@@ -1,0 +1,103 @@
+
+.graph-container {
+    --text-color: #cecece;
+    --text-color-dark: #9c9c9c;
+    --alt-color: #ff1eaa;
+    --node-container-color: #4f4f4f;
+    --node-border-color: #858585;
+    --node-inset-color: #414141;
+    --node-header-height: 30px;
+    --graph-bg-color: #202020;
+}
+
+.graph-container {
+    background-color: var(--graph-bg-color);
+    color: var(--text-color);
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    height: 100vh;
+    position: relative;
+}
+
+.graph-node {
+    background-color: var(--node-container-color);
+    border: 1px solid var(--node-border-color);
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    padding: 3px;
+}
+
+.graph-node-body {
+    display: flex;
+}
+
+.graph-node-header {
+    display: flex;
+    height: var(--node-header-height);
+    align-items: center;
+}
+
+.graph-node-title {
+    flex-grow: 1;
+    pointer-events: none;
+    user-select: none;
+    margin-left: var(--node-header-height);
+    text-align: center;
+}
+
+.graph-node-ports {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.graph-node-port-group {
+    display: flex;
+    padding: 5px 7px;
+}
+
+.graph-node-port-label {
+    color: var(--text-color-dark);
+    margin: 0 7px;
+}
+
+.graph-node-port {
+    background-color: var(--node-inset-color);
+    border: 1px solid var(--node-border-color);
+    border-radius: 10px;
+    width: 10px;
+    height: 10px;
+}
+
+.graph-node-close {
+    background-color: transparent;
+    border-radius: 50px;
+    color: var(--alt-color);
+    cursor: pointer;
+    height: var(--node-header-height);
+    line-height: var(--node-header-height);
+    text-align: center;
+    transition: 0.5s background-color ease;
+    width: var(--node-header-height);
+}
+
+.graph-node-close:hover {
+    background-color: var(--node-inset-color);   
+}
+
+.graph-node-field {
+    width: 100px;
+    margin-bottom: 7px;
+}
+
+.graph-node-field-label {
+    color: #b7b7b7;
+    margin-bottom: 3px;
+}
+
+.text-input {
+    min-width: 0;
+    width: 100%;
+}
