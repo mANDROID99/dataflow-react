@@ -1,15 +1,17 @@
 import React, { useMemo } from 'react';
-import Graph from './graph/components/Graph';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { StoreState } from './store/storeTypes';
-import { GraphSpec, GraphActions } from './graph/graphTypes';
+import { GraphActions } from './graph/graphContext';
+import { GraphNode } from './graph/types/graphTypes';
+import { GraphSpec } from './graph/types/graphSpecTypes';
+
 import {
-    setNodePosition,
-    removeNode,
-    setNodeFieldValue,
-    nodePortStartDrag,
-    nodePortEndDrag
+    createNode,
+    updateNode,
+    removeNode
 } from './store/graphActions';
+import Graph from './graph/components/Graph';
 
 /**
  * Connects the graph to the redux-store.
@@ -28,22 +30,16 @@ export default function GraphContainer({ graphId, spec }: Props) {
         return state.graph.graphs[graphId];
     });
 
-    const actions = useMemo<GraphActions>(() => {
+    const actions = useMemo<GraphActions>((): GraphActions => {
         return {
-            onNodePosChanged(nodeId: string, x: number, y: number) {
-                dispatch(setNodePosition(graphId, nodeId, x, y));
+            onNodeCreated(nodeId: string, node: GraphNode) {
+                dispatch(createNode(graphId, nodeId, node));
+            },
+            onNodeChanged(nodeId: string, node: GraphNode) {
+                dispatch(updateNode(graphId, nodeId, node));
             },
             onNodeRemoved(nodeId: string) {
                 dispatch(removeNode(graphId, nodeId));
-            },
-            onNodeFieldChanged(nodeId: string, fieldName: string, value: unknown) {
-                dispatch(setNodeFieldValue(graphId, nodeId, fieldName, value));
-            },
-            onNodePortStartDrag(nodeId: string, portOut: boolean, portName: string) {
-                dispatch(nodePortStartDrag(graphId, nodeId, portOut, portName));
-            },
-            onNodePortEndDrag(nodeId: string, portOut: boolean, portName: string) {
-                dispatch(nodePortEndDrag(graphId, nodeId, portOut, portName));
             }
         }
     }, [graphId, dispatch]);
@@ -54,6 +50,6 @@ export default function GraphContainer({ graphId, spec }: Props) {
             spec={spec}
             actions={actions}
         />
-    )
+    );
 }
 

@@ -1,4 +1,4 @@
-import { Graph } from "../graph/graphTypes"
+import { Graph } from "../graph/types/graphTypes"
 
 export type GraphState = {
     graphs: {

@@ -1,11 +1,13 @@
-import React, { useCallback, useContext, useState, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-import { GraphNode as GraphNodeT, GraphNodeSpec } from '../graphTypes';
+import { GraphNodeSpec } from '../types/graphSpecTypes';
+import { GraphActionType, NodeState } from '../types/graphStateTypes';
+import { GraphNode as GraphNodeT } from '../types/graphTypes';
+
 import { Context } from '../graphContext';
-import { batch } from 'react-redux';
 import GraphNodeField from './GraphNodeField';
 import GraphNodePort from './GraphNodePort';
 
@@ -14,20 +16,15 @@ library.add(faTimes);
 type Props = {
     nodeId: string;
     node: GraphNodeT;
-    // state: NodeState | undefined;
+    nodeState: NodeState;
 }
 
-type DragState = {
-    x: number;
-    y: number;
-}
-
-function GraphNode({ nodeId, node }: Props) {
-    const [isDragging, setDragging] = useState(false);
-    const [dragState, setDragState] = useState<DragState | undefined>(undefined);
-
+function GraphNode({ nodeId, node, nodeState }: Props) {
     const { dispatch, actions, spec } = useContext(Context);
-    const onNodePosChanged = actions.onNodePosChanged;
+
+    const drag = nodeState.drag;
+    const dragging = nodeState.dragging;
+    const onNodeChanged = actions.onNodeChanged;
 
     useEffect(() => {
         let x = node.x, y = node.y;
@@ -35,17 +32,15 @@ function GraphNode({ nodeId, node }: Props) {
         function onDragged(evt: MouseEvent) {
             x += evt.movementX;
             y += evt.movementY;
-            setDragState({ x, y });
+            dispatch({ type: GraphActionType.UPDATE_NODE_DRAG, nodeId, x: x, y: y });
         }
     
         function onDragEnd(){
-            batch(() => {
-                onNodePosChanged(nodeId, x, y);
-                setDragging(false);
-            });
+            dispatch({ type: GraphActionType.CLEAR_NODE_DRAG, nodeId });
+            onNodeChanged(nodeId, { ...node, x: x, y: y });
         }
 
-        if (isDragging) {
+        if (dragging) {
             window.addEventListener('mousemove', onDragged);
             window.addEventListener('mouseup', onDragEnd);
 
@@ -54,14 +49,14 @@ function GraphNode({ nodeId, node }: Props) {
                 window.removeEventListener('mouseup', onDragEnd);
             }
         }
-    }, [isDragging, node]);
+    }, [dragging, node, nodeId, dispatch, onNodeChanged]);
 
     const onDragStart = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        setDragging(true);
-    }, []);
+        dispatch({ type: GraphActionType.BEGIN_NODE_DRAG, nodeId });
+    }, [dispatch, nodeId]);
 
-    const left: number = dragState ? dragState.x : node.x;
-    const top: number  = dragState ? dragState.y : node.y;
+    const left: number = drag ? drag.x : node.x;
+    const top: number  = drag ? drag.y : node.y;
 
     const nodeSpec: GraphNodeSpec = spec.nodes[node.type];
     const portsIn = nodeSpec.portsIn;
@@ -85,8 +80,8 @@ function GraphNode({ nodeId, node }: Props) {
                             key={i}
                             nodeId={nodeId}
                             portSpec={port}
-                            portOut={false}
-                            port={node.portsIn[port.name]}
+                            portIn={false}
+                            portName={port.name}
                         />
                     ))}
                 </div>
@@ -108,8 +103,8 @@ function GraphNode({ nodeId, node }: Props) {
                             key={i}
                             nodeId={nodeId}
                             portSpec={port}
-                            portOut={true}
-                            port={node.portsOut[port.name]}
+                            portIn={true}
+                            portName={port.name}
                         />
                     ))}
                 </div>

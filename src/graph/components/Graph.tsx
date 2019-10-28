@@ -1,9 +1,13 @@
-import React, { useMemo, useReducer } from 'react';
-import { Graph as GraphT, GraphSpec, GraphActions } from '../graphTypes';
-import { GraphContext, Context } from '../graphContext';
-import GraphNode from './GraphNode';
+import React, { useMemo, useReducer, useEffect } from 'react';
+
+import { Graph as GraphT } from '../types/graphTypes';
+import { GraphSpec } from '../types/graphSpecTypes';
+import { GraphContext, Context, GraphActions } from '../graphContext';
+
 import { reducer, init } from '../graphStateReducer';
+import GraphNode from './GraphNode';
 import GraphSVG from './GraphSVG';
+import { GraphActionType } from '../types/graphStateTypes';
 
 type Props = {
     spec: GraphSpec;
@@ -13,10 +17,16 @@ type Props = {
 
 export default function Graph(props: Props) {
     const { spec, graph, actions } = props;
-    const [state, dispatch] = useReducer(reducer, null, init);
+    const [state, dispatch] = useReducer(reducer, graph, init);
 
-    const nodes = graph.nodes;
-    // const nodesState = state.nodes;
+    const graphNodes = state.graph.nodes;
+    const stateNodes = state.nodes;
+
+    useEffect(() => {
+        if (state.graph !== graph) {
+            dispatch({ type: GraphActionType.INIT, graph });
+        }
+    }, [graph]);
 
     const graphContext = useMemo<GraphContext>(() => {
         return {
@@ -30,11 +40,12 @@ export default function Graph(props: Props) {
         <Context.Provider value={graphContext}>
             <div className="graph-container">
                 <div className="graph-nodes">
-                    {Object.keys(nodes).map(nodeId => (
+                    {Object.keys(stateNodes).map(nodeId => (
                         <GraphNode
                             key={nodeId}
                             nodeId={nodeId}
-                            node={nodes[nodeId]}
+                            node={graphNodes[nodeId]}
+                            nodeState={stateNodes[nodeId]}
                         />
                     ))}
                 </div>

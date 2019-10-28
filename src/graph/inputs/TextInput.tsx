@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraphFieldInputProps } from "../graphTypes";
+import { GraphFieldInputProps } from '../types/graphInputTypes';
 
 export default function TextInput(props: GraphFieldInputProps<string>) {
     return (

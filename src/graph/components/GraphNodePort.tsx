@@ -1,32 +1,33 @@
 import React, { useContext } from 'react';
-import { GraphNodePortSpec, GraphNodePort as GraphNodePortT } from '../graphTypes';
+
+import { GraphNodePortSpec } from '../types/graphSpecTypes';
+import { GraphActionType } from '../types/graphStateTypes';
+
 import { Context } from '../graphContext';
 
 type Props = {
     nodeId: string;
     portSpec: GraphNodePortSpec;
-    port: GraphNodePortT | undefined;
-    portOut: boolean;
+    portName: string;
+    portIn: boolean;
 }
 
-function GraphNodePort({ nodeId, portSpec, port, portOut }: Props) {
-    const { actions } = useContext(Context);
+function GraphNodePort({ nodeId, portSpec, portName, portIn }: Props) {
+    const { dispatch } = useContext(Context);
 
     function renderPortComponent() {
         return (
-            <div className="graph-node-port" onMouseDown={(evt: React.MouseEvent) => {
-                evt.preventDefault();
-                evt.stopPropagation();
-                actions.onNodePortStartDrag(nodeId, portOut, portSpec.name);
+            <div className="graph-node-port" onMouseDown={() => {
+                dispatch({ type: GraphActionType.BEGIN_PORT_DRAG, nodeId, portIn, portName })
             }}/>
         );
     }
     
     return (
         <div className="graph-node-port-group">
-            { portOut ? undefined : renderPortComponent() }
+            { portIn ? renderPortComponent() : undefined }
             <div className="graph-node-port-label">{portSpec.label}</div>
-            { portOut ? renderPortComponent() : undefined }
+            { portIn ? undefined : renderPortComponent() }
         </div>
     );
 }

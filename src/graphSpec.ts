@@ -1,4 +1,4 @@
-import { GraphSpec, GraphNodeSpec } from "./graph/graphTypes";
+import { GraphNodeSpec, GraphSpec } from "./graph/types/graphSpecTypes";
 import TextInput from "./graph/inputs/TextInput";
 
 const group: GraphNodeSpec = {

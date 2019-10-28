@@ -1,5 +1,5 @@
 import React from 'react';
-import { Graph } from '../graphTypes';
+import { Graph } from '../types/graphTypes';
 
 type Props = {
     graph: Graph;
