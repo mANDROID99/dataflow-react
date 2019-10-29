@@ -2,6 +2,7 @@ export enum ActionType {
     SET_NODE_POSITION = 'node-graph.SET_NODE_POSITION',
     SET_NODE_FIELD_VALUE = 'node-graph.SET_NODE_FIELD_VALUE',
     REMOVE_NODE = 'node-graph.REMOVE_NODE',
+    CLEAR_NODE_CONNECTION = 'node-graph.CLEAR_NODE_CONNECTION'
 }
 
 export function setNodePosition(graphId: string, nodeId: string, x: number, y: number): SetNodePositionAction {
@@ -21,6 +22,16 @@ export function setNodeFieldValue(graphId: string, nodeId: string, fieldName: st
         nodeId,
         fieldName,
         value
+    };
+}
+
+export function clearNodeConnection(graphId: string, nodeId: string, portName: string, portOut: boolean): ClearNodeConnectionAction {
+    return {
+        type: ActionType.CLEAR_NODE_CONNECTION,
+        graphId,
+        nodeId,
+        portName,
+        portOut
     };
 }
 
@@ -48,10 +59,22 @@ export type setNodeFieldValueAction = {
     value: unknown;
 }
 
+export type ClearNodeConnectionAction = {
+    type: ActionType.CLEAR_NODE_CONNECTION;
+    graphId: string;
+    nodeId: string;
+    portName: string;
+    portOut: boolean;
+}
+
 export type RemoveNodeAction = {
     type: ActionType.REMOVE_NODE;
     graphId: string;
     nodeId: string;
 }
 
-export type GraphAction = SetNodePositionAction | setNodeFieldValueAction | RemoveNodeAction;
+export type GraphAction =
+    SetNodePositionAction |
+    setNodeFieldValueAction |
+    ClearNodeConnectionAction |
+    RemoveNodeAction;

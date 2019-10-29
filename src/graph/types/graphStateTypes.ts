@@ -34,6 +34,7 @@ export enum GraphActionType {
     MOUNT_PORT,
     UNMOUNT_PORT,
     START_PORT_DRAG,
+    END_PORT_DRAG
 }
 
 export type GraphAction = 
@@ -42,4 +43,5 @@ export type GraphAction =
     { type: GraphActionType.END_DRAG } |
     { type: GraphActionType.MOUNT_PORT, portId: string, offX: number, offY: number } |
     { type: GraphActionType.UNMOUNT_PORT, portId: string } |
-    { type: GraphActionType.START_PORT_DRAG, nodeId: string, portName: string, portOut: boolean };
+    { type: GraphActionType.START_PORT_DRAG, nodeId: string, portName: string, portOut: boolean } |
+    { type: GraphActionType.END_PORT_DRAG };

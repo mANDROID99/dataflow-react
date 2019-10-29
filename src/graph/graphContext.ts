@@ -6,6 +6,7 @@ export type GraphActions = {
     onNodePosChanged(nodeId: string, x: number, y: number): void;
     onNodeFieldValueChanged(nodeId: string, fieldName: string, value: unknown): void;
     onNodeRemoved(nodeId: string): void;
+    onNodeConnectionCleared(nodeId: string, portName: string, portOut: boolean): void;
 }
 
 export type GraphContext = {

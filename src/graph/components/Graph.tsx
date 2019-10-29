@@ -32,7 +32,6 @@ export default function Graph(props: Props) {
     return (
         <Context.Provider value={graphContext}>
             <div className="graph-container">
-                <GraphSVG graph={graph} state={state}/>
                 <div className="graph-nodes">
                     {Object.entries(graphNodes).map(([nodeId, node]) => {
                         const isDragging = nodeDrag ? nodeDrag.nodeId === nodeId : false;
@@ -51,6 +50,7 @@ export default function Graph(props: Props) {
                         );
                     })}
                 </div>
+                <GraphSVG graph={graph} state={state}/>
             </div>
         </Context.Provider>
     );

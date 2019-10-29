@@ -53,6 +53,11 @@ export function reducer(state: GraphState, action: GraphAction): GraphState {
                 };
             });
 
+        case GraphActionType.END_PORT_DRAG:
+            return produce(state, (draft) => {
+                draft.portDrag = undefined;
+            })
+
         default:
             return state;
     }

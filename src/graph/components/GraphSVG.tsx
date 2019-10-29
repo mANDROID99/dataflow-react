@@ -3,6 +3,7 @@ import { Graph } from '../types/graphTypes';
 import { GraphState } from '../types/graphStateTypes';
 import { getPortId } from '../graphHelpers';
 import GraphSVGConnection from './GraphSVGConnection';
+import GraphSVGConnectionDraggable from './GraphSVGConnectionDraggable';
 
 type Props = {
     graph: Graph;
@@ -20,7 +21,6 @@ function getNodePos(graph: Graph, state: GraphState, nodeId: string): { x: numbe
     const nodeDrag = state.nodeDrag;
 
     if (nodeDrag && nodeDrag.nodeId === nodeId) {
-        
         if (nodeDrag.dx != null) {
             x = nodeDrag.dx;
         }
@@ -68,8 +68,25 @@ function getConnections(graph: Graph, state: GraphState) {
     return connections;
 }
 
+function getDraggable(graph: Graph, state: GraphState) {
+    const portDrag = state.portDrag;
+    if (portDrag == null) return;
+
+    const portId = getPortId(portDrag.nodeId, portDrag.portOut, portDrag.portName);
+    const portOffset = state.portOffsets[portId];
+    if (portOffset == null) return;
+
+    const nodePos = getNodePos(graph, state, portDrag.nodeId);
+    if (nodePos == null) return;
+
+    const sx = nodePos.x + portOffset.offX;
+    const sy = nodePos.y + portOffset.offY;
+    return { sx, sy };
+}
+
 export default function GraphSVG({ graph, state }: Props) {
     const connections = getConnections(graph, state);
+    const draggable = getDraggable(graph, state);
 
     return (
         <svg className="graph-svg">
@@ -82,6 +99,7 @@ export default function GraphSVG({ graph, state }: Props) {
                     ey={conn.ey}
                 />
             ))}
+            {draggable ? <GraphSVGConnectionDraggable sx={draggable.sx} sy={draggable.sy}/> : undefined}
         </svg>
     );
 }

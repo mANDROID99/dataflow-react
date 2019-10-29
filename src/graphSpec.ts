@@ -3,7 +3,7 @@ import TextInput from "./graph/inputs/TextInput";
 
 const group: GraphNodeSpec = {
     fields: [
-        { label: 'Key', name: 'key', type: 'text' }
+        { label: 'Column', name: 'column', type: 'text' }
     ],
     ports: {
         in: [
@@ -18,7 +18,7 @@ const group: GraphNodeSpec = {
 
 const sum: GraphNodeSpec = {
     fields: [
-        { label: 'Key', name: 'key', type: 'text' }
+        { label: 'Column', name: 'column', type: 'text' }
     ],
     ports: {
         in: [

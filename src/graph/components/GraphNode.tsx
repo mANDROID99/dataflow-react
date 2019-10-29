@@ -24,6 +24,7 @@ type Props = {
 function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
     const { dispatch, actions, spec } = useContext(Context);
     const onNodePosChanged = actions.onNodePosChanged;
+    const onNodeRemoved = actions.onNodeRemoved;
 
     useEffect(() => {
         let x = node.x, y = node.y;
@@ -51,11 +52,12 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
     }, [isDragging, node, nodeId, dispatch, onNodePosChanged]);
 
     const onDragStart = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        const target = e.target;
-        if (target != null && (target as HTMLElement).className === 'graph-node') {
-            dispatch({ type: GraphActionType.START_DRAG, nodeId });
-        }
+        dispatch({ type: GraphActionType.START_DRAG, nodeId });
     }, [dispatch, nodeId]);
+
+    const onCloseClicked = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        onNodeRemoved(nodeId);
+    }, [onNodeRemoved, nodeId])
 
     const left: number = dragX != null ? dragX : node.x;
     const top: number  = dragY != null ? dragY : node.y;
@@ -66,12 +68,12 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
     const fields = nodeSpec.fields;
 
     return (
-        <div className="graph-node" onMouseDown={onDragStart} style={{ left, top }}>
+        <div className="graph-node" style={{ left, top }}>
             <div className="graph-node-header">
-                <div className="graph-node-title">
+                <div className="graph-node-title" onMouseDown={onDragStart}>
                     { node.title }
                 </div>
-                <div className="graph-node-close" onClick={() => actions.onNodeRemoved(nodeId)}>
+                <div className="graph-node-close" onClick={onCloseClicked}>
                     <FontAwesomeIcon icon="times"/>
                 </div>
             </div>
@@ -83,6 +85,7 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
                             nodeId={nodeId}
                             portOut={false}
                             portName={port.name}
+                            port={node.ports.in[port.name]}
                         />
                     ))}
                 </div>
@@ -105,6 +108,7 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
                             nodeId={nodeId}
                             portOut={true}
                             portName={port.name}
+                            port={node.ports.out[port.name]}
                         />
                     ))}
                 </div>
