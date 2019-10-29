@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { Graph } from "../graph/types/graphTypes";
-import { GraphAction, ActionType, CreateNodeAction, UpdateNodeAction, RemoveNodeAction } from "./graphActions";
+import { GraphAction, ActionType, SetNodePositionAction, setNodeFieldValueAction, RemoveNodeAction } from "./graphActions";
 import { GraphState } from './storeTypes';
 
 const INIT_GRAPH_STATE: Graph = {
@@ -8,20 +8,29 @@ const INIT_GRAPH_STATE: Graph = {
         groupBy: {
             title: 'Group-By',
             type: 'group',
-            values: {},
+            fields: {},
             x: 10,
             y: 30,
-            portsIn: {},
-            portsOut: {}
+            ports: {
+                in: {},
+                out: {
+                    rows: {
+                        node: 'sum',
+                        port: 'in'
+                    }
+                }
+            }
         },
         sum: {
             title: 'Sum',
             type: 'sum',
-            values: {},
+            fields: {},
             x: 110,
             y: 50,
-            portsIn: {},
-            portsOut: {}
+            ports: {
+                in: {},
+                out: {}
+            }
         }
     }
 }
@@ -34,11 +43,11 @@ const INIT_STATE: GraphState = {
 
 export default function(state: GraphState = INIT_STATE, action: GraphAction): GraphState {
     switch (action.type) {
-        case ActionType.CREATE_NODE:
-            return createNode(state, action);
+        case ActionType.SET_NODE_POSITION:
+            return setNodePosition(state, action);
             
-        case ActionType.UPDATE_NODE:
-            return updateNode(state, action);
+        case ActionType.SET_NODE_FIELD_VALUE:
+            return setNodeFieldValue(state, action);
 
         case ActionType.REMOVE_NODE:
             return removeNode(state, action);
@@ -48,19 +57,28 @@ export default function(state: GraphState = INIT_STATE, action: GraphAction): Gr
     }
 }
 
-function createNode(state: GraphState, action: CreateNodeAction): GraphState {
+function setNodePosition(state: GraphState, action: SetNodePositionAction): GraphState {
     return produce(state, (draft) => {
         const graph = draft.graphs[action.graphId];
         if (graph == null) return;
-        graph.nodes[action.nodeId] = action.node;
+
+        const node = graph.nodes[action.nodeId];
+        if (node == null) return;
+
+        node.x = action.x;
+        node.y = action.y;
     });
 }
 
-function updateNode(state: GraphState, action: UpdateNodeAction): GraphState {
+function setNodeFieldValue(state: GraphState, action: setNodeFieldValueAction): GraphState {
     return produce(state, (draft) => {
         const graph = draft.graphs[action.graphId];
         if (graph == null) return;
-        graph.nodes[action.nodeId] = action.node;
+
+        const node = graph.nodes[action.nodeId];
+        if (node == null) return;
+
+        node.fields[action.fieldName] = action.value;
     });
 }
 

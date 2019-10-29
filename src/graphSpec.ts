@@ -5,26 +5,30 @@ const group: GraphNodeSpec = {
     fields: [
         { label: 'Key', name: 'key', type: 'text' }
     ],
-    portsIn: [
-        { label: 'In', name: 'in', type: 'row' }
-    ],
-    portsOut: [
-        { label: 'Group', name: 'group', type: 'scalar' },
-        { label: 'Rows', name: 'rows', type: 'row[]' }
-    ]
-}
+    ports: {
+        in: [
+            { name: 'in', type: 'row' }
+        ],
+        out: [
+            { name: 'group', type: 'scalar' },
+            { name: 'rows', type: 'row[]' }
+        ]
+    }
+};
 
 const sum: GraphNodeSpec = {
     fields: [
         { label: 'Key', name: 'key', type: 'text' }
     ],
-    portsIn: [
-        { label: 'In', name: 'in', type: 'row[]' }
-    ],
-    portsOut: [
-        { label: 'Out', name: 'out', type: 'scalar' }
-    ]
-}
+    ports: {
+        in: [
+            { name: 'in', type: 'row[]' }
+        ],
+        out: [
+            { name: 'out', type: 'scalar' }    
+        ]
+    }
+};
 
 export const spec: GraphSpec = {
     inputs: {

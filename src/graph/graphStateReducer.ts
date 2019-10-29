@@ -1,94 +1,56 @@
 import produce from "immer";
 
-import { GraphNode, Graph } from "./types/graphTypes";
-import { NodeState, GraphState, GraphActionType, GraphAction } from "./types/graphStateTypes";
+import { GraphAction, GraphState, GraphActionType } from "./types/graphStateTypes";
 
-function createNodeState(node: GraphNode): NodeState {
+export function init(): GraphState {
     return {
-        dragging: false,
-        portsIn: {},
-        portsOut: {}
+        portOffsets: {}
     };
-}
-
-export function init(graph: Graph): GraphState {
-    const graphNodes = graph.nodes;
-    const nodes: { [id: string]: NodeState } = {};
-
-    for (let [nodeId, graphNode] of Object.entries(graphNodes)) {
-        nodes[nodeId] = createNodeState(graphNode);
-    }
-
-    return { graph, nodes };
 }
 
 export function reducer(state: GraphState, action: GraphAction): GraphState {
     switch (action.type) {
-        case GraphActionType.INIT:
-            return init(action.graph);
-        
-        case GraphActionType.BEGIN_NODE_DRAG:
-            return produce(state, (state) => {
-                const node = state.nodes[action.nodeId];
-                if (!node) return;
+        case GraphActionType.START_DRAG:
+            return produce(state, (draft) => {
+                draft.nodeDrag = {
+                    nodeId: action.nodeId
+                };
+            })
 
-                node.drag = undefined;
-                node.dragging = true;
+        case GraphActionType.UPDATE_DRAG:
+            return produce(state, (draft) => {
+                const drag = draft.nodeDrag;
+                if (drag == null) return;
+
+                drag.dx = action.dragX;
+                drag.dy = action.dragY;
             });
 
-        case GraphActionType.UPDATE_NODE_DRAG:
-            return produce(state, (state) => {
-                const node = state.nodes[action.nodeId];
-                if (!node) return;
-                
-                node.drag = { x: action.x, y: action.y };
+        case GraphActionType.END_DRAG:
+            return produce(state, (draft) => {
+                draft.nodeDrag = undefined;
             });
 
-        case GraphActionType.CLEAR_NODE_DRAG:
-            return produce(state, (state) => {
-                const node = state.nodes[action.nodeId];
-                if (!node) return;
-
-                node.drag = undefined;
-                node.dragging = false;
+        case GraphActionType.MOUNT_PORT:
+            return produce(state, (draft) => {
+                draft.portOffsets[action.portId] = {
+                    offX: action.offX,
+                    offY: action.offY
+                };
             });
 
-        case GraphActionType.BEGIN_PORT_DRAG:
-            return produce(state, (state) => {
-                const node = state.nodes[action.nodeId];
-                if (!node) return;
-
-                const ports = action.portIn ? node.portsIn : node.portsOut;
-                const port = ports[action.portName];
-                if (!port) return;
-
-                port.drag = undefined;
-                port.dragging = true;
+        case GraphActionType.UNMOUNT_PORT:
+            return produce(state, (draft) => {
+                delete draft.portOffsets[action.portId];
             });
 
-        case GraphActionType.UPDATE_PORT_DRAG:
-            return produce(state, (state) => {
-                const node = state.nodes[action.nodeId];
-                if (!node) return;
-
-                const ports = action.portIn ? node.portsIn : node.portsOut;
-                const port = ports[action.portName];
-                if (!port) return;
-
-                port.drag = { x: action.x, y: action.y };
-            });
-
-        case GraphActionType.CLEAR_PORT_DRAG:
-            return produce(state, (state) => {
-                const node = state.nodes[action.nodeId];
-                if (!node) return;
-
-                const ports = action.portIn ? node.portsIn : node.portsOut;
-                const port = ports[action.portName];
-                if (!port) return;
-
-                port.drag = undefined;
-                port.dragging = false;
+        case GraphActionType.START_PORT_DRAG:
+            return produce(state, (draft) => {
+                draft.portDrag = {
+                    nodeId: action.nodeId,
+                    portName: action.portName,
+                    portOut: action.portOut
+                };
             });
 
         default:

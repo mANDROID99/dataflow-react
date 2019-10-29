@@ -1,18 +1,27 @@
 
+export type GraphPort = {
+    node: string;
+    port: string;
+}
+
+export type GraphNodePorts = {
+    in: {
+        [name: string]: GraphPort | undefined;
+    },
+    out: {
+        [name: string]: GraphPort | undefined;
+    }
+}
+
 export type GraphNode = {
     title: string;
     type: string;
     x: number;
     y: number;
-    values: {
+    ports: GraphNodePorts;
+    fields: {
         [name: string]: unknown;
     };
-    portsIn: {
-        [name: string]: string | undefined;
-    };
-    portsOut: {
-        [name: string]: string | undefined;
-    }
 }
 
 export type Graph = {

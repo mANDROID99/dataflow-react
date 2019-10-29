@@ -3,12 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { StoreState } from './store/storeTypes';
 import { GraphActions } from './graph/graphContext';
-import { GraphNode } from './graph/types/graphTypes';
 import { GraphSpec } from './graph/types/graphSpecTypes';
 
 import {
-    createNode,
-    updateNode,
+    setNodePosition,
+    setNodeFieldValue,
     removeNode
 } from './store/graphActions';
 import Graph from './graph/components/Graph';
@@ -32,11 +31,11 @@ export default function GraphContainer({ graphId, spec }: Props) {
 
     const actions = useMemo<GraphActions>((): GraphActions => {
         return {
-            onNodeCreated(nodeId: string, node: GraphNode) {
-                dispatch(createNode(graphId, nodeId, node));
+            onNodePosChanged(nodeId, x, y) {
+                dispatch(setNodePosition(graphId, nodeId, x, y));
             },
-            onNodeChanged(nodeId: string, node: GraphNode) {
-                dispatch(updateNode(graphId, nodeId, node));
+            onNodeFieldValueChanged(nodeId, fieldName, value) {
+                dispatch(setNodeFieldValue(graphId, nodeId, fieldName, value));
             },
             onNodeRemoved(nodeId: string) {
                 dispatch(removeNode(graphId, nodeId));

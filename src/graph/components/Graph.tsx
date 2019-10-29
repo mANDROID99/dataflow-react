@@ -1,13 +1,12 @@
-import React, { useMemo, useReducer, useEffect } from 'react';
+import React, { useMemo, useReducer } from 'react';
 
 import { Graph as GraphT } from '../types/graphTypes';
 import { GraphSpec } from '../types/graphSpecTypes';
 import { GraphContext, Context, GraphActions } from '../graphContext';
 
 import { reducer, init } from '../graphStateReducer';
-import GraphNode from './GraphNode';
+import GraphNodeComponent from './GraphNode';
 import GraphSVG from './GraphSVG';
-import { GraphActionType } from '../types/graphStateTypes';
 
 type Props = {
     spec: GraphSpec;
@@ -17,16 +16,7 @@ type Props = {
 
 export default function Graph(props: Props) {
     const { spec, graph, actions } = props;
-    const [state, dispatch] = useReducer(reducer, graph, init);
-
-    const graphNodes = state.graph.nodes;
-    const stateNodes = state.nodes;
-
-    useEffect(() => {
-        if (state.graph !== graph) {
-            dispatch({ type: GraphActionType.INIT, graph });
-        }
-    }, [graph]);
+    const [state, dispatch] = useReducer(reducer, null, init);
 
     const graphContext = useMemo<GraphContext>(() => {
         return {
@@ -36,20 +26,31 @@ export default function Graph(props: Props) {
         };
     }, [spec, actions]);
 
+    const graphNodes = graph.nodes;
+    const nodeDrag = state.nodeDrag;
+
     return (
         <Context.Provider value={graphContext}>
             <div className="graph-container">
+                <GraphSVG graph={graph} state={state}/>
                 <div className="graph-nodes">
-                    {Object.keys(stateNodes).map(nodeId => (
-                        <GraphNode
-                            key={nodeId}
-                            nodeId={nodeId}
-                            node={graphNodes[nodeId]}
-                            nodeState={stateNodes[nodeId]}
-                        />
-                    ))}
+                    {Object.entries(graphNodes).map(([nodeId, node]) => {
+                        const isDragging = nodeDrag ? nodeDrag.nodeId === nodeId : false;
+                        const dragX = isDragging ? nodeDrag!.dx : undefined;
+                        const dragY = isDragging ? nodeDrag!.dy : undefined;
+
+                        return (
+                            <GraphNodeComponent
+                                key={nodeId}
+                                nodeId={nodeId}
+                                node={node}
+                                isDragging={isDragging}
+                                dragX={dragX}
+                                dragY={dragY}
+                            />
+                        );
+                    })}
                 </div>
-                <GraphSVG graph={graph}/>
             </div>
         </Context.Provider>
     );

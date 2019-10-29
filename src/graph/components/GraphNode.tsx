@@ -4,27 +4,26 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import { GraphNodeSpec } from '../types/graphSpecTypes';
-import { GraphActionType, NodeState } from '../types/graphStateTypes';
-import { GraphNode as GraphNodeT } from '../types/graphTypes';
+import { GraphNode } from '../types/graphTypes';
 
 import { Context } from '../graphContext';
 import GraphNodeField from './GraphNodeField';
 import GraphNodePort from './GraphNodePort';
+import { GraphActionType } from '../types/graphStateTypes';
 
 library.add(faTimes);
 
 type Props = {
     nodeId: string;
-    node: GraphNodeT;
-    nodeState: NodeState;
+    node: GraphNode;
+    isDragging: boolean;
+    dragX?: number;
+    dragY?: number;
 }
 
-function GraphNode({ nodeId, node, nodeState }: Props) {
+function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
     const { dispatch, actions, spec } = useContext(Context);
-
-    const drag = nodeState.drag;
-    const dragging = nodeState.dragging;
-    const onNodeChanged = actions.onNodeChanged;
+    const onNodePosChanged = actions.onNodePosChanged;
 
     useEffect(() => {
         let x = node.x, y = node.y;
@@ -32,15 +31,15 @@ function GraphNode({ nodeId, node, nodeState }: Props) {
         function onDragged(evt: MouseEvent) {
             x += evt.movementX;
             y += evt.movementY;
-            dispatch({ type: GraphActionType.UPDATE_NODE_DRAG, nodeId, x: x, y: y });
+            dispatch({ type: GraphActionType.UPDATE_DRAG, dragX: x, dragY: y });
         }
     
         function onDragEnd(){
-            dispatch({ type: GraphActionType.CLEAR_NODE_DRAG, nodeId });
-            onNodeChanged(nodeId, { ...node, x: x, y: y });
+            dispatch({ type: GraphActionType.END_DRAG });
+            onNodePosChanged(nodeId, x, y);
         }
 
-        if (dragging) {
+        if (isDragging) {
             window.addEventListener('mousemove', onDragged);
             window.addEventListener('mouseup', onDragEnd);
 
@@ -49,18 +48,21 @@ function GraphNode({ nodeId, node, nodeState }: Props) {
                 window.removeEventListener('mouseup', onDragEnd);
             }
         }
-    }, [dragging, node, nodeId, dispatch, onNodeChanged]);
+    }, [isDragging, node, nodeId, dispatch, onNodePosChanged]);
 
     const onDragStart = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        dispatch({ type: GraphActionType.BEGIN_NODE_DRAG, nodeId });
+        const target = e.target;
+        if (target != null && (target as HTMLElement).className === 'graph-node') {
+            dispatch({ type: GraphActionType.START_DRAG, nodeId });
+        }
     }, [dispatch, nodeId]);
 
-    const left: number = drag ? drag.x : node.x;
-    const top: number  = drag ? drag.y : node.y;
+    const left: number = dragX != null ? dragX : node.x;
+    const top: number  = dragY != null ? dragY : node.y;
 
     const nodeSpec: GraphNodeSpec = spec.nodes[node.type];
-    const portsIn = nodeSpec.portsIn;
-    const portsOut = nodeSpec.portsOut;
+    const portsIn = nodeSpec.ports.in;
+    const portsOut = nodeSpec.ports.out;
     const fields = nodeSpec.fields;
 
     return (
@@ -79,8 +81,7 @@ function GraphNode({ nodeId, node, nodeState }: Props) {
                         <GraphNodePort
                             key={i}
                             nodeId={nodeId}
-                            portSpec={port}
-                            portIn={false}
+                            portOut={false}
                             portName={port.name}
                         />
                     ))}
@@ -92,7 +93,7 @@ function GraphNode({ nodeId, node, nodeState }: Props) {
                                 key={i}
                                 nodeId={nodeId}
                                 field={field}
-                                value={node.values[field.name]}
+                                value={node.fields[field.name]}
                             />
                         )
                     })}                    
@@ -102,8 +103,7 @@ function GraphNode({ nodeId, node, nodeState }: Props) {
                         <GraphNodePort
                             key={i}
                             nodeId={nodeId}
-                            portSpec={port}
-                            portIn={true}
+                            portOut={true}
                             portName={port.name}
                         />
                     ))}
@@ -113,4 +113,4 @@ function GraphNode({ nodeId, node, nodeState }: Props) {
     );
 }
 
-export default React.memo(GraphNode);
+export default React.memo(GraphNodeComponent);

@@ -1,12 +1,11 @@
 import { createContext, Dispatch } from "react";
-import { GraphNode } from "./types/graphTypes";
 import { GraphSpec } from "./types/graphSpecTypes";
 import { GraphAction } from "./types/graphStateTypes";
 
 export type GraphActions = {
+    onNodePosChanged(nodeId: string, x: number, y: number): void;
+    onNodeFieldValueChanged(nodeId: string, fieldName: string, value: unknown): void;
     onNodeRemoved(nodeId: string): void;
-    onNodeChanged(nodeId: string, node: GraphNode): void;
-    onNodeCreated(nodeId: string, node: GraphNode): void;
 }
 
 export type GraphContext = {

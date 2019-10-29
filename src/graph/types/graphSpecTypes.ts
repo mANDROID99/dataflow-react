@@ -12,14 +12,17 @@ export type GraphNodeFieldSpec = {
 
 export type GraphNodePortSpec = {
     name: string;
-    label: string;
     type: string;
+}
+
+export type GraphNodePortsSpec = {
+    in: GraphNodePortSpec[];
+    out: GraphNodePortSpec[];
 }
 
 export type GraphNodeSpec = {
     fields: GraphNodeFieldSpec[];
-    portsIn: GraphNodePortSpec[];
-    portsOut: GraphNodePortSpec[];
+    ports: GraphNodePortsSpec;
 }
 
 export type GraphSpec = {

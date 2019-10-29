@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useState } from 'react';
+import React, { useContext, useCallback } from 'react';
 import { GraphNodeFieldSpec } from '../types/graphSpecTypes';
 import { Context } from '../graphContext';
 
@@ -9,22 +9,21 @@ type Props = {
 }
 
 function GraphNodeField({ nodeId, field, value }: Props) {
-    const fieldName = field.name;
-    const [inputValue, setInputValue] = useState<unknown>(value);
-
     const { spec, actions } = useContext(Context);
+
+    const fieldName = field.name;
     const inputSpec = spec.inputs[field.type];
-    // const onNodeFieldChanged = actions.onNodeFieldChanged;
+    const onNodeFieldValueChanged = actions.onNodeFieldValueChanged;
 
     const onChanged = useCallback((value: unknown) => {
-        setInputValue(value);
-    }, []);
+        onNodeFieldValueChanged(nodeId, fieldName, value);
+    }, [nodeId, fieldName, onNodeFieldValueChanged]);
 
     return (
         <div className="graph-node-field">
             <div className="graph-node-field-label">{ field.label }</div>
             <div className="graph-node-field-input">
-                { inputSpec ? React.createElement(inputSpec.component, { value: inputValue, onChanged }) : null }
+                { inputSpec ? React.createElement(inputSpec.component, { value, onChanged }) : null }
             </div>
         </div>
     );

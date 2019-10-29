@@ -1,26 +1,26 @@
-import { GraphNode } from "../graph/types/graphTypes";
-
 export enum ActionType {
-    CREATE_NODE = 'node-graph.CREATE_NODE',
-    UPDATE_NODE = 'node-graph.UPDATE_NODE',
+    SET_NODE_POSITION = 'node-graph.SET_NODE_POSITION',
+    SET_NODE_FIELD_VALUE = 'node-graph.SET_NODE_FIELD_VALUE',
     REMOVE_NODE = 'node-graph.REMOVE_NODE',
 }
 
-export function createNode(graphId: string, nodeId: string, node: GraphNode): CreateNodeAction {
+export function setNodePosition(graphId: string, nodeId: string, x: number, y: number): SetNodePositionAction {
     return {
-        type: ActionType.CREATE_NODE,
+        type: ActionType.SET_NODE_POSITION,
         graphId,
         nodeId,
-        node
+        x,
+        y
     };
 }
 
-export function updateNode(graphId: string, nodeId: string, node: GraphNode): UpdateNodeAction {
+export function setNodeFieldValue(graphId: string, nodeId: string, fieldName: string, value: unknown): setNodeFieldValueAction {
     return {
-        type: ActionType.UPDATE_NODE,
+        type: ActionType.SET_NODE_FIELD_VALUE,
         graphId,
         nodeId,
-        node
+        fieldName,
+        value
     };
 }
 
@@ -32,18 +32,20 @@ export function removeNode(graphId: string, nodeId: string): RemoveNodeAction {
     };
 }
 
-export type CreateNodeAction = {
-    type: ActionType.CREATE_NODE;
+export type SetNodePositionAction = {
+    type: ActionType.SET_NODE_POSITION;
     graphId: string;
     nodeId: string;
-    node: GraphNode;
+    x: number;
+    y: number;
 }
 
-export type UpdateNodeAction = {
-    type: ActionType.UPDATE_NODE;
+export type setNodeFieldValueAction = {
+    type: ActionType.SET_NODE_FIELD_VALUE;
     graphId: string;
     nodeId: string;
-    node: GraphNode;
+    fieldName: string;
+    value: unknown;
 }
 
 export type RemoveNodeAction = {
@@ -52,4 +54,4 @@ export type RemoveNodeAction = {
     nodeId: string;
 }
 
-export type GraphAction = CreateNodeAction | UpdateNodeAction | RemoveNodeAction;
+export type GraphAction = SetNodePositionAction | setNodeFieldValueAction | RemoveNodeAction;
