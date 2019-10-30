@@ -105,15 +105,11 @@ function removeNodeConnection(state: GraphState, action: RemoveNodeConnectionAct
 
         const startPorts = start.portOut ? startNode.ports.out : startNode.ports.in;
         const startPort = startPorts[start.portName];
-        if (startPort == null) return;
-
-        delete startPorts[start.portName];
         
-        const endNode = graph.nodes[startPort.node];
-        if (endNode == null) return;
-
-        const endPorts = start.portOut ? endNode.ports.in : endNode.ports.out;
-        delete endPorts[startPort.port];
+        if (startPort != null) {
+            delete startPorts[start.portName];
+            clearPort(graph, startPort.node, !start.portOut, startPort.port);
+        }
     });
 }
 
@@ -129,6 +125,11 @@ function createNodeConnection(state: GraphState, action: CreateNodeConnectionAct
         if (startNode == null) return;
 
         const startPorts = start.portOut ? startNode.ports.out : startNode.ports.in;
+        const startPort = startPorts[start.portName];
+        if (startPort != null) {
+            clearPort(graph, startPort.node, !start.portOut, startPort.port);
+        }
+
         startPorts[start.portName] = {
             node: end.nodeId,
             port: end.portName
@@ -138,6 +139,11 @@ function createNodeConnection(state: GraphState, action: CreateNodeConnectionAct
         if (endNode == null) return;
 
         const endPorts = end.portOut ? endNode.ports.out : endNode.ports.in;
+        const endPort = endPorts[end.portName];
+        if (endPort != null) {
+            clearPort(graph, endPort.node, !end.portOut, endPort.port);
+        }
+        
         endPorts[end.portName] = {
             node: start.nodeId,
             port: start.portName
@@ -145,12 +151,19 @@ function createNodeConnection(state: GraphState, action: CreateNodeConnectionAct
     });
 }
 
-
-
 function removeNode(state: GraphState, action: RemoveNodeAction): GraphState {
     return produce(state, (draft) => {
         const graph = draft.graphs[action.graphId];
         if (graph == null) return;
         delete graph.nodes[action.nodeId];
     });
+}
+
+
+function clearPort(graph: Graph, nodeId: string, portOut: boolean, portName: string) {
+    const node = graph.nodes[nodeId];
+    if (node == null) return;
+
+    const ports = portOut ? node.ports.out : node.ports.in;
+    ports[portName] = undefined;
 }
