@@ -1,9 +1,9 @@
-import React, { useContext, useRef, useLayoutEffect } from 'react';
+import React, { useContext, useRef, useLayoutEffect, useMemo } from 'react';
 import classnames from 'classnames';
 
-import { GraphActionType } from '../types/graphStateTypes';
+import { GraphActionType, PortDragState } from '../types/graphStateTypes';
 import { Context } from '../graphContext';
-import { createPortId } from '../graphHelpers';
+import { createPortId, PortId, comparePortIds } from '../graphHelpers';
 import { GraphPort } from '../types/graphTypes';
 
 type Props = {
@@ -11,11 +11,34 @@ type Props = {
     port: GraphPort | undefined;
     portName: string;
     portOut: boolean;
+    portDrag: PortDragState | undefined;
 }
 
-function GraphNodePort({ nodeId, port, portName, portOut }: Props) {
+function isConnected(port: GraphPort | undefined, portDrag: PortDragState | undefined, portId: PortId) {
+    if (port) {
+        return true;
+    }
+
+    if (portDrag) {
+        if (comparePortIds(portDrag.startPort, portId)) {
+            return true;
+        }
+
+        if (portDrag.targetPort && comparePortIds(portDrag.targetPort, portId)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function GraphNodePort({ nodeId, port, portName, portOut, portDrag }: Props) {
     const { dispatch, actions } = useContext(Context);
     const portEl = useRef<HTMLDivElement>(null);
+
+    const portId = useMemo(() => {
+        return createPortId(nodeId, portName, portOut);
+    }, [nodeId, portName, portOut])
 
     useLayoutEffect(() => {
         const el = portEl.current;
@@ -34,25 +57,21 @@ function GraphNodePort({ nodeId, port, portName, portOut }: Props) {
 
     }, [nodeId, portName, portOut, dispatch]);
 
-    const connected = port != null;
+    const connected = isConnected(port, portDrag, portId);
 
     function handleMouseDown() {
-        const port = createPortId(nodeId, portName, portOut);
-        dispatch({ type: GraphActionType.PORT_DRAG_SET, port });
-
+        dispatch({ type: GraphActionType.PORT_DRAG_SET, port: portId });
         if (connected) {
-            actions.onNodeConnectionRemoved(port);
+            actions.onNodeConnectionRemoved(portId);
         }
     }
 
     function handleMouseOver() {
-        const port = createPortId(nodeId, portName, portOut);
-        dispatch({ type: GraphActionType.PORT_DRAG_TARGET_SET, port });
+        dispatch({ type: GraphActionType.PORT_DRAG_TARGET_SET, port: portId });
     }
 
     function handleMouseOut() {
-        const port = createPortId(nodeId, portName, portOut);
-        dispatch({ type: GraphActionType.PORT_DRAG_TARGET_CLEAR, port });
+        dispatch({ type: GraphActionType.PORT_DRAG_TARGET_CLEAR, port: portId });
     }
 
     function renderLabel() {
@@ -60,15 +79,13 @@ function GraphNodePort({ nodeId, port, portName, portOut }: Props) {
     }
 
     return (
-        <div className={classnames("graph-node-port-group", { connected })}>
+        <div
+            className={classnames("graph-node-port-group", { connected, 'out': portOut })}
+            onMouseOver={handleMouseOver}
+            onMouseOut={handleMouseOut}
+        >
             { portOut ? renderLabel() : undefined }
-            <div
-                ref={portEl}
-                className="graph-node-port"
-                onMouseDown={handleMouseDown}
-                onMouseOver={handleMouseOver}
-                onMouseOut={handleMouseOut}
-            />
+            <div ref={portEl} className="graph-node-port" onMouseDown={handleMouseDown}/>
             { portOut ? undefined : renderLabel() }
         </div>
     );

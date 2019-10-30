@@ -2,11 +2,12 @@
 .graph-container {
     --text-color: #cecece;
     --text-color-dark: #9c9c9c;
-    --alt-color: #ff1eaa;
+    --alt-color: #ff811e;
     --node-container-color: #58585894;
     --node-header-color: #303030;
     --node-border-color: #676767;
-    --node-inset-color: #2020204a;
+    --node-inset-color: #202020;
+    --node-overlay-color: #ffffff1a;
     --node-header-height: 30px;
     --graph-bg-color: #202020;
     background-color: var(--graph-bg-color);
@@ -45,7 +46,8 @@
 
 .graph-node-body {
     display: flex;
-    padding-top: 7px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .graph-node-title {
@@ -66,7 +68,15 @@
 
 .graph-node-port-group {
     display: flex;
-    padding: 5px;
+    align-items: center;
+    padding: 3px 0;
+    margin-left: -7px;
+    margin-right: 0;
+}
+
+.graph-node-port-group.out {
+    margin-left: 0;
+    margin-right: -7px;
 }
 
 .graph-node-port-label {
@@ -79,13 +89,11 @@
     border: 1px solid var(--node-border-color);
     border-radius: 10px;
     cursor: crosshair;
-    height: 10px;
-    pointer-events: all;
-    width: 10px;
+    height: 12px;
+    width: 12px;
 }
 
-.graph-node-port-group.connected > .graph-node-port,
-.graph-node-port:hover {
+.graph-node-port-group.connected > .graph-node-port {
     background-color: var(--alt-color);
     border-color: var(--node-header-color);
 }
@@ -99,16 +107,21 @@
     border-radius: 50px;
     color: var(--alt-color);
     cursor: pointer;
-    height: var(--node-header-height);
-    line-height: var(--node-header-height);
+    height: 25px;
+    line-height: 25px;
+    margin-right: 5px;
     text-align: center;
     pointer-events: all;
     transition: 0.5s background-color ease;
-    width: var(--node-header-height);
+    width: 25px;
 }
 
 .graph-node-close:hover {
-    background-color: var(--node-inset-color);   
+    background-color: var(--node-overlay-color);   
+}
+
+.graph-node-fields {
+    padding: 0 2px;
 }
 
 .graph-node-field {

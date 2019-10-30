@@ -9,7 +9,7 @@ import { GraphNode } from '../types/graphTypes';
 import { Context } from '../graphContext';
 import GraphNodeField from './GraphNodeField';
 import GraphNodePort from './GraphNodePort';
-import { GraphActionType } from '../types/graphStateTypes';
+import { GraphActionType, PortDragState } from '../types/graphStateTypes';
 
 library.add(faTimes);
 
@@ -19,9 +19,10 @@ type Props = {
     isDragging: boolean;
     dragX?: number;
     dragY?: number;
+    portDrag?: PortDragState;
 }
 
-function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
+function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY, portDrag }: Props) {
     const { dispatch, actions, spec } = useContext(Context);
     const onNodePosChanged = actions.onNodePosChanged;
     const onNodeRemoved = actions.onNodeRemoved;
@@ -86,6 +87,7 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
                             portOut={false}
                             portName={port.name}
                             port={node.ports.in[port.name]}
+                            portDrag={portDrag}
                         />
                     ))}
                 </div>
@@ -109,6 +111,7 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
                             portOut={true}
                             portName={port.name}
                             port={node.ports.out[port.name]}
+                            portDrag={portDrag}
                         />
                     ))}
                 </div>

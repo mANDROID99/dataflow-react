@@ -69,7 +69,7 @@ export function reducer(state: GraphState, action: GraphAction): GraphState {
         case GraphActionType.PORT_DRAG_TARGET_CLEAR:
             return produce(state, (draft) => {
                 const drag = draft.portDrag;
-                if (drag == null || !comparePortIds(drag.startPort, action.port)) return;
+                if (drag == null || !drag.targetPort || !comparePortIds(drag.targetPort, action.port)) return;
                 drag.targetPort = undefined;
             })
 

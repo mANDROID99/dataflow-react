@@ -46,6 +46,7 @@ export default function Graph(props: Props) {
                                 isDragging={isDragging}
                                 dragX={dragX}
                                 dragY={dragY}
+                                portDrag={state.portDrag}
                             />
                         );
                     })}
