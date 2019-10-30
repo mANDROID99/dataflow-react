@@ -79,6 +79,10 @@
     margin-right: -7px;
 }
 
+.graph-node-port-group.connectable .graph-node-port {
+    background-color: #ff811e96;
+}
+
 .graph-node-port-label {
     color: var(--text-color-dark);
     margin: 0 7px;
@@ -95,11 +99,6 @@
 
 .graph-node-port-group.connected > .graph-node-port {
     background-color: var(--alt-color);
-    border-color: var(--node-header-color);
-}
-
-.graph-node-port-group.connected > .graph-node-port-label {
-    color: #b7b7b7;
 }
 
 .graph-node-close {
@@ -141,5 +140,9 @@
 }
 
 .graph-connection {
+    stroke: #ff811e96;
+}
+
+.graph-connection.connected {
     stroke: var(--alt-color);
 }

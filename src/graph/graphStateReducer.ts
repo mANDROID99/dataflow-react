@@ -47,10 +47,11 @@ export function reducer(state: GraphState, action: GraphAction): GraphState {
                 delete draft.portOffsets[portKey];
             });
 
-        case GraphActionType.PORT_DRAG_SET:
+        case GraphActionType.PORT_DRAG_START:
             return produce(state, (draft) => {
                 draft.portDrag = {
-                    startPort: action.port
+                    startPort: action.port,
+                    portType: action.portType
                 };
             });
 

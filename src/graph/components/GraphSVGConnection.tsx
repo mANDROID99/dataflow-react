@@ -9,7 +9,7 @@ type Props = {
 
 function GraphSVGConnection(props: Props) {
     const d = `M${props.sx},${props.sy}L${props.ex},${props.ey}`;
-    return <path className="graph-connection" d={d}/>
+    return <path className="graph-connection connected" d={d}/>
 }
 
 export default React.memo(GraphSVGConnection);

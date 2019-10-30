@@ -87,6 +87,7 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY, portDrag }
                             portOut={false}
                             portName={port.name}
                             port={node.ports.in[port.name]}
+                            portSpec={port}
                             portDrag={portDrag}
                         />
                     ))}
@@ -110,6 +111,7 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY, portDrag }
                             nodeId={nodeId}
                             portOut={true}
                             portName={port.name}
+                            portSpec={port}
                             port={node.ports.out[port.name]}
                             portDrag={portDrag}
                         />

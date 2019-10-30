@@ -36,6 +36,17 @@ const INIT_GRAPH_STATE: Graph = {
                 },
                 out: {}
             }
+        },
+        sum2: {
+            title: 'Sum',
+            type: 'sum',
+            fields: {},
+            x: 250,
+            y: 200,
+            ports: {
+                in: {},
+                out: {}
+            }
         }
     }
 }

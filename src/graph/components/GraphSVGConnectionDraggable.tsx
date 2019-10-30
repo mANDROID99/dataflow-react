@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from "react"
 import { Context } from "../graphContext";
 import { GraphActionType, PortDragState } from "../types/graphStateTypes";
+import classNames from "classnames";
 
 type Props = {
     sx: number;
@@ -48,6 +49,7 @@ export default function GraphSVGConnectionDraggable({ sx, sy, drag }: Props) {
         }
     }, [onNodeConnectionCreated, dispatch]);
 
+    const connected = drag.targetPort != null;
     const d = `M${sx},${sy}L${endPos.x},${endPos.y}`;
-    return <path className="graph-connection" d={d}/>
+    return <path className={classNames("graph-connection", { connected })} d={d}/>
 }

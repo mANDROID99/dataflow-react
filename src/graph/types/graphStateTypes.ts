@@ -10,6 +10,7 @@ export type NodeDragState = {
 
 export type PortDragState = {
     startPort: PortId;
+    portType: string;
     targetPort?: PortId;
 }
 
@@ -34,7 +35,7 @@ export enum GraphActionType {
     DRAG_END,
     PORT_MOUNT,
     PORT_UNMOUNT,
-    PORT_DRAG_SET,
+    PORT_DRAG_START,
     PORT_DRAG_END,
     PORT_DRAG_TARGET_SET,
     PORT_DRAG_TARGET_CLEAR
@@ -46,7 +47,7 @@ export type GraphAction =
     | { type: GraphActionType.DRAG_END }
     | { type: GraphActionType.PORT_MOUNT, port: PortId, offX: number, offY: number }
     | { type: GraphActionType.PORT_UNMOUNT, port: PortId }
-    | { type: GraphActionType.PORT_DRAG_SET, port: PortId }
+    | { type: GraphActionType.PORT_DRAG_START, port: PortId, portType: string }
     | { type: GraphActionType.PORT_DRAG_END }
     | { type: GraphActionType.PORT_DRAG_TARGET_SET, port: PortId }
     | { type: GraphActionType.PORT_DRAG_TARGET_CLEAR, port: PortId };
