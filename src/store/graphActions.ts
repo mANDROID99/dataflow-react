@@ -1,8 +1,11 @@
+import { PortId } from "../graph/graphHelpers";
+
 export enum ActionType {
     SET_NODE_POSITION = 'node-graph.SET_NODE_POSITION',
     SET_NODE_FIELD_VALUE = 'node-graph.SET_NODE_FIELD_VALUE',
     REMOVE_NODE = 'node-graph.REMOVE_NODE',
-    CLEAR_NODE_CONNECTION = 'node-graph.CLEAR_NODE_CONNECTION'
+    CREATE_NODE_CONNECTION = 'node-graph.CREATE_NODE_CONNECTION',
+    REMOVE_NODE_CONNECTION = 'node-graph.CLEAR_NODE_CONNECTION'
 }
 
 export function setNodePosition(graphId: string, nodeId: string, x: number, y: number): SetNodePositionAction {
@@ -25,15 +28,23 @@ export function setNodeFieldValue(graphId: string, nodeId: string, fieldName: st
     };
 }
 
-export function clearNodeConnection(graphId: string, nodeId: string, portName: string, portOut: boolean): ClearNodeConnectionAction {
+export function removeNodeConnection(graphId: string, start: PortId): RemoveNodeConnectionAction {
     return {
-        type: ActionType.CLEAR_NODE_CONNECTION,
+        type: ActionType.REMOVE_NODE_CONNECTION,
         graphId,
-        nodeId,
-        portName,
-        portOut
+        start
     };
 }
+
+export function createNodeConnection(graphId: string, start: PortId, end: PortId) {
+    return {
+        type: ActionType.CREATE_NODE_CONNECTION,
+        graphId,
+        start,
+        end
+    };
+}
+
 
 export function removeNode(graphId: string, nodeId: string): RemoveNodeAction {
     return {
@@ -59,12 +70,17 @@ export type setNodeFieldValueAction = {
     value: unknown;
 }
 
-export type ClearNodeConnectionAction = {
-    type: ActionType.CLEAR_NODE_CONNECTION;
+export type RemoveNodeConnectionAction = {
+    type: ActionType.REMOVE_NODE_CONNECTION;
     graphId: string;
-    nodeId: string;
-    portName: string;
-    portOut: boolean;
+    start: PortId;
+}
+
+export type CreateNodeConnectionAction = {
+    type: ActionType.CREATE_NODE_CONNECTION;
+    graphId: string;
+    start: PortId;
+    end: PortId;
 }
 
 export type RemoveNodeAction = {
@@ -76,5 +92,6 @@ export type RemoveNodeAction = {
 export type GraphAction =
     SetNodePositionAction |
     setNodeFieldValueAction |
-    ClearNodeConnectionAction |
+    RemoveNodeConnectionAction |
+    CreateNodeConnectionAction |
     RemoveNodeAction;

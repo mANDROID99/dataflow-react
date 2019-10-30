@@ -1,3 +1,4 @@
+import { PortId } from "../graphHelpers"
 
 // state
 export type NodeDragState = {
@@ -6,10 +7,10 @@ export type NodeDragState = {
     dy?: number;
 }
 
+
 export type PortDragState = {
-    nodeId: string;
-    portName: string;
-    portOut: boolean;
+    startPort: PortId;
+    targetPort?: PortId;
 }
 
 export type PortOffset = {
@@ -28,20 +29,24 @@ export type GraphState = {
 // actions
 
 export enum GraphActionType {
-    START_DRAG,
-    UPDATE_DRAG,
-    END_DRAG,
-    MOUNT_PORT,
-    UNMOUNT_PORT,
-    START_PORT_DRAG,
-    END_PORT_DRAG
+    DRAG_START,
+    DRAG_UPDATE,
+    DRAG_END,
+    PORT_MOUNT,
+    PORT_UNMOUNT,
+    PORT_DRAG_SET,
+    PORT_DRAG_END,
+    PORT_DRAG_TARGET_SET,
+    PORT_DRAG_TARGET_CLEAR
 }
 
 export type GraphAction = 
-    { type: GraphActionType.START_DRAG, nodeId: string } |
-    { type: GraphActionType.UPDATE_DRAG, dragX: number, dragY: number } |
-    { type: GraphActionType.END_DRAG } |
-    { type: GraphActionType.MOUNT_PORT, portId: string, offX: number, offY: number } |
-    { type: GraphActionType.UNMOUNT_PORT, portId: string } |
-    { type: GraphActionType.START_PORT_DRAG, nodeId: string, portName: string, portOut: boolean } |
-    { type: GraphActionType.END_PORT_DRAG };
+    | { type: GraphActionType.DRAG_START, nodeId: string }
+    | { type: GraphActionType.DRAG_UPDATE, dragX: number, dragY: number }
+    | { type: GraphActionType.DRAG_END }
+    | { type: GraphActionType.PORT_MOUNT, port: PortId, offX: number, offY: number }
+    | { type: GraphActionType.PORT_UNMOUNT, port: PortId }
+    | { type: GraphActionType.PORT_DRAG_SET, port: PortId }
+    | { type: GraphActionType.PORT_DRAG_END }
+    | { type: GraphActionType.PORT_DRAG_TARGET_SET, port: PortId }
+    | { type: GraphActionType.PORT_DRAG_TARGET_CLEAR, port: PortId };

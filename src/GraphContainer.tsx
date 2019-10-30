@@ -9,7 +9,8 @@ import {
     setNodePosition,
     setNodeFieldValue,
     removeNode,
-    clearNodeConnection
+    removeNodeConnection,
+    createNodeConnection
 } from './store/graphActions';
 import Graph from './graph/components/Graph';
 
@@ -38,8 +39,11 @@ export default function GraphContainer({ graphId, spec }: Props) {
             onNodeFieldValueChanged(nodeId, fieldName, value) {
                 dispatch(setNodeFieldValue(graphId, nodeId, fieldName, value));
             },
-            onNodeConnectionCleared(nodeId, portName, portOut) {
-                dispatch(clearNodeConnection(graphId, nodeId, portName, portOut));
+            onNodeConnectionRemoved(start) {
+                dispatch(removeNodeConnection(graphId, start));
+            },
+            onNodeConnectionCreated(start, end) {
+                dispatch(createNodeConnection(graphId, start, end))
             },
             onNodeRemoved(nodeId: string) {
                 dispatch(removeNode(graphId, nodeId));

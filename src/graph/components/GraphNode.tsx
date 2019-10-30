@@ -32,11 +32,11 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
         function onDragged(evt: MouseEvent) {
             x += evt.movementX;
             y += evt.movementY;
-            dispatch({ type: GraphActionType.UPDATE_DRAG, dragX: x, dragY: y });
+            dispatch({ type: GraphActionType.DRAG_UPDATE, dragX: x, dragY: y });
         }
     
         function onDragEnd(){
-            dispatch({ type: GraphActionType.END_DRAG });
+            dispatch({ type: GraphActionType.DRAG_END });
             onNodePosChanged(nodeId, x, y);
         }
 
@@ -52,7 +52,7 @@ function GraphNodeComponent({ nodeId, node, isDragging, dragX, dragY }: Props) {
     }, [isDragging, node, nodeId, dispatch, onNodePosChanged]);
 
     const onDragStart = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        dispatch({ type: GraphActionType.START_DRAG, nodeId });
+        dispatch({ type: GraphActionType.DRAG_START, nodeId });
     }, [dispatch, nodeId]);
 
     const onCloseClicked = useCallback((e: React.MouseEvent<HTMLDivElement>) => {

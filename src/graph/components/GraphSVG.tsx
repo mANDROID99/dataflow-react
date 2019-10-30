@@ -1,7 +1,7 @@
 import React from 'react';
 import { Graph } from '../types/graphTypes';
 import { GraphState } from '../types/graphStateTypes';
-import { getPortId } from '../graphHelpers';
+import { portIdToKey, getPortKey } from '../graphHelpers';
 import GraphSVGConnection from './GraphSVGConnection';
 import GraphSVGConnectionDraggable from './GraphSVGConnectionDraggable';
 
@@ -10,7 +10,7 @@ type Props = {
     state: GraphState;
 }
 
-type Connection = { portId: string, sx: number, sy: number, ex: number, ey: number };
+type Connection = { key: string, sx: number, sy: number, ex: number, ey: number };
 
 function getNodePos(graph: Graph, state: GraphState, nodeId: string): { x: number, y: number } | undefined {
     const node = graph.nodes[nodeId];
@@ -45,15 +45,15 @@ function getConnections(graph: Graph, state: GraphState) {
         for (let [portName, port] of Object.entries(node.ports.out)) {
             if (port == null) continue;
 
-            const portId = getPortId(nodeId, true, portName);
-            const portOffset = offsets[portId];
+            const portKey = getPortKey(nodeId, portName, true);
+            const portOffset = offsets[portKey];
             if (portOffset == null) continue;
 
             const targetNodePos = getNodePos(graph, state, port.node);
             if (targetNodePos == null) continue;
 
-            const targetPortId = getPortId(port.node, false, port.port);
-            const targetPortOffset = offsets[targetPortId];
+            const targetPortKey = getPortKey(port.node, port.port, false);
+            const targetPortOffset = offsets[targetPortKey];
             if (targetPortOffset == null) continue;
 
             const sx = nodePos.x + portOffset.offX;
@@ -61,45 +61,51 @@ function getConnections(graph: Graph, state: GraphState) {
             const ex = targetNodePos.x + targetPortOffset.offX;
             const ey  = targetNodePos.y + targetPortOffset.offY;
 
-            connections.push({ portId, sx, sy, ex, ey });
+            connections.push({ key: portKey, sx, sy, ex, ey });
         }
     }
 
     return connections;
 }
 
-function getDraggable(graph: Graph, state: GraphState) {
+function getActiveDragProps(graph: Graph, state: GraphState) {
     const portDrag = state.portDrag;
     if (portDrag == null) return;
 
-    const portId = getPortId(portDrag.nodeId, portDrag.portOut, portDrag.portName);
-    const portOffset = state.portOffsets[portId];
+    const portKey = portIdToKey(portDrag.startPort);
+    const portOffset = state.portOffsets[portKey];
     if (portOffset == null) return;
 
-    const nodePos = getNodePos(graph, state, portDrag.nodeId);
+    const nodePos = getNodePos(graph, state, portDrag.startPort.nodeId);
     if (nodePos == null) return;
 
     const sx = nodePos.x + portOffset.offX;
     const sy = nodePos.y + portOffset.offY;
-    return { sx, sy };
+    return { sx, sy, drag: portDrag };
 }
 
 export default function GraphSVG({ graph, state }: Props) {
     const connections = getConnections(graph, state);
-    const draggable = getDraggable(graph, state);
+    const dragProps = getActiveDragProps(graph, state);
 
     return (
         <svg className="graph-svg">
             {connections.map(conn => (
                 <GraphSVGConnection
-                    key={conn.portId}
+                    key={conn.key}
                     sx={conn.sx}
                     sy={conn.sy}
                     ex={conn.ex}
                     ey={conn.ey}
                 />
             ))}
-            {draggable ? <GraphSVGConnectionDraggable sx={draggable.sx} sy={draggable.sy}/> : undefined}
+            {dragProps ? (
+                <GraphSVGConnectionDraggable
+                    sx={dragProps.sx}
+                    sy={dragProps.sy}
+                    drag={dragProps.drag}
+                />
+            ) : undefined}
         </svg>
     );
 }

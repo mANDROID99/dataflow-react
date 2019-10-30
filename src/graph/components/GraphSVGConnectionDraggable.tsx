@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useEffect, useState, useContext, useRef } from "react"
 import { Context } from "../graphContext";
-import { GraphActionType } from "../types/graphStateTypes";
+import { GraphActionType, PortDragState } from "../types/graphStateTypes";
 
 type Props = {
     sx: number;
     sy: number;
+    drag: PortDragState;
 }
 
 type Pos = {
@@ -12,9 +13,13 @@ type Pos = {
     y: number;
 }
 
-export default function GraphSVGConnectionDraggable({ sx, sy }: Props) {
-    const { dispatch } = useContext(Context);
+export default function GraphSVGConnectionDraggable({ sx, sy, drag }: Props) {
+    const { dispatch, actions } = useContext(Context);
     const [endPos, setEndPos] = useState<Pos>({ x: sx, y: sy });
+    const onNodeConnectionCreated = actions.onNodeConnectionCreated;
+
+    const dragRef = useRef(drag);
+    dragRef.current = drag;
 
     useEffect(() => {
         function onDrag(evt: MouseEvent) {
@@ -24,7 +29,14 @@ export default function GraphSVGConnectionDraggable({ sx, sy }: Props) {
         }
 
         function onDragEnd() {
-            dispatch({ type: GraphActionType.END_PORT_DRAG });
+            // cancel the current drag
+            dispatch({ type: GraphActionType.PORT_DRAG_END });
+
+            // create a connection in the store
+            const drag = dragRef.current;
+            if (drag.targetPort) {
+                onNodeConnectionCreated(drag.startPort, drag.targetPort);
+            }
         }
 
         window.addEventListener('mousemove', onDrag);
@@ -34,7 +46,7 @@ export default function GraphSVGConnectionDraggable({ sx, sy }: Props) {
             window.removeEventListener('mousemove', onDrag);
             window.removeEventListener('mouseup', onDragEnd);
         }
-    }, []);
+    }, [onNodeConnectionCreated, dispatch]);
 
     const d = `M${sx},${sy}L${endPos.x},${endPos.y}`;
     return <path className="graph-connection" d={d}/>

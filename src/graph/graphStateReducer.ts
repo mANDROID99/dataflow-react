@@ -1,6 +1,7 @@
 import produce from "immer";
 
 import { GraphAction, GraphState, GraphActionType } from "./types/graphStateTypes";
+import { comparePortIds, portIdToKey } from "./graphHelpers";
 
 export function init(): GraphState {
     return {
@@ -10,14 +11,14 @@ export function init(): GraphState {
 
 export function reducer(state: GraphState, action: GraphAction): GraphState {
     switch (action.type) {
-        case GraphActionType.START_DRAG:
+        case GraphActionType.DRAG_START:
             return produce(state, (draft) => {
                 draft.nodeDrag = {
                     nodeId: action.nodeId
                 };
             })
 
-        case GraphActionType.UPDATE_DRAG:
+        case GraphActionType.DRAG_UPDATE:
             return produce(state, (draft) => {
                 const drag = draft.nodeDrag;
                 if (drag == null) return;
@@ -26,36 +27,50 @@ export function reducer(state: GraphState, action: GraphAction): GraphState {
                 drag.dy = action.dragY;
             });
 
-        case GraphActionType.END_DRAG:
+        case GraphActionType.DRAG_END:
             return produce(state, (draft) => {
                 draft.nodeDrag = undefined;
             });
 
-        case GraphActionType.MOUNT_PORT:
+        case GraphActionType.PORT_MOUNT:
             return produce(state, (draft) => {
-                draft.portOffsets[action.portId] = {
+                const portKey = portIdToKey(action.port);
+                draft.portOffsets[portKey] = {
                     offX: action.offX,
                     offY: action.offY
                 };
             });
 
-        case GraphActionType.UNMOUNT_PORT:
+        case GraphActionType.PORT_UNMOUNT:
             return produce(state, (draft) => {
-                delete draft.portOffsets[action.portId];
+                const portKey = portIdToKey(action.port);
+                delete draft.portOffsets[portKey];
             });
 
-        case GraphActionType.START_PORT_DRAG:
+        case GraphActionType.PORT_DRAG_SET:
             return produce(state, (draft) => {
                 draft.portDrag = {
-                    nodeId: action.nodeId,
-                    portName: action.portName,
-                    portOut: action.portOut
+                    startPort: action.port
                 };
             });
 
-        case GraphActionType.END_PORT_DRAG:
+        case GraphActionType.PORT_DRAG_END:
             return produce(state, (draft) => {
                 draft.portDrag = undefined;
+            });
+
+        case GraphActionType.PORT_DRAG_TARGET_SET:
+            return produce(state, (draft) => {
+                const drag = draft.portDrag;
+                if (drag == null) return;
+                drag.targetPort = action.port;
+            });
+
+        case GraphActionType.PORT_DRAG_TARGET_CLEAR:
+            return produce(state, (draft) => {
+                const drag = draft.portDrag;
+                if (drag == null || !comparePortIds(drag.startPort, action.port)) return;
+                drag.targetPort = undefined;
             })
 
         default:
