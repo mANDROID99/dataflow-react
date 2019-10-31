@@ -6,6 +6,7 @@ import { GraphState } from './storeTypes';
 const INIT_GRAPH_STATE: Graph = {
     nodes: {
         groupBy: {
+            id: 'groupBy',
             title: 'Group-By',
             type: 'group',
             fields: {},
@@ -22,6 +23,7 @@ const INIT_GRAPH_STATE: Graph = {
             }
         },
         sum: {
+            id: 'sum',
             title: 'Sum',
             type: 'sum',
             fields: {},
@@ -38,6 +40,7 @@ const INIT_GRAPH_STATE: Graph = {
             }
         },
         sum2: {
+            id: 'sum2',
             title: 'Sum',
             type: 'sum',
             fields: {},

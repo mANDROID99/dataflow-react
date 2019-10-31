@@ -2,6 +2,8 @@ import { GraphNodeSpec, GraphSpec } from "./graph/types/graphSpecTypes";
 import TextInput from "./graph/inputs/TextInput";
 
 const group: GraphNodeSpec = {
+    title: 'Group',
+    width: 150,
     fields: [
         { label: 'Column', name: 'column', type: 'text' }
     ],
@@ -17,6 +19,8 @@ const group: GraphNodeSpec = {
 };
 
 const sum: GraphNodeSpec = {
+    title: 'Sum',
+    width: 150,
     fields: [
         { label: 'Column', name: 'column', type: 'text' }
     ],

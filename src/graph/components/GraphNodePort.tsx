@@ -4,19 +4,19 @@ import classnames from 'classnames';
 import { GraphActionType, PortDragState } from '../types/graphStateTypes';
 import { Context } from '../graphContext';
 import { createPortId, PortId, comparePortIds } from '../graphHelpers';
-import { GraphPort } from '../types/graphTypes';
+import { GraphNodePort } from '../types/graphTypes';
 import { GraphNodePortSpec } from '../types/graphSpecTypes';
 
 type Props = {
     nodeId: string;
-    port: GraphPort | undefined;
+    port: GraphNodePort | undefined;
     portSpec: GraphNodePortSpec;
     portName: string;
     portOut: boolean;
     portDrag: PortDragState | undefined;
 }
 
-function isConnected(port: GraphPort | undefined, portDrag: PortDragState | undefined, portId: PortId) {
+function isConnected(port: GraphNodePort | undefined, portDrag: PortDragState | undefined, portId: PortId) {
     if (port) {
         return true;
     }

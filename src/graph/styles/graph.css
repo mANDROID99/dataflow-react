@@ -1,5 +1,43 @@
+.graph-svg {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.0625em;
+}
 
-.graph-container {
+.graph-node {
+    fill: grey;
+}
+
+.graph-node-title {
+    fill: white;
+    user-select: none;
+    pointer-events: none;
+}
+
+.graph-node-close-overlay {
+    cursor: pointer;
+    fill: transparent;
+    transition: 0.5s fill ease;
+}
+
+.graph-node-close-overlay:hover {
+    fill: black;
+}
+
+.graph-node-close-icon {
+    color: white;
+    text-align: center;
+}
+
+.graph-node-port {
+    fill: black;
+}
+
+.graph-connection {
+    stroke: black;
+}
+
+/* .graph-container {
     --text-color: #cecece;
     --text-color-dark: #9c9c9c;
     --alt-color: #ff811e;
@@ -145,4 +183,4 @@
 
 .graph-connection.connected {
     stroke: var(--alt-color);
-}
+} */

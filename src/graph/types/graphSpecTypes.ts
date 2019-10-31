@@ -21,15 +21,17 @@ export type GraphNodePortsSpec = {
 }
 
 export type GraphNodeSpec = {
+    width: number;
+    title: string;
     fields: GraphNodeFieldSpec[];
     ports: GraphNodePortsSpec;
 }
 
 export type GraphSpec = {
     nodes: {
-        [id: string]: GraphNodeSpec;
+        [type: string]: GraphNodeSpec;
     };
     inputs: {
-        [id: string]: GraphFieldInputSpec<any>;
+        [type: string]: GraphFieldInputSpec<any>;
     };
 }

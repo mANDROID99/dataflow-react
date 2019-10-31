@@ -4,6 +4,8 @@ import { store } from './store/store';
 import GraphContainer from './GraphContainer';
 import { spec } from './graphSpec';
 
+import '@fortawesome/fontawesome-free';
+
 import './styles/app.css';
 import './graph/styles/graph.css';
 
