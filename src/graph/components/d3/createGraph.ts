@@ -5,40 +5,36 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { GraphNode, Graph } from "../../types/graphTypes";
 import { GraphSpec } from "../../types/graphSpecTypes";
 import { GraphActions } from "../../graphContext";
-import { getNodeHeight, translate, HEADER_HEIGHT, CLOSE_SIZE, PADDING, CLOSE_OVERLAY_RADIUS } from './measure';
-import { createGraphConnectionsUpdater, createDragConnectionsUpdater } from './connections';
-import { createNodePortsOutUpdater, createNodePortsInUpdater } from './ports';
+import { getNodeHeight, translate, HEADER_HEIGHT, CLOSE_SIZE, PADDING, CLOSE_OVERLAY_RADIUS, getNodeWidth } from './helpers';
+import { updateGraphConnections, updateDragConnections } from './connections';
+import { updateNodePortsOut, updateNodePortsIn } from './ports';
+import { GraphContext } from './types';
 
 library.add(faTimes);
 
-type DragState = {
-    x: number;
-    y: number;
-}
-
-export function createGraphEditor(el: SVGSVGElement, spec: GraphSpec, actions: GraphActions) {
-    let graph!: Graph;
-    let drag: DragState | undefined;
+export function createGraphEditor(container: SVGSVGElement, spec: GraphSpec, actions: GraphActions) {
+    let context: GraphContext = {
+        container,
+        spec,
+        actions,
+        graph: undefined as any
+    }
     
-    function selectNodeSpec(node: GraphNode) {
-        return spec.nodes[node.type];
-    }
-
-    function selectNodeWidth(node: GraphNode) {
+    function selectNodeTitle(node: GraphNode): string {
         const nodeSpec = spec.nodes[node.type];
-        return nodeSpec.width;
+        return nodeSpec ? nodeSpec.title : '';
     }
 
-    function selectNodeHeight(node: GraphNode) {
+    function selectNodeWidth(node: GraphNode): number {
         const nodeSpec = spec.nodes[node.type];
-        return getNodeHeight(nodeSpec);
+        return nodeSpec ? getNodeWidth(nodeSpec) : 0;
     }
 
-    const updateGraphConnections = createGraphConnectionsUpdater(el, spec);
-    const updateDragConnections = createDragConnectionsUpdater(el, spec);
-    const updatePortsOut = createNodePortsOutUpdater(spec, actions);
-    const updatePortsIn = createNodePortsInUpdater(spec, actions);
-   
+    function selectNodeHeight(node: GraphNode): number {
+        const nodeSpec = spec.nodes[node.type];
+        return nodeSpec ? getNodeHeight(nodeSpec) : 0;
+    }
+    
     function createGraphNodes(sel: d3.Selection<d3.EnterElement, GraphNode, SVGSVGElement, unknown>): d3.Selection<SVGGElement, GraphNode, SVGSVGElement, unknown> {
         return sel.append('g')
             .classed('graph-node', true)
@@ -49,12 +45,12 @@ export function createGraphEditor(el: SVGSVGElement, spec: GraphSpec, actions: G
                     .attr('height', selectNodeHeight)
                     .call(d3
                         .drag<SVGRectElement, GraphNode>()
-                        .container(el)
+                        .container(container)
                         .on('start', function(d) {
-                            drag =  { x: 0, y: 0 };
+                            context.drag =  { node: d.id, x: 0, y: 0 };
                         })
                         .on('drag', function(n: GraphNode) {
-                            const d = drag!;
+                            const d = context.drag!;
                             d.x += d3.event.dx;
                             d.y += d3.event.dy;
 
@@ -63,13 +59,13 @@ export function createGraphEditor(el: SVGSVGElement, spec: GraphSpec, actions: G
 
                             const parent = this.parentNode as SVGGElement;
                             parent.setAttribute('transform', translate(x, y));
-                            updateDragConnections(graph, n, x, y);
+                            updateDragConnections(context, n, x, y);
                         })
                         .on('end', function(n: GraphNode) {
-                            const d = drag!;
+                            const d = context.drag!;
                             const x = n.x + d.x;
                             const y = n.y + d.y;
-                            drag = undefined;
+                            context.drag = undefined;
 
                             actions.onNodePosChanged(n.id, x, y);
                         })
@@ -79,7 +75,7 @@ export function createGraphEditor(el: SVGSVGElement, spec: GraphSpec, actions: G
                     .classed('graph-node-title', true)
                     .attr('text-anchor', 'middle')
                     .attr('dominant-baseline', 'middle')
-                    .text(n => selectNodeSpec(n).title)
+                    .text(selectNodeTitle)
                     .attr('x', n => selectNodeWidth(n) / 2)
                     .attr('y', HEADER_HEIGHT / 2);
 
@@ -113,7 +109,7 @@ export function createGraphEditor(el: SVGSVGElement, spec: GraphSpec, actions: G
 
     function updateGraphNodes(graph: Graph) {
         const nodes = Object.values(graph.nodes);
-        d3.select(el)
+        d3.select(container)
             .selectAll<SVGGElement, GraphNode>('.graph-node')
             .data(nodes, node => node.id)
             .join(createGraphNodes)
@@ -124,13 +120,13 @@ export function createGraphEditor(el: SVGSVGElement, spec: GraphSpec, actions: G
                 // the drag behaviour works with updated data
                 g.select('.graph-node-container');
             })
-            .call(updatePortsIn)
-            .call(updatePortsOut);
+            .call(updateNodePortsIn(context))
+            .call(updateNodePortsOut(context));
     }
 
     return (g: Graph) => {
-        graph = g;
-        updateGraphConnections(graph);
-        updateGraphNodes(graph);
+        context.graph = g;
+        updateGraphConnections(context);
+        updateGraphNodes(g);
     }
 }

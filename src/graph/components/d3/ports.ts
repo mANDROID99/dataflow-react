@@ -1,91 +1,98 @@
 import * as d3 from 'd3';
 
 import { GraphNode } from "../../types/graphTypes";
-import { GraphNodePortSpec, GraphSpec } from "../../types/graphSpecTypes";
-import { getPortX, getPortY, translate, PORT_RADIUS } from "./measure";
-import { GraphActions } from "../../graphContext";
+import { GraphSpec } from "../../types/graphSpecTypes";
+import { GraphContext } from './types';
+import { lookupPortX, lookupPortY, PORT_RADIUS, lookupPortRelativeX, lookupPortRelativeY, translate } from "./helpers";
 import { pathFromTo } from './connections';
 
 type PortDatum = {
-    node: GraphNode;
+    node: string;
     port: string;
-    x: number;
-    y: number;
+    portOut: boolean;
+    index: number;
 }
 
-type DragState = {
-    x: number;
-    y: number;
-}
-
-function toPortData(spec: GraphSpec, node: GraphNode, out: boolean): PortDatum[] {
+function toPortData(spec: GraphSpec, node: GraphNode, portOut: boolean): PortDatum[] {
     const nodeSpec = spec.nodes[node.type];
-    const portSpecs = (out ? nodeSpec.ports.out : nodeSpec.ports.in);
+    const portSpecs = (portOut ? nodeSpec.ports.out : nodeSpec.ports.in);
 
-    return portSpecs.map((port, i): PortDatum => {
-        const x = getPortX(nodeSpec, out);
-        const y = getPortY(nodeSpec, out, i);
+    return portSpecs.map((port, index): PortDatum => {
         return {
-            node,
+            node: node.id,
             port: port.name,
-            x,
-            y
+            portOut,
+            index
         };
     });
 }
 
+function updateDragConnection(context: GraphContext) {
+    d3.select(context.container)
+        .selectAll('.graph-connection.dragging')
+        .data(context.portDrag ? [context.portDrag] : [])
+        .join(enter => enter.append('path')
+            .classed('graph-connection dragging', true)
+        )
+        .attr('d', d => pathFromTo(d.startX, d.startY, d.x, d.y));
+}
 
-function createPort(spec: GraphSpec, actions: GraphActions, out: boolean) {
-    let dragState: DragState | undefined;
-
+function createPort(context: GraphContext) {
     return (g: d3.Selection<SVGGElement, PortDatum, any, any>) => {
         g.append('circle')
             .classed('graph-node-port', true)
             .attr('r', PORT_RADIUS)
             .call(d3.drag<SVGCircleElement, PortDatum>()
-                .on('start', function(p) {
-                    dragState = { x: 0, y: 0 };
+                .container(context.container)
+                .on('start', function(datum) {
+                    const x = lookupPortX(context, datum.node, datum.portOut);
+                    const y = lookupPortY(context, datum.node, datum.portOut, datum.index);
+                    context.portDrag = { startX: x, startY: y, x, y };
                 })
                 .on('drag', function(p) {
-                    const d = dragState!;
+                    const d = context.portDrag;
+                    if (d == null) return;
+
                     d.x += d3.event.dx;
                     d.y += d3.event.dy;
-
-                    d3.select(this.parentNode as any)
-                        .selectAll('.graph-connection.dragging')
-                        .data([d])
-                        .join(enter => enter.append('path').classed('graph-connection dragging', true))
-                            .attr('d', pathFromTo(0, 0, d.x, d.y));
+                    updateDragConnection(context);
                 })
                 .on('end', function(p) {
-                    d3.select(this.parentNode as any)
-                        .selectAll('.graph-connection.dragging')
-                        .remove();
+                    context.portDrag = undefined;
+                    updateDragConnection(context);
                 })
             );
     }
 }
 
-export function createNodePortsOutUpdater(spec: GraphSpec, actions: GraphActions) {
+export function updateNodePortsOut(context: GraphContext) {
     return (g: d3.Selection<SVGGElement, GraphNode, SVGSVGElement, unknown>) => {
         g.selectAll<SVGGElement, PortDatum>('.graph-node-port-container.out')
-            .data(n => toPortData(spec, n, true))
+            .data(n => toPortData(context.spec, n, true))
             .join(enter => enter.append('g')
                 .classed('graph-node-port-container out', true)
-                .attr('transform', p => translate(p.x, p.y))
-                .call(createPort(spec, actions, true))
+                .attr('transform', (datum) => {
+                    const x = lookupPortRelativeX(context, datum.node, true);
+                    const y = lookupPortRelativeY(context, datum.node, true, datum.index);
+                    return translate(x, y);
+                })
+                .call(createPort(context))
             );
     }
 }
 
-export function createNodePortsInUpdater(spec: GraphSpec, actions: GraphActions) {
+export function updateNodePortsIn(context: GraphContext) {
     return (g: d3.Selection<SVGGElement, GraphNode, SVGSVGElement, unknown>) => {
         g.selectAll<SVGGElement, PortDatum>('.graph-node-port-container.in')
-            .data(n => toPortData(spec, n, false))
+            .data(n => toPortData(context.spec, n, false))
             .join(enter => enter.append('g')
                 .classed('graph-node-port-container in', false)
-                .attr('transform', p => translate(p.x, p.y))
-                .call(createPort(spec, actions, false))
+                .attr('transform', (datum) => {
+                    const x = lookupPortRelativeX(context, datum.node, false);
+                    const y = lookupPortRelativeY(context, datum.node, false, datum.index);
+                    return translate(x, y);
+                })
+                .call(createPort(context))
             );
     }
 }

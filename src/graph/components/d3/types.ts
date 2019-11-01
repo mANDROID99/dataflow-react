@@ -1,5 +1,6 @@
 import { GraphSpec } from "../../types/graphSpecTypes";
 import { GraphActions } from "../../graphContext";
+import { Graph } from "../../types/graphTypes";
 
 export type NodeDrag = {
     node: string;
@@ -8,17 +9,18 @@ export type NodeDrag = {
 }
 
 export type PortDrag = {
-    node: string;
-    port: string;
-    portOut: boolean;
+    startX: number;
+    startY: number;
     x: number;
     y: number;
 }
 
 export type GraphContext = {
-    svg: SVGSVGElement;
+    container: SVGSVGElement;
     spec: GraphSpec;
     actions: GraphActions;
+    graph: Graph;
+    
     drag?: NodeDrag;
-    port?: PortDrag;
+    portDrag?: PortDrag;
 }
