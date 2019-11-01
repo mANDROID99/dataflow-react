@@ -1,7 +1,5 @@
-import { GraphFieldInputProps } from "./graphInputTypes"
-
 export type GraphFieldInputSpec<T> = {
-    component: React.ComponentType<GraphFieldInputProps<T>>
+    // component: React.ComponentType<GraphFieldInputProps<T>>
 }
 
 export type GraphNodeFieldSpec = {

@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
-import { GraphNode } from "../../types/graphTypes";
-import { GraphContext } from './types';
+import { GraphNode } from "../types/graphTypes";
+import { GraphContext } from '../types/graphD3types';
 import { lookupPortX, lookupPortY, lookupPortRelativeX, lookupPortRelativeY, translate, PORT_RADIUS, PORT_OVERLAY_RADIUS } from "./helpers";
 import { pathFromTo } from './connections';
 
@@ -82,11 +82,11 @@ function updateDragTargets(context: GraphContext) {
 
 function updateDragConnection(context: GraphContext) {
     d3.select(context.container)
-        .selectAll('.graph-connection.dragging')
+        .selectAll('.graph-connection-dragger')
         .data(context.portDrag ? [context.portDrag] : [])
         .join(enter => enter.append('path')
             .style('pointer-events', 'none')
-            .classed('graph-connection dragging', true)
+            .classed('graph-connection-dragger', true)
         )
         .classed('connected', context.portDragTarget != null)
         .attr('d', d => {
@@ -98,6 +98,7 @@ function updateDragConnection(context: GraphContext) {
 }
 
 function createPorts(context: GraphContext) {
+    const actions = context.actions;
     return (enter: d3.Selection<SVGGElement, PortDatum, any, any>) => {
         enter.append('circle')
             .classed('graph-node-port', true)
@@ -119,6 +120,11 @@ function createPorts(context: GraphContext) {
                     };
 
                     updateDragTargets(context);
+
+                    if (!datum.portOut) {
+                        // clear existing connections when an "in" port is dragged
+                        actions.clearPortConnections(datum.node, datum.port, false);
+                    }
                 })
                 .on('drag', function(p) {
                     const d = context.portDrag;
@@ -129,10 +135,17 @@ function createPorts(context: GraphContext) {
                     updateDragConnection(context);
                 })
                 .on('end', function(p) {
+                    const drag = context.portDrag;
+                    const target = context.portDragTarget;
+
                     context.portDrag = undefined;
                     context.portDragTarget = undefined;
                     updateDragConnection(context);
                     updateDragTargets(context);
+
+                    if (target && drag) {
+                        actions.addPortConnection(drag.node, drag.port, drag.portOut, target.node, target.port);
+                    }
                 })
             );
     }

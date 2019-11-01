@@ -1,7 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import GraphContainer from './GraphContainer';
+import Graph from './graph/components/Graph';
 import { spec } from './graphSpec';
 
 import '@fortawesome/fontawesome-free';
@@ -13,7 +13,7 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <div className="App">
-        <GraphContainer graphId="graph-1" spec={spec}/>
+        <Graph graphId="graph-1" spec={spec}/>
       </div>
     </Provider>
   );

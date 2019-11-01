@@ -1,5 +1,5 @@
-import { GraphContext } from "./types";
-import { GraphNodeSpec, GraphNodePortSpec } from "../../types/graphSpecTypes";
+import { GraphContext } from "../types/graphD3types";
+import { GraphNodeSpec, GraphNodePortSpec } from "../types/graphSpecTypes";
 
 export const HEADER_HEIGHT = 30;
 export const FIELD_HEIGHT = 30;

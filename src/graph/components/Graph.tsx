@@ -1,62 +1,70 @@
-import React from 'react';
-// import React, { useMemo, useReducer } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Graph as GraphT } from '../types/graphTypes';
+import { Graph } from "../types/graphTypes";
 import { GraphSpec } from '../types/graphSpecTypes';
-import { GraphActions } from '../graphContext';
-// import { GraphContext, GraphActions, Context } from '../graphContext';
-
-// import { reducer, init } from '../graphStateReducer';
-// import GraphNodeComponent from './GraphNode';
-// import GraphSVG from './GraphSVG';
-import Graphd3 from './Graphd3';
+import { createGraphEditor } from '../d3/createGraph';
+import { GraphActions } from '../types/graphD3types';
+import { removeNode, setNodePosition, setNodeFieldValue, clearPortConnections, addPortConnection } from '../../store/graphActions';
+import { StoreState } from '../../store/storeTypes';
 
 type Props = {
+    graphId: string;
     spec: GraphSpec;
-    graph: GraphT;
+}
+
+type EditorWithDeps = {
+    editor: (graph: Graph) => void;
+    spec: GraphSpec;
     actions: GraphActions;
 }
 
-export default function Graph(props: Props) {
-    const { graph, spec, actions } = props;
-    // const [state, dispatch] = useReducer(reducer, null, init);
+export default function GraphComponent({ graphId, spec }: Props) {
+    const elRef = useRef<SVGSVGElement>(null);
+    const editorRef = useRef<EditorWithDeps>();
+    const graph = useSelector((state: StoreState) => state.graph.graphs[graphId]);
 
-    // const graphContext = useMemo<GraphContext>(() => {
-    //     return {
-    //         spec,
-    //         actions,
-    //         dispatch
-    //     };
-    // }, [spec, actions]);
+    const dispatch = useDispatch();
+    const actions = useMemo((): GraphActions => {
+        return {
+            removeNode(node: string): void {
+                dispatch(removeNode(graphId, node));
+            },
 
-    // const graphNodes = graph.nodes;
-    // const nodeDrag = state.nodeDrag;
+            setNodePosition(node: string, x: number, y: number): void {
+                dispatch(setNodePosition(graphId, node, x, y));
+            },
+
+            setNodeFieldValue(node: string, field: string, value: unknown): void {
+                dispatch(setNodeFieldValue(graphId, node, field, value));
+            },
+
+            clearPortConnections(node: string, port: string, portOut: boolean): void {
+                dispatch(clearPortConnections(graphId, node, port, portOut));
+            },
+
+            addPortConnection(node: string, port: string, portOut: boolean, targetNode: string, targetPort: string): void {
+                dispatch(addPortConnection(graphId, node, port, portOut, targetNode, targetPort));
+            }
+        }
+    }, [graphId, dispatch]);
+
+    useEffect(() => {
+        const el = elRef.current;
+        if (el) {
+            let prev = editorRef.current;
+            if (!prev || prev.actions !== actions || prev.spec !== spec) {
+                const editor = createGraphEditor(el, spec, actions);
+                prev = { editor, spec, actions };
+                editorRef.current = prev;
+            }
+
+            prev.editor(graph);
+        }
+    }, [graph, spec, actions]);
 
     return (
-        <Graphd3 graph={graph} spec={spec} actions={actions}/>
-        // <Context.Provider value={graphContext}>
-        //     <div className="graph-container">
-        //         <div className="graph-nodes">
-        //             {Object.entries(graphNodes).map(([nodeId, node]) => {
-        //                 const isDragging = nodeDrag ? nodeDrag.nodeId === nodeId : false;
-        //                 const dragX = isDragging ? nodeDrag!.dx : undefined;
-        //                 const dragY = isDragging ? nodeDrag!.dy : undefined;
-
-        //                 return (
-        //                     <GraphNodeComponent
-        //                         key={nodeId}
-        //                         nodeId={nodeId}
-        //                         node={node}
-        //                         isDragging={isDragging}
-        //                         dragX={dragX}
-        //                         dragY={dragY}
-        //                         portDrag={state.portDrag}
-        //                     />
-        //                 );
-        //             })}
-        //         </div>
-        //         <GraphSVG graph={graph} state={state}/>
-        //     </div>
-        // </Context.Provider>
+        <svg className="graph-svg" ref={elRef} width="800" height="600">
+        </svg>
     );
 }

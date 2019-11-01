@@ -2,13 +2,12 @@ import * as d3 from 'd3';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-import { GraphNode, Graph } from "../../types/graphTypes";
-import { GraphSpec } from "../../types/graphSpecTypes";
-import { GraphActions } from "../../graphContext";
+import { GraphNode, Graph } from "../types/graphTypes";
+import { GraphSpec } from "../types/graphSpecTypes";
 import { getNodeHeight, translate, HEADER_HEIGHT, CLOSE_SIZE, PADDING, CLOSE_OVERLAY_RADIUS, getNodeWidth } from './helpers';
 import { updateGraphConnections, updateDragConnections } from './connections';
 import { updateNodePortsOut, updateNodePortsIn } from './ports';
-import { GraphContext } from './types';
+import { GraphContext, GraphActions } from '../types/graphD3types';
 
 library.add(faTimes);
 
@@ -66,8 +65,7 @@ export function createGraphEditor(container: SVGSVGElement, spec: GraphSpec, act
                             const x = n.x + d.x;
                             const y = n.y + d.y;
                             context.drag = undefined;
-
-                            actions.onNodePosChanged(n.id, x, y);
+                            actions.setNodePosition(n.id, x, y);
                         })
                     );
 
@@ -93,7 +91,7 @@ export function createGraphEditor(container: SVGSVGElement, spec: GraphSpec, act
                             .attr('cy', CLOSE_SIZE / 2)
                             .attr('r', CLOSE_OVERLAY_RADIUS)
                             .on('click', n => {
-                                actions.onNodeRemoved(n.id);
+                                actions.removeNode(n.id);
                             });
 
                         closeG.append('foreignObject')

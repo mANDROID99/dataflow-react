@@ -1,97 +1,104 @@
-import { PortId } from "../graph/graphHelpers";
-
 export enum ActionType {
+    REMOVE_NODE = 'node-graph.REMOVE_NODE',
     SET_NODE_POSITION = 'node-graph.SET_NODE_POSITION',
     SET_NODE_FIELD_VALUE = 'node-graph.SET_NODE_FIELD_VALUE',
-    REMOVE_NODE = 'node-graph.REMOVE_NODE',
-    CREATE_NODE_CONNECTION = 'node-graph.CREATE_NODE_CONNECTION',
-    REMOVE_NODE_CONNECTION = 'node-graph.CLEAR_NODE_CONNECTION'
+    CLEAR_PORT_CONNECTIONS = 'node-graph.CLEAR_PORT_CONNECTIONS',
+    ADD_PORT_CONNECTION = 'node-graph.ADD_PORT_CONNECTION'
 }
 
-export function setNodePosition(graphId: string, nodeId: string, x: number, y: number): SetNodePositionAction {
+export function removeNode(graph: string, node: string): RemoveNodeAction {
+    return {
+        type: ActionType.REMOVE_NODE,
+        graph,
+        node
+    };
+}
+
+export function setNodePosition(graph: string, node: string, x: number, y: number): SetNodePositionAction {
     return {
         type: ActionType.SET_NODE_POSITION,
-        graphId,
-        nodeId,
+        graph,
+        node,
         x,
         y
     };
 }
 
-export function setNodeFieldValue(graphId: string, nodeId: string, fieldName: string, value: unknown): setNodeFieldValueAction {
+export function setNodeFieldValue(graph: string, node: string, field: string, value: unknown): setNodeFieldValueAction {
     return {
         type: ActionType.SET_NODE_FIELD_VALUE,
-        graphId,
-        nodeId,
-        fieldName,
+        graph,
+        node,
+        field,
         value
     };
 }
 
-export function removeNodeConnection(graphId: string, start: PortId): RemoveNodeConnectionAction {
+export function clearPortConnections(graph: string, node: string, port: string, portOut: boolean): ClearPortConnectionsAction {
     return {
-        type: ActionType.REMOVE_NODE_CONNECTION,
-        graphId,
-        start
+        type: ActionType.CLEAR_PORT_CONNECTIONS,
+        graph,
+        node,
+        port,
+        portOut
     };
 }
 
-export function createNodeConnection(graphId: string, start: PortId, end: PortId) {
+export function addPortConnection(graph: string, node: string, port: string, portOut: boolean, targetNode: string, targetPort: string): AddPortConnectionAction {
     return {
-        type: ActionType.CREATE_NODE_CONNECTION,
-        graphId,
-        start,
-        end
+        type: ActionType.ADD_PORT_CONNECTION,
+        graph,
+        node,
+        port,
+        portOut,
+        targetNode,
+        targetPort
     };
 }
 
-
-export function removeNode(graphId: string, nodeId: string): RemoveNodeAction {
-    return {
-        type: ActionType.REMOVE_NODE,
-        graphId,
-        nodeId
-    };
+export type RemoveNodeAction = {
+    type: ActionType.REMOVE_NODE;
+    graph: string;
+    node: string;
 }
 
 export type SetNodePositionAction = {
     type: ActionType.SET_NODE_POSITION;
-    graphId: string;
-    nodeId: string;
+    graph: string;
+    node: string;
     x: number;
     y: number;
 }
 
 export type setNodeFieldValueAction = {
     type: ActionType.SET_NODE_FIELD_VALUE;
-    graphId: string;
-    nodeId: string;
-    fieldName: string;
+    graph: string;
+    node: string;
+    field: string;
     value: unknown;
 }
 
-export type RemoveNodeConnectionAction = {
-    type: ActionType.REMOVE_NODE_CONNECTION;
-    graphId: string;
-    start: PortId;
+export type ClearPortConnectionsAction = {
+    type: ActionType.CLEAR_PORT_CONNECTIONS;
+    graph: string;
+    node: string;
+    port: string;
+    portOut: boolean;
 }
 
-export type CreateNodeConnectionAction = {
-    type: ActionType.CREATE_NODE_CONNECTION;
-    graphId: string;
-    start: PortId;
-    end: PortId;
-}
-
-export type RemoveNodeAction = {
-    type: ActionType.REMOVE_NODE;
-    graphId: string;
-    nodeId: string;
+export type AddPortConnectionAction = {
+    type: ActionType.ADD_PORT_CONNECTION;
+    graph: string;
+    node: string;
+    port: string;
+    portOut: boolean;
+    targetNode: string;
+    targetPort: string;
 }
 
 export type GraphAction =
-    SetNodePositionAction |
-    setNodeFieldValueAction |
-    RemoveNodeConnectionAction |
-    CreateNodeConnectionAction |
-    RemoveNodeAction;
+    | RemoveNodeAction
+    | SetNodePositionAction 
+    | setNodeFieldValueAction 
+    | ClearPortConnectionsAction 
+    | AddPortConnectionAction

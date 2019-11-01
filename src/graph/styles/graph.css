@@ -35,13 +35,19 @@
 
 .graph-connection {
     stroke: black;
+    pointer-events: none;
 }
 
 .graph-node-port-overlay {
     fill: #ff7a00ba;
 }
 
-.graph-connection.connected {
+.graph-connection-dragger {
+    stroke: black;
+    pointer-events: none;
+}
+
+.graph-connection-dragger.connected {
     stroke: orange;
 }
 

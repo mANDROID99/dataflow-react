@@ -1,6 +1,5 @@
-import { GraphSpec } from "../../types/graphSpecTypes";
-import { GraphActions } from "../../graphContext";
-import { Graph } from "../../types/graphTypes";
+import { GraphSpec } from "./graphSpecTypes";
+import { Graph } from "./graphTypes";
 
 export type NodeDrag = {
     node: string;
@@ -24,6 +23,14 @@ export type PortDragTarget = {
     port: string;
     portOut: boolean;
     portIndex: number;
+}
+
+export type GraphActions = {
+    removeNode(node: string): void;
+    setNodePosition(node: string, x: number, y: number): void;
+    setNodeFieldValue(node: string, field: string, value: unknown): void;
+    clearPortConnections(node: string, port: string, portOut: boolean): void;
+    addPortConnection(node: string, port: string, portOut: boolean, targetNode: string, targetPort: string): void;
 }
 
 export type GraphContext = {

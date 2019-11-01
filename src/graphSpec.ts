@@ -1,5 +1,4 @@
 import { GraphNodeSpec, GraphSpec } from "./graph/types/graphSpecTypes";
-import TextInput from "./graph/inputs/TextInput";
 
 const group: GraphNodeSpec = {
     title: 'Group',
@@ -37,7 +36,7 @@ const sum: GraphNodeSpec = {
 export const spec: GraphSpec = {
     inputs: {
         text: {
-            component: TextInput
+            
         }
     },
     nodes: {
