@@ -9,10 +9,21 @@ export type NodeDrag = {
 }
 
 export type PortDrag = {
+    node: string;
+    port: string;
+    portType: string;
+    portOut: boolean;
     startX: number;
     startY: number;
     x: number;
     y: number;
+}
+
+export type PortDragTarget = {
+    node: string;
+    port: string;
+    portOut: boolean;
+    portIndex: number;
 }
 
 export type GraphContext = {
@@ -23,4 +34,5 @@ export type GraphContext = {
     
     drag?: NodeDrag;
     portDrag?: PortDrag;
+    portDragTarget?: PortDragTarget;
 }

@@ -1,5 +1,5 @@
 import { GraphContext } from "./types";
-import { GraphNodeSpec } from "../../types/graphSpecTypes";
+import { GraphNodeSpec, GraphNodePortSpec } from "../../types/graphSpecTypes";
 
 export const HEADER_HEIGHT = 30;
 export const FIELD_HEIGHT = 30;
@@ -8,6 +8,7 @@ export const CLOSE_OVERLAY_RADIUS = 10;
 export const PADDING = 5;
 export const PORT_HEIGHT = 20;
 export const PORT_RADIUS = 5;
+export const PORT_OVERLAY_RADIUS = 10;
 
 export function translate(x: number, y: number) {
     return `translate(${x},${y})`;
@@ -85,10 +86,25 @@ export function lookupPortRelativeY(context: GraphContext, nodeName: string, out
     return 0;
 }
 
-export function lookupPortX(context: GraphContext, nodeName: string, out: boolean) {
+export function lookupPortX(context: GraphContext, nodeName: string, out: boolean): number {
     return lookupNodeX(context, nodeName) + lookupPortRelativeX(context, nodeName, out);
 }
 
-export function lookupPortY(context: GraphContext, nodeName: string, out: boolean, index: number) {
+export function lookupPortY(context: GraphContext, nodeName: string, out: boolean, index: number): number {
     return lookupNodeY(context, nodeName) + lookupPortRelativeY(context, nodeName, out, index);
+}
+
+export function lookupPortSpec(context: GraphContext, nodeName: string, out: boolean, index: number): GraphNodePortSpec | undefined {
+    const nodeSpec = context.spec.nodes[nodeName];
+    if (nodeSpec) {
+        const portSpec = out ? nodeSpec.ports.out : nodeSpec.ports.in;
+        if (portSpec) {
+            return portSpec[index];
+        }
+    }
+}
+
+export function lookupPortType(context: GraphContext, nodeName: string, out: boolean, index: number): string {
+    const portSpec = lookupPortSpec(context, nodeName, out, index);
+    return portSpec ? portSpec.type : '';
 }

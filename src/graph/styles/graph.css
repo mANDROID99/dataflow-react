@@ -37,6 +37,16 @@
     stroke: black;
 }
 
+.graph-node-port-overlay {
+    fill: #ff7a00ba;
+}
+
+.graph-connection.connected {
+    stroke: orange;
+}
+
+
+
 /* .graph-container {
     --text-color: #cecece;
     --text-color-dark: #9c9c9c;
