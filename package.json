@@ -20,6 +20,7 @@
     "react-redux": "^7.1.1",
     "react-scripts": "3.2.0",
     "redux": "^4.0.4",
+    "svg.js": "^2.7.1",
     "typescript": "3.6.4"
   },
   "scripts": {
@@ -48,6 +49,7 @@
     "@types/d3": "^5.7.2",
     "@types/d3-drag": "^1.2.3",
     "@types/react-redux": "^7.1.5",
+    "@types/svg.js": "^2.3.1",
     "node-sass": "^4.13.0"
   }
 }

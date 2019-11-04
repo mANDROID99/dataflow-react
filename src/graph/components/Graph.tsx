@@ -1,12 +1,11 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Graph } from "../types/graphTypes";
 import { GraphSpec } from '../types/graphSpecTypes';
-import { createGraphEditor } from '../d3/createGraph';
 import { GraphActions } from '../types/graphD3types';
-import { removeNode, setNodePosition, setNodeFieldValue, clearPortConnections, addPortConnection } from '../../store/graphActions';
 import { StoreState } from '../../store/storeTypes';
+import { removeNode, setNodePosition, setNodeFieldValue, clearPortConnections, addPortConnection } from '../../store/graphActions';
+import { GraphEditor } from '../svg/GraphEditor';
 
 type Props = {
     graphId: string;
@@ -14,7 +13,7 @@ type Props = {
 }
 
 type EditorWithDeps = {
-    editor: (graph: Graph) => void;
+    editor: GraphEditor;
     spec: GraphSpec;
     actions: GraphActions;
 }
@@ -54,12 +53,13 @@ export default function GraphComponent({ graphId, spec }: Props) {
         if (el) {
             let prev = editorRef.current;
             if (!prev || prev.actions !== actions || prev.spec !== spec) {
-                const editor = createGraphEditor(el, spec, actions);
+                const editor = new GraphEditor(el, actions, spec, graph);
                 prev = { editor, spec, actions };
                 editorRef.current = prev;
-            }
 
-            prev.editor(graph);
+            } else {
+                prev.editor.updateGraph(graph);
+            }
         }
     }, [graph, spec, actions]);
 

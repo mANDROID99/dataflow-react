@@ -2,7 +2,7 @@ import { GraphNodeSpec, GraphSpec } from "./graph/types/graphSpecTypes";
 
 const group: GraphNodeSpec = {
     title: 'Group',
-    width: 150,
+    width: 0,
     fields: [
         { label: 'Column', name: 'column', type: 'text' }
     ],
