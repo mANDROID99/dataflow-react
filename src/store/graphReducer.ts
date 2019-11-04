@@ -215,29 +215,7 @@ const addPortConnection = produce((state: GraphState, action: AddPortConnectionA
             port: portId
         });
     }
-})
-
-
-// function clearInPort(graph: Graph, portTargets: TargetPort[], nodeId: string) {
-//     const targetNode = graph.nodes[portTarget.node];
-//     if (!targetNode) return;
-
-//     const targetPorts = targetNode.ports.out[portTarget.port];
-//     if (!targetPorts) return;
-
-//     const index = targetPorts.findIndex(p => p.node === nodeId);
-//     if (index < 0) return;
-
-//     targetPorts.splice(index, 1);
-// }
-
-// function clearOutPort(graph: Graph, portTargets: TargetPort[]) {
-//     for (let target of portTargets) {
-//         const targetNode = graph.nodes[target.node];
-//         if (!targetNode) continue;
-//         targetNode.ports.in[target.port] = undefined;
-//     }
-// }
+});
 
 function clearPort(graph: Graph, portTargets: TargetPort[], nodeId: string, portOut: boolean) {
     for (let target of portTargets) {

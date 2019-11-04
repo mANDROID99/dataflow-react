@@ -35,6 +35,8 @@
 
 .graph-node-port-label {
     fill: black;
+    pointer-events: none;
+    user-select: none;
 }
 
 .graph-connection {

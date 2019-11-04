@@ -2,11 +2,14 @@ import * as SVG from 'svg.js';
 import { GraphNode } from "../types/graphTypes";
 import { GraphEditor } from './GraphEditor';
 import { NodeMeasurements } from './graphEditorTypes';
-import { GraphNodePortsComponent } from './GraphNodePorts';
+import { GraphNodePortsManager } from './GraphNodePortsManager';
 import { GraphNodeSpec } from '../types/graphSpecTypes';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { makeDraggable } from './helpers/draggable';
+import { Disposables } from './helpers/disposables';
+import { GraphNodePortComponent } from './GraphNodePort';
 library.add(faTimes);
 
 const HEADER_CLOSE_BTN_SIZE = 20;
@@ -23,37 +26,57 @@ export class GraphNodeComponent {
     private readonly titleText: SVG.Text;
     private readonly closeBtn: SVG.G;
 
-    private readonly portsIn: GraphNodePortsComponent;
-    private readonly portsOut: GraphNodePortsComponent;
+    private readonly portsIn: GraphNodePortsManager;
+    private readonly portsOut: GraphNodePortsManager;
+    private readonly disposables: Disposables = new Disposables();
 
-    private node!: GraphNode;
+    private node: GraphNode;
     
     constructor(editor: GraphEditor, container: SVG.G, nodeId: string, node: GraphNode) {
         this.editor = editor;
         this.nodeId = nodeId;
+        this.node = node;
         this.spec = this.getSpec(node.type);
 
         this.group = container.group().addClass('graph-node-container');
         this.backRect = this.createBackRect(this.group);
-        this.titleText = this.createTitle(this.group, node);
+        this.titleText = this.createTitle(this.group);
         this.closeBtn = this.createCloseButton(this.group);
 
-        this.portsIn = new GraphNodePortsComponent(editor, this.group, nodeId, false, this.spec.ports.in, node.ports.in);
-        this.portsOut = new GraphNodePortsComponent(editor, this.group, nodeId, true, this.spec.ports.out, node.ports.out);
+        this.portsIn = new GraphNodePortsManager(editor, this.group, nodeId, false, this.spec.ports.in);
+        this.portsOut = new GraphNodePortsManager(editor, this.group, nodeId, true, this.spec.ports.out);
 
         this.resize();
-        this.update(node);
+        this.update();
     }
 
-    update(node: GraphNode) {
+    setNode(node: GraphNode) {
         if (this.node !== node) {
             this.node = node;
-            this.group.translate(node.x, node.y);
+            this.update();
         }
     }
     
     remove() {
+        this.disposables.dispose();
         this.group.remove();
+        this.portsIn.remove();
+        this.portsOut.remove();
+    }
+
+    getPortComponent(port: string, portOut: boolean): GraphNodePortComponent | undefined {
+        if (portOut) {
+            return this.portsOut.getPortComponent(port);
+        } else {
+            return this.portsIn.getPortComponent(port);
+        }
+    }
+
+    private update() {
+        const node = this.node;
+        this.group.translate(node.x, node.y);
+        this.portsIn.update(node.ports.in, node.x, node.y);
+        this.portsOut.update(node.ports.out, node.x, node.y);
     }
 
     private resize() {
@@ -72,7 +95,7 @@ export class GraphNodeComponent {
 
     private measure(): NodeMeasurements {
         const widthTitle = this.titleText.bbox().width;
-        const widthHeader = widthTitle + (HEADER_CLOSE_BTN_SIZE + HEADER_PAD) * 2
+        const widthHeader = widthTitle + (HEADER_CLOSE_BTN_SIZE + HEADER_PAD * 2) * 2
 
         const sizePortsIn = this.portsIn.getSize();
         const sizePortsOut = this.portsOut.getSize();
@@ -90,11 +113,18 @@ export class GraphNodeComponent {
     }
 
     private createBackRect(nodeGroup: SVG.G) {
-        return nodeGroup.rect()
+        const rect = nodeGroup.rect()
             .addClass('graph-node-back');
+
+        this.disposables.push(makeDraggable(rect, {
+            onDrag: this.onDrag.bind(this),
+            onEnd: this.onDragEnd.bind(this)
+        }));
+        
+        return rect;
     }
 
-    private createTitle(nodeGroup: SVG.G, node: GraphNode): SVG.Text {
+    private createTitle(nodeGroup: SVG.G): SVG.Text {
         const title = this.spec.title;
         return nodeGroup.plain(title)
             .addClass('graph-node-title');
@@ -131,5 +161,22 @@ export class GraphNodeComponent {
 
     private getSpec(nodeType: string) {
         return this.editor.getSpec().nodes[nodeType];
+    }
+
+    private onDrag(dx: number, dy: number) {
+        const x = this.node.x + dx;
+        const y = this.node.y + dy;
+
+        this.group.translate(x, y);
+        this.portsIn.setDrag(x, y);
+        this.portsOut.setDrag(x, y);
+    }
+
+    private onDragEnd(dx: number, dy: number) {
+        const x = this.node.x + dx;
+        const y = this.node.y + dy;
+
+        this.editor.getActions()
+            .setNodePosition(this.nodeId, x, y);
     }
 }

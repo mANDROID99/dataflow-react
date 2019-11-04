@@ -21,9 +21,10 @@ export class GraphNodesManager {
         for (let nodeId of Object.keys(nodes)) {
             const node = nodes[nodeId];
             let component = this.components.get(nodeId);
+            
             if (component) {
-                component.update(node);
-                
+                component.setNode(node);
+
             } else {
                 component = new GraphNodeComponent(this.editor, this.group, nodeId, node);
                 this.components.set(nodeId, component);
@@ -41,5 +42,9 @@ export class GraphNodesManager {
                 this.components.delete(nodeId);
             }
         }
+    }
+
+    getNode(nodeId: string): GraphNodeComponent | undefined {
+        return this.components.get(nodeId);
     }
 }
