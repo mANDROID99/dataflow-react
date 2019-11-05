@@ -1,4 +1,4 @@
-import { Graph } from "../graph/types/graphTypes"
+import { Graph } from "../graph/types/graphTypes";
 
 export type DraggedNode = {
     node: string;

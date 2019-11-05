@@ -21,15 +21,14 @@ export class GraphConnection {
         this.update();
     }
     
-    remove() {
+    remove(): void {
         // unregister this connection
         this.start.unregisterConnection(this);
         this.end.unregisterConnection(this);
-
         this.path.remove();
     }
 
-    update() {
+    update(): void {
         const sx = this.start.getAttachX();
         const sy = this.start.getAttachY();
         const ex = this.end.getAttachX();

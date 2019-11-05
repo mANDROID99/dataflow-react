@@ -1,8 +1,7 @@
 import * as SVG from 'svg.js';
 import { GraphEditor } from '../GraphEditor';
-import { GraphNodePortSpec } from '../../types/graphSpecTypes';
 import { TargetPort } from '../../types/graphTypes';
-import { NodeMeasurements, Size, PortDragTarget } from '../graphEditorTypes';
+import { NodeMeasurements, Size, PortDragTarget } from '../../types/graphEditorTypes';
 import { GraphConnection } from '../GraphConnection';
 import { makeDraggable, DragState } from '../helpers/draggable';
 import { Disposables } from '../helpers/disposables';
@@ -25,10 +24,10 @@ export class GraphNodePortComponent {
     private dragConnection?: GraphNodePortDragConnection;
     private overlay: GraphNodePortOverlay;
 
-    private offsetX: number = 0;
-    private offsetY: number = 0;
-    private attachX: number = 0;
-    private attachY: number = 0;
+    private offsetX = 0;
+    private offsetY = 0;
+    private attachX = 0;
+    private attachY = 0;
 
     private registeredConnections: GraphConnection[] = [];
     private disposables: Disposables;
@@ -44,20 +43,20 @@ export class GraphNodePortComponent {
         this.overlay = new GraphNodePortOverlay(this.portGroup);
     }
 
-    onPortUpdated(targets: TargetPort[] | undefined, nodeX: number, nodeY: number) {
+    onPortUpdated(targets: TargetPort[] | undefined, nodeX: number, nodeY: number): void {
         this.attachX = nodeX + this.offsetX;
         this.attachY = nodeY + this.offsetY;
     }
 
-    onNodeDragged(dragX: number, dragY: number) {
+    onNodeDragged(dragX: number, dragY: number): void {
         this.attachX = dragX + this.offsetX;
         this.attachY = dragY + this.offsetY;
-        for (let conn of this.registeredConnections) {
+        for (const conn of this.registeredConnections) {
             conn.update();
         }
     }
 
-    onPortDragChanged(portDrag: PortDragTarget | undefined) {
+    onPortDragChanged(portDrag: PortDragTarget | undefined): void {
         if (portDrag != null && isPortConnectable(portDrag, this.port)) {
             this.overlay.show();
         } else {
@@ -65,7 +64,7 @@ export class GraphNodePortComponent {
         }
     }
 
-    onNodeBoundsMeasured(bounds: NodeMeasurements, index: number) {
+    onNodeBoundsMeasured(bounds: NodeMeasurements, index: number): void {
         this.offsetX = this.port.portOut ? bounds.outerWidth : 0;
         this.offsetY = bounds.headerHeight + index * PORT_GROUP_HEIGHT + PORT_GROUP_HEIGHT / 2;
         this.portGroup.translate(this.offsetX, this.offsetY);
@@ -76,7 +75,7 @@ export class GraphNodePortComponent {
         return {
             width,
             height: PORT_GROUP_HEIGHT
-        }
+        };
     }
 
     getAttachX(): number {
@@ -87,19 +86,19 @@ export class GraphNodePortComponent {
         return this.attachY;
     }
 
-    remove() {
+    remove(): void {
         this.disposables.dispose();   
     }
 
-    registerConnection(connection: GraphConnection) {
+    registerConnection(connection: GraphConnection): void {
         this.registeredConnections.push(connection);
     }
 
-    unregisterConnection(connection: GraphConnection) {
+    unregisterConnection(connection: GraphConnection): void {
         this.registeredConnections.splice(this.registeredConnections.indexOf(connection), 1);
     }
 
-    private createLabelTextShape(container: SVG.G, port: PortDragTarget) {
+    private createLabelTextShape(container: SVG.G, port: PortDragTarget): SVG.Text {
         const portLabel = port.portSpec.name;
         const portOut = port.portOut;
 
@@ -110,7 +109,7 @@ export class GraphNodePortComponent {
             .x(portOut ? -(LABEL_PADDING + CIRCLE_RADIUS) : LABEL_PADDING + CIRCLE_RADIUS );
     }
 
-    private createPortConnectorShape(container: SVG.G) {
+    private createPortConnectorShape(container: SVG.G): SVG.Circle {
         const shape = container.circle()
             .addClass('graph-node-port-connector')
             .radius(CIRCLE_RADIUS)
@@ -126,19 +125,19 @@ export class GraphNodePortComponent {
         return shape;
     }
 
-    private onDragStart() {
+    private onDragStart(): void {
         const container = this.editor.getConnectionsGroup();
         this.dragConnection = new GraphNodePortDragConnection(container, this.attachX, this.attachY);
         this.editor.onPortDragChanged(this.port);
     }
 
-    private onDrag(_s: DragState, event: MouseEvent) {
+    private onDrag(_s: DragState, event: MouseEvent): void {
         if (this.dragConnection) {
             this.dragConnection.update(event.clientX, event.clientY);
         }
     }
 
-    private onDragEnd() {
+    private onDragEnd(): void {
         if (this.dragConnection) {
             this.dragConnection.remove();
         }

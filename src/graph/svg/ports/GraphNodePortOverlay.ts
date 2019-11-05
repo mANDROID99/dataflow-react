@@ -11,18 +11,18 @@ export class GraphNodePortOverlay {
         this.container = container;
     }
 
-    show() {
+    show(): void {
         if (!this.shape) {
             this.shape = this.container.circle()
                 .addClass('graph-node-port-overlay')
                 .radius(OVERLAY_RADIUS)
                 .attr('opacity', 0);
 
-            this.shape.animate(200).attr({ opacity: 1 })
+            this.shape.animate(200).attr({ opacity: 1 });
         }
     }
 
-    hide() {
+    hide(): void {
         if (this.shape) {
             const shape = this.shape;
             this.shape = undefined;

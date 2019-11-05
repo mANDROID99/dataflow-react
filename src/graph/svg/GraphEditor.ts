@@ -1,11 +1,11 @@
 import * as SVG from 'svg.js';
 import { Graph } from "../types/graphTypes";
-import { GraphActions } from "../types/graphD3types";
+import { GraphActions } from "../types/graphEditorTypes";
 import { GraphNodesManager } from "./GraphNodesManager";
 import { GraphSpec } from "../types/graphSpecTypes";
 import { GraphNodeComponent } from './GraphNode';
 import { GraphConnectionsManager } from './GraphConnectionsManager';
-import { PortDragTarget } from './graphEditorTypes';
+import { PortDragTarget } from '../types/graphEditorTypes';
 
 export class GraphEditor {
     private readonly doc: SVG.Doc;
@@ -34,7 +34,7 @@ export class GraphEditor {
         this.graphConnections = new GraphConnectionsManager(this, graph, this.connectionsGroup);
     }
 
-    updateGraph(graph: Graph) {
+    updateGraph(graph: Graph): void {
         if (this.graph !== graph) {
             this.graph = graph;
             this.graphNodes.updateGraph(graph);
@@ -42,13 +42,13 @@ export class GraphEditor {
         }
     }
 
-    onPortDragChanged(portDrag?: PortDragTarget) {
+    onPortDragChanged(portDrag?: PortDragTarget): void {
         this.portDrag = portDrag;
         this.portDragTarget = undefined;
         this.graphNodes.onPortDragChanged(portDrag);
     }
 
-    onPortDragTargetChanged(portDragTarget?: PortDragTarget) {
+    onPortDragTargetChanged(portDragTarget?: PortDragTarget): void {
         this.portDragTarget = portDragTarget;
     }
 

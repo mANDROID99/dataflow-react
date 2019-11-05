@@ -1,7 +1,7 @@
 import * as SVG from 'svg.js';
 import { GraphNode } from "../types/graphTypes";
 import { GraphEditor } from './GraphEditor';
-import { NodeMeasurements, PortDragTarget } from './graphEditorTypes';
+import { NodeMeasurements, PortDragTarget } from '../types/graphEditorTypes';
 import { GraphNodePortsManager } from './GraphNodePortsManager';
 import { GraphNodeSpec } from '../types/graphSpecTypes';
 
@@ -50,19 +50,19 @@ export class GraphNodeComponent {
         this.update();
     }
 
-    updateNode(node: GraphNode) {
+    updateNode(node: GraphNode): void {
         if (this.node !== node) {
             this.node = node;
             this.update();
         }
     }
 
-    onPortDragChanged(portDrag: PortDragTarget | undefined) {
+    onPortDragChanged(portDrag: PortDragTarget | undefined): void {
         this.portsIn.onPortDragChanged(portDrag);
         this.portsOut.onPortDragChanged(portDrag);
     }
     
-    remove() {
+    remove(): void {
         this.disposables.dispose();
         this.group.remove();
         this.portsIn.remove();
@@ -77,14 +77,14 @@ export class GraphNodeComponent {
         }
     }
 
-    private update() {
+    private update(): void {
         const node = this.node;
         this.group.translate(node.x, node.y);
         this.portsIn.onPortsUpdated(node.ports.in, node.x, node.y);
         this.portsOut.onPortsUpdated(node.ports.out, node.x, node.y);
     }
 
-    private resize() {
+    private resize(): void {
         const m = this.measure();
 
         this.titleText.center(m.outerWidth / 2, HEADER_HEIGHT / 2);
@@ -100,7 +100,7 @@ export class GraphNodeComponent {
 
     private measure(): NodeMeasurements {
         const widthTitle = this.titleText.bbox().width;
-        const widthHeader = widthTitle + (HEADER_CLOSE_BTN_SIZE + HEADER_PAD * 2) * 2
+        const widthHeader = widthTitle + (HEADER_CLOSE_BTN_SIZE + HEADER_PAD * 2) * 2;
 
         const sizePortsIn = this.portsIn.getSize();
         const sizePortsOut = this.portsOut.getSize();
@@ -117,7 +117,7 @@ export class GraphNodeComponent {
         };
     }
 
-    private createBackRectShape(nodeGroup: SVG.G) {
+    private createBackRectShape(nodeGroup: SVG.G): SVG.Rect {
         const rect = nodeGroup.rect()
             .addClass('graph-node-back');
 
@@ -159,16 +159,16 @@ export class GraphNodeComponent {
         return closeGroup;
     }
 
-    private handleRemove() {
+    private handleRemove(): void {
         const actions = this.editor.getActions();
         actions.removeNode(this.nodeId);
     }
 
-    private getSpec(nodeType: string) {
+    private getSpec(nodeType: string): GraphNodeSpec {
         return this.editor.getSpec().nodes[nodeType];
     }
 
-    private onDrag({ dx, dy }: DragState) {
+    private onDrag({ dx, dy }: DragState): void {
         const x = this.node.x + dx;
         const y = this.node.y + dy;
 
@@ -177,7 +177,7 @@ export class GraphNodeComponent {
         this.portsOut.onNodeDragged(x, y);
     }
 
-    private onDragEnd({ dx, dy }: DragState) {
+    private onDragEnd({ dx, dy }: DragState): void {
         const x = this.node.x + dx;
         const y = this.node.y + dy;
 

@@ -18,16 +18,13 @@
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-redux": "^7.1.1",
-    "react-scripts": "3.2.0",
     "redux": "^4.0.4",
-    "svg.js": "^2.7.1",
-    "typescript": "3.6.4"
+    "svg.js": "^2.7.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "webpack-dev-server",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
+    "build": "webpack"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -45,11 +42,25 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
     "@types/classnames": "^2.2.9",
     "@types/d3": "^5.7.2",
     "@types/d3-drag": "^1.2.3",
     "@types/react-redux": "^7.1.5",
     "@types/svg.js": "^2.3.1",
-    "node-sass": "^4.13.0"
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "css-loader": "^3.2.0",
+    "eslint": "^6.6.0",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^2.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "node-sass": "^4.13.0",
+    "style-loader": "^1.0.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
   }
 }

@@ -3,7 +3,7 @@ import { Graph } from "../types/graphTypes";
 
 import { GraphEditor } from "./GraphEditor";
 import { GraphNodeComponent } from './GraphNode';
-import { PortDragTarget } from './graphEditorTypes';
+import { PortDragTarget } from '../types/graphEditorTypes';
 
 export class GraphNodesManager {
     private readonly editor: GraphEditor;
@@ -17,9 +17,9 @@ export class GraphNodesManager {
         this.updateGraph(graph);
     }
 
-    updateGraph(graph: Graph) {
+    updateGraph(graph: Graph): void {
         const nodes = graph.nodes;
-        for (let nodeId of Object.keys(nodes)) {
+        for (const nodeId of Object.keys(nodes)) {
             const node = nodes[nodeId];
             let component = this.components.get(nodeId);
             
@@ -32,7 +32,7 @@ export class GraphNodesManager {
             }
         }
 
-        for (let entry of this.components) {
+        for (const entry of this.components) {
             const nodeId = entry[0];
             if (!(nodeId in nodes)) {
                 entry[1].remove();
@@ -41,8 +41,8 @@ export class GraphNodesManager {
         }
     }
 
-    onPortDragChanged(portDrag: PortDragTarget | undefined) {
-        for (let component of this.components.values()) {
+    onPortDragChanged(portDrag: PortDragTarget | undefined): void {
+        for (const component of this.components.values()) {
             component.onPortDragChanged(portDrag);
         }
     }

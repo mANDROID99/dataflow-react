@@ -12,16 +12,16 @@ export class GraphNodePortDragConnection {
         this.shape = this.createShape(container);
     }
 
-    private createShape(container: SVG.G) {
+    private createShape(container: SVG.G): SVG.Path {
         return container.path()
             .addClass('graph-node-port-dragger');
     }
 
-    update(mouseX: number, mouseY: number) {
+    update(mouseX: number, mouseY: number): void {
         this.shape.plot(lineBetween(this.sx, this.sy, mouseX, mouseY));
     }
 
-    remove() {
+    remove(): void {
         this.shape.remove();
     }
 }

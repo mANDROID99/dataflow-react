@@ -8,12 +8,34 @@ export type DraggableCallbacks = {
     onEnd?(state: DragState, event: MouseEvent): void;
 }
 
-export type DragState = { dx: number, dy: number };
+export type DragState = { dx: number; dy: number };
 
-export function makeDraggable(shape: SVG.Element, callbacks: DraggableCallbacks) {
+export function makeDraggable(shape: SVG.Element, callbacks: DraggableCallbacks): () => void {
     let drag: DragState | undefined;
 
-    function handleDragStart(event: MouseEvent) {
+    function handleDragged(event: MouseEvent): void {
+        if (!drag) return;
+        drag.dx += event.movementX;
+        drag.dy += event.movementY;
+
+        if (callbacks.onDrag) {
+            callbacks.onDrag(drag, event);
+        }
+    }
+
+    function handleDragEnd(event: MouseEvent): void {
+        if (!drag) return;
+
+        if (callbacks.onEnd) {
+            callbacks.onEnd(drag, event);
+        }
+
+        drag = undefined;
+        window.removeEventListener('mousemove', handleDragged);
+        window.removeEventListener('mouseup', handleDragEnd);
+    }
+
+    function handleDragStart(event: MouseEvent): void {
         if (event.button !== 0) {
             return;
         }
@@ -28,31 +50,9 @@ export function makeDraggable(shape: SVG.Element, callbacks: DraggableCallbacks)
         window.addEventListener('mouseup', handleDragEnd);
     }
 
-    function handleDragged(event: MouseEvent) {
-        if (!drag) return;
-        drag.dx += event.movementX;
-        drag.dy += event.movementY;
-
-        if (callbacks.onDrag) {
-            callbacks.onDrag(drag, event);
-        }
-    }
-
-    function handleDragEnd(event: MouseEvent) {
-        if (!drag) return;
-
-        if (callbacks.onEnd) {
-            callbacks.onEnd(drag, event);
-        }
-
-        drag = undefined;
-        window.removeEventListener('mousemove', handleDragged);
-        window.removeEventListener('mouseup', handleDragEnd);
-    }
-
     shape.on('mousedown', handleDragStart);
 
-    return () => {
+    return (): void => {
         // cleanup
 
         shape.off('mousedown', handleDragStart);

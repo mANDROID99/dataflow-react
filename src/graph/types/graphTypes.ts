@@ -9,8 +9,8 @@ export type Ports = {
 }
 
 export type GraphNodePorts = {
-    in: Ports,
-    out: Ports
+    in: Ports;
+    out: Ports;
 }
 
 export type GraphNode = {
@@ -27,6 +27,6 @@ export type GraphNode = {
 
 export type Graph = {
     nodes: {
-        [id: string]: GraphNode
+        [id: string]: GraphNode;
     };
 }

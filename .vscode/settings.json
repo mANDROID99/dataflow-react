@@ -3,5 +3,18 @@
         "activityBar.background": "#342555",
         "titleBar.activeBackground": "#483377",
         "titleBar.activeForeground": "#FAF9FC"
-    }
+    },
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        {
+          "language": "typescript",
+          "autoFix": true
+        },
+        {
+          "language": "typescriptreact",
+          "autoFix": true
+        }
+    ]
 }

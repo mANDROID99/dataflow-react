@@ -1,4 +1,4 @@
-import { PortDragTarget } from "../graphEditorTypes";
+import { PortDragTarget } from "../../types/graphEditorTypes";
 
 export function isPortConnectable(from: PortDragTarget, to: PortDragTarget): boolean {
     return (

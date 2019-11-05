@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { GraphSpec } from '../types/graphSpecTypes';
-import { GraphActions } from '../types/graphD3types';
+import { GraphActions } from '../types/graphEditorTypes';
 import { StoreState } from '../../store/storeTypes';
 import { removeNode, setNodePosition, setNodeFieldValue, clearPortConnections, addPortConnection } from '../../store/graphActions';
 import { GraphEditor } from '../svg/GraphEditor';
@@ -18,7 +18,7 @@ type EditorWithDeps = {
     actions: GraphActions;
 }
 
-export default function GraphComponent({ graphId, spec }: Props) {
+export default function GraphComponent({ graphId, spec }: Props): JSX.Element {
     const elRef = useRef<SVGSVGElement>(null);
     const editorRef = useRef<EditorWithDeps>();
     const graph = useSelector((state: StoreState) => state.graph.graphs[graphId]);
@@ -45,7 +45,7 @@ export default function GraphComponent({ graphId, spec }: Props) {
             addPortConnection(node: string, port: string, portOut: boolean, targetNode: string, targetPort: string): void {
                 dispatch(addPortConnection(graphId, node, port, portOut, targetNode, targetPort));
             }
-        }
+        };
     }, [graphId, dispatch]);
 
     useEffect(() => {

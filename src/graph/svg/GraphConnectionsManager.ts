@@ -20,25 +20,25 @@ export class GraphConnectionsManager {
         this.updateGraph(graph);
     }
 
-    updateGraph(graph: Graph) {
+    updateGraph(graph: Graph): void {
         const updatedKeys = new Set<string>();
         const nodes = graph.nodes;
 
-        for (let nodeId of Object.keys(nodes)) {
+        for (const nodeId of Object.keys(nodes)) {
             const node = nodes[nodeId];
 
             const nodeComponent = this.editor.getNodeComponent(nodeId);
             if (!nodeComponent) continue;
 
             const portsOut = node.ports.out;
-            for (let portId of Object.keys(portsOut)) {
+            for (const portId of Object.keys(portsOut)) {
                 const port = portsOut[portId];
                 if (!port) continue;
 
                 const portComponent = nodeComponent.getPortComponent(portId, true);
                 if (!portComponent) continue;
 
-                for (let target of port) {
+                for (const target of port) {
                     const targetNodeComponent = this.editor.getNodeComponent(target.node);
                     if (!targetNodeComponent) continue;
 
@@ -58,6 +58,7 @@ export class GraphConnectionsManager {
         }
 
         const it = this.connections.keys();
+        // eslint-disable-next-line no-constant-condition
         while (true) {
             const e = it.next();
             if (e.done) break;
@@ -74,7 +75,7 @@ export class GraphConnectionsManager {
         }
     }
 
-    private getConnectionKey(startNode: string, startPort: string, endNode: string, endPort: string) {
+    private getConnectionKey(startNode: string, startPort: string, endNode: string, endPort: string): string {
         return [startNode, startPort, endNode, endPort].join('__');
     }
 }
