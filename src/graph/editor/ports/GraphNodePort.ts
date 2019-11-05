@@ -8,6 +8,7 @@ import { Disposables } from '../helpers/disposables';
 import { GraphNodePortDragConnection } from './GraphNodePortDragConnection';
 import { comparePortTargets, isPortConnectable } from '../helpers/ports';
 import { GraphNodePortOverlay } from './GraphNodePortOverlay';
+import { EventType, GraphEditorEvent } from '../GraphEditorEvents';
 
 const LABEL_PADDING = 5;
 const CIRCLE_RADIUS = 5;
@@ -40,7 +41,9 @@ export class GraphNodePortComponent {
         this.portGroup = container.group();
         this.labelText = this.createLabelTextShape(this.portGroup, port);
         this.portConnector = this.createPortConnectorShape(this.portGroup);
-        this.overlay = new GraphNodePortOverlay(this.portGroup);
+        this.overlay = new GraphNodePortOverlay(editor, this.portGroup, port);
+
+        this.handleEvent = editor.addEventListener(this.handleEvent.bind(this));
     }
 
     onPortUpdated(targets: TargetPort[] | undefined, nodeX: number, nodeY: number): void {
@@ -55,15 +58,7 @@ export class GraphNodePortComponent {
             conn.update();
         }
     }
-
-    onPortDragChanged(portDrag: PortDragTarget | undefined): void {
-        if (portDrag != null && isPortConnectable(portDrag, this.port)) {
-            this.overlay.show();
-        } else {
-            this.overlay.hide();
-        }
-    }
-
+    
     onNodeBoundsMeasured(bounds: NodeMeasurements, index: number): void {
         this.offsetX = this.port.portOut ? bounds.outerWidth : 0;
         this.offsetY = bounds.headerHeight + index * PORT_GROUP_HEIGHT + PORT_GROUP_HEIGHT / 2;
@@ -87,7 +82,8 @@ export class GraphNodePortComponent {
     }
 
     remove(): void {
-        this.disposables.dispose();   
+        this.disposables.dispose();
+        this.editor.removeEventListener(this.handleEvent);
     }
 
     registerConnection(connection: GraphConnection): void {
@@ -126,13 +122,18 @@ export class GraphNodePortComponent {
     }
 
     private onDragStart(): void {
-        const container = this.editor.getConnectionsGroup();
+        const container = this.editor.connectionsGroup;
         this.dragConnection = new GraphNodePortDragConnection(container, this.attachX, this.attachY);
-        this.editor.onPortDragChanged(this.port);
+        this.editor.onActivePortChanged(this.port);
+
+        const port = this.port;
+        if (!port.portOut) {
+            this.editor.actions.clearPortConnections(port.nodeId, port.portId, port.portOut);
+        }
     }
 
     private onDrag(_s: DragState, event: MouseEvent): void {
-        if (this.dragConnection) {
+        if (this.dragConnection && !this.editor.targetPort) {
             this.dragConnection.update(event.clientX, event.clientY);
         }
     }
@@ -142,9 +143,39 @@ export class GraphNodePortComponent {
             this.dragConnection.remove();
         }
 
-        const portDrag = this.editor.getPortDrag();
-        if (comparePortTargets(portDrag, this.port)) {
-            this.editor.onPortDragChanged(undefined);
+        const target = this.editor.targetPort;
+        if (comparePortTargets(this.editor.activePort, this.port)) {
+            this.editor.onActivePortChanged(undefined);
+
+            if (target) {
+                const port = this.port;
+                this.editor.actions.addPortConnection(
+                    port.nodeId, port.portId, port.portOut, target.nodeId, target.portId
+                );
+            }
+        }
+    }
+
+    private handleEvent(event: GraphEditorEvent): void {
+        if (event.type === EventType.TARGET_PORT_CHANGED) {
+            const target = event.port;
+            if (this.dragConnection && target) {
+                const port = this.editor.findNodePort(target.nodeId, target.portId, target.portOut);
+
+                if (port) {
+                    const px = port.getAttachX();
+                    const py = port.getAttachY();
+                    this.dragConnection.update(px, py);
+                }
+            }
+
+        } else if (event.type === EventType.ACTIVE_PORT_CHANGED) {
+            const target = event.port;
+            if (target != null && isPortConnectable(target, this.port)) {
+                this.overlay.show();
+            } else {
+                this.overlay.hide();
+            }
         }
     }
 }

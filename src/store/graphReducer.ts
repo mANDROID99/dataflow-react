@@ -65,7 +65,7 @@ function clearPort(graph: Graph, portTargets: TargetPort[], nodeId: string, port
         const targetNode = graph.nodes[target.node];
         if (!targetNode) continue;
 
-        const ports = portOut ? targetNode.ports.out : targetNode.ports.in;
+        const ports = portOut ? targetNode.ports.in : targetNode.ports.out;
         const targetPorts = ports[target.port];
         if (!targetPorts) continue;
 

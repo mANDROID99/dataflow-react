@@ -27,7 +27,7 @@ export class GraphConnectionsManager {
         for (const nodeId of Object.keys(nodes)) {
             const node = nodes[nodeId];
 
-            const nodeComponent = this.editor.getNodeComponent(nodeId);
+            const nodeComponent = this.editor.findNode(nodeId);
             if (!nodeComponent) continue;
 
             const portsOut = node.ports.out;
@@ -35,14 +35,11 @@ export class GraphConnectionsManager {
                 const port = portsOut[portId];
                 if (!port) continue;
 
-                const portComponent = nodeComponent.getPortComponent(portId, true);
+                const portComponent = nodeComponent.findPortComponent(portId, true);
                 if (!portComponent) continue;
 
                 for (const target of port) {
-                    const targetNodeComponent = this.editor.getNodeComponent(target.node);
-                    if (!targetNodeComponent) continue;
-
-                    const targetPortComponent = targetNodeComponent.getPortComponent(target.port, false);
+                    const targetPortComponent = this.editor.findNodePort(target.node, target.port, false);
                     if (!targetPortComponent) continue;
 
                     const key = this.getConnectionKey(nodeId, portId, target.node, target.port);

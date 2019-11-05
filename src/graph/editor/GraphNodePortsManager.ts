@@ -59,12 +59,6 @@ export class GraphNodePortsManager {
         }
     }
 
-    onPortDragChanged(portDrag: PortDragTarget | undefined): void {
-        for (const port of this.ports) {
-            port.onPortDragChanged(portDrag);
-        }
-    }
-
     getPortComponent(port: string): GraphNodePortComponent | undefined {
         return this.portsById.get(port);
     }

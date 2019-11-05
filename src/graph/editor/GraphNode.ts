@@ -1,7 +1,7 @@
 import * as SVG from 'svg.js';
 import { GraphNode } from "../types/graphTypes";
 import { GraphEditor } from './GraphEditor';
-import { NodeMeasurements, PortDragTarget } from '../types/graphEditorTypes';
+import { NodeMeasurements } from '../types/graphEditorTypes';
 import { GraphNodePortsManager } from './GraphNodePortsManager';
 import { GraphNodeSpec } from '../types/graphSpecTypes';
 
@@ -57,11 +57,6 @@ export class GraphNodeComponent {
         }
     }
 
-    onPortDragChanged(portDrag: PortDragTarget | undefined): void {
-        this.portsIn.onPortDragChanged(portDrag);
-        this.portsOut.onPortDragChanged(portDrag);
-    }
-    
     remove(): void {
         this.disposables.dispose();
         this.group.remove();
@@ -69,7 +64,7 @@ export class GraphNodeComponent {
         this.portsOut.remove();
     }
 
-    getPortComponent(port: string, portOut: boolean): GraphNodePortComponent | undefined {
+    findPortComponent(port: string, portOut: boolean): GraphNodePortComponent | undefined {
         if (portOut) {
             return this.portsOut.getPortComponent(port);
         } else {
@@ -160,12 +155,11 @@ export class GraphNodeComponent {
     }
 
     private handleRemove(): void {
-        const actions = this.editor.getActions();
-        actions.removeNode(this.nodeId);
+        this.editor.actions.removeNode(this.nodeId);
     }
 
     private getSpec(nodeType: string): GraphNodeSpec {
-        return this.editor.getSpec().nodes[nodeType];
+        return this.editor.spec.nodes[nodeType];
     }
 
     private onDrag({ dx, dy }: DragState): void {
@@ -180,8 +174,6 @@ export class GraphNodeComponent {
     private onDragEnd({ dx, dy }: DragState): void {
         const x = this.node.x + dx;
         const y = this.node.y + dy;
-
-        this.editor.getActions()
-            .setNodePosition(this.nodeId, x, y);
+        this.editor.actions.setNodePosition(this.nodeId, x, y);
     }
 }

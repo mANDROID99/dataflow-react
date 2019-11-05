@@ -6,78 +6,94 @@ import { GraphSpec } from "../types/graphSpecTypes";
 import { GraphNodeComponent } from './GraphNode';
 import { GraphConnectionsManager } from './GraphConnectionsManager';
 import { PortDragTarget } from '../types/graphEditorTypes';
+import { GraphEditorEvents, EventType, GraphEditorListener, GraphEditorEvent } from './GraphEditorEvents';
+import { GraphNodePortComponent } from './ports/GraphNodePort';
 
 export class GraphEditor {
-    private readonly doc: SVG.Doc;
-    private readonly actions: GraphActions;
-    private readonly spec: GraphSpec;
+    public readonly doc: SVG.Doc;
+    public readonly actions: GraphActions;
+    public readonly spec: GraphSpec;
 
-    private readonly connectionsGroup: SVG.G;
-    private readonly nodesGroup: SVG.G;
-    private readonly graphNodes: GraphNodesManager;
-    private readonly graphConnections: GraphConnectionsManager;
+    public readonly connectionsGroup: SVG.G;
+    public readonly nodesGroup: SVG.G;
+    public readonly graphNodes: GraphNodesManager;
+    public readonly graphConnections: GraphConnectionsManager;
+    public readonly events: GraphEditorEvents;
 
-    private graph: Graph;
-    private portDrag?: PortDragTarget;
-    private portDragTarget?: PortDragTarget;
+    private _graph: Graph;
+    private _activePort?: PortDragTarget;
+    private _targetPort?: PortDragTarget;
 
     constructor(svg: SVGSVGElement, actions: GraphActions, spec: GraphSpec, graph: Graph) {
         this.doc = new SVG.Doc(svg as any as HTMLElement);
         this.actions = actions;
         this.spec = spec;
-        this.graph = graph;
+        this._graph = graph;
 
         this.connectionsGroup = this.doc.group();
         this.nodesGroup = this.doc.group();
         
+        this.events = new GraphEditorEvents();
         this.graphNodes = new GraphNodesManager(this, graph, this.nodesGroup);
         this.graphConnections = new GraphConnectionsManager(this, graph, this.connectionsGroup);
     }
 
     updateGraph(graph: Graph): void {
-        if (this.graph !== graph) {
-            this.graph = graph;
+        if (this._graph !== graph) {
+            this._graph = graph;
             this.graphNodes.updateGraph(graph);
             this.graphConnections.updateGraph(graph);
         }
     }
 
-    onPortDragChanged(portDrag?: PortDragTarget): void {
-        this.portDrag = portDrag;
-        this.portDragTarget = undefined;
-        this.graphNodes.onPortDragChanged(portDrag);
+    onActivePortChanged(activePort?: PortDragTarget): void {
+        this._activePort = activePort;
+        this._targetPort = undefined;
+
+        this.trigger({
+            type: EventType.ACTIVE_PORT_CHANGED,
+            port: activePort
+        });
     }
 
-    onPortDragTargetChanged(portDragTarget?: PortDragTarget): void {
-        this.portDragTarget = portDragTarget;
+    onTargetPortChanged(targetPort?: PortDragTarget): void {
+        this._targetPort = targetPort;
+
+        this.trigger({
+            type: EventType.TARGET_PORT_CHANGED,
+            port: targetPort
+        });
     }
 
-    getGraph(): Graph {
-        return this.graph;
+    findNode(nodeId: string): GraphNodeComponent | undefined {
+        return this.graphNodes.findNode(nodeId);
     }
 
-    getActions(): GraphActions {
-        return this.actions;
-    }
-    
-    getSpec(): GraphSpec {
-        return this.spec;
+    findNodePort(nodeId: string, portId: string, portOut: boolean): GraphNodePortComponent | undefined {
+        return this.graphNodes.findNode(nodeId)?.findPortComponent(portId, portOut);
     }
 
-    getDoc(): SVG.Doc {
-        return this.doc;
+    addEventListener(listener: GraphEditorListener): GraphEditorListener {
+        return this.events.addListener(listener);
     }
 
-    getNodeComponent(nodeId: string): GraphNodeComponent | undefined {
-        return this.graphNodes.getNode(nodeId);
+    removeEventListener(listener: GraphEditorListener): boolean {
+        return this.events.removeListener(listener);
     }
 
-    getConnectionsGroup(): SVG.G {
-        return this.connectionsGroup;
+    trigger(event: GraphEditorEvent): void {
+        this.events.trigger(event);
     }
 
-    getPortDrag(): PortDragTarget | undefined {
-        return this.portDrag;
+    get graph(): Graph {
+        return this._graph;
+    }
+
+    get activePort(): PortDragTarget | undefined {
+        return this._activePort;
+    }
+
+    get targetPort(): PortDragTarget | undefined {
+        return this._targetPort;
     }
 }
-

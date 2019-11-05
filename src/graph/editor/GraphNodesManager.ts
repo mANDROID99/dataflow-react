@@ -3,7 +3,6 @@ import { Graph } from "../types/graphTypes";
 
 import { GraphEditor } from "./GraphEditor";
 import { GraphNodeComponent } from './GraphNode';
-import { PortDragTarget } from '../types/graphEditorTypes';
 
 export class GraphNodesManager {
     private readonly editor: GraphEditor;
@@ -41,13 +40,7 @@ export class GraphNodesManager {
         }
     }
 
-    onPortDragChanged(portDrag: PortDragTarget | undefined): void {
-        for (const component of this.components.values()) {
-            component.onPortDragChanged(portDrag);
-        }
-    }
-
-    getNode(nodeId: string): GraphNodeComponent | undefined {
+    findNode(nodeId: string): GraphNodeComponent | undefined {
         return this.components.get(nodeId);
     }
 }
