@@ -1,15 +1,15 @@
 import * as SVG from 'svg.js';
 import { GraphNode } from "../types/graphTypes";
 import { GraphEditor } from './GraphEditor';
-import { NodeMeasurements } from './graphEditorTypes';
+import { NodeMeasurements, PortDragTarget } from './graphEditorTypes';
 import { GraphNodePortsManager } from './GraphNodePortsManager';
 import { GraphNodeSpec } from '../types/graphSpecTypes';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { makeDraggable } from './helpers/draggable';
+import { makeDraggable, DragState } from './helpers/draggable';
 import { Disposables } from './helpers/disposables';
-import { GraphNodePortComponent } from './GraphNodePort';
+import { GraphNodePortComponent } from './ports/GraphNodePort';
 library.add(faTimes);
 
 const HEADER_CLOSE_BTN_SIZE = 20;
@@ -39,9 +39,9 @@ export class GraphNodeComponent {
         this.spec = this.getSpec(node.type);
 
         this.group = container.group().addClass('graph-node-container');
-        this.backRect = this.createBackRect(this.group);
-        this.titleText = this.createTitle(this.group);
-        this.closeBtn = this.createCloseButton(this.group);
+        this.backRect = this.createBackRectShape(this.group);
+        this.titleText = this.createTitleShape(this.group);
+        this.closeBtn = this.createCloseShape(this.group);
 
         this.portsIn = new GraphNodePortsManager(editor, this.group, nodeId, false, this.spec.ports.in);
         this.portsOut = new GraphNodePortsManager(editor, this.group, nodeId, true, this.spec.ports.out);
@@ -50,11 +50,16 @@ export class GraphNodeComponent {
         this.update();
     }
 
-    setNode(node: GraphNode) {
+    updateNode(node: GraphNode) {
         if (this.node !== node) {
             this.node = node;
             this.update();
         }
+    }
+
+    onPortDragChanged(portDrag: PortDragTarget | undefined) {
+        this.portsIn.onPortDragChanged(portDrag);
+        this.portsOut.onPortDragChanged(portDrag);
     }
     
     remove() {
@@ -75,8 +80,8 @@ export class GraphNodeComponent {
     private update() {
         const node = this.node;
         this.group.translate(node.x, node.y);
-        this.portsIn.update(node.ports.in, node.x, node.y);
-        this.portsOut.update(node.ports.out, node.x, node.y);
+        this.portsIn.onPortsUpdated(node.ports.in, node.x, node.y);
+        this.portsOut.onPortsUpdated(node.ports.out, node.x, node.y);
     }
 
     private resize() {
@@ -89,8 +94,8 @@ export class GraphNodeComponent {
             .width(m.outerWidth)
             .height(m.outerHeight);
 
-        this.portsIn.resize(m);
-        this.portsOut.resize(m);
+        this.portsIn.onNodeBoundsMeasured(m);
+        this.portsOut.onNodeBoundsMeasured(m);
     }
 
     private measure(): NodeMeasurements {
@@ -112,7 +117,7 @@ export class GraphNodeComponent {
         };
     }
 
-    private createBackRect(nodeGroup: SVG.G) {
+    private createBackRectShape(nodeGroup: SVG.G) {
         const rect = nodeGroup.rect()
             .addClass('graph-node-back');
 
@@ -124,13 +129,13 @@ export class GraphNodeComponent {
         return rect;
     }
 
-    private createTitle(nodeGroup: SVG.G): SVG.Text {
+    private createTitleShape(nodeGroup: SVG.G): SVG.Text {
         const title = this.spec.title;
         return nodeGroup.plain(title)
             .addClass('graph-node-title');
     }
 
-    private createCloseButton(nodeGroup: SVG.G): SVG.G {
+    private createCloseShape(nodeGroup: SVG.G): SVG.G {
         const closeGroup = nodeGroup.group()
             .addClass('graph-node-close');
 
@@ -163,16 +168,16 @@ export class GraphNodeComponent {
         return this.editor.getSpec().nodes[nodeType];
     }
 
-    private onDrag(dx: number, dy: number) {
+    private onDrag({ dx, dy }: DragState) {
         const x = this.node.x + dx;
         const y = this.node.y + dy;
 
         this.group.translate(x, y);
-        this.portsIn.setDrag(x, y);
-        this.portsOut.setDrag(x, y);
+        this.portsIn.onNodeDragged(x, y);
+        this.portsOut.onNodeDragged(x, y);
     }
 
-    private onDragEnd(dx: number, dy: number) {
+    private onDragEnd({ dx, dy }: DragState) {
         const x = this.node.x + dx;
         const y = this.node.y + dy;
 

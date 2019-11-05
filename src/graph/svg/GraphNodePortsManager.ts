@@ -2,8 +2,8 @@ import * as SVG from 'svg.js';
 import { GraphEditor } from "./GraphEditor";
 import { Ports } from "../types/graphTypes";
 import { GraphNodePortSpec } from '../types/graphSpecTypes';
-import { GraphNodePortComponent } from './GraphNodePort';
-import { Size, NodeMeasurements } from './graphEditorTypes';
+import { GraphNodePortComponent } from './ports/GraphNodePort';
+import { Size, NodeMeasurements, PortDragTarget } from './graphEditorTypes';
 
 export class GraphNodePortsManager {
     private readonly portSpecs: GraphNodePortSpec[];
@@ -12,16 +12,10 @@ export class GraphNodePortsManager {
 
     constructor(editor: GraphEditor, container: SVG.G, nodeId: string, portOut: boolean, portSpecs: GraphNodePortSpec[]) {
         this.portSpecs = portSpecs;
-        this.portsById = new Map<string, GraphNodePortComponent>();
-        this.ports = [];
 
-        for (let portSpec of portSpecs) {
-            const portId = portSpec.name;
-            const portComponent = new GraphNodePortComponent(editor, container, portSpec, nodeId, portId, portOut);
-
-            this.ports.push(portComponent);
-            this.portsById.set(portId, portComponent);
-        }
+        const [ports, portsById] = this.createPorts(editor, container, nodeId, portOut, portSpecs);
+        this.ports = ports;
+        this.portsById = portsById;
     }
 
     getSize(): Size {
@@ -33,6 +27,7 @@ export class GraphNodePortsManager {
             if (s.width > width) {
                 width = s.width;
             }
+            
             height += s.height;
         }
 
@@ -42,25 +37,31 @@ export class GraphNodePortsManager {
         };
     }
 
-    resize(bounds: NodeMeasurements) {
+    onNodeBoundsMeasured(bounds: NodeMeasurements) {
         let i = 0;
         for (let port of this.ports) {
-            port.resize(bounds, i++);
+            port.onNodeBoundsMeasured(bounds, i++);
         }
     }
 
-    update(ports: Ports, nodeX: number, nodeY: number) {
+    onPortsUpdated(ports: Ports, nodeX: number, nodeY: number) {
         const portSpecs = this.portSpecs;
         for (let i = 0, n = portSpecs.length; i < n; i++) {
             const portName = portSpecs[i].name;
             const portTargets = ports[portName];
-            this.ports[i].update(portTargets!, nodeX, nodeY);
+            this.ports[i].onPortUpdated(portTargets!, nodeX, nodeY);
         }
     }
 
-    setDrag(dragX: number, dragY: number) {
+    onNodeDragged(dragX: number, dragY: number) {
         for (let port of this.ports) {
-            port.setDrag(dragX, dragY);
+            port.onNodeDragged(dragX, dragY);
+        }
+    }
+
+    onPortDragChanged(portDrag: PortDragTarget | undefined) {
+        for (let port of this.ports) {
+            port.onPortDragChanged(portDrag);
         }
     }
 
@@ -72,6 +73,19 @@ export class GraphNodePortsManager {
         for (let port of this.ports) {
             port.remove();
         }
+    }
+
+    private createPorts(editor: GraphEditor, container: SVG.G, nodeId: string, portOut: boolean, portSpecs: GraphNodePortSpec[]) {
+        const portsById = new Map<string, GraphNodePortComponent>();
+        const ports = portSpecs.map(portSpec => {
+            const portId = portSpec.name;
+            const port: PortDragTarget = { nodeId, portId, portOut, portSpec };
+            const component = new GraphNodePortComponent(editor, container, port);
+            portsById.set(portId, component);
+            return component;
+        });
+
+        return [ports, portsById] as const;
     }
 }
 

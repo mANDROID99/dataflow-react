@@ -1,14 +1,14 @@
 import * as SVG from 'svg.js';
 
-type DraggableCallbacks = {
+export type DraggableCallbacks = {
     onStart?(): void;
 
-    onDrag?(dx: number, dy: number): void;
+    onDrag?(state: DragState, event: MouseEvent): void;
 
-    onEnd?(dx: number, dy: number): void;
+    onEnd?(state: DragState, event: MouseEvent): void;
 }
 
-type DragState = { dx: number, dy: number };
+export type DragState = { dx: number, dy: number };
 
 export function makeDraggable(shape: SVG.Element, callbacks: DraggableCallbacks) {
     let drag: DragState | undefined;
@@ -34,15 +34,15 @@ export function makeDraggable(shape: SVG.Element, callbacks: DraggableCallbacks)
         drag.dy += event.movementY;
 
         if (callbacks.onDrag) {
-            callbacks.onDrag(drag.dx, drag.dy);
+            callbacks.onDrag(drag, event);
         }
     }
 
-    function handleDragEnd() {
+    function handleDragEnd(event: MouseEvent) {
         if (!drag) return;
 
         if (callbacks.onEnd) {
-            callbacks.onEnd(drag.dx, drag.dy);
+            callbacks.onEnd(drag, event);
         }
 
         drag = undefined;

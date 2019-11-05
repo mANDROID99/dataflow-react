@@ -1,5 +1,6 @@
 import * as SVG from 'svg.js';
-import { GraphNodePortComponent } from './GraphNodePort';
+import { GraphNodePortComponent } from './ports/GraphNodePort';
+import { lineBetween } from './helpers/paths';
 
 export class GraphConnection {
     private readonly start: GraphNodePortComponent;
@@ -31,11 +32,8 @@ export class GraphConnection {
     update() {
         const sx = this.start.getAttachX();
         const sy = this.start.getAttachY();
-
         const ex = this.end.getAttachX();
         const ey = this.end.getAttachY();
-
-        const d = `M${sx},${sy}L${ex},${ey}`;
-        this.path.plot(d);
+        this.path.plot(lineBetween(sx, sy, ex, ey));
     }
 }

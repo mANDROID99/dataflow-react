@@ -48,12 +48,12 @@
     fill: #ff7a00ba;
 }
 
-.graph-connection-dragger {
+.graph-node-port-dragger {
     stroke: black;
     pointer-events: none;
 }
 
-.graph-connection-dragger.connected {
+.graph-node-port-dragger.connected {
     stroke: orange;
 }
 

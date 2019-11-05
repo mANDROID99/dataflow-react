@@ -1,3 +1,11 @@
+import { GraphNodePortSpec } from "../types/graphSpecTypes"
+
+export type PortDragTarget = {
+    nodeId: string;
+    portId: string;
+    portOut: boolean;
+    portSpec: GraphNodePortSpec;
+}
 
 export type NodeMeasurements = {
     headerHeight: number;
