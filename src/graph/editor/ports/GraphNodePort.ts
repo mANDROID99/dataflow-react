@@ -27,8 +27,8 @@ export class GraphNodePortComponent {
 
     private offsetX = 0;
     private offsetY = 0;
-    private attachX = 0;
-    private attachY = 0;
+    private _attachX = 0;
+    private _attachY = 0;
 
     private registeredConnections: GraphConnection[] = [];
     private disposables: Disposables;
@@ -47,13 +47,13 @@ export class GraphNodePortComponent {
     }
 
     onPortUpdated(targets: TargetPort[] | undefined, nodeX: number, nodeY: number): void {
-        this.attachX = nodeX + this.offsetX;
-        this.attachY = nodeY + this.offsetY;
+        this._attachX = nodeX + this.offsetX;
+        this._attachY = nodeY + this.offsetY;
     }
 
     onNodeDragged(dragX: number, dragY: number): void {
-        this.attachX = dragX + this.offsetX;
-        this.attachY = dragY + this.offsetY;
+        this._attachX = dragX + this.offsetX;
+        this._attachY = dragY + this.offsetY;
         for (const conn of this.registeredConnections) {
             conn.update();
         }
@@ -73,12 +73,12 @@ export class GraphNodePortComponent {
         };
     }
 
-    getAttachX(): number {
-        return this.attachX;
+    get attachX(): number {
+        return this._attachX;
     }
 
-    getAttachY(): number {
-        return this.attachY;
+    get attachY(): number {
+        return this._attachY;
     }
 
     remove(): void {
@@ -123,7 +123,7 @@ export class GraphNodePortComponent {
 
     private onDragStart(): void {
         const container = this.editor.connectionsGroup;
-        this.dragConnection = new GraphNodePortDragConnection(container, this.attachX, this.attachY);
+        this.dragConnection = new GraphNodePortDragConnection(container, this._attachX, this._attachY);
         this.editor.onActivePortChanged(this.port);
 
         const port = this.port;
@@ -157,24 +157,26 @@ export class GraphNodePortComponent {
     }
 
     private handleEvent(event: GraphEditorEvent): void {
-        if (event.type === EventType.TARGET_PORT_CHANGED) {
-            const target = event.port;
-            if (this.dragConnection && target) {
-                const port = this.editor.findNodePort(target.nodeId, target.portId, target.portOut);
+        switch (event.type) {
+            case EventType.TARGET_PORT_CHANGED: {
+                const target = event.port;
+                if (this.dragConnection && target) {
+                    const port = this.editor.findNodePort(target.nodeId, target.portId, target.portOut);
 
-                if (port) {
-                    const px = port.getAttachX();
-                    const py = port.getAttachY();
-                    this.dragConnection.update(px, py);
+                    if (port) {
+                        this.dragConnection.update(port.attachX, port.attachY);
+                    }
                 }
+                break;
             }
-
-        } else if (event.type === EventType.ACTIVE_PORT_CHANGED) {
-            const target = event.port;
-            if (target != null && isPortConnectable(target, this.port)) {
-                this.overlay.show();
-            } else {
-                this.overlay.hide();
+            case EventType.ACTIVE_PORT_CHANGED: {
+                const target = event.port;
+                if (target != null && isPortConnectable(target, this.port)) {
+                    this.overlay.show();
+                } else {
+                    this.overlay.hide();
+                }
+                break;
             }
         }
     }

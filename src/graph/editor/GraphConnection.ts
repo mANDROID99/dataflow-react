@@ -29,10 +29,10 @@ export class GraphConnection {
     }
 
     update(): void {
-        const sx = this.start.getAttachX();
-        const sy = this.start.getAttachY();
-        const ex = this.end.getAttachX();
-        const ey = this.end.getAttachY();
+        const sx = this.start.attachX;
+        const sy = this.start.attachY;
+        const ex = this.end.attachX;
+        const ey = this.end.attachY;
         this.path.plot(lineBetween(sx, sy, ex, ey));
     }
 }
