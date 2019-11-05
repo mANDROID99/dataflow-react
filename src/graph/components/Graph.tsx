@@ -5,7 +5,7 @@ import { GraphSpec } from '../types/graphSpecTypes';
 import { GraphActions } from '../types/graphEditorTypes';
 import { StoreState } from '../../store/storeTypes';
 import { removeNode, setNodePosition, setNodeFieldValue, clearPortConnections, addPortConnection } from '../../store/graphActions';
-import { GraphEditor } from '../svg/GraphEditor';
+import { GraphEditor } from '../editor/GraphEditor';
 
 type Props = {
     graphId: string;
