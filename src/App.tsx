@@ -1,13 +1,13 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import Graph from './graph/components/Graph';
+import Graph from './graph2/components/Graph';
 import { spec } from './graphSpec';
 
 import '@fortawesome/fontawesome-free';
 
 import './styles/app.css';
-import './graph/styles/graph.css';
+import './graph2/styles/graph.css';
 
 const App: React.FC = () => {
   return (

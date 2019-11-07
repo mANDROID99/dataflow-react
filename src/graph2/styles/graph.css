@@ -1,0 +1,49 @@
+
+.graph {
+    --bg-color: #151515;
+    --bg-color-node: #707070;
+    background-color: var(--bg-color);
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    height: 100%;
+    letter-spacing: 0.0625em;
+    width: 100%;
+}
+
+.graph-nodes {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.graph-node {
+    background-color: var(--bg-color-node);
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    position: absolute;
+}
+
+.graph-node-header {
+    display: flex;
+    height: 30px;
+    align-items: center;
+}
+
+.graph-node-header-title {
+    user-select: none;
+    pointer-events: none;
+}
+
+.graph-node-header-close-icon {
+    cursor: pointer;
+    display: flex;
+    width: 20px;
+    justify-content: center;
+    align-content: center;
+}
+
+.graph-node-header-close-icon * {
+    position: abs;
+}
