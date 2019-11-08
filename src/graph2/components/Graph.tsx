@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { GraphSpec } from '../types/graphSpecTypes';
 import { GraphActions, GraphContext } from '../types/graphEditorTypes';
 import GraphNodeComponent from './GraphNode';
-import { useSelector, useDispatch } from 'react-redux';
 import { StoreState } from '../../store/storeTypes';
 import { removeNode, setNodePosition, setNodeFieldValue, clearPortConnections, addPortConnection } from '../../store/graphActions';
+import { ConnectionsManager } from './ConnectionsManager';
 
 type Props = {
     graphId: string;
@@ -43,16 +45,28 @@ export default function GraphComponent(props: Props): React.ReactElement {
         };
     }, [graphId, dispatch]);
 
+    const connsSvgRef = useRef<SVGSVGElement>(null);
+    const [connections, setConnections] = useState<ConnectionsManager>();
+
     const context = useMemo((): GraphContext => {
         return {
             actions,
-            spec
+            spec,
+            connections
         };
-    }, [spec, actions]);
+    }, [spec, actions, connections]);
+
+    useEffect(() => {
+        const svg = connsSvgRef.current;
+        if (svg != null) {
+            setConnections(new ConnectionsManager(svg));
+        }
+    }, []);
 
     return (
         <graphContext.Provider value={context}>
             <div className="graph">
+                <svg className="graph-connections" ref={connsSvgRef}/>
                 <div className="graph-nodes">
                     {Object.keys(graph.nodes).map(nodeId => (
                         <GraphNodeComponent

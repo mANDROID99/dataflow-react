@@ -35,10 +35,24 @@ function GraphNodeComponent(props: Props): React.ReactElement {
 
     return (
         <div className="graph-node" onMouseDown={startDrag} style={{ left: x, top: y }}>
-            <GraphNodeHeader spec={nodeSpec}/>
+            <GraphNodeHeader spec={nodeSpec} nodeId={nodeId}/>
             <div className="graph-node-body">
-                <GraphNodePorts portsOut={false}/>
-                <GraphNodePorts portsOut={true}/>
+                <GraphNodePorts
+                    nodeId={nodeId}
+                    portSpecs={nodeSpec?.ports.in ?? []}
+                    portTargets={graphNode.ports.in}
+                    portsOut={false}
+                    nodeX={x}
+                    nodeY={y}
+                />
+                <GraphNodePorts
+                    nodeId={nodeId}
+                    portSpecs={nodeSpec?.ports.out ?? []}
+                    portTargets={graphNode.ports.out}
+                    portsOut={true}
+                    nodeX={x}
+                    nodeY={y}
+                />
             </div>
         </div>
     );

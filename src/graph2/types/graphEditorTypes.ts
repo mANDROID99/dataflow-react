@@ -1,8 +1,10 @@
 import { GraphSpec } from "./graphSpecTypes";
+import { ConnectionsManager } from "../components/ConnectionsManager";
 
 export type GraphContext = {
     spec: GraphSpec;
     actions: GraphActions;
+    connections: ConnectionsManager | undefined;
 }
 
 export type GraphActions = {

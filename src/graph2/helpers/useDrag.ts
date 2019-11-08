@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback } from "react";
 import { batch } from "react-redux";
 
 type DragStart = {
@@ -33,14 +33,14 @@ export function useDrag(opts?: DragOptions): [Drag | undefined, (event: React.Mo
         const startY = dragStart.startY;
 
         function onDrag(event: MouseEvent): void {
-            const dx = event.screenX - startX;
-            const dy = event.screenY - startY;
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
             setDrag({ startX, startY, dx, dy });
         }
 
         function onDragEnd(event: MouseEvent): void {
-            const dx = event.screenX - startX;
-            const dy = event.screenY - startY;
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
             batch(() => {
                 optsRef.current?.onEnd?.(dx, dy);
                 setDrag(undefined);
@@ -59,7 +59,8 @@ export function useDrag(opts?: DragOptions): [Drag | undefined, (event: React.Mo
 
     const startDrag = useCallback((event: React.MouseEvent | MouseEvent) => {
         if (event.button === 0) {
-            setDragStart({ startX: event.screenX, startY: event.screenY });
+            event.stopPropagation();
+            setDragStart({ startX: event.clientX, startY: event.clientY });
         }
     }, []);
 
