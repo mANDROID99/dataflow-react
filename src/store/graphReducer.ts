@@ -1,7 +1,8 @@
 import { produce } from 'immer';
-import { Graph, TargetPort } from "../graph/types/graphTypes";
-import { GraphAction, ActionType, SetNodePositionAction, setNodeFieldValueAction, RemoveNodeAction, ClearPortConnectionsAction, AddPortConnectionAction, StartPortDragAction, ClearPortDragAction, SetPortDragTargetAction, ClearPortDragTargetAction } from "../graph2/graphActions";
-import { GraphsState } from './storeTypes';
+import { Graph, TargetPort } from '../graph/types/graphTypes';
+import { GraphAction, ActionType, setNodeFieldValueAction, RemoveNodeAction, StartPortDragAction, SetPortDragTargetAction, UnsetPortDragTargetAction, UpdatePortDragAction, EndPortDragAction, StartNodeDragAction, UpdateNodeDragAction, EndNodeDragAction, MountPortAction, UnmountPortAction } from "../graph/graphActions";
+import { GraphsState, PortRef } from './storeTypes';
+import { comparePortRefs, getPortKeyFromRef } from '../graph/helpers/portHelpers';
 
 const INIT_GRAPH: Graph = {
     nodes: {
@@ -57,7 +58,8 @@ const INIT_GRAPH: Graph = {
 const INIT_STATE: GraphsState = {
     graphs: {
         'graph-1': {
-            graph: INIT_GRAPH
+            graph: INIT_GRAPH,
+            ports: {}
         }
     }
 };
@@ -78,19 +80,123 @@ function clearPortTargets(graph: Graph, targets: TargetPort[], nodeId: string, p
     }
 }
 
-function clearPort(graph: Graph, nodeId: string, portId: string, portOut: boolean): void {
+function clearPort(graph: Graph, port: PortRef): void {
+    const portOut = port.portOut;
+    const portId = port.portId;
+    const nodeId = port.nodeId;
     const node = graph.nodes[nodeId];
     if (node == null) return;
 
     const ports = portOut ? node.ports.out : node.ports.in;
-    const portTargets = ports[portId];
+    const portTargets = ports[port.portId];
+
     if (portTargets) {
         ports[portId] = undefined;
         clearPortTargets(graph, portTargets, nodeId, portOut);
     }
 }
 
-const removeNode = produce((state: GraphsState, action: RemoveNodeAction) => {
+function createConnection(graph: Graph, start: PortRef, end: PortRef): void {
+    const nodeId = start.nodeId;
+    const portId = start.portId;
+    const portOut = start.portOut;
+
+    const endNodeId = end.nodeId;
+    const endPortId = end.portId;
+
+    const node = graph.nodes[nodeId];
+    const targetNode = graph.nodes[endNodeId];
+    if (!node || !targetNode) return;
+
+    if (portOut) {
+        // add connection node -> target
+        const ports = node.ports.out;
+        let targets = ports[portId];
+        if (!targets) {
+            targets = [];
+            ports[portId] = targets;
+        }
+        
+        targets.push({
+            node: endNodeId,
+            port: endPortId
+        });
+
+        // add connection target -> node
+        const targetPorts = targetNode.ports.in;
+        targetPorts[endPortId] = [{
+            node: nodeId,
+            port: portId
+        }];
+
+    } else {
+        // clear previous connection
+        const ports = node.ports.in;
+        const targets = ports[portId];
+        if (targets) {
+            clearPortTargets(graph, targets, nodeId, false);
+        }
+
+        // add connection node -> target
+        ports[portId] = [{
+            node: endNodeId,
+            port: endPortId
+        }];
+
+        // add connection target -> node
+        const targetPorts = targetNode.ports.out;
+        let targetPort = targetPorts[endPortId];
+        if (!targetPort) {
+            targetPort = [];
+            targetPorts[endPortId] = targetPort;
+        }
+
+        targetPort.push({
+            node: nodeId,
+            port: portId
+        });
+    }
+}
+
+const handleStartNodeDrag = produce((state: GraphsState, action: StartNodeDragAction) => {
+    const graphState = state.graphs[action.graph];
+    if (!graphState) return;
+
+    graphState.nodeDrag = {
+        node: action.node,
+        dragX: 0,
+        dragY: 0
+    };
+});
+
+const handleUpdateNodeDrag = produce((state: GraphsState, action: UpdateNodeDragAction) => {
+    const graphState = state.graphs[action.graph];
+    if (!graphState) return;
+
+    const nodeDrag = graphState.nodeDrag;
+    if (!nodeDrag) return;
+
+    nodeDrag.dragX = action.dragX;
+    nodeDrag.dragY = action.dragY;
+});
+
+const handleEndNodeDrag = produce((state: GraphsState, action: EndNodeDragAction) => {
+    const graphState = state.graphs[action.graph];
+    if (!graphState) return;
+
+    const nodeDrag = graphState.nodeDrag;
+    if (!nodeDrag) return;
+
+    graphState.nodeDrag = undefined;
+
+    const node = graphState.graph.nodes[nodeDrag.node];
+    if (!node) return;
+
+    node.x += nodeDrag.dragX;
+    node.y += nodeDrag.dragY;
+});
+
+const handleRemoveNode = produce((state: GraphsState, action: RemoveNodeAction) => {
     const graphState = state.graphs[action.graph];
     if (!graphState) return;
 
@@ -118,19 +224,7 @@ const removeNode = produce((state: GraphsState, action: RemoveNodeAction) => {
     delete graph.nodes[nodeId];
 });
 
-const setNodePosition = produce((state: GraphsState, action: SetNodePositionAction) => {
-    const graphState = state.graphs[action.graph];
-    if (!graphState) return;
-
-    const graph = graphState.graph;
-    const node = graph.nodes[action.node];
-    if (!node) return;
-
-    node.x = action.x;
-    node.y = action.y;
-});
-
-const setNodeFieldValue = produce((state: GraphsState, action: setNodeFieldValueAction) => {
+const handleSetNodeFieldValue = produce((state: GraphsState, action: setNodeFieldValueAction) => {
     const graphState = state.graphs[action.graph];
     if (!graphState) return;
 
@@ -141,112 +235,59 @@ const setNodeFieldValue = produce((state: GraphsState, action: setNodeFieldValue
     node.fields[action.field] = action.value;
 });
 
-const clearPortConnections = produce((state: GraphsState, action: ClearPortConnectionsAction) => {
+const handleStartPortDrag = produce((state: GraphsState, action: StartPortDragAction) => {
     const graphState = state.graphs[action.graph];
     if (!graphState) return;
 
-    const graph = graphState.graph;
-    clearPort(graph, action.node, action.port, action.portOut);
-});
-
-const addPortConnection = produce((state: GraphsState, action: AddPortConnectionAction) => {
-    const graphId = action.graph;
-    const nodeId = action.node;
-    const portId = action.port;
-    const portOut = action.portOut;
-    const targetNodeId = action.targetNode;
-    const targetPortId = action.targetPort;
-
-    const graphState = state.graphs[graphId];
-    if (!graphState) return;
-
-    const graph = graphState.graph;
-    const node = graph.nodes[nodeId];
-    const targetNode = graph.nodes[targetNodeId];
-    if (!node || !targetNode) return;
-
-    if (portOut) {
-        // add connection node -> target
-        const ports = node.ports.out;
-        let targets = ports[portId];
-        if (!targets) {
-            targets = [];
-            ports[portId] = targets;
-        }
-        
-        targets.push({
-            node: targetNodeId,
-            port: targetPortId
-        });
-
-        // add connection target -> node
-        const targetPorts = targetNode.ports.in;
-        targetPorts[targetPortId] = [{
-            node: nodeId,
-            port: portId
-        }];
-
-    } else {
-        // clear previous connection
-        const ports = node.ports.in;
-        const targets = ports[portId];
-        if (targets) {
-            clearPortTargets(graph, targets, nodeId, false);
-        }
-
-        // add connection node -> target
-        ports[portId] = [{
-            node: targetNodeId,
-            port: targetPortId
-        }];
-
-        // add connection target -> node
-        const targetPorts = targetNode.ports.out;
-        let targetPort = targetPorts[targetPortId];
-        if (!targetPort) {
-            targetPort = [];
-            targetPorts[targetPortId] = targetPort;
-        }
-
-        targetPort.push({
-            node: nodeId,
-            port: portId
-        });
+    const port = action.port;
+    if (!port.portOut) {
+        clearPort(graphState.graph, action.port);
     }
-});
-
-const startPortDrag = produce((state: GraphsState, action: StartPortDragAction) => {
-    const graphState = state.graphs[action.graph];
-    if (!graphState) return;
 
     graphState.portDrag = {
-        nodeId: action.node,
-        portId: action.port,
-        portOut: action.portOut,
-        portType: action.portType
+        port: action.port,
+        mouseX: action.mouseX,
+        mouseY: action.mouseY
     };
 });
 
-const clearPortDrag = produce((state: GraphsState, action: ClearPortDragAction) => {
-    const graphState = state.graphs[action.graph];
-    if (!graphState) return;
-    graphState.portDrag = undefined;
-});
-
-const setPortDragTarget = produce((state: GraphsState, action: SetPortDragTargetAction) => {
+const handleUpdatePortDrag = produce((state: GraphsState, action: UpdatePortDragAction) => {
     const graphState = state.graphs[action.graph];
     if (!graphState) return;
 
     const portDrag = graphState.portDrag;
     if (!portDrag) return;
 
-    portDrag.target = {
-        nodeId: action.node,
-        portId: action.port
-    };
+    portDrag.mouseX = action.mouseX;
+    portDrag.mouseY = action.mouseY;
 });
 
-const clearPortDragTarget = produce((state: GraphsState, action: ClearPortDragTargetAction) => {
+const handleEndPortDrag = produce((state: GraphsState, action: EndPortDragAction) => {
+    const graphState = state.graphs[action.graph];
+    if (!graphState) return;
+
+    const portDrag = graphState.portDrag;
+    if (!portDrag) return;
+
+    graphState.portDrag = undefined;
+    const target = portDrag.target;
+
+    if (target) {
+        createConnection(graphState.graph, portDrag.port, target);
+    }
+}); 
+
+const handleSetPortDragTarget = produce((state: GraphsState, action: SetPortDragTargetAction) => {
+    const graphState = state.graphs[action.graph];
+    if (!graphState) return;
+
+    const portDrag = graphState.portDrag;
+    if (!portDrag) return;
+
+    portDrag.target = action.port;
+});
+
+const handleUnsetPortDragTarget = produce((state: GraphsState, action: UnsetPortDragTargetAction) => {
     const graphState = state.graphs[action.graph];
     if (!graphState) return;
 
@@ -254,40 +295,59 @@ const clearPortDragTarget = produce((state: GraphsState, action: ClearPortDragTa
     if (!portDrag) return;
 
     const target = portDrag.target;
-    if (target && target.nodeId === action.node && target.portId === action.port) {
+    if (target && comparePortRefs(target, action.port)) {
         portDrag.target = undefined;
     }
 });
 
+const handleMountPort = produce((state: GraphsState, action: MountPortAction) => {
+    const graphState = state.graphs[action.graph];
+    if (!graphState) return;
+
+    const port = action.port;
+    const portKey = getPortKeyFromRef(port);
+
+    graphState.ports[portKey] = {
+        offsetX: action.xOff,
+        offsetY: action.yOff
+    };
+});
+
+const handleUnmountPort = produce((state: GraphsState, action: UnmountPortAction) => {
+    const graphState = state.graphs[action.graph];
+    if (!graphState) return;
+
+    const port = action.port;
+    const portKey = getPortKeyFromRef(port);
+    delete graphState.ports[portKey];
+});
+
 export default function(state: GraphsState = INIT_STATE, action: GraphAction): GraphsState {
     switch (action.type) {
-        case ActionType.START_PORT_DRAG:
-            return startPortDrag(state, action);
-
-        case ActionType.CLEAR_PORT_DRAG:
-            return clearPortDrag(state, action);
-
-        case ActionType.SET_PORT_DRAG_TARGET:
-            return setPortDragTarget(state, action);
-
-        case ActionType.CLEAR_PORT_DRAG_TARGET:
-            return clearPortDragTarget(state, action);
-
         case ActionType.REMOVE_NODE:
-            return removeNode(state, action);
-
-        case ActionType.SET_NODE_POSITION:
-            return setNodePosition(state, action);
-
+            return handleRemoveNode(state, action);
+        case ActionType.START_NODE_DRAG:
+            return handleStartNodeDrag(state, action);
+        case ActionType.UPDATE_NODE_DRAG:
+            return handleUpdateNodeDrag(state, action);
+        case ActionType.END_NODE_DRAG:
+            return handleEndNodeDrag(state, action);
+        case ActionType.START_PORT_DRAG:
+            return handleStartPortDrag(state, action);
+        case ActionType.UPDATE_PORT_DRAG:
+            return handleUpdatePortDrag(state, action);
+        case ActionType.END_PORT_DRAG:
+            return handleEndPortDrag(state, action);
+        case ActionType.SET_PORT_DRAG_TARGET:
+            return handleSetPortDragTarget(state, action);
+        case ActionType.UNSET_PORT_DRAG_TARGET:
+            return handleUnsetPortDragTarget(state, action);
+        case ActionType.MOUNT_PORT:
+            return handleMountPort(state, action);
+        case ActionType.UNMOUNT_PORT:
+            return handleUnmountPort(state, action);
         case ActionType.SET_NODE_FIELD_VALUE:
-            return setNodeFieldValue(state, action);
-
-        case ActionType.CLEAR_PORT_CONNECTIONS:
-            return clearPortConnections(state, action);
-
-        case ActionType.ADD_PORT_CONNECTION:
-            return addPortConnection(state, action);
-
+            return handleSetNodeFieldValue(state, action);  
         default:
             return state;
     }

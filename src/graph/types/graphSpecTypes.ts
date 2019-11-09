@@ -27,9 +27,9 @@ export type GraphNodeSpec = {
 
 export type GraphSpec = {
     nodes: {
-        [type: string]: GraphNodeSpec;
+        [type: string]: GraphNodeSpec | undefined;
     };
     inputs: {
-        [type: string]: GraphFieldInputSpec<any>;
+        [type: string]: GraphFieldInputSpec<any> | undefined;
     };
 }

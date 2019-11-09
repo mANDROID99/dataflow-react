@@ -14,7 +14,7 @@ type Drag = {
 }
 
 type DragOptions = {
-    onStart?: () => void;
+    onStart?: (dragStart: DragStart) => void;
     onEnd?: (drag: Drag) => void;
     onDrag?: (drag: Drag) => void;
 }
@@ -62,8 +62,14 @@ export function useDrag(opts?: DragOptions): (event: React.MouseEvent | MouseEve
     const startDrag = useCallback((event: React.MouseEvent | MouseEvent) => {
         if (event.button === 0) {
             event.stopPropagation();
-            optsRef.current?.onStart?.();
-            setDragStart({ startX: event.clientX, startY: event.clientY });
+
+            const startState: DragStart = {
+                startX: event.clientX,
+                startY: event.clientY
+            };
+            
+            optsRef.current?.onStart?.(startState);
+            setDragStart(startState);
         }
     }, []);
 

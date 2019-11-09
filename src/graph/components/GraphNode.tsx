@@ -1,49 +1,44 @@
-import React, { useContext, useState } from 'react';
-import { GraphNode } from '../../graph/types/graphTypes';
+import React, { useContext } from 'react';
+import { GraphNode } from '../types/graphTypes';
 import { graphContext } from './Graph';
 import GraphNodeHeader from './GraphNodeHeader';
 import GraphNodePorts from './GraphNodePorts';
 import { useDrag } from '../helpers/useDrag';
-import { useDispatch } from 'react-redux';
-import { setNodePosition } from '../graphActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { startNodeDrag, updateNodeDrag, endNodeDrag } from '../graphActions';
+import { selectNodeDrag } from '../selectors';
 
 type Props = {
     nodeId: string;
     graphNode: GraphNode;
 }
 
-type Drag = {
-    dx: number;
-    dy: number;
-}
-
 function GraphNodeComponent(props: Props): React.ReactElement {
-    const graphNode = props.graphNode;
-    const nodeId = props.nodeId;
-
-    const [drag, setDrag] = useState<Drag>();
-    const dispatch = useDispatch();
+    const { nodeId, graphNode } = props;
     const { graphId, spec } = useContext(graphContext);
+
+    const dispatch = useDispatch();
     const nodeSpec = spec.nodes[graphNode.type];
+    const drag = useSelector(selectNodeDrag(graphId));
 
     const startDrag = useDrag({
-        onDrag(drag) {
-            setDrag(drag);
+        onStart() {
+            dispatch(startNodeDrag(graphId, nodeId));
         },
-        onEnd(drag) {
-            const x = graphNode.x + drag.dx;
-            const y = graphNode.y + drag.dy;
-            setDrag(undefined);
-            dispatch(setNodePosition(graphId, nodeId, x, y));
+        onDrag(drag) {
+            dispatch(updateNodeDrag(graphId, drag.dx, drag.dy));
+        },
+        onEnd() {
+            dispatch(endNodeDrag(graphId));
         }
     });
 
     let x = graphNode.x;
     let y = graphNode.y;
 
-    if (drag) {
-        x += drag.dx;
-        y += drag.dy;
+    if (drag && drag.node === nodeId) {
+        x += drag.dragX;
+        y += drag.dragY;
     }
 
     return (
@@ -55,16 +50,12 @@ function GraphNodeComponent(props: Props): React.ReactElement {
                     portSpecs={nodeSpec?.ports.in ?? []}
                     portTargets={graphNode.ports.in}
                     portsOut={false}
-                    nodeX={x}
-                    nodeY={y}
                 />
                 <GraphNodePorts
                     nodeId={nodeId}
                     portSpecs={nodeSpec?.ports.out ?? []}
                     portTargets={graphNode.ports.out}
                     portsOut={true}
-                    nodeX={x}
-                    nodeY={y}
                 />
             </div>
         </div>
