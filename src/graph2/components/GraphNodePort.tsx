@@ -1,25 +1,63 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import classNames from 'classnames';
+
 import { GraphNodePortSpec } from '../types/graphSpecTypes';
 import { TargetPort } from '../types/graphTypes';
 import { graphContext } from './Graph';
-import classNames from 'classnames';
 import { useDrag } from '../helpers/useDrag';
+import { selectPortDrag } from '../selectors';
+import { startPortDrag, clearPortDrag, clearPortConnections, addPortConnection } from '../graphActions';
+import GraphNodePortOverlay from './GraphNodePortOverlay';
 
 type Props = {
     nodeId: string;
     nodeX: number;
     nodeY: number;
-    targets: TargetPort[] | undefined;
+    portTargets: TargetPort[] | undefined;
     portSpec: GraphNodePortSpec;
     portOut: boolean;
 }
 
+type DragState = {
+    x: number;
+    y: number;
+}
+
 function GraphNodePort(props: Props): React.ReactElement {
-    const { nodeId, nodeX, nodeY, portSpec, portOut, targets  } = props;
+    const { nodeId, nodeX, nodeY, portSpec, portOut, portTargets } = props;
     const portId = portSpec.name;
 
-    const { connections } = useContext(graphContext);
-    const [drag, beginDrag] = useDrag();
+    const { graphId, connections } = useContext(graphContext);
+    const portDrag = useSelector(selectPortDrag(graphId));
+    const dispatch = useDispatch();
+    const [drag, setDrag] = useState<DragState>();
+
+    // port drag behaviour
+    const beginDrag = useDrag({
+        onStart() {
+            // on port drag begin
+            dispatch(startPortDrag(graphId, nodeId, portId, portOut, portSpec.type));
+            if (!portOut) {
+                dispatch(clearPortConnections(graphId, nodeId, portId, portOut));
+            }
+        },
+        onDrag(drag) {
+            // on port drag updated
+            const x = drag.startX + drag.dx;
+            const y = drag.startY + drag.dy;
+            setDrag({ x, y });
+        },
+        onEnd() {
+            // on port drag ended
+            setDrag(undefined);
+            dispatch(clearPortDrag(graphId));
+            if (portDrag && portDrag.target) {
+                const target = portDrag.target;
+                dispatch(addPortConnection(graphId, nodeId, portId, portOut, target.nodeId, target.portId));
+            }
+        }
+    });
 
     function renderLabel(): React.ReactElement {
         return <div className="graph-node-port-label">{ portSpec.name }</div>;
@@ -42,9 +80,9 @@ function GraphNodePort(props: Props): React.ReactElement {
         if (el && connections) {
             const x = nodeX + el.offsetLeft;
             const y = nodeY + el.offsetTop;
-            connections.updatePort(nodeId, portId, portOut, x, y, targets);
+            connections.updatePort(nodeId, portId, portOut, x, y, portTargets);
         }
-    }, [nodeId, portId, portOut, nodeX, nodeY, targets, connections]);
+    }, [nodeId, portId, portOut, nodeX, nodeY, portTargets, connections]);
 
     // update the drag connection
     useEffect(() => {
@@ -53,9 +91,7 @@ function GraphNodePort(props: Props): React.ReactElement {
             if (drag) {
                 const sx = nodeX + el.offsetLeft;
                 const sy = nodeY + el.offsetTop;
-                const ex = drag.startX + drag.dx;
-                const ey = drag.startY + drag.dy;
-                connections.setDragConnection(sx, sy, ex, ey);
+                connections.setDragConnection(sx, sy, drag.x, drag.y);
             } else {
                 connections.clearDragConnection();
             }
@@ -67,6 +103,15 @@ function GraphNodePort(props: Props): React.ReactElement {
             {portOut ? renderLabel() : undefined}
             <div ref={portConnector} className="graph-node-port-wrap-connector">
                 <div className="graph-node-port-connector" onMouseDown={beginDrag}/>
+                <GraphNodePortOverlay
+                    graphId={graphId}
+                    nodeId={nodeId}
+                    portId={portId}
+                    portType={portSpec.type}
+                    portOut={portOut}
+                    portDrag={portDrag}
+                    portTargets={portTargets}
+                />
             </div>
             {portOut ? undefined : renderLabel()}
         </div>

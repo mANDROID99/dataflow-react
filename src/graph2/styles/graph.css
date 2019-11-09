@@ -26,6 +26,11 @@
     position: absolute;
 }
 
+.graph-node * {
+    user-select: none;
+    pointer-events: none;
+}
+
 .graph-node-header {
     display: flex;
     height: 30px;
@@ -43,6 +48,9 @@
     width: 20px;
     justify-content: center;
     align-content: center;
+
+    user-select: initial;
+    pointer-events: all;
 }
 
 .graph-node-body {
@@ -89,6 +97,23 @@
     position: absolute;
     left: -5px;
     top: -5px;
+
+    user-select: initial;
+    pointer-events: all;
+}
+
+.graph-node-port-overlay {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-color: #ffa50087;
+    border-radius: 10px;
+    position: absolute;
+    left: -10px;
+    top: -10px;
+
+    user-select: initial;
+    pointer-events: all;
 }
 
 .graph-node-header-close-icon * {

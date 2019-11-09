@@ -5,6 +5,8 @@ import { GraphNodeSpec } from '../types/graphSpecTypes';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { graphContext } from './Graph';
+import { useDispatch } from 'react-redux';
+import { removeNode } from '../graphActions';
 library.add(faTimes);
 
 type Props = {
@@ -17,12 +19,12 @@ const TITLE_UNKNOWN = 'Unknown';
 function GraphNodeHeader(props: Props): React.ReactElement {
     const nodeId = props.nodeId;
     
-    const { actions } = useContext(graphContext);
-    const removeNode = actions.removeNode;
+    const { graphId } = useContext(graphContext);
+    const dispatch = useDispatch();
 
     const handleRemove = useCallback(() => {
-        removeNode(nodeId);
-    }, [removeNode, nodeId]);
+        dispatch(removeNode(graphId, nodeId));
+    }, [dispatch, graphId, nodeId]);
 
     return (
         <div className="graph-node-header">

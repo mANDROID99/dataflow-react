@@ -25,7 +25,7 @@ function GraphNodePorts(props: Props): React.ReactElement {
                 return (
                     <GraphNodePort
                         key={portSpec.name}
-                        targets={targets}
+                        portTargets={targets}
                         nodeId={nodeId}
                         portSpec={portSpec}
                         portOut={portsOut}

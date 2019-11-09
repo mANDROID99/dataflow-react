@@ -1,9 +1,49 @@
 export enum ActionType {
+    START_PORT_DRAG = 'node-graph.START_PORT_DRAG',
+    CLEAR_PORT_DRAG = 'node-graph.CLEAR_PORT_DRAG',
+    SET_PORT_DRAG_TARGET = 'node-graph.SET_PORT_DRAG_TARGET',
+    CLEAR_PORT_DRAG_TARGET = 'node-graph.CLEAR_PORT_DRAG_TARGET',
     REMOVE_NODE = 'node-graph.REMOVE_NODE',
     SET_NODE_POSITION = 'node-graph.SET_NODE_POSITION',
     SET_NODE_FIELD_VALUE = 'node-graph.SET_NODE_FIELD_VALUE',
     CLEAR_PORT_CONNECTIONS = 'node-graph.CLEAR_PORT_CONNECTIONS',
     ADD_PORT_CONNECTION = 'node-graph.ADD_PORT_CONNECTION'
+}
+
+export function startPortDrag(graph: string, node: string, port: string, portOut: boolean, portType: string): StartPortDragAction {
+    return {
+        type: ActionType.START_PORT_DRAG,
+        graph,
+        node,
+        port,
+        portOut,
+        portType
+    };
+}
+
+export function clearPortDrag(graph: string): ClearPortDragAction {
+    return {
+        type: ActionType.CLEAR_PORT_DRAG,
+        graph
+    };
+}
+
+export function setPortDragTarget(graph: string, node: string, port: string): SetPortDragTargetAction {
+    return {
+        type: ActionType.SET_PORT_DRAG_TARGET,
+        graph,
+        node,
+        port
+    };
+}
+
+export function clearPortDragTarget(graph: string, node: string, port: string): ClearPortDragTargetAction {
+    return {
+        type: ActionType.CLEAR_PORT_DRAG_TARGET,
+        graph,
+        node,
+        port
+    };
 }
 
 export function removeNode(graph: string, node: string): RemoveNodeAction {
@@ -56,6 +96,34 @@ export function addPortConnection(graph: string, node: string, port: string, por
     };
 }
 
+export type SetPortDragTargetAction = {
+    type: ActionType.SET_PORT_DRAG_TARGET;
+    graph: string;
+    node: string;
+    port: string;
+}
+
+export type ClearPortDragTargetAction = {
+    type: ActionType.CLEAR_PORT_DRAG_TARGET;
+    graph: string;
+    node: string;
+    port: string;
+}
+
+export type StartPortDragAction = {
+    type: ActionType.START_PORT_DRAG;
+    graph: string;
+    node: string;
+    port: string;
+    portOut: boolean;
+    portType: string;
+}
+
+export type ClearPortDragAction = {
+    type: ActionType.CLEAR_PORT_DRAG;
+    graph: string;
+}
+
 export type RemoveNodeAction = {
     type: ActionType.REMOVE_NODE;
     graph: string;
@@ -97,6 +165,10 @@ export type AddPortConnectionAction = {
 }
 
 export type GraphAction =
+    | SetPortDragTargetAction
+    | ClearPortDragTargetAction
+    | StartPortDragAction
+    | ClearPortDragAction
     | RemoveNodeAction
     | SetNodePositionAction 
     | setNodeFieldValueAction 

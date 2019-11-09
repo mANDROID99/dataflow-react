@@ -1,27 +1,40 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { GraphNode } from '../../graph/types/graphTypes';
 import { graphContext } from './Graph';
 import GraphNodeHeader from './GraphNodeHeader';
 import GraphNodePorts from './GraphNodePorts';
 import { useDrag } from '../helpers/useDrag';
+import { useDispatch } from 'react-redux';
+import { setNodePosition } from '../graphActions';
 
 type Props = {
     nodeId: string;
     graphNode: GraphNode;
 }
 
+type Drag = {
+    dx: number;
+    dy: number;
+}
+
 function GraphNodeComponent(props: Props): React.ReactElement {
     const graphNode = props.graphNode;
     const nodeId = props.nodeId;
 
-    const { actions, spec } = useContext(graphContext);
+    const [drag, setDrag] = useState<Drag>();
+    const dispatch = useDispatch();
+    const { graphId, spec } = useContext(graphContext);
     const nodeSpec = spec.nodes[graphNode.type];
 
-    const [drag, startDrag] = useDrag({
-        onEnd(dx, dy) {
-            const x = graphNode.x + dx;
-            const y = graphNode.y + dy;
-            actions.setNodePosition(nodeId, x, y);
+    const startDrag = useDrag({
+        onDrag(drag) {
+            setDrag(drag);
+        },
+        onEnd(drag) {
+            const x = graphNode.x + drag.dx;
+            const y = graphNode.y + drag.dy;
+            setDrag(undefined);
+            dispatch(setNodePosition(graphId, nodeId, x, y));
         }
     });
 

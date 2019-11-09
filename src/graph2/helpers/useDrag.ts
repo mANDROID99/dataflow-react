@@ -14,12 +14,13 @@ type Drag = {
 }
 
 type DragOptions = {
-    onEnd?: (dx: number, dy: number) => void;
+    onStart?: () => void;
+    onEnd?: (drag: Drag) => void;
+    onDrag?: (drag: Drag) => void;
 }
 
-export function useDrag(opts?: DragOptions): [Drag | undefined, (event: React.MouseEvent | MouseEvent) => void] {
+export function useDrag(opts?: DragOptions): (event: React.MouseEvent | MouseEvent) => void {
     const [dragStart, setDragStart] = useState<DragStart>();
-    const [drag, setDrag] = useState<Drag>();
 
     const optsRef = useRef(opts);
     optsRef.current = opts;
@@ -35,17 +36,18 @@ export function useDrag(opts?: DragOptions): [Drag | undefined, (event: React.Mo
         function onDrag(event: MouseEvent): void {
             const dx = event.clientX - startX;
             const dy = event.clientY - startY;
-            setDrag({ startX, startY, dx, dy });
+            optsRef.current?.onDrag?.({ startX, startY, dx, dy });
         }
 
         function onDragEnd(event: MouseEvent): void {
-            const dx = event.clientX - startX;
-            const dy = event.clientY - startY;
-            batch(() => {
-                optsRef.current?.onEnd?.(dx, dy);
-                setDrag(undefined);
-                setDragStart(undefined);
-            });
+            if (event.button === 0) {
+                const dx = event.clientX - startX;
+                const dy = event.clientY - startY;
+                batch(() => {
+                    optsRef.current?.onEnd?.({ startX, startY, dx, dy });
+                    setDragStart(undefined);
+                });
+            }
         }
 
         window.addEventListener('mousemove', onDrag);
@@ -60,9 +62,10 @@ export function useDrag(opts?: DragOptions): [Drag | undefined, (event: React.Mo
     const startDrag = useCallback((event: React.MouseEvent | MouseEvent) => {
         if (event.button === 0) {
             event.stopPropagation();
+            optsRef.current?.onStart?.();
             setDragStart({ startX: event.clientX, startY: event.clientY });
         }
     }, []);
 
-    return [drag, startDrag];
+    return startDrag;
 }

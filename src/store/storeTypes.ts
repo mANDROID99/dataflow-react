@@ -1,21 +1,27 @@
 import { Graph } from "../graph/types/graphTypes";
 
-export type DraggedNode = {
-    node: string;
+export type PortDragTarget = {
+    nodeId: string;
+    portId: string;
 }
 
-export type DraggedPort = {
-    node: string;
-    port: string;
-    out: boolean;
+export type PortDrag = {
+    nodeId: string;
+    portId: string;
+    portOut: boolean;
+    portType: string;
+    target?: PortDragTarget;
 }
 
 export type GraphState = {
+    graph: Graph;
+    portDrag?: PortDrag;
+}
+
+export type GraphsState = {
     graphs: {
-        [graphId: string]: Graph;
+        [graphId: string]: GraphState | undefined;
     };
-    dragPort?: DraggedPort;
-    dragNode?: DraggedNode;
 }
 
 export type PortState = {
@@ -25,5 +31,5 @@ export type PortState = {
 }
 
 export type StoreState = {
-    graph: GraphState;
+    graph: GraphsState;
 }

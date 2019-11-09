@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GraphSpec } from '../types/graphSpecTypes';
 import { GraphActions } from '../types/graphEditorTypes';
 import { StoreState } from '../../store/storeTypes';
-import { removeNode, setNodePosition, setNodeFieldValue, clearPortConnections, addPortConnection } from '../../store/graphActions';
+import { removeNode, setNodePosition, setNodeFieldValue, clearPortConnections, addPortConnection } from '../../graph2/graphActions';
 import { GraphEditor } from '../editor/GraphEditor';
 
 type Props = {
@@ -21,7 +21,7 @@ type EditorWithDeps = {
 export default function GraphComponent({ graphId, spec }: Props): JSX.Element {
     const elRef = useRef<SVGSVGElement>(null);
     const editorRef = useRef<EditorWithDeps>();
-    const graph = useSelector((state: StoreState) => state.graph.graphs[graphId]);
+    const graph = useSelector((state: StoreState) => state.graph.graphs[graphId]!.graph);
 
     const dispatch = useDispatch();
     const actions = useMemo((): GraphActions => {
