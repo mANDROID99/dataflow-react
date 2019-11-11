@@ -16,7 +16,7 @@ const INIT_GRAPH: Graph = {
             ports: {
                 in: {},
                 out: {
-                    rows: [{
+                    group: [{
                         node: 'sum',
                         port: 'in'
                     }]
@@ -34,7 +34,7 @@ const INIT_GRAPH: Graph = {
                 in: {
                     in: [{
                         node: 'groupBy',
-                        port: 'rows'
+                        port: 'group'
                     }]
                 },
                 out: {}

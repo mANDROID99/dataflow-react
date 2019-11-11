@@ -8,6 +8,7 @@ import '@fortawesome/fontawesome-free';
 
 import './styles/app.css';
 import './graph/styles/graph.css';
+import './graph/styles/contextmenu.css';
 
 const App: React.FC = () => {
   return (

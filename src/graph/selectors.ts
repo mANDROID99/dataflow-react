@@ -1,10 +1,8 @@
 import { StoreState, PortDrag, NodeDrag, GraphState } from "../store/storeTypes";
 import { GraphNode } from "./types/graphTypes";
 
-export function selectPortDrag(graphId: string) {
-    return (state: StoreState): PortDrag | undefined => {
-        return state.graph.graphs[graphId]?.portDrag;
-    };
+export function selectPortDrag(state: StoreState, graphId: string): PortDrag | undefined {
+    return state.graph.graphs[graphId]?.portDrag;
 }
 
 export function selectGraphState(graphId: string) {

@@ -12,8 +12,8 @@ const group: GraphNodeSpec = {
             { name: 'in', type: 'row' }
         ],
         out: [
-            { name: 'group', type: 'scalar' },
-            { name: 'rows', type: 'row[]' }
+            { name: 'name', type: 'scalar' },
+            { name: 'group', type: 'row[]' }
         ]
     }
 };

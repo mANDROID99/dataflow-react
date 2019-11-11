@@ -1,7 +1,9 @@
 
 .graph {
     --bg-color: #151515;
-    --bg-color-node: #707070;
+    --bg-color-node: #6c6c6ccc;
+    --color-lighter: #d7d7d7;
+    --color-light: #cccccc;
     background-color: var(--bg-color);
     font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 12px;
@@ -32,14 +34,21 @@
 }
 
 .graph-node-header {
+    color: var(--color-lighter);
     display: flex;
     height: 30px;
     align-items: center;
+    background-color: #3a3a3a;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    margin-bottom: 5px;
+    font-size: 1.1em;
 }
 
 .graph-node-header-title {
-    user-select: none;
-    pointer-events: none;
+    margin-left: 20px;
+    text-align: center;
+    flex-grow: 1;
 }
 
 .graph-node-header-close-icon {
@@ -59,6 +68,7 @@
 
 .graph-node-port {
     display: flex;
+    margin: 3px 0;
 }
 
 .graph-node-ports {
@@ -92,14 +102,26 @@
     cursor: pointer;
     width: 10px;
     height: 10px;
-    background-color: black;
+    background-color: #959595;
     border-radius: 10px;
     position: absolute;
     left: -5px;
     top: -5px;
-
     user-select: initial;
     pointer-events: all;
+}
+
+.graph-node-field-label {
+    margin: 3px 0;
+    color: var(--color-light);
+}
+
+.graph-node-port.connected .graph-node-port-label {
+    color: var(--color-light);
+}
+
+.graph-node-port.connected .graph-node-port-connector {
+    background-color: #b8b8b8;
 }
 
 .graph-node-port-overlay {
@@ -116,6 +138,10 @@
     pointer-events: all;
 }
 
+.graph-node-port-label {
+    margin: 0 3px;
+}
+
 .graph-node-header-close-icon * {
     position: abs;
 }
@@ -128,7 +154,20 @@
     stroke: orange;
 }
 
+.graph-node-fields {
+    margin: 0 5px;
+}
+
+.graph-node-field {
+    margin-bottom: 5px;
+}
+
+.graph-node-field-label {
+    margin-bottom: 3px;
+}
+
 .graph-node-field-input * {
     user-select: all;
     pointer-events: initial;
 }
+

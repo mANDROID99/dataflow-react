@@ -3,28 +3,27 @@ import { TargetPort } from "../types/graphTypes";
 
 export function comparePortRefs(left: PortRef, right: PortRef): boolean {
     return left.nodeId === right.nodeId
-        && left.portType === right.portId
+        && left.portId === right.portId
         && left.portOut === right.portOut;
 }
 
 
-export function isPortConnectable(portDrag: PortDrag | undefined, portTargets: TargetPort[] | undefined, portRef: PortRef): boolean {
-    if (!portDrag) {
+export function isPortConnectable(dragPort: PortRef | undefined, portTargets: TargetPort[] | undefined, portRef: PortRef): boolean {
+    if (!dragPort) {
         return false;
     } 
     
-    const port = portDrag.port;
     if (portTargets) {
         for (const target of portTargets) {
-            if (target.node === port.nodeId && target.port === port.portId) {
+            if (target.node === dragPort.nodeId && target.port === dragPort.portId) {
                 return false;
             }
         }
     }
 
-    return port.nodeId !== portRef.nodeId
-        && port.portOut !== portRef.portOut
-        && port.portType === portRef.portType;
+    return dragPort.nodeId !== portRef.nodeId
+        && dragPort.portOut !== portRef.portOut
+        && dragPort.portType === portRef.portType;
 }
 
 export function getPortKey(nodeId: string, portId: string, portOut: boolean): string {
