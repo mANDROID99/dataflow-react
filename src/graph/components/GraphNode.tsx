@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { GraphNode } from '../types/graphTypes';
 import { graphContext } from './Graph';
 import GraphNodeHeader from './GraphNodeHeader';
@@ -7,6 +7,7 @@ import { useDrag } from '../helpers/useDrag';
 import { useDispatch, useSelector } from 'react-redux';
 import { startNodeDrag, updateNodeDrag, endNodeDrag } from '../graphActions';
 import { selectNodeDrag } from '../selectors';
+import GraphNodeFields from './GraphNodeFields';
 
 type Props = {
     nodeId: string;
@@ -21,7 +22,8 @@ function GraphNodeComponent(props: Props): React.ReactElement {
     const nodeSpec = spec.nodes[graphNode.type];
     const drag = useSelector(selectNodeDrag(graphId));
 
-    const startDrag = useDrag({
+    const elRef = useRef<HTMLDivElement>(null);
+    useDrag(elRef, {
         onStart() {
             dispatch(startNodeDrag(graphId, nodeId));
         },
@@ -42,7 +44,7 @@ function GraphNodeComponent(props: Props): React.ReactElement {
     }
 
     return (
-        <div className="graph-node" onMouseDown={startDrag} style={{ left: x, top: y }}>
+        <div className="graph-node" ref={elRef} style={{ left: x, top: y }}>
             <GraphNodeHeader spec={nodeSpec} nodeId={nodeId}/>
             <div className="graph-node-body">
                 <GraphNodePorts
@@ -50,6 +52,11 @@ function GraphNodeComponent(props: Props): React.ReactElement {
                     portSpecs={nodeSpec?.ports.in ?? []}
                     portTargets={graphNode.ports.in}
                     portsOut={false}
+                />
+                <GraphNodeFields
+                    nodeId={nodeId}
+                    fieldSpecs={nodeSpec?.fields}
+                    fields={graphNode.fields}
                 />
                 <GraphNodePorts
                     nodeId={nodeId}

@@ -34,7 +34,10 @@ function GraphNodePort(props: Props): React.ReactElement {
         portType
     }), [nodeId, portId, portOut, portType]);
 
-    const beginDrag = useDrag({
+    const wrapPortElRef = useRef<HTMLDivElement>(null);
+    const portElRef = useRef<HTMLDivElement>(null);
+
+    useDrag(portElRef, {
         onStart(drag) {
             dispatch(startPortDrag(graphId, portRef, drag.startX, drag.startY));
         },
@@ -49,9 +52,8 @@ function GraphNodePort(props: Props): React.ReactElement {
     });
 
     // mount / unmount the port
-    const portElRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
-        const el = portElRef.current;
+        const el = wrapPortElRef.current;
         if (el) {
             const xOff = el.offsetLeft;
             const yOff = el.offsetTop;
@@ -87,8 +89,8 @@ function GraphNodePort(props: Props): React.ReactElement {
     return (
         <div className={classNames("graph-node-port", { out: portOut, target: isDragTarget })}>
             {portOut ? renderLabel() : undefined}
-            <div ref={portElRef} className="graph-node-port-wrap-connector">
-                <div className="graph-node-port-connector" onMouseDown={beginDrag}/>
+            <div ref={wrapPortElRef} className="graph-node-port-wrap-connector">
+                <div ref={portElRef} className="graph-node-port-connector"/>
                 { isConnectable ? (
                     <div className="graph-node-port-overlay" onMouseOver={onEnter} onMouseOut={onExit}/>
                 ) : undefined }

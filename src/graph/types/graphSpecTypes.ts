@@ -1,5 +1,7 @@
-export type GraphFieldInputSpec<T> = {
-    // component: React.ComponentType<GraphFieldInputProps<T>>
+import { GraphFieldInputProps } from "./graphInputTypes";
+
+export type GraphNodeInputSpec = {
+    component: React.ComponentType<GraphFieldInputProps>;
 }
 
 export type GraphNodeFieldSpec = {
@@ -30,6 +32,6 @@ export type GraphSpec = {
         [type: string]: GraphNodeSpec | undefined;
     };
     inputs: {
-        [type: string]: GraphFieldInputSpec<any> | undefined;
+        [type: string]: GraphNodeInputSpec | undefined;
     };
 }

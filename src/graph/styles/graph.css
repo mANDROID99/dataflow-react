@@ -127,3 +127,8 @@
 .graph-drag-connection {
     stroke: orange;
 }
+
+.graph-node-field-input * {
+    user-select: all;
+    pointer-events: initial;
+}

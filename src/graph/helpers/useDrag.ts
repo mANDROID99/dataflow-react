@@ -19,7 +19,7 @@ type DragOptions = {
     onDrag?: (drag: Drag) => void;
 }
 
-export function useDrag(opts?: DragOptions): (event: React.MouseEvent | MouseEvent) => void {
+export function useDrag(ref: React.RefObject<HTMLElement>, opts?: DragOptions): void {
     const [dragStart, setDragStart] = useState<DragStart>();
 
     const optsRef = useRef(opts);
@@ -59,19 +59,27 @@ export function useDrag(opts?: DragOptions): (event: React.MouseEvent | MouseEve
         };
     }, [dragStart]);
 
-    const startDrag = useCallback((event: React.MouseEvent | MouseEvent) => {
-        if (event.button === 0) {
-            event.stopPropagation();
+    useEffect(() => {
+        const el = ref.current;
+        if (el == null) return;
 
-            const startState: DragStart = {
-                startX: event.clientX,
-                startY: event.clientY
-            };
-            
-            optsRef.current?.onStart?.(startState);
-            setDragStart(startState);
-        }
-    }, []);
+        const startDrag = (event: React.MouseEvent | MouseEvent): void => {
+            if (event.button === 0 && el === event.target) {
+                event.stopPropagation();
+    
+                const startState: DragStart = {
+                    startX: event.clientX,
+                    startY: event.clientY
+                };
+                
+                optsRef.current?.onStart?.(startState);
+                setDragStart(startState);
+            }
+        };
 
-    return startDrag;
+        el.addEventListener('mousedown', startDrag);
+        return (): void => {
+            el.removeEventListener('mousedown', startDrag);
+        };
+    }, [ref]);
 }

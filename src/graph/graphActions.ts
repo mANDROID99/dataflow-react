@@ -180,7 +180,7 @@ export type RemoveNodeAction = {
     node: string;
 }
 
-export function setNodeFieldValue(graph: string, node: string, field: string, value: unknown): setNodeFieldValueAction {
+export function setFieldValue(graph: string, node: string, field: string, value: unknown): setFieldValueAction {
     return {
         type: ActionType.SET_NODE_FIELD_VALUE,
         graph,
@@ -190,7 +190,7 @@ export function setNodeFieldValue(graph: string, node: string, field: string, va
     };
 }
 
-export type setNodeFieldValueAction = {
+export type setFieldValueAction = {
     type: ActionType.SET_NODE_FIELD_VALUE;
     graph: string;
     node: string;
@@ -210,4 +210,4 @@ export type GraphAction =
     | UnsetPortDragTargetAction
     | MountPortAction
     | UnmountPortAction
-    | setNodeFieldValueAction
+    | setFieldValueAction
