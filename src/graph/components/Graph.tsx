@@ -7,6 +7,7 @@ import { GraphContext } from '../types/graphEditorTypes';
 import GraphNodeComponent from './GraphNode';
 import { selectGraphNodes } from '../selectors';
 import GraphSVG from './GraphSVG';
+import Menu from './menu/Menu';
 
 type Props = {
     graphId: string;
@@ -26,30 +27,20 @@ export default function GraphComponent(props: Props): React.ReactElement {
         };
     }, [graphId, spec]);
 
-    const contextMenuId = "graph-menu-" + graphId;
     return (
         <graphContext.Provider value={context}>
             <div className="graph">
                 <GraphSVG graphId={graphId}/>
-                <ContextMenuTrigger id={contextMenuId}>
-                    <div className="graph-nodes">
-                        {(graphNodes ? Object.keys(graphNodes) : []).map(nodeId => (
-                            <GraphNodeComponent
-                                key={nodeId}
-                                nodeId={nodeId}
-                                graphNode={graphNodes![nodeId]}
-                            />
-                        ))}
-                    </div>
-                </ContextMenuTrigger>
-                <ContextMenu id={contextMenuId}>
-                    <MenuItem>Grid</MenuItem>
-                    <MenuItem divider/>
-                    <MenuItem>Group By</MenuItem>
-                    <MenuItem>Sum</MenuItem>
-                    <MenuItem divider/>
-                    <MenuItem>Column</MenuItem>
-                </ContextMenu>
+                <div className="graph-nodes">
+                    {(graphNodes ? Object.keys(graphNodes) : []).map(nodeId => (
+                        <GraphNodeComponent
+                            key={nodeId}
+                            nodeId={nodeId}
+                            graphNode={graphNodes![nodeId]}
+                        />
+                    ))}
+                </div>
+                <Menu/>
             </div>
         </graphContext.Provider>
     );

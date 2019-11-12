@@ -4,6 +4,8 @@
     --bg-color-node: #6c6c6ccc;
     --color-lighter: #d7d7d7;
     --color-light: #cccccc;
+    --color-menu-outline: #a2a2a2;
+    --color-alt: #ff7d0e;
     background-color: var(--bg-color);
     font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 12px;
@@ -128,7 +130,7 @@
     cursor: pointer;
     width: 20px;
     height: 20px;
-    background-color: #ffa50087;
+    background-color: #ff7d0080;
     border-radius: 10px;
     position: absolute;
     left: -10px;
@@ -147,11 +149,11 @@
 }
 
 .graph-connection {
-    stroke: orange;
+    stroke: var(--color-alt);
 }
 
 .graph-drag-connection {
-    stroke: orange;
+    stroke: var(--color-alt);
 }
 
 .graph-node-fields {
