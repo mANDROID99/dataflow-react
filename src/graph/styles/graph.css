@@ -36,12 +36,11 @@
 .graph-node-header {
     color: var(--color-lighter);
     display: flex;
-    height: 30px;
     align-items: center;
     background-color: #3a3a3a;
     border-top-right-radius: 6px;
     border-top-left-radius: 6px;
-    margin-bottom: 5px;
+    padding: 7px 10px;
     font-size: 1.1em;
 }
 
@@ -54,16 +53,15 @@
 .graph-node-header-close-icon {
     cursor: pointer;
     display: flex;
-    width: 20px;
     justify-content: center;
     align-content: center;
-
     user-select: initial;
     pointer-events: all;
 }
 
 .graph-node-body {
     display: flex;
+    padding: 10px 0;
 }
 
 .graph-node-port {
@@ -74,6 +72,8 @@
 .graph-node-ports {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    margin-bottom: 25px;
 }
 
 .graph-node-ports.out {
@@ -100,13 +100,13 @@
 
 .graph-node-port-connector {
     cursor: pointer;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background-color: #959595;
     border-radius: 10px;
     position: absolute;
-    left: -5px;
-    top: -5px;
+    left: -6px;
+    top: -6px;
     user-select: initial;
     pointer-events: all;
 }
@@ -139,7 +139,7 @@
 }
 
 .graph-node-port-label {
-    margin: 0 3px;
+    margin: 0 5px;
 }
 
 .graph-node-header-close-icon * {
@@ -158,8 +158,8 @@
     margin: 0 5px;
 }
 
-.graph-node-field {
-    margin-bottom: 5px;
+.graph-node-field:not(:last-child) {
+    margin-bottom: 10px;
 }
 
 .graph-node-field-label {
@@ -171,3 +171,6 @@
     pointer-events: initial;
 }
 
+.text-input {
+    width: 120px;
+}

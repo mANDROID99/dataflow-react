@@ -5,7 +5,8 @@ const group: GraphNodeSpec = {
     title: 'Group',
     width: 0,
     fields: [
-        { label: 'Column', name: 'column', type: 'text' }
+        { label: 'Column', name: 'column', type: 'text' },
+        { label: 'Test', name: 'test', type: 'text' }
     ],
     ports: {
         in: [
