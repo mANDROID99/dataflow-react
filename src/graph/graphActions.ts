@@ -1,6 +1,9 @@
 import { PortRef } from "../store/storeTypes";
+import { GraphNode } from "./types/graphTypes";
 
 export enum ActionType {
+    CREATE_NODE = 'node-graph.ADD_NODE',
+    REMOVE_NODE = 'node-graph.REMOVE_NODE',
     START_NODE_DRAG = 'node-graph.START_NODE_DRAG',
     UPDATE_NODE_DRAG = 'node-graph.UPDATE_NODE_DRAG',
     END_NODE_DRAG = 'node-graph.END_NODE_DRAG',
@@ -11,8 +14,35 @@ export enum ActionType {
     UNMOUNT_PORT = 'node-graph.UNMOUNT_PORT',
     SET_PORT_DRAG_TARGET = 'node-graph.SET_PORT_DRAG_TARGET',
     UNSET_PORT_DRAG_TARGET = 'node-graph.UNSET_PORT_DRAG_TARGET',
-    REMOVE_NODE = 'node-graph.REMOVE_NODE',
     SET_NODE_FIELD_VALUE = 'node-graph.SET_NODE_FIELD_VALUE'
+}
+
+export function createNode(graph: string, node: GraphNode): CreateNodeAction {
+    return {
+        type: ActionType.CREATE_NODE,
+        graph,
+        node
+    };
+}
+
+export type CreateNodeAction = {
+    type: ActionType.CREATE_NODE;
+    graph: string;
+    node: GraphNode;
+}
+
+export function removeNode(graph: string, node: string): RemoveNodeAction {
+    return {
+        type: ActionType.REMOVE_NODE,
+        graph,
+        node
+    };
+}
+
+export type RemoveNodeAction = {
+    type: ActionType.REMOVE_NODE;
+    graph: string;
+    node: string;
 }
 
 export function startNodeDrag(graph: string, node: string): StartNodeDragAction {
@@ -166,20 +196,6 @@ export type UnsetPortDragTargetAction = {
     port: PortRef;
 }
 
-export function removeNode(graph: string, node: string): RemoveNodeAction {
-    return {
-        type: ActionType.REMOVE_NODE,
-        graph,
-        node
-    };
-}
-
-export type RemoveNodeAction = {
-    type: ActionType.REMOVE_NODE;
-    graph: string;
-    node: string;
-}
-
 export function setFieldValue(graph: string, node: string, field: string, value: unknown): setFieldValueAction {
     return {
         type: ActionType.SET_NODE_FIELD_VALUE,
@@ -199,6 +215,7 @@ export type setFieldValueAction = {
 }
 
 export type GraphAction =
+    | CreateNodeAction
     | RemoveNodeAction
     | StartPortDragAction
     | UpdatePortDragAction

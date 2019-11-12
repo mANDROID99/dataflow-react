@@ -3,14 +3,16 @@ import { inputs } from "./graph/components/input/standardInputs";
 
 const group: GraphNodeSpec = {
     title: 'Group',
-    width: 0,
+    menu: {
+        label: 'Group',
+        group: 'Transform'
+    },
     fields: [
-        { label: 'Column', name: 'column', type: 'text' },
-        { label: 'Test', name: 'test', type: 'text' }
+        { label: 'Column', name: 'column', type: 'text' }
     ],
     ports: {
         in: [
-            { name: 'in', type: 'row' }
+            { name: 'in', type: 'row[]' }
         ],
         out: [
             { name: 'name', type: 'scalar' },
@@ -21,7 +23,10 @@ const group: GraphNodeSpec = {
 
 const sum: GraphNodeSpec = {
     title: 'Sum',
-    width: 150,
+    menu: {
+        label: 'Sum',
+        group: 'Transform'
+    },
     fields: [
         { label: 'Column', name: 'column', type: 'text' }
     ],

@@ -1,44 +1,20 @@
-.graph-menu {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1;
-}
-
-.graph-menu-item {
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--color-menu-outline);
-    display: flex;
-    color: var(--color-menu-outline);
-    cursor: pointer;
-    padding: 7px 10px;
-    position: relative;
-    transition-property: color, border;
-    transition-duration: 0.5s;
-}
-
-.graph-menu-item:hover {
-    border-color: var(--color-alt);
-    color: var(--color-alt);
-}
-
-.graph-menu-dropdown {
-    border: 1px solid var(--color-menu-outline);
-    top: 5px;
-    right: 0;
-    padding: 5px;
-    position: absolute;
+.fade-down {
+    opacity: 0;
+    transform: translate(0, -20px);
     transition-property: opacity, transform;
     transition-duration: 0.5s;
-    transform: translate(0, 0);
-    opacity: 0;
 }
 
-.graph-menu-dropdown.hidden {
-    visibility: hidden;
-}
-
-.graph-menu-dropdown.in {
+.fade-down.in {
     opacity: 1;
-    transform: translate(0, 30px);
+    transform: translate(0, 0);
+}
+
+.overlay {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    top: 0;
+    left: 0;
 }

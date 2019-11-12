@@ -8,6 +8,7 @@ export type GraphNodeFieldSpec = {
     name: string;
     label: string;
     type: string;
+    initialValue?: unknown;
 }
 
 export type GraphNodePortSpec = {
@@ -20,8 +21,13 @@ export type GraphNodePortsSpec = {
     out: GraphNodePortSpec[];
 }
 
+export type GraphNodeMenuEntry = {
+    label: string;
+    group?: string;
+}
+
 export type GraphNodeSpec = {
-    width: number;
+    menu: GraphNodeMenuEntry;
     title: string;
     fields: GraphNodeFieldSpec[];
     ports: GraphNodePortsSpec;

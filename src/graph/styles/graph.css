@@ -4,8 +4,8 @@
     --bg-color-node: #6c6c6ccc;
     --color-lighter: #d7d7d7;
     --color-light: #cccccc;
-    --color-menu-outline: #a2a2a2;
-    --color-alt: #ff7d0e;
+    --color-dark: #2d2d2d;
+    --color-alt: #578fd5;
     background-color: var(--bg-color);
     font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 12px;
@@ -25,6 +25,7 @@
 .graph-node {
     background-color: var(--bg-color-node);
     border-radius: 7px;
+    border: 1px solid #7b7b7b;
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -63,7 +64,7 @@
 
 .graph-node-body {
     display: flex;
-    padding: 10px 0;
+    padding: 7px 0;
 }
 
 .graph-node-port {
@@ -75,7 +76,6 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-bottom: 25px;
 }
 
 .graph-node-ports.out {
@@ -114,7 +114,6 @@
 }
 
 .graph-node-field-label {
-    margin: 3px 0;
     color: var(--color-light);
 }
 

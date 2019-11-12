@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { Graph, TargetPort } from '../graph/types/graphTypes';
-import { GraphAction, ActionType, setFieldValueAction, RemoveNodeAction, StartPortDragAction, SetPortDragTargetAction, UnsetPortDragTargetAction, UpdatePortDragAction, EndPortDragAction, StartNodeDragAction, UpdateNodeDragAction, EndNodeDragAction, MountPortAction, UnmountPortAction } from "../graph/graphActions";
+import { GraphAction, ActionType, setFieldValueAction, RemoveNodeAction, StartPortDragAction, SetPortDragTargetAction, UnsetPortDragTargetAction, UpdatePortDragAction, EndPortDragAction, StartNodeDragAction, UpdateNodeDragAction, EndNodeDragAction, MountPortAction, UnmountPortAction, CreateNodeAction } from "../graph/graphActions";
 import { GraphsState, PortRef } from './storeTypes';
 import { comparePortRefs, getPortKeyFromRef } from '../graph/helpers/portHelpers';
 
@@ -8,7 +8,6 @@ const INIT_GRAPH: Graph = {
     nodes: {
         groupBy: {
             id: 'groupBy',
-            title: 'Group-By',
             type: 'group',
             fields: {},
             x: 10,
@@ -25,7 +24,6 @@ const INIT_GRAPH: Graph = {
         },
         sum: {
             id: 'sum',
-            title: 'Sum',
             type: 'sum',
             fields: {},
             x: 300,
@@ -42,7 +40,6 @@ const INIT_GRAPH: Graph = {
         },
         sum2: {
             id: 'sum2',
-            title: 'Sum',
             type: 'sum',
             fields: {},
             x: 250,
@@ -196,6 +193,15 @@ const handleEndNodeDrag = produce((state: GraphsState, action: EndNodeDragAction
     node.y += nodeDrag.dragY;
 });
 
+const handleCreateNode = produce((state: GraphsState, action: CreateNodeAction) => {
+    const graphState = state.graphs[action.graph];
+    if (!graphState) return;
+
+    const graph = graphState.graph;
+    const node = action.node;
+    graph.nodes[node.id] = node;
+})
+
 const handleRemoveNode = produce((state: GraphsState, action: RemoveNodeAction) => {
     const graphState = state.graphs[action.graph];
     if (!graphState) return;
@@ -324,6 +330,8 @@ const handleUnmountPort = produce((state: GraphsState, action: UnmountPortAction
 
 export default function(state: GraphsState = INIT_STATE, action: GraphAction): GraphsState {
     switch (action.type) {
+        case ActionType.CREATE_NODE:
+            return handleCreateNode(state, action);
         case ActionType.REMOVE_NODE:
             return handleRemoveNode(state, action);
         case ActionType.START_NODE_DRAG:
