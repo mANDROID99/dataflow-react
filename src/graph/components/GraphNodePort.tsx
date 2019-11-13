@@ -13,16 +13,17 @@ import { isPortConnectable, comparePortRefs } from '../helpers/portHelpers';
 
 type Props = {
     nodeId: string;
+    nodeType: string;
     portTargets: TargetPort[] | undefined;
     portSpec: GraphNodePortSpec;
     portOut: boolean;
 }
 
 function GraphNodePort(props: Props): React.ReactElement {
-    const { nodeId, portSpec, portOut, portTargets } = props;
+    const { nodeId, nodeType, portSpec, portOut, portTargets } = props;
     const portId = portSpec.name;
 
-    const { graphId } = useContext(graphContext);
+    const { graphId, spec } = useContext(graphContext);
     const { dragTarget, dragPort } = useSelector((state: StoreState) => {
         const drag = selectPortDrag(state, graphId);
         return {
@@ -34,12 +35,14 @@ function GraphNodePort(props: Props): React.ReactElement {
     const dispatch = useDispatch();
 
     const portType = portSpec.type;
+    const portTypeSpec = spec.types[portType];
     const portRef: PortRef = useMemo((): PortRef => ({
         nodeId,
         portId,
         portOut,
-        portType
-    }), [nodeId, portId, portOut, portType]);
+        portType,
+        nodeType
+    }), [nodeId, nodeType, portId, portOut, portType]);
 
     const wrapPortElRef = useRef<HTMLDivElement>(null);
     const portElRef = useRef<HTMLDivElement>(null);
@@ -71,20 +74,24 @@ function GraphNodePort(props: Props): React.ReactElement {
         }
     }, [graphId, portRef, dispatch]);
 
+    // determines whether this port can be connected to port being dragged
+    const isConnectable = useMemo(() => {
+        return isPortConnectable(dragPort, portTargets, portRef, portSpec);
+    }, [dragPort, portTargets, portRef, portSpec]);
+
     // on mouse over the port overlay
     const onEnter = useCallback(() => {
-        dispatch(setPortDragTarget(graphId, portRef));
-    }, [graphId, portRef, dispatch]);
+        if (isConnectable) {
+            dispatch(setPortDragTarget(graphId, portRef));
+        }
+    }, [graphId, portRef, isConnectable, dispatch]);
 
     // on mouse exit the port overlay
     const onExit = useCallback(() => {
         dispatch(unsetPortDragTarget(graphId, portRef));
     }, [graphId, portRef, dispatch]);
 
-    const isConnectable = useMemo(() => {
-        return isPortConnectable(dragPort, portTargets, portRef);
-    }, [dragPort, portTargets, portRef]);
-
+    // whether the port is "connected" to another port in the graph, or is the current drag-target.
     const isConnected = useMemo((): boolean => {
         if (portTargets != null && portTargets.length > 0) {
             return true;
@@ -104,11 +111,12 @@ function GraphNodePort(props: Props): React.ReactElement {
         return <div className="graph-node-port-label">{ portSpec.name }</div>;
     }
 
+    const portColor = portTypeSpec?.color;
     return (
         <div className={classNames("graph-node-port", { out: portOut, connected: isConnected })}>
             {portOut ? renderLabel() : undefined}
             <div ref={wrapPortElRef} className="graph-node-port-wrap-connector">
-                <div ref={portElRef} className="graph-node-port-connector"/>
+                <div ref={portElRef} className="graph-node-port-connector" style={{ backgroundColor: portColor }}/>
                 { isConnectable ? (
                     <div className="graph-node-port-overlay" onMouseOver={onEnter} onMouseOut={onExit}/>
                 ) : undefined }

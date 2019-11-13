@@ -46,7 +46,7 @@ export default function Menu(): React.ReactElement {
     return (
         <div className="flex absolute top-0 left-0 ml-2 mt-2">
             <div className="relative">
-                <div className="border border-grey rounded hover:border-alt flex text-light cursor-pointer p-2" onClick={onShow}>
+                <div className="border border-grey rounded hover:border-primary flex text-light cursor-pointer p-2" onClick={onShow}>
                     <div className="mr-2">
                         <FontAwesomeIcon icon="plus"/>
                     </div>

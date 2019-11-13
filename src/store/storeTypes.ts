@@ -5,6 +5,7 @@ export type PortRef = {
     portId: string;
     portOut: boolean;
     portType: string;
+    nodeType: string;
 }
 
 export type PortDrag = {

@@ -12,11 +12,11 @@ const group: GraphNodeSpec = {
     ],
     ports: {
         in: [
-            { name: 'in', type: 'row[]' }
+            { name: 'in', type: 'row[]', match: ['row', 'row[]'] }
         ],
         out: [
-            { name: 'name', type: 'scalar' },
-            { name: 'group', type: 'row[]' }
+            { name: 'name', type: 'scalar', match: 'scalar' },
+            { name: 'group', type: 'row[]', match: 'row[]' }
         ]
     }
 };
@@ -32,10 +32,10 @@ const sum: GraphNodeSpec = {
     ],
     ports: {
         in: [
-            { name: 'in', type: 'row[]' }
+            { name: 'in', type: 'row[]', match: 'row[]' }
         ],
         out: [
-            { name: 'out', type: 'scalar' }    
+            { name: 'out', type: 'scalar', match: 'scalar' }
         ]
     }
 };
@@ -45,5 +45,16 @@ export const spec: GraphSpec = {
     nodes: {
         group,
         sum
+    },
+    types: {
+        row: {
+            color: 'red'
+        },
+        'row[]': {
+            color: 'orange'
+        },
+        scalar: {
+            color: 'green'
+        }
     }
 };

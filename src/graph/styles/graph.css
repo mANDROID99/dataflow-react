@@ -102,13 +102,13 @@
 
 .graph-node-port-connector {
     cursor: pointer;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     background-color: #959595;
     border-radius: 10px;
     position: absolute;
-    left: -6px;
-    top: -6px;
+    left: -5px;
+    top: -5px;
     user-select: initial;
     pointer-events: all;
 }

@@ -19,7 +19,8 @@ function GraphNodeComponent(props: Props): React.ReactElement {
     const { graphId, spec } = useContext(graphContext);
 
     const dispatch = useDispatch();
-    const nodeSpec = spec.nodes[graphNode.type];
+    const nodeType = graphNode.type;
+    const nodeSpec = spec.nodes[nodeType];
     const drag = useSelector(selectNodeDrag(graphId));
 
     const elRef = useRef<HTMLDivElement>(null);
@@ -49,6 +50,7 @@ function GraphNodeComponent(props: Props): React.ReactElement {
             <div className="graph-node-body">
                 <GraphNodePorts
                     nodeId={nodeId}
+                    nodeType={nodeType}
                     portSpecs={nodeSpec?.ports.in ?? []}
                     portTargets={graphNode.ports.in}
                     portsOut={false}
@@ -60,6 +62,7 @@ function GraphNodeComponent(props: Props): React.ReactElement {
                 />
                 <GraphNodePorts
                     nodeId={nodeId}
+                    nodeType={nodeType}
                     portSpecs={nodeSpec?.ports.out ?? []}
                     portTargets={graphNode.ports.out}
                     portsOut={true}

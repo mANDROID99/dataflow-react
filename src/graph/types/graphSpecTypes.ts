@@ -1,5 +1,7 @@
 import { GraphFieldInputProps } from "./graphInputTypes";
 
+export type PortMatcher = string | string[] | ((portType: string, nodeType: string) => boolean);
+
 export type GraphNodeInputSpec = {
     component: React.ComponentType<GraphFieldInputProps>;
 }
@@ -14,6 +16,7 @@ export type GraphNodeFieldSpec = {
 export type GraphNodePortSpec = {
     name: string;
     type: string;
+    match?: PortMatcher;
 }
 
 export type GraphNodePortsSpec = {
@@ -33,11 +36,18 @@ export type GraphNodeSpec = {
     ports: GraphNodePortsSpec;
 }
 
+export type PortTypeSpec = {
+    color: string;
+}
+
 export type GraphSpec = {
     nodes: {
         [type: string]: GraphNodeSpec | undefined;
     };
     inputs: {
         [type: string]: GraphNodeInputSpec | undefined;
+    };
+    types: {
+        [type: string]: PortTypeSpec | undefined;
     };
 }
