@@ -45,8 +45,10 @@ function GraphNodeComponent(props: Props): React.ReactElement {
     }
 
     return (
-        <div className="graph-node" ref={elRef} style={{ left: x, top: y }}>
-            <GraphNodeHeader spec={nodeSpec} nodeId={nodeId}/>
+        <div className="graph-node" style={{ left: x, top: y }}>
+            <div ref={elRef} className="graph-node-header">
+                <GraphNodeHeader spec={nodeSpec} nodeId={nodeId}/>
+            </div>
             <div className="graph-node-body">
                 <GraphNodePorts
                     nodeId={nodeId}

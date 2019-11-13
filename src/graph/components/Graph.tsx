@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { ContextMenuTrigger, ContextMenu, MenuItem } from 'react-contextmenu';
 
 import { GraphSpec } from '../types/graphSpecTypes';
 import { GraphContext } from '../types/graphEditorTypes';

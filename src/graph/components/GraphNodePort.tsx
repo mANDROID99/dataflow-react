@@ -35,7 +35,7 @@ function GraphNodePort(props: Props): React.ReactElement {
     const dispatch = useDispatch();
 
     const portType = portSpec.type;
-    const portTypeSpec = spec.types[portType];
+    const portTypeSpec = spec.portTypes[portType];
     const portRef: PortRef = useMemo((): PortRef => ({
         nodeId,
         portId,
@@ -44,7 +44,7 @@ function GraphNodePort(props: Props): React.ReactElement {
         nodeType
     }), [nodeId, nodeType, portId, portOut, portType]);
 
-    const wrapPortElRef = useRef<HTMLDivElement>(null);
+    const wrapElRef = useRef<HTMLDivElement>(null);
     const portElRef = useRef<HTMLDivElement>(null);
 
     useDrag(portElRef, {
@@ -63,10 +63,10 @@ function GraphNodePort(props: Props): React.ReactElement {
 
     // mount / unmount the port
     useEffect(() => {
-        const el = wrapPortElRef.current;
-        if (el) {
-            const xOff = el.offsetLeft;
-            const yOff = el.offsetTop;
+        const wrapEl = wrapElRef.current;
+        if (wrapEl) {
+            const xOff = wrapEl.offsetLeft;
+            const yOff = wrapEl.offsetTop + wrapEl.clientHeight / 2;
             dispatch(mountPort(graphId, portRef, xOff, yOff));
             return (): void => {
                 dispatch(unmountPort(graphId, portRef));
@@ -92,7 +92,7 @@ function GraphNodePort(props: Props): React.ReactElement {
     }, [graphId, portRef, dispatch]);
 
     // whether the port is "connected" to another port in the graph, or is the current drag-target.
-    const isConnected = useMemo((): boolean => {
+    const connected = useMemo((): boolean => {
         if (portTargets != null && portTargets.length > 0) {
             return true;
 
@@ -113,15 +113,17 @@ function GraphNodePort(props: Props): React.ReactElement {
 
     const portColor = portTypeSpec?.color;
     return (
-        <div className={classNames("graph-node-port", { out: portOut, connected: isConnected })}>
-            {portOut ? renderLabel() : undefined}
-            <div ref={wrapPortElRef} className="graph-node-port-wrap-connector">
-                <div ref={portElRef} className="graph-node-port-connector" style={{ backgroundColor: portColor }}/>
-                { isConnectable ? (
-                    <div className="graph-node-port-overlay" onMouseOver={onEnter} onMouseOut={onExit}/>
-                ) : undefined }
+        <div ref={wrapElRef} className="graph-node-wrap-port">
+            <div className={classNames("graph-node-port", { connected, out: portOut })}>
+                { portOut ? undefined : renderLabel() }
+                <div ref={portElRef} className="graph-node-port-connector" style={{ backgroundColor: portColor }}>
+                    { isConnectable ? (
+                        <div className="graph-node-port-overlay" onMouseOver={onEnter} onMouseOut={onExit}/>
+                    ) : undefined }
+                </div>
+                { portOut ? renderLabel() : undefined }
+               
             </div>
-            {portOut ? undefined : renderLabel()}
         </div>
     );
 }

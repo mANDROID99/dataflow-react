@@ -90,12 +90,11 @@ function renderDragConnection(state: GraphState): React.ReactElement | undefined
 }
 
 export default function GraphSVG(props: Props): React.ReactElement {
-    const svgRef = useRef<SVGSVGElement>(null);
     const graphState = useSelector(selectGraphState(props.graphId));
     const connections = graphState ? getConnections(graphState) : [];
 
     return (
-        <svg className="graph-connections" ref={svgRef}>
+        <svg className="graph-connections">
             {connections.map(conn => {
                 const d = plot(conn.sx, conn.sy, conn.ex, conn.ey);
                 return <path key={conn.key} className="graph-connection" d={d}/>;

@@ -3,15 +3,25 @@ import { Graph, TargetPort } from '../graph/types/graphTypes';
 import { GraphAction, ActionType, setFieldValueAction, RemoveNodeAction, StartPortDragAction, SetPortDragTargetAction, UnsetPortDragTargetAction, UpdatePortDragAction, EndPortDragAction, StartNodeDragAction, UpdateNodeDragAction, EndNodeDragAction, MountPortAction, UnmountPortAction, CreateNodeAction } from "../graph/graphActions";
 import { GraphsState, PortRef } from './storeTypes';
 import { comparePortRefs, getPortKeyFromRef } from '../graph/helpers/portHelpers';
+import { v4 } from 'uuid';
 
 const INIT_GRAPH: Graph = {
     nodes: {
+        grid: {
+            type: 'grid',
+            fields: {},
+            x: 120,
+            y: 300,
+            ports: {
+                in: {},
+                out: {}
+            }
+        },
         groupBy: {
-            id: 'groupBy',
             type: 'group',
             fields: {},
-            x: 10,
-            y: 30,
+            x: 100,
+            y: 120,
             ports: {
                 in: {},
                 out: {
@@ -23,11 +33,10 @@ const INIT_GRAPH: Graph = {
             }
         },
         sum: {
-            id: 'sum',
             type: 'sum',
             fields: {},
-            x: 300,
-            y: 100,
+            x: 400,
+            y: 200,
             ports: {
                 in: {
                     in: [{
@@ -35,17 +44,6 @@ const INIT_GRAPH: Graph = {
                         port: 'group'
                     }]
                 },
-                out: {}
-            }
-        },
-        sum2: {
-            id: 'sum2',
-            type: 'sum',
-            fields: {},
-            x: 250,
-            y: 200,
-            ports: {
-                in: {},
                 out: {}
             }
         }
@@ -199,8 +197,10 @@ const handleCreateNode = produce((state: GraphsState, action: CreateNodeAction) 
 
     const graph = graphState.graph;
     const node = action.node;
-    graph.nodes[node.id] = node;
-})
+
+    const nodeId = v4();
+    graph.nodes[nodeId] = node;
+});
 
 const handleRemoveNode = produce((state: GraphsState, action: RemoveNodeAction) => {
     const graphState = state.graphs[action.graph];

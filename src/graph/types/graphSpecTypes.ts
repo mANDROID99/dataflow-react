@@ -24,20 +24,22 @@ export type GraphNodePortsSpec = {
     out: GraphNodePortSpec[];
 }
 
-export type GraphNodeMenuEntry = {
-    label: string;
-    group?: string;
-}
-
 export type GraphNodeSpec = {
-    menu: GraphNodeMenuEntry;
     title: string;
+    category: string;
+    menuOrder?: number;
     fields: GraphNodeFieldSpec[];
     ports: GraphNodePortsSpec;
 }
 
 export type PortTypeSpec = {
     color: string;
+}
+
+export type NodeCategorySpec = {
+    label: string;
+    color: string;
+    menuOrder?: number;
 }
 
 export type GraphSpec = {
@@ -47,7 +49,10 @@ export type GraphSpec = {
     inputs: {
         [type: string]: GraphNodeInputSpec | undefined;
     };
-    types: {
+    portTypes: {
         [type: string]: PortTypeSpec | undefined;
+    };
+    categories: {
+        [category: string]: NodeCategorySpec | undefined;
     };
 }

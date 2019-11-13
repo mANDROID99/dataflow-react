@@ -27,14 +27,14 @@ function GraphNodeHeader(props: Props): React.ReactElement {
     }, [dispatch, graphId, nodeId]);
 
     return (
-        <div className="graph-node-header">
+        <>
             <div className="graph-node-header-title">
                 { props.spec ? props.spec.title : TITLE_UNKNOWN }
             </div>
-            <div className="graph-node-header-close-icon" onClick={handleRemove}>
+            <div className="graph-node-header-close-icon p-2" onClick={handleRemove}>
                 <FontAwesomeIcon icon="times"/>
             </div>
-        </div>
+        </>
     );
 }
 

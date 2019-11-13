@@ -1,0 +1,92 @@
+@import 'variables';
+
+.graph-menu {
+    display: flex;
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+}
+
+.graph-menu-item-wrap-dropdown {
+    position: relative;
+}
+
+.graph-menu-item {
+    background-color: rgba($color-dark, 0.25);
+    display: flex;
+    color: $color-light;
+    border-radius: $border-radius;
+    border: 1px solid $color-grey;
+    cursor: pointer;
+    padding: 1rem;
+    &:hover {
+        border-color: $color-primary;
+    }
+}
+
+.graph-menu-item-icon {
+    margin-right: 0.5rem;
+}
+
+.wrap-graph-menu-dropdown {
+    position: relative;
+    height: 0;
+    margin-top: 0.5rem;
+}
+
+.graph-menu-dropdown {
+    background-color: $color-dark;
+    border: 1px solid $color-grey;
+    color: $color-light;
+    position: absolute;
+    border-radius: $border-radius;
+    min-width: 100%;
+    opacity: 0;
+    transform: translate(0, -20px);
+    transition-property: opacity, transform;
+    transition-duration: 0.5s;
+    &.hidden {
+        visibility: hidden;
+    }
+    &.in {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+.graph-menu-dropdown-group {
+    margin-bottom: 0.5rem;
+}
+
+.graph-menu-dropdown-group-label {
+    color: $color-primary;
+    padding: 0.5rem;
+    pointer-events: none;
+    font-weight: 700;
+    text-align: center;
+}
+
+.graph-menu-dropdown-item {
+    cursor: pointer;
+    display: flex;
+    padding: 0.5rem;
+    align-items: center;
+    &:hover {
+        color: $color-white;
+        background-color: $color-primary;
+    }
+}
+
+.graph-menu-dropdown-item-label {
+    margin-right: 0.5rem;
+    flex-grow: 1;
+}
+
+.graph .overlay {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    top: 0;
+    left: 0;
+}

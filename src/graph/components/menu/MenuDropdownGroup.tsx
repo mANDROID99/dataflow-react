@@ -10,8 +10,8 @@ type Props = {
 
 function MenuDropdownGroup(props: Props): React.ReactElement {
     return (
-        <div className="mb-1">
-            <div className="text-primary p-1 pointer-events-none font-bold text-center">{ props.label }</div>
+        <div className="graph-menu-dropdown-group">
+            <div className="graph-menu-dropdown-group-label">{ props.label }</div>
             {props.items.map((item, index) => (
                 <MenuDropdownItem
                     key={index}

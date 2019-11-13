@@ -1,14 +1,25 @@
 import { GraphNodeSpec, GraphSpec } from "./graph/types/graphSpecTypes";
-import { inputs } from "./graph/components/input/standardInputs";
+import { inputs, InputType } from "./graph/components/input/standardInputs";
+
+const grid: GraphNodeSpec = {
+    title: 'Grid',
+    category: 'input',
+    fields: [
+        { label: 'Data', name: 'data', type: InputType.DATA_GRID }
+    ],
+    ports: {
+        in: [],
+        out: [
+            { name: 'rows', type: 'row[]', match: 'row[]' }
+        ]
+    }
+}
 
 const group: GraphNodeSpec = {
     title: 'Group',
-    menu: {
-        label: 'Group',
-        group: 'Transform'
-    },
+    category: 'transform',
     fields: [
-        { label: 'Column', name: 'column', type: 'text' }
+        { label: 'Column', name: 'column', type: InputType.TEXT }
     ],
     ports: {
         in: [
@@ -23,12 +34,9 @@ const group: GraphNodeSpec = {
 
 const sum: GraphNodeSpec = {
     title: 'Sum',
-    menu: {
-        label: 'Sum',
-        group: 'Transform'
-    },
+    category: 'transform',
     fields: [
-        { label: 'Column', name: 'column', type: 'text' }
+        { label: 'Column', name: 'column', type: InputType.TEXT }
     ],
     ports: {
         in: [
@@ -43,10 +51,11 @@ const sum: GraphNodeSpec = {
 export const spec: GraphSpec = {
     inputs,
     nodes: {
+        grid,
         group,
         sum
     },
-    types: {
+    portTypes: {
         row: {
             color: 'red'
         },
@@ -55,6 +64,16 @@ export const spec: GraphSpec = {
         },
         scalar: {
             color: 'green'
+        }
+    },
+    categories: {
+        input: {
+            color: 'red',
+            label: 'Input'
+        },
+        transform: {
+            color: 'blue',
+            label: 'Transform'
         }
     }
 };

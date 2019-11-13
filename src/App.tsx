@@ -6,10 +6,9 @@ import { spec } from './graphSpec';
 
 import '@fortawesome/fontawesome-free';
 
+import 'normalize.css';
 import './styles/app.css';
-import './graph/styles/graph.css';
-import './graph/styles/graph-menu.css';
-import './graph/styles/contextmenu.css';
+import './graph/styles/main.scss';
 
 const App: React.FC = () => {
   return (
