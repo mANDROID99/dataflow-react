@@ -3,6 +3,7 @@ import { GraphSpec } from "./graphSpecTypes";
 export type GraphContext = {
     graphId: string;
     spec: GraphSpec;
+    modalRoot: Element;
 }
 
 // export type GraphActions = {
