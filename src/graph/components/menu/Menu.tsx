@@ -64,14 +64,14 @@ export default function Menu(): React.ReactElement {
 
     const menuItems = useMemo(() => resolveMenuItems(spec), [spec]);
     
-    const onShow = useCallback(() => {
-        setShowDropdown(true);
-    }, []);
-    
-    const onHide = useCallback(() => {
+    const toggleDropdown = useCallback(() => {
+        setShowDropdown(!isShowDropdown);
+    }, [isShowDropdown]);
+
+    const hideDropdown = useCallback(() => {
         setShowDropdown(false);
     }, []);
-    
+        
     const nodeSpecs = spec.nodes;
     const onItemSelected = useCallback((nodeType: string) => {
         setShowDropdown(false);
@@ -85,13 +85,13 @@ export default function Menu(): React.ReactElement {
     return (
         <div className="graph-menu">
             <div className="graph-menu-item-wrap-dropdown">
-                <div className="graph-menu-item" onClick={onShow}>
+                <div className="graph-menu-item" onClick={toggleDropdown}>
                     <div className="graph-menu-item-icon">
                         <FontAwesomeIcon icon="plus"/>
                     </div>
                     <span>Add Node</span>
                 </div>
-                <MenuDropdown show={isShowDropdown} items={menuItems} onItemSelected={onItemSelected} onHide={onHide}/>
+                <MenuDropdown show={isShowDropdown} items={menuItems} onItemSelected={onItemSelected} onHide={hideDropdown}/>
             </div>
         </div>
     );

@@ -35,8 +35,8 @@
 }
 
 .graph-menu-dropdown {
-    background-color: $color-dark;
-    border: 1px solid $color-grey;
+    background-color: $color-bg-interface;
+    border: $border-interface;
     color: $color-light;
     position: absolute;
     border-radius: $border-radius;
@@ -71,15 +71,6 @@
     flex-grow: 1;
 }
 
-.graph .overlay {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    background-color: transparent;
-    top: 0;
-    left: 0;
-}
-
 @keyframes slideIn {
     0% {
         opacity: 0;
@@ -101,3 +92,22 @@
         transform: translateY(-20px);
     }
 }
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
