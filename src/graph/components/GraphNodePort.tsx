@@ -48,12 +48,14 @@ function GraphNodePort(props: Props): React.ReactElement {
     const portElRef = useRef<HTMLDivElement>(null);
 
     useDrag(portElRef, {
-        onStart(drag) {
-            dispatch(startPortDrag(graphId, portRef, drag.startX, drag.startY));
+        onStart(event) {
+            const x = event.clientX;
+            const y = event.clientY;
+            dispatch(startPortDrag(graphId, portRef, x, y));
         },
-        onDrag(drag) {
-            const x = drag.startX + drag.dx;
-            const y = drag.startY + drag.dy;
+        onDrag(event) {
+            const x = event.clientX;
+            const y = event.clientY;
             dispatch(updatePortDrag(graphId, x, y));
         },
         onEnd() {

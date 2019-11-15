@@ -1,51 +1,32 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { batch } from "react-redux";
 
-type DragStart = {
-    startX: number;
-    startY: number;
+type DragOptions<T> = {
+    onStart: (event: MouseEvent) => T;
+    onDrag?: (event: MouseEvent, value: T) => void;
+    onEnd?: (value: T) => void;
 }
 
-type Drag = {
-    startX: number;
-    startY: number;
-    dx: number;
-    dy: number;
-}
-
-type DragOptions = {
-    onStart?: (dragStart: DragStart) => void;
-    onEnd?: (drag: Drag) => void;
-    onDrag?: (drag: Drag) => void;
-}
-
-export function useDrag(ref: React.RefObject<HTMLElement>, opts?: DragOptions): void {
-    const [dragStart, setDragStart] = useState<DragStart>();
+export function useDrag<T>(ref: React.RefObject<HTMLElement>, opts: DragOptions<T>): void {
+    const [drag, setDrag] = useState<[T]>();
 
     const optsRef = useRef(opts);
     optsRef.current = opts;
 
     useEffect(() => {
-        if (!dragStart) {
+        if (drag === undefined) {
             return;
         }
 
-        const startX = dragStart.startX;
-        const startY = dragStart.startY;
-
         function onDrag(event: MouseEvent): void {
-            const dx = event.clientX - startX;
-            const dy = event.clientY - startY;
-            optsRef.current?.onDrag?.({ startX, startY, dx, dy });
+            optsRef.current.onDrag?.(event, drag![0]);
         }
 
         function onDragEnd(event: MouseEvent): void {
             if (event.button === 0) {
-                const dx = event.clientX - startX;
-                const dy = event.clientY - startY;
                 batch(() => {
-                    optsRef.current?.onEnd?.({ startX, startY, dx, dy });
-                    setDragStart(undefined);
+                    optsRef.current?.onEnd?.(drag![0]);
+                    setDrag(undefined);
                 });
             }
         }
@@ -57,23 +38,17 @@ export function useDrag(ref: React.RefObject<HTMLElement>, opts?: DragOptions): 
             window.removeEventListener('mousemove', onDrag);
             window.removeEventListener('mouseup', onDragEnd);
         };
-    }, [dragStart]);
+    }, [drag]);
 
     useEffect(() => {
         const el = ref.current;
         if (el == null) return;
 
-        const startDrag = (event: React.MouseEvent | MouseEvent): void => {
+        const startDrag = (event: MouseEvent): void => {
             if (event.button === 0 && el === event.target) {
                 event.stopPropagation();
-    
-                const startState: DragStart = {
-                    startX: event.clientX,
-                    startY: event.clientY
-                };
-                
-                optsRef.current?.onStart?.(startState);
-                setDragStart(startState);
+                const drag = optsRef.current.onStart(event);
+                setDrag([drag]);
             }
         };
 

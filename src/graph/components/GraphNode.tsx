@@ -24,12 +24,18 @@ function GraphNodeComponent(props: Props): React.ReactElement {
     const drag = useSelector(selectNodeDrag(graphId));
 
     const elRef = useRef<HTMLDivElement>(null);
-    useDrag(elRef, {
-        onStart() {
+    useDrag<{ startX: number; startY: number }>(elRef, {
+        onStart(event) {
             dispatch(startNodeDrag(graphId, nodeId));
+            return {
+                startX: event.clientX,
+                startY: event.clientY
+            };
         },
-        onDrag(drag) {
-            dispatch(updateNodeDrag(graphId, drag.dx, drag.dy));
+        onDrag(event, drag) {
+            const dx = event.clientX - drag.startX;
+            const dy = event.clientY - drag.startY;
+            dispatch(updateNodeDrag(graphId, dx, dy));
         },
         onEnd() {
             dispatch(endNodeDrag(graphId));
