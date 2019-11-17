@@ -50,15 +50,17 @@ export default function GraphComponent(props: Props): React.ReactElement {
     return (
         <graphContext.Provider value={context}>
             <div ref={graphContainerRef} className="graph">
-                <GraphSVG graphId={graphId}/>
-                <div className="graph-nodes">
-                    {(graphNodes ? Object.keys(graphNodes) : []).map(nodeId => (
-                        <GraphNodeComponent
-                            key={nodeId}
-                            nodeId={nodeId}
-                            graphNode={graphNodes![nodeId]}
-                        />
-                    ))}
+                <div className="graph-scroll">
+                    <GraphSVG graphId={graphId}/>
+                    <div className="graph-nodes">
+                        {(graphNodes ? Object.keys(graphNodes) : []).map(nodeId => (
+                            <GraphNodeComponent
+                                key={nodeId}
+                                nodeId={nodeId}
+                                graphNode={graphNodes![nodeId]}
+                            />
+                        ))}
+                    </div>
                 </div>
                 <Menu/>
             </div>

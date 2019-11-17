@@ -1,4 +1,7 @@
-import React, { Dispatch, useState } from 'react';
+import React, { Dispatch } from 'react';
+import classNames from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { Action, ActionType } from './DataGrid';
 import InputEditor from './InputEditor';
 
@@ -7,29 +10,19 @@ type Props = {
     row: number;
     value: string;
     columnWidth: number;
+    last: boolean;
     dispatch: Dispatch<Action>;
 }
 
-function DataGridCellComponent({ col, row, value, columnWidth, dispatch }: Props): React.ReactElement {
-    const [isEditing, setEditing] = useState(false);
-
-    const startEdit = (): void => {
-        setEditing(true);
-    };
-
+function DataGridCellComponent({ col, row, value, columnWidth, last, dispatch }: Props): React.ReactElement {
     const onValueChanged = (value: string): void => {
-        setEditing(false);
         dispatch({ type: ActionType.SET_CELL_VALUE, col, row, value });
     };
 
     return (
-        <div className="datagrid-cell" style={{ width: columnWidth }}>
+        <div className={classNames("datagrid-cell", { grow: last })} style={{ width: columnWidth, minWidth: columnWidth }}>
             <div className="datagrid-cell-content">
-                { isEditing ? (
-                    <span onClick={startEdit}>{ value }</span>
-                ) : (
-                    <InputEditor value={value} onValueChanged={onValueChanged}/>
-                )}
+                <InputEditor value={value} onValueChanged={onValueChanged}/>
             </div>
         </div>
     );
@@ -45,6 +38,10 @@ type RowProps = {
 }
 
 function DataGridRowComponent({ row, values, columnWidths, dispatch }: RowProps): React.ReactElement {
+    const removeRow = (): void => {
+        dispatch({ type: ActionType.DELETE_ROW, row });
+    };
+
     return (
         <div className="datagrid-row">
             {values.map((value, index) => (
@@ -54,9 +51,17 @@ function DataGridRowComponent({ row, values, columnWidths, dispatch }: RowProps)
                     col={index}
                     value={value}
                     columnWidth={columnWidths[index]}
+                    last={index === values.length - 1}
                     dispatch={dispatch}
                 />
             ))}
+            <div className="datagrid-cell datagrid-cell-dark">
+                <div className="datagrid-cell-content">
+                    <div className="datagrid-action" onClick={removeRow}>
+                        <FontAwesomeIcon icon="times"/>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

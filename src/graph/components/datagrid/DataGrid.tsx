@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect } from "react";
 import { DataGridHeaderGroup } from "./DataGridHeaders";
 import { DataGridRow } from "./DataGridRow";
+import DataGridAddRow from "./DataGridAddRow";
 
 type State = {
     originalData: string[][];
@@ -106,7 +107,7 @@ function reducer(state: State, action: Action): State {
             columnWidths.push(action.column.width);
 
             const data = state.data.map(row => row.concat(['']));
-            return { ...state, data, columns };
+            return { ...state, data, columns, columnWidths };
         }
 
         case ActionType.DELETE_COLUMN: {
@@ -151,24 +152,26 @@ export default function DataGrid(props: Props): React.ReactElement {
 
     return (
         <div className="datagrid">
-            <div className="datagrid-headers">
+            <div className="datagrid-scroll">
                 <DataGridHeaderGroup
                     columns={state.columns}
                     columnWidths={state.columnWidths}
                     dispatch={dispatch}
                 />
+                <div className="datagrid-body">
+                    {state.data.map((row: string[], index: number) => (
+                        <DataGridRow
+                            key={index}
+                            row={index}
+                            columnWidths={state.columnWidths}
+                            values={row}
+                            dispatch={dispatch}
+                        />
+                    ))}
+                    
+                </div>
             </div>
-            <div className="datagrid-body">
-                {state.data.map((row: string[], index: number) => (
-                    <DataGridRow
-                        key={index}
-                        row={index}
-                        columnWidths={state.columnWidths}
-                        values={row}
-                        dispatch={dispatch}
-                    />
-                ))}
-            </div>
+            <DataGridAddRow dispatch={dispatch}/>
         </div>
     );
 }

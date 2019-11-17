@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: center;
     justify-content: center;
-    position: fixed;
+    position: absolute;
     left: 0;
     right: 0;
     top: 0;
@@ -22,8 +22,6 @@
 }
 
 .modal-content {
-    background-color: $color-white;
-    border-radius: $border-radius;
     max-height: calc(100% - 40px);
     overflow: hidden;
     position: relative;

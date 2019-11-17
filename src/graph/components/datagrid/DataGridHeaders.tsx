@@ -1,26 +1,32 @@
-import React, { Dispatch, useState, useRef } from 'react';
+import React, { Dispatch, useRef } from 'react';
+import classNames from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { Column, Action, ActionType } from "./DataGrid";
 import InputEditor from './InputEditor';
 import { useDrag } from '../../helpers/useDrag';
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
+library.add(faPlusSquare);
 
 type Props = {
     col: number;
     column: Column;
     columnWidth: number;
+    last: boolean;
     dispatch: Dispatch<Action>;
 }
 
-function DataGridHeaderComponent({ col, column, columnWidth, dispatch }: Props): React.ReactElement {
-    const [isEditing, setEditing] = useState(false);
+function DataGridHeaderComponent({ col, column, columnWidth, last, dispatch }: Props): React.ReactElement {
     const ref = useRef<HTMLDivElement>(null);
 
-    const startEdit = (): void => {
-        setEditing(true);
+    const onValueChanged = (value: string): void => {
+        dispatch({ type: ActionType.SET_COLUMN_NAME, col, name: value });
     };
 
-    const onValueChanged = (value: string): void => {
-        setEditing(false);
-        dispatch({ type: ActionType.SET_COLUMN_NAME, col, name: value });
+    const removeColumn = (): void => {
+        dispatch({ type: ActionType.DELETE_COLUMN, col });
     };
 
     useDrag<{ startX: number; startWidth: number }>(ref, {
@@ -31,21 +37,22 @@ function DataGridHeaderComponent({ col, column, columnWidth, dispatch }: Props):
             };
         },
         onDrag: (event, { startX, startWidth }) => {
-            const width = startWidth + event.clientX - startX;
+            const width = Math.max(column.minWidth ?? 0, startWidth + event.clientX - startX);
             dispatch({ type: ActionType.SET_COLUMN_WIDTH, col, width });
         }
     });
 
     return (
-        <div className="datagrid-header" style={{ width: columnWidth }}>
-            <div className="datagrid-header-content">
-                {isEditing ? (
-                    <span onClick={startEdit}>{ column.name }</span>
-                ) : (
+        <div className={classNames("datagrid-header", { grow: last })} style={{ width: columnWidth, minWidth: columnWidth }}>
+            <div className="datagrid-cell-content">
+                <div className="datagrid-header-label">
                     <InputEditor value={column.name} onValueChanged={onValueChanged}/>
-                )}
+                </div>
+                <div className="datagrid-action" onClick={removeColumn}>
+                    <FontAwesomeIcon icon="times"/>
+                </div>
             </div>
-            <div ref={ref} className="datagrid-resizer"/>
+            <div ref={ref} className="datagrid-resizer" style={{ visibility: last ? 'hidden' : 'visible' }}/>
         </div>
     );
 }
@@ -59,8 +66,14 @@ type HeaderGroupProps = {
 }
 
 function DataGridHeaderGroupComponent({ columns, columnWidths, dispatch }: HeaderGroupProps): React.ReactElement {
+
+    const addColumn = (): void => {
+        const column: Column = { name: 'Column', width: 100, minWidth: 50 };
+        dispatch({ type: ActionType.ADD_COLUMN, column });
+    };
+
     return (
-        <div className="datagrid-header-group">
+        <div className="datagrid-headers">
             { columns.map((column, index) => (
                 <DataGridHeader
                     key={index}
@@ -68,8 +81,16 @@ function DataGridHeaderGroupComponent({ columns, columnWidths, dispatch }: Heade
                     column={column}
                     columnWidth={columnWidths[index]}
                     dispatch={dispatch}
+                    last={index === columns.length - 1}
                 />
             ))}
+            <div className="datagrid-header">
+                <div className="datagrid-cell-content">
+                    <div className="datagrid-action" onClick={addColumn}>
+                        <FontAwesomeIcon icon="plus-square"/>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
