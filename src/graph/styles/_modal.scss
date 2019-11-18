@@ -1,6 +1,6 @@
 @import './variables';
 
-.modal {
+.ngr-modal {
     align-items: center;
     display: flex;
     flex-direction: center;
@@ -12,7 +12,7 @@
     bottom: 0;
 }
 
-.modal-overlay {
+.ngr-modal-overlay {
     background-color: rgba(70, 70, 70, 0.25);
     position: absolute;
     left: 0;
@@ -21,15 +21,53 @@
     bottom: 0;
 }
 
-.modal-content {
-    max-height: calc(100% - 40px);
-    overflow: hidden;
+.ngr-modal-content {
+    background-color: rgba(21, 21, 21, 0.85);
+    border-radius: $border-radius;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 60px);
+    padding: 1rem;
     position: relative;
-    width: 100%;
+}
+
+.ngr-modal-body {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.ngr-modal-footer {
+    margin-top: 1rem;
+    text-align: end;
+    .ngr-btn {
+        margin-left: 0.5rem;
+    }
 }
 
 @media only screen and (min-width: 768px) {
-    .modal-content {
+    .ngr-modal-content {
         width: 640px;
+    }
+}
+
+.ngr-btn {
+    background-color: $color-grey;
+    border: 0;
+    border-radius: $border-radius;
+    color: $color-light;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+
+    &:hover {
+        background-color: lighten($color-grey, 5%);
+        color: $color-white;
+    }
+}
+
+.ngr-btn.primary {
+    background-color: $color-primary;
+    color: white;
+    &:hover {
+        background-color: lighten($color-primary, 5%);
     }
 }

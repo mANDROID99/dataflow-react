@@ -14,5 +14,5 @@ export default function ModalOverlay({ onHide }: Props): React.ReactElement {
         }
     }, [onHide]);
 
-    return <div ref={overlayRef} className="modal-overlay" onClick={onClick}/>;
+    return <div ref={overlayRef} className="ngr-modal-overlay" onClick={onClick}/>;
 }

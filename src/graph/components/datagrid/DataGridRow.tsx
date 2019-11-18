@@ -44,6 +44,13 @@ function DataGridRowComponent({ row, values, columnWidths, dispatch }: RowProps)
 
     return (
         <div className="datagrid-row">
+            <div className="datagrid-cell datagrid-cell-dark">
+                <div className="datagrid-cell-content">
+                    <div className="datagrid-action-btn" onClick={removeRow}>
+                        <FontAwesomeIcon icon="times"/>
+                    </div>
+                </div>
+            </div>
             {values.map((value, index) => (
                 <DataGridCell
                     key={index}
@@ -55,13 +62,6 @@ function DataGridRowComponent({ row, values, columnWidths, dispatch }: RowProps)
                     dispatch={dispatch}
                 />
             ))}
-            <div className="datagrid-cell datagrid-cell-dark">
-                <div className="datagrid-cell-content">
-                    <div className="datagrid-action" onClick={removeRow}>
-                        <FontAwesomeIcon icon="times"/>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }

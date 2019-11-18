@@ -48,7 +48,7 @@ function DataGridHeaderComponent({ col, column, columnWidth, last, dispatch }: P
                 <div className="datagrid-header-label">
                     <InputEditor value={column.name} onValueChanged={onValueChanged}/>
                 </div>
-                <div className="datagrid-action" onClick={removeColumn}>
+                <div className="datagrid-action-btn" onClick={removeColumn}>
                     <FontAwesomeIcon icon="times"/>
                 </div>
             </div>
@@ -74,7 +74,14 @@ function DataGridHeaderGroupComponent({ columns, columnWidths, dispatch }: Heade
 
     return (
         <div className="datagrid-headers">
-            { columns.map((column, index) => (
+            <div className="datagrid-header">
+                <div className="datagrid-cell-content">
+                    <div className="datagrid-action-btn" onClick={addColumn}>
+                        <FontAwesomeIcon icon="plus-square"/>
+                    </div>
+                </div>
+            </div>
+            {columns.map((column, index) => (
                 <DataGridHeader
                     key={index}
                     col={index}
@@ -84,13 +91,6 @@ function DataGridHeaderGroupComponent({ columns, columnWidths, dispatch }: Heade
                     last={index === columns.length - 1}
                 />
             ))}
-            <div className="datagrid-header">
-                <div className="datagrid-cell-content">
-                    <div className="datagrid-action" onClick={addColumn}>
-                        <FontAwesomeIcon icon="plus-square"/>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }

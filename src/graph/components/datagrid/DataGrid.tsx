@@ -151,25 +151,23 @@ export default function DataGrid(props: Props): React.ReactElement {
     }, [props.data, props.columns, state.originalData, state.originalColumns]);
 
     return (
-        <div className="datagrid">
-            <div className="datagrid-scroll">
-                <DataGridHeaderGroup
-                    columns={state.columns}
-                    columnWidths={state.columnWidths}
-                    dispatch={dispatch}
-                />
-                <div className="datagrid-body">
-                    {state.data.map((row: string[], index: number) => (
-                        <DataGridRow
-                            key={index}
-                            row={index}
-                            columnWidths={state.columnWidths}
-                            values={row}
-                            dispatch={dispatch}
-                        />
-                    ))}
-                    
-                </div>
+    <div className="datagrid">
+            <DataGridHeaderGroup
+                columns={state.columns}
+                columnWidths={state.columnWidths}
+                dispatch={dispatch}
+            />
+            <div className="datagrid-body">
+                {state.data.map((row: string[], index: number) => (
+                    <DataGridRow
+                        key={index}
+                        row={index}
+                        columnWidths={state.columnWidths}
+                        values={row}
+                        dispatch={dispatch}
+                    />
+                ))}
+                
             </div>
             <DataGridAddRow dispatch={dispatch}/>
         </div>
