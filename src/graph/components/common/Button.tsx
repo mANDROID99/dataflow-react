@@ -10,7 +10,7 @@ type Props = {
 export default function Button({ primary, children, onClick }: Props): React.ReactElement {
     return (
         <button
-            className={classNames("ngr-btn", { primary: !!primary })}
+            className={classNames("btn", { primary: !!primary })}
             onClick={onClick}>
             { children }
         </button>

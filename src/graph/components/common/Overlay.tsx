@@ -4,7 +4,7 @@ type Props = {
     onHide: () => void;
 }
 
-export default function ModalOverlay({ onHide }: Props): React.ReactElement {
+export default function Overlay({ onHide }: Props): React.ReactElement {
     const overlayRef = useRef<HTMLDivElement>(null);
 
     const onClick = useCallback((event: React.MouseEvent) => {
@@ -14,5 +14,7 @@ export default function ModalOverlay({ onHide }: Props): React.ReactElement {
         }
     }, [onHide]);
 
-    return <div ref={overlayRef} className="modal-overlay" onClick={onClick}/>;
+    return (
+        <div ref={overlayRef} className="overlay" onClick={onClick}/>
+    );
 }

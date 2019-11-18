@@ -18,7 +18,7 @@ export default function Modal(props: Props): React.ReactElement {
     return createPortal(
         <Transition show={show} render={(show, afterAnimation): React.ReactElement => {
             return (
-                <div className="ngr-modal" style={{ animation: `${show ? 'fadeIn' : 'fadeOut'} 0.2s` }} onAnimationEnd={afterAnimation}>
+                <div className="modal" style={{ animation: `${show ? 'fadeIn' : 'fadeOut'} 0.2s` }} onAnimationEnd={afterAnimation}>
                     <ModalOverlay onHide={onHide}/>
                     {children}
                 </div>

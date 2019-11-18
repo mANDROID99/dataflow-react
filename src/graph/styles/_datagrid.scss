@@ -1,132 +1,78 @@
-$cell-border: 1px solid #777777;
-$bg-color-header: #222222;
-$bg-color-cell: #464646;
-$bg-color-cell-dark: #383838;
-$width-actions: 2.5rem;
-
-.datagrid-modal {
-    padding: 1rem;
-}
+$row-select-width: 25px;
 
 .datagrid {
-    border: $cell-border;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.datagrid-body {
-    background-color: #282828;
+    color: white;
     flex-grow: 1;
-    overflow-y: auto;
-}
-
-.datagrid-headers {
-    background-color: $bg-color-header;
-    display: flex;
-    width: 100%;
-}
-
-.datagrid-header {
-    background-color: $bg-color-header;
-    border-right: $cell-border;
-    display: inline-block;
+    height: 100%;
     position: relative;
-    font-weight: 700;
 }
 
-.datagrid-header.grow {
-    flex-grow: 1;
-}
-
-.datagrid-header:last-child {
-    border-right: none;
-}
-
-.datagrid-cell-content {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
-    width: 100%;
-    height: 100%;
-}
-
-.datagrid-header-label {
-    flex-grow: 1;
-    margin-right: 0.5rem;
-}
-
+.datagrid-headers,
 .datagrid-row {
-    display: flex;
+    display: inline-block;
     min-width: 100%;
     white-space: nowrap;
 }
 
+.datagrid-headers {
+    background-color: #191919;
+    padding-left: $row-select-width;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.datagrid-header .datagrid-inner-pad {
+    cursor: pointer;
+}
+
+.datagrid-header,
 .datagrid-cell {
-    background-color: $bg-color-cell;
-    border-right: $cell-border;
-    border-bottom: $cell-border;
+    display: inline-block;
     position: relative;
+    height: 100%;
 }
 
-.datagrid-cell.grow {
-    flex-grow: 1;
+.datagrid-inner-pad {
+    margin: 0.5rem 0.75rem;
 }
 
-.datagrid-cell:last-child {
-    border-right: none;
+.datagrid-row {
+    background-color: white;
+    color: black;
 }
 
-.datagrid-editor {
-    width: 100%;
+.datagrid-row:nth-child(even) {
+    background-color: #f6f6f6;
 }
 
 .datagrid-resizer {
     background-color: $color-primary;
     cursor: ew-resize;
-    height: 100%;
     position: absolute;
-    right: 0;
-    top: 0;
     width: 3px;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 
-.datagrid-editor {
-    color: white;
-    border: none;
-    background: none;
-    width: 100%;
-}
-
-.datagrid-cell-dark {
-    background-color: $bg-color-cell-dark;
-}
-
-.datagrid-add-row {
-    background-color: $bg-color-cell-dark;
-    border-top: $cell-border;
-    color: #d5d5d5;
-    cursor: pointer;
+.datagrid-row-select {
+    display: inline-block;
     text-align: center;
-    padding: 0.5rem;
+    width: $row-select-width;
+}
+
+.datagrid-header-dropdown {
+    position: absolute;
+    background-color: #191919;
+    top: calc(100%);
+    z-index: 3;
+}
+
+.datagrid-header-dropdown-item {
+    cursor: pointer;
+    padding: 0.75rem;
     &:hover {
-        background-color: darken($bg-color-cell-dark, 5%);
+        background-color: $color-primary;
     }
 }
-
-.datagrid-action-btn {
-    color: #d5d5d5;
-    cursor: pointer;
-    border-radius: 100px;
-    min-width: 30px;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-    transition: background-color 0.2s ease;
-    &:hover {
-        background-color: rgba(white, 0.1);
-        color: white;
-    }
-}
-
