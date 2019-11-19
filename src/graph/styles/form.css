@@ -1,0 +1,49 @@
+.form-btn {
+    @apply bg-secondary cursor-pointer py-2 px-3 border-0 rounded;
+}
+
+.form-btn:hover {
+    @apply bg-secondary-light;
+}
+
+.form-btn.primary {
+    @apply bg-primary;
+}
+
+.form-btn.primary:hover {
+    @apply bg-primary-light;
+}
+
+.form-btn.warn {
+    @apply bg-warn;
+}
+
+.form-btn.warn:hover {
+    @apply bg-warn-light;
+}
+
+.form-btn.danger {
+    @apply bg-danger;
+}
+
+.form-btn.danger:hover {
+    @apply bg-danger-light;
+}
+
+.form-label {
+    @apply mb-1 text-center font-bold;
+    color: #e3e3e3;
+}
+
+.form-control {
+    @apply bg-control rounded p-2 outline-none border-none;
+    transition: background-color 0.5s ease;
+}
+
+.form-control:focus {
+    @apply bg-control-light;
+}
+
+.form-control-sm {
+    width: 80px;
+}

@@ -8,6 +8,7 @@ import '@fortawesome/fontawesome-free';
 
 import 'normalize.css';
 import './styles/app.css';
+import './graph/styles/form.css';
 import './graph/styles/main.scss';
 
 const App: React.FC = () => {

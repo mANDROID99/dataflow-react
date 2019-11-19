@@ -7,7 +7,6 @@ library.add(faEdit);
 import { GraphFieldInputProps } from "../../types/graphInputTypes";
 import Modal from '../common/Modal';
 import DataGridModalContent from './DataGridModalContent';
-import Button from '../common/Button';
 
 
 export default function DataGridInput(props: GraphFieldInputProps): React.ReactElement {
@@ -22,12 +21,12 @@ export default function DataGridInput(props: GraphFieldInputProps): React.ReactE
     }, []);
 
     return (
-        <Button onClick={showModal}>
+        <div className="form-btn" onClick={showModal}>
             <span className="select-none">Edit</span>
             <FontAwesomeIcon className="ml-2" icon="edit"/>
             <Modal show={modalShowing} onHide={hideModal}>
                 <DataGridModalContent onHide={hideModal} onSave={hideModal}/>
             </Modal>
-        </Button>
+        </div>
     );
 }

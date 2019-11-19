@@ -1,7 +1,5 @@
 import React from 'react';
-// import DataGrid, { Column } from '../datagrid/DataGrid';
 import DataGrid from '../datagrid2/DataGrid';
-import Button from '../common/Button';
 import { Column } from '../datagrid2/dataGridTypes';
 
 type Props = {
@@ -63,8 +61,8 @@ export default function DataGridModalContent(props: Props): React.ReactElement {
                 <DataGrid data={data} columns={columns}/>
             </div>
             <div className="modal-footer">
-                <Button onClick={props.onHide}>Cancel</Button>
-                <Button onClick={props.onSave} primary>Save Changes</Button>
+                <button className="form-btn" onClick={props.onHide}>Cancel</button>
+                <button className="form-btn primary ml-2" onClick={props.onSave}>Save Changes</button>
             </div>
         </div>
     );

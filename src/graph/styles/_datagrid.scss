@@ -1,9 +1,18 @@
-$row-select-width: 25px;
+$height-header: 35px;
+$width-row-select: 25px;
+
+.datagrid-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+}
 
 .datagrid {
     color: white;
-    flex-grow: 1;
     height: 100%;
+    flex-grow: 1;
+    overflow: auto;
     position: relative;
 }
 
@@ -16,7 +25,8 @@ $row-select-width: 25px;
 
 .datagrid-headers {
     background-color: #191919;
-    padding-left: $row-select-width;
+    height: $height-header;
+    padding-left: $width-row-select;
     position: sticky;
     top: 0;
     z-index: 1;
@@ -30,11 +40,10 @@ $row-select-width: 25px;
 .datagrid-cell {
     display: inline-block;
     position: relative;
-    height: 100%;
 }
 
 .datagrid-inner-pad {
-    margin: 0.5rem 0.75rem;
+    margin: 0.75rem;
 }
 
 .datagrid-row {
@@ -59,7 +68,7 @@ $row-select-width: 25px;
 .datagrid-row-select {
     display: inline-block;
     text-align: center;
-    width: $row-select-width;
+    width: $width-row-select;
 }
 
 .datagrid-header-dropdown {

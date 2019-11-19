@@ -27,14 +27,14 @@
     display: flex;
     flex-direction: column;
     height: calc(100% - 60px);
+    max-width: 768px;
     width: 100%;
-    padding: 1rem;
     position: relative;
 }
 
 .modal-body {
     flex-grow: 1;
-    overflow-y: auto;
+    height: 100%;
 }
 
 .modal-footer {
@@ -42,33 +42,5 @@
     text-align: end;
     .btn {
         margin-left: 0.5rem;
-    }
-}
-
-@media only screen and (min-width: 768px) {
-    .modal-content {
-        width: 640px;
-    }
-}
-
-.btn {
-    background-color: $color-grey;
-    border: 0;
-    border-radius: $border-radius;
-    color: $color-light;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-
-    &:hover {
-        background-color: lighten($color-grey, 5%);
-        color: $color-white;
-    }
-}
-
-.btn.primary {
-    background-color: $color-primary;
-    color: white;
-    &:hover {
-        background-color: lighten($color-primary, 5%);
     }
 }
