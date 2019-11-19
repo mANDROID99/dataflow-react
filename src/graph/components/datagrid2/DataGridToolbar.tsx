@@ -5,10 +5,9 @@ type Props = {
 
 }
 
-function DataGridToolbar(props: Props): React.ReactElement {
+function DataGridToolbar(props: Props) {
     return (
         <div className="flex p-2 items-start">
-            <div className="form-btn danger">Remove (2)</div>
             <div className="flex justify-center flex-grow">
                 <div className="flex flex-col">
                     <label className="form-label">Rows</label>
@@ -18,7 +17,7 @@ function DataGridToolbar(props: Props): React.ReactElement {
                     <FontAwesomeIcon icon="times"/>
                 </div>
                 <div className="flex flex-col">
-                    <label className="form-label">Cols</label>
+                    <label className="form-label">Columns</label>
                     <input className="form-control form-control-sm text-center" type="number"/>
                 </div>
             </div>

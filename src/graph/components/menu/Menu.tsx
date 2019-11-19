@@ -1,7 +1,5 @@
 import React, { useState, useCallback, useContext, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { useDispatch } from 'react-redux';
 
 import MenuDropdown, { MenuItemGroup, MenuItem } from './MenuDropdown';
@@ -9,7 +7,6 @@ import { graphContext } from '../Graph';
 import { GraphSpec } from '../../types/graphSpecTypes';
 import { createGraphNodeFromSpec } from '../../helpers/graphNodeFactory';
 import { createNode } from '../../graphActions';
-library.add(faPlus);
 
 function sortBy<T>(key: keyof T) {
     return (left: T, right: T): number => {

@@ -1,8 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faEdit);
 
 import { GraphFieldInputProps } from "../../types/graphInputTypes";
 import Modal from '../common/Modal';

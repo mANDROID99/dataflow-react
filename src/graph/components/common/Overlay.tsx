@@ -2,9 +2,10 @@ import React, { useRef, useCallback } from "react";
 
 type Props = {
     onHide: () => void;
+    children?: React.ReactChild;
 }
 
-export default function Overlay({ onHide }: Props): React.ReactElement {
+export default function Overlay({ onHide, children }: Props): React.ReactElement {
     const overlayRef = useRef<HTMLDivElement>(null);
 
     const onClick = useCallback((event: React.MouseEvent) => {
@@ -15,6 +16,8 @@ export default function Overlay({ onHide }: Props): React.ReactElement {
     }, [onHide]);
 
     return (
-        <div ref={overlayRef} className="overlay" onClick={onClick}/>
+        <div ref={overlayRef} className="overlay" onClick={onClick}>
+            {children}
+        </div>
     );
 }

@@ -1,0 +1,67 @@
+.datagrid-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+}
+
+.datagrid {
+    display: grid;
+    overflow: auto;
+}
+
+.datagrid-headers,
+.datagrid-body,
+.datagrid-row {
+    display: contents;
+}
+
+.datagrid-row {
+    background-color: #f5f5f5;
+    position: relative;
+}
+
+.datagrid-row:nth-child(even) {
+    background-color: #eeeeee;
+}
+
+.datagrid-resizer {
+    background-color: theme('colors.primary');
+    cursor: ew-resize;
+    position: absolute;
+    width: 3px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.bg-inherit {
+    background-color: inherit;
+}
+
+.display-contents {
+    display: contents;
+}
+
+.datagrid-cell-label {
+    white-space: nowrap;
+}
+
+.datagrid-cell-label:hover {
+    cursor: pointer;
+    display: inline;
+    text-decoration: underline;
+}
+
+.context-menu {
+    position: fixed;
+}
+
+.context-menu-item {
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.context-menu-item:hover {
+    background-color: theme('colors.primary');
+}

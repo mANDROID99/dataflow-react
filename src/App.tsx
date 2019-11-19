@@ -5,9 +5,11 @@ import Graph from './graph/components/Graph';
 import { spec } from './graphSpec';
 
 import '@fortawesome/fontawesome-free';
+import './fa';
 
 import 'normalize.css';
 import './styles/app.css';
+import './graph/styles/datagrid.css';
 import './graph/styles/form.css';
 import './graph/styles/main.scss';
 

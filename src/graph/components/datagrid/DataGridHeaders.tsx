@@ -6,10 +6,6 @@ import { Column, Action, ActionType } from "./DataGrid";
 import InputEditor from './InputEditor';
 import { useDrag } from '../../helpers/useDrag';
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
-library.add(faPlusSquare);
-
 type Props = {
     col: number;
     column: Column;

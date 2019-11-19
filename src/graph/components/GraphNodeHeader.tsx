@@ -1,13 +1,10 @@
 import React, { useContext, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GraphNodeSpec } from '../types/graphSpecTypes';
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { graphContext } from './Graph';
-import { useDispatch } from 'react-redux';
 import { removeNode } from '../graphActions';
-library.add(faTimes);
 
 type Props = {
     nodeId: string;

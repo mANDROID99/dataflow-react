@@ -1,8 +1,9 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useMemo } from 'react';
 
 import { Column } from './dataGridTypes';
-import DataGridHeader from './DataGridHeader';
 import DataGridToolbar from './DataGridToolbar';
+import DataGridHeaders from './DataGridHeaders';
+import DataGridBody from './DataGridBody';
 
 type Props = {
     columns: Column[];
@@ -17,11 +18,13 @@ type State = {
 }
 
 export enum ActionType {
-    RESIZE_COLUMN
+    RESIZE_COLUMN,
+    CHANGE_CELL_VALUE
 }
 
 export type Action =
-    | { type: ActionType.RESIZE_COLUMN; col: number; width: number };
+    | { type: ActionType.RESIZE_COLUMN; col: number; width: number }
+    | { type: ActionType.CHANGE_CELL_VALUE; col: number; row: number; value: string };
 
 function init(params: { data: string[][]; columns: Column[] }): State {
     return {
@@ -39,6 +42,15 @@ function reducer(state: State, action: Action): State {
             columns[action.col] = { ...columns[action.col], width: action.width };
             return { ...state, columns };
         }
+
+        case ActionType.CHANGE_CELL_VALUE: {
+            const data = state.data.slice(0);
+
+            const row = data[action.row] = data[action.row].slice(0);
+            row[action.col] = action.value;
+
+            return { ...state, data };
+        }
         default:
             return state;
     }
@@ -47,35 +59,21 @@ function reducer(state: State, action: Action): State {
 export default function DataGrid({ columns, data }: Props): React.ReactElement | null {
     const [state, dispatch] = useReducer(reducer, { columns, data }, init);
 
+    const gridTemplateColumns = useMemo(() => {
+        const cols: string[] = [];
+        cols.push('40px');
+
+        state.columns.forEach((col, i, arr) => {
+            cols.push(i === arr.length - 1 ? 'auto' : col.width + 'px');
+        });
+        return cols.join(' ');
+    }, [state.columns]);
+
     return (
-        <div className="flex flex-col flex-grow h-full">
-            <div className="datagrid">
-                <div className="datagrid-headers">
-                    {state.columns.map((column, i) => (
-                        <DataGridHeader key={i} col={i} column={column} dispatch={dispatch}/>
-                    ))}
-                </div>
-                <div className="datagrid-rows">
-                    {state.data.map((row, i) => (
-                        <div key={i} className="datagrid-row">
-                            <div className="datagrid-row-select">
-                                <div className="datagrid-inner-pad">
-                                    <input type="checkbox"/>
-                                </div>
-                            </div>
-                            {row.map((cell, j) => {
-                                const column = state.columns[j];
-                                return (
-                                    <div key={j} className="datagrid-cell" style={{ width: column.width }}>
-                                        <div className="datagrid-inner-pad">
-                                            {cell}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ))}
-                </div>
+        <div className="datagrid-container">
+            <div className="datagrid" style={{ gridTemplateColumns }}>
+                <DataGridHeaders columns={state.columns} dispatch={dispatch}/>
+                <DataGridBody data={state.data} dispatch={dispatch}/>
             </div>
             <DataGridToolbar/>
         </div>

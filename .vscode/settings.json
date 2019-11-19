@@ -16,5 +16,6 @@
           "language": "typescriptreact",
           "autoFix": true
         }
-    ]
+    ],
+    "css.validate": false
 }
