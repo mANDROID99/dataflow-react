@@ -53,15 +53,12 @@
     text-decoration: underline;
 }
 
-.context-menu {
-    position: fixed;
-}
-
-.context-menu-item {
+.menu-item {
+    background-color: theme('colors.container');
     cursor: pointer;
     padding: 0.5rem;
 }
 
-.context-menu-item:hover {
+.menu-item:hover {
     background-color: theme('colors.primary');
 }

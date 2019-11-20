@@ -39,7 +39,7 @@ export default function DataGridContextMenu(props: Props) {
         <Transition show={props.mousePos != null} render={(show, onAnimationEnd) => (
             <Overlay onHide={props.onHide}>
                 <div
-                    className="context-menu bg-container"
+                    className="fixed"
                     style={{
                         left: mousePos!.x,
                         top: mousePos!.y,
@@ -47,9 +47,9 @@ export default function DataGridContextMenu(props: Props) {
                     }}
                     onAnimationEnd={onAnimationEnd}
                 >
-                    <div className="context-menu-item" onClick={handleDeleteRows}>Delete Rows</div>
-                    <div className="context-menu-item" onClick={handleInsertBefore}>Insert Row Before</div>
-                    <div className="context-menu-item" onClick={handleInsertAfter}>Insert Row After</div>
+                    <div className="menu-item" onClick={handleDeleteRows}>Delete Rows</div>
+                    <div className="menu-item" onClick={handleInsertBefore}>Insert Row Before</div>
+                    <div className="menu-item" onClick={handleInsertAfter}>Insert Row After</div>
                 </div>
             </Overlay>
         )}/>        

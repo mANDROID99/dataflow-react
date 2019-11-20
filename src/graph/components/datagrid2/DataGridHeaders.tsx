@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Action, ColumnState, ActionType } from './DataGrid';
 import DataGridResizer from './DataGridResizer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DataGridHeaderDropdown from './DataGridHeaderDropdown';
 
 // type DropdownProps = {
 //     show: boolean;
@@ -48,17 +50,17 @@ type HeaderProps = {
 function DataGridHeader({ col, column, dispatch, autoColumn }: HeaderProps): React.ReactElement {
     const [state, setState] = useState({ editing: false, dropdown: false });
 
-    const toggleDropdown = (): void => {
+    const handleToggleDropdown = (): void => {
         setState({ editing: false, dropdown: !state.dropdown });
     };
 
     const hideDropdown = (): void => {
         setState({ editing: false, dropdown: false });
-    }
+    };
 
     return (
-        <div className="p-2 py-3 bg-container relative sticky top-0">
-            <div className="datagrid-header-label">{column.column.name}</div>
+        <div className="p-2 py-3 bg-container flex relative sticky top-0">
+            <div className="flex-grow">{column.column.name}</div>
             { !autoColumn ? (
                 <DataGridResizer
                     col={col}
@@ -67,7 +69,15 @@ function DataGridHeader({ col, column, dispatch, autoColumn }: HeaderProps): Rea
                     dispatch={dispatch}
                 />
             ) : undefined }
-            {/* <DataGridHeaderDropdown onHide={hideDropdown} show={state.dropdown}/> */}
+            <div className="cursor-pointer px-2" onClick={handleToggleDropdown}>
+                <FontAwesomeIcon icon="bars"/>
+            </div>
+            <DataGridHeaderDropdown
+                col={col}
+                onHide={hideDropdown}
+                show={state.dropdown}
+                dispatch={dispatch}
+            />
         </div>
     );
 }

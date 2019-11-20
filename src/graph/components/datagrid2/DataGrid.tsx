@@ -35,7 +35,10 @@ export enum ActionType {
     TOGGLE_SELECT_ALL,
     DELETE_SELECTED_ROWS,
     INSERT_ROW_BEFORE,
-    INSERT_ROW_AFTER
+    INSERT_ROW_AFTER,
+    DELETE_COLUMN,
+    INSERT_COLUMN_BEFORE,
+    INSERT_COLUMN_AFTER
 }
 
 export type Action =
@@ -45,7 +48,10 @@ export type Action =
     | { type: ActionType.TOGGLE_SELECT_ROW; row: number }
     | { type: ActionType.DELETE_SELECTED_ROWS }
     | { type: ActionType.INSERT_ROW_BEFORE }
-    | { type: ActionType.INSERT_ROW_AFTER };
+    | { type: ActionType.INSERT_ROW_AFTER }
+    | { type: ActionType.DELETE_COLUMN; col: number }
+    | { type: ActionType.INSERT_COLUMN_BEFORE; col: number }
+    | { type: ActionType.INSERT_COLUMN_AFTER; col: number };
 
 function init(params: { data: string[][]; columns: Column[] }): State {
     const columns = params.columns.map((column): ColumnState => {
@@ -74,7 +80,15 @@ function areAllRowsSelected(rows: RowState[]): boolean {
     return !rows.some(row => !row.selected);
 }
 
-function createRow(numCols: number): RowState {
+function createColumnState(): ColumnState {
+    const column: Column = { name: '', width: 100, minWidth: 50 };
+    return {
+        column,
+        width: column.width
+    };
+}
+
+function createRowState(numCols: number): RowState {
     const values: string[] = new Array(numCols);
     values.fill('');
     return {
@@ -124,7 +138,7 @@ function reducer(state: State, action: Action): State {
             const rows = state.rows.flatMap(row => {
                 if (row.selected) {
                     row = { ...row, selected: false };
-                    const newRow = createRow(state.columns.length);
+                    const newRow = createRowState(state.columns.length);
                     return [row, newRow];
                 } else {
                     return [row];
@@ -137,13 +151,33 @@ function reducer(state: State, action: Action): State {
             const rows = state.rows.flatMap(row => {
                 if (row.selected) {
                     row = { ...row, selected: false };
-                    const newRow = createRow(state.columns.length);
+                    const newRow = createRowState(state.columns.length);
                     return [newRow, row];
                 } else {
                     return [row];
                 }
             });
             return { ...state, rows };
+        }
+
+        case ActionType.DELETE_COLUMN: {
+            const columns = state.columns.slice(0);
+            columns.splice(action.col, 1);
+            return { ...state, columns };
+        }
+
+        case ActionType.INSERT_COLUMN_AFTER: {
+            const columns = state.columns.slice(0);
+            const newColumn = createColumnState();
+            columns.splice(action.col + 1, 0, newColumn);
+            return { ...state, columns };
+        }
+
+        case ActionType.INSERT_COLUMN_BEFORE: {
+            const columns = state.columns.slice(0);
+            const newColumn = createColumnState();
+            columns.splice(action.col, 0, newColumn);
+            return { ...state, columns };
         }
 
         default:
