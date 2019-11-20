@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Column } from "./dataGridTypes";
-import { Action } from './DataGrid';
+import { Action, ColumnState, ActionType } from './DataGrid';
 import DataGridResizer from './DataGridResizer';
 
 // type DropdownProps = {
@@ -41,7 +40,7 @@ import DataGridResizer from './DataGridResizer';
 
 type HeaderProps = {
     col: number;
-    column: Column;
+    column: ColumnState;
     dispatch: React.Dispatch<Action>;
     autoColumn: boolean;
 }
@@ -59,23 +58,36 @@ function DataGridHeader({ col, column, dispatch, autoColumn }: HeaderProps): Rea
 
     return (
         <div className="p-2 py-3 bg-container relative sticky top-0">
-            <div className="datagrid-header-label">{column.name}</div>
-            { !autoColumn ? <DataGridResizer col={col} column={column} dispatch={dispatch}/> : undefined }
+            <div className="datagrid-header-label">{column.column.name}</div>
+            { !autoColumn ? (
+                <DataGridResizer
+                    col={col}
+                    width={column.width}
+                    column={column.column}
+                    dispatch={dispatch}
+                />
+            ) : undefined }
             {/* <DataGridHeaderDropdown onHide={hideDropdown} show={state.dropdown}/> */}
         </div>
     );
 }
 
 type Props = {
-    columns: Column[];
+    allSelected: boolean;
+    columns: ColumnState[];
     dispatch: React.Dispatch<Action>;
 }
 
-function DataGridHeaders({ columns, dispatch }: Props) {
+function DataGridHeaders({ allSelected, columns, dispatch }: Props) {
+
+    const handleSelectAll = () => {
+        dispatch({ type: ActionType.TOGGLE_SELECT_ALL });
+    }
+
     return (
         <div className="datagrid-headers">
-            <div className="sticky bg-container p-2 top-0">
-                <input type="checkbox"/>
+            <div className="sticky bg-container p-2 top-0" onClick={handleSelectAll}>
+                <input type="checkbox" checked={allSelected}/>
             </div>
             {columns.map((column, i) => (
                 <DataGridHeader

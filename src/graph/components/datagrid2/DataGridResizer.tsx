@@ -1,28 +1,30 @@
 import React, { Dispatch, useRef } from "react";
 import { Action, ActionType } from './DataGrid';
-import { Column } from "./dataGridTypes";
 import { useDrag } from "../../helpers/useDrag";
+import { Column } from "./dataGridTypes";
 
 type Props = {
     col: number;
+    width: number;
     column: Column;
     dispatch: Dispatch<Action>;
 }
 
-export default function DataGridResizer({ col, column, dispatch }: Props): React.ReactElement {
+export default function DataGridResizer({ col, width, column, dispatch }: Props): React.ReactElement {
     const ref = useRef<HTMLDivElement>(null);
 
-    useDrag<{ startX: number; column: Column }>(ref, {
+    useDrag<{ startX: number; width: number; column: Column }>(ref, {
         onStart: (event) => {
             return {
                 startX: event.clientX,
+                width,
                 column
             };
         },
-        onDrag: (event, { startX, column }) => {
+        onDrag: (event, { startX, width, column }) => {
             const dx = event.clientX - startX;
-            const width = Math.max(column.minWidth ?? 0, column.width + dx);
-            dispatch({ type: ActionType.RESIZE_COLUMN, col, width });
+            const w = Math.max(column.minWidth ?? 0, width + dx);
+            dispatch({ type: ActionType.RESIZE_COLUMN, col, width: w });
         }
     });
 

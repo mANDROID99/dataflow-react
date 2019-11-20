@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 import DataGridCell from './DataGridCell';
-import { Action } from './DataGrid';
+import { Action, RowState, ActionType } from './DataGrid';
 import DataGridContextMenu from './DataGridContextMenu';
 
 type RowProps = {
-    row: number;
-    data: string[];
+    rowNo: number;
+    row: RowState;
     dispatch: React.Dispatch<Action>;
 }
 
-function DataGridRow({ row, data, dispatch }: RowProps) {
+function DataGridRow({ rowNo, row, dispatch }: RowProps) {
+
+    const handleRowSelected = () => {
+        dispatch({ type: ActionType.TOGGLE_SELECT_ROW, row: rowNo });
+    };
+
     return (
         <div className="datagrid-row">
-            <div className="bg-inherit p-2">
-                <input type="checkbox"/>
+            <div className="bg-inherit p-2" onClick={handleRowSelected}>
+                <input type="checkbox" checked={row.selected}/>
             </div>
-            {data.map((cell, i) => {
+            {row.values.map((cell, i) => {
                 return (
                     <DataGridCell
                         key={i}
-                        row={row}
+                        row={rowNo}
                         col={i}
                         value={cell}
                         dispatch={dispatch}
@@ -34,11 +39,11 @@ function DataGridRow({ row, data, dispatch }: RowProps) {
 const Row = React.memo(DataGridRow);
 
 type Props = {
-    data: string[][];
+    rows: RowState[];
     dispatch: React.Dispatch<Action>;
 }
 
-function DataGridBody({ data, dispatch }: Props) {
+function DataGridBody({ rows, dispatch }: Props) {
     const [showContextMenu, setShowContextMenu] = useState<{ x: number; y: number } | undefined>(undefined);
 
     const handleShowContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -55,8 +60,8 @@ function DataGridBody({ data, dispatch }: Props) {
 
     return (
         <div className="datagrid-body" onContextMenu={handleShowContextMenu}>
-            {data.map((row, i) => (
-                <Row key={i} row={i} data={row} dispatch={dispatch} />
+            {rows.map((row, i) => (
+                <Row key={i} rowNo={i} row={row} dispatch={dispatch} />
             ))}
             <DataGridContextMenu mousePos={showContextMenu} onHide={handleHideContextMenu} />
         </div>
