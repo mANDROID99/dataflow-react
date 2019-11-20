@@ -29,19 +29,20 @@ export default function DataGridHeaderDropdown({ col, show, dispatch, onHide }: 
 
     return (
         <Transition show={show} render={(show, onAnimationEnd) => (
-            // <Overlay onHide={onHide}>
+            <>
+                { show ? <Overlay onHide={onHide} /> : undefined }
                 <div
-                    className="absolute bg-container"
+                    className="dropdown-container"
+                    style={{ animation: (show ? 'slideIn' : 'slideOut') + ' 0.25s' }}
                     onAnimationEnd={onAnimationEnd}
                 >
                     <div className="menu-item" onClick={handleDeleteColumn}>Delete Column</div>
                     <div className="menu-item" onClick={handleInsertBefore}>Insert Column Before</div>
                     <div className="menu-item" onClick={handleInsertAfter}>Insert Column After</div>
                 </div>
-            // </Overlay>
+            </>
         )}/>        
     );
-}
 }
 
 

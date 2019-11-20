@@ -43,7 +43,7 @@ export default function DataGridContextMenu(props: Props) {
                     style={{
                         left: mousePos!.x,
                         top: mousePos!.y,
-                        animation: `${show ? 'slideIn' : 'slideOut'} 0.5s`
+                        animation: `${show ? 'slideIn' : 'slideOut'} 0.25s`
                     }}
                     onAnimationEnd={onAnimationEnd}
                 >

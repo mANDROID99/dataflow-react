@@ -3,42 +3,7 @@ import { Action, ColumnState, ActionType } from './DataGrid';
 import DataGridResizer from './DataGridResizer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DataGridHeaderDropdown from './DataGridHeaderDropdown';
-
-// type DropdownProps = {
-//     show: boolean;
-//     onHide: () => void;
-// }
-
-// function DataGridHeaderDropdown({ show, onHide }: DropdownProps): React.ReactElement {
-//     return (
-//         <Transition show={show} render={(show, onAnimationEnd): React.ReactElement => {
-//             return (
-//                 <>
-//                     { show ? <Overlay onHide={onHide}/> : undefined }
-//                     <div
-//                         className="datagrid-header-dropdown"
-//                         style={{ animation: `${show ? 'slideIn' : 'slideOut'} 0.5s`}}
-//                         onAnimationEnd={onAnimationEnd}
-//                     >
-//                         <div className="datagrid-header-dropdown-item">
-//                             Edit Column Name
-//                         </div>
-//                         <div className="datagrid-header-dropdown-item">
-//                             Insert Column Right
-//                         </div>
-//                         <div className="datagrid-header-dropdown-item">
-//                             Insert Column Left
-//                         </div>
-//                         <div className="datagrid-header-dropdown-item">
-//                             Delete Column
-//                         </div>
-//                     </div>
-//                 </>
-//             );
-//         }}/>
-//     );
-// }
-
+import TextEditable from './TextEditable';
 
 type HeaderProps = {
     col: number;
@@ -48,19 +13,24 @@ type HeaderProps = {
 }
 
 function DataGridHeader({ col, column, dispatch, autoColumn }: HeaderProps): React.ReactElement {
-    const [state, setState] = useState({ editing: false, dropdown: false });
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const handleToggleDropdown = (): void => {
-        setState({ editing: false, dropdown: !state.dropdown });
+        setShowDropdown(!showDropdown);
     };
 
-    const hideDropdown = (): void => {
-        setState({ editing: false, dropdown: false });
+    const handleNameChanged = (value: string): void => {
+        dispatch({ type: ActionType.CHANGE_COLUMN_HEADER, col, value });
     };
-
+    
     return (
-        <div className="p-2 py-3 bg-container flex relative sticky top-0">
-            <div className="flex-grow">{column.column.name}</div>
+        <div className="datagrid-header">
+            <div className="datagrid-header-dropdown-icon" onClick={handleToggleDropdown}>
+                <FontAwesomeIcon icon="bars"/>
+            </div>
+            <div className="datagrid-header-title">
+                <TextEditable onChange={handleNameChanged} value={column.name} dark/>
+            </div>
             { !autoColumn ? (
                 <DataGridResizer
                     col={col}
@@ -69,13 +39,10 @@ function DataGridHeader({ col, column, dispatch, autoColumn }: HeaderProps): Rea
                     dispatch={dispatch}
                 />
             ) : undefined }
-            <div className="cursor-pointer px-2" onClick={handleToggleDropdown}>
-                <FontAwesomeIcon icon="bars"/>
-            </div>
             <DataGridHeaderDropdown
                 col={col}
-                onHide={hideDropdown}
-                show={state.dropdown}
+                onHide={handleToggleDropdown}
+                show={showDropdown}
                 dispatch={dispatch}
             />
         </div>
@@ -96,8 +63,8 @@ function DataGridHeaders({ allSelected, columns, dispatch }: Props) {
 
     return (
         <div className="datagrid-headers">
-            <div className="sticky bg-container p-2 top-0" onClick={handleSelectAll}>
-                <input type="checkbox" checked={allSelected}/>
+            <div className="datagrid-header" onClick={handleSelectAll}>
+                <input type="checkbox" checked={allSelected} readOnly/>
             </div>
             {columns.map((column, i) => (
                 <DataGridHeader
@@ -109,7 +76,7 @@ function DataGridHeaders({ allSelected, columns, dispatch }: Props) {
                 />
             ))}
         </div>
-    )
+    );
 }
 
 export default React.memo(DataGridHeaders);

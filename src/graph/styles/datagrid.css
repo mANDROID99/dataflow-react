@@ -1,13 +1,14 @@
 .datagrid-container {
+    background-color: theme('colors.light.200');
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     height: 100%;
+    overflow: auto;
 }
 
 .datagrid {
     display: grid;
-    overflow: auto;
 }
 
 .datagrid-headers,
@@ -25,6 +26,24 @@
     background-color: #eeeeee;
 }
 
+.datagrid-header {
+    background-color: theme('colors.container');
+    display: flex;;
+    padding: 1rem 0.5rem;
+    position: sticky;
+    top: 0;
+}
+
+.datagrid-header-title {
+    flex-grow: 1;
+}
+
+.datagrid-header-dropdown-icon {
+    cursor: pointer;
+    padding: 0 0.5rem;
+    margin-right: 0.5rem;
+}
+
 .datagrid-resizer {
     background-color: theme('colors.primary');
     cursor: ew-resize;
@@ -33,6 +52,31 @@
     top: 0;
     right: 0;
     bottom: 0;
+}
+
+.datagrid-cell {
+    color: black;
+    background-color: inherit;
+    padding: 0.75rem 1rem;
+}
+
+.text-editable-label {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.text-editable-label:hover {
+    text-decoration: underline;
+}
+
+.text-editable-input {
+    width: 100%;
+    max-width: 150px;
+}
+
+.text-editable-input.dark {
+    color: black;
 }
 
 .bg-inherit {
@@ -53,10 +97,18 @@
     text-decoration: underline;
 }
 
+.dropdown-container {
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    top: 100%;
+}
+
 .menu-item {
     background-color: theme('colors.container');
     cursor: pointer;
     padding: 0.5rem;
+    white-space: nowrap;
 }
 
 .menu-item:hover {
