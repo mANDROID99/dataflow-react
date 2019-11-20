@@ -63,7 +63,11 @@ function DataGridBody({ rows, dispatch }: Props) {
             {rows.map((row, i) => (
                 <Row key={i} rowNo={i} row={row} dispatch={dispatch} />
             ))}
-            <DataGridContextMenu mousePos={showContextMenu} onHide={handleHideContextMenu} />
+            <DataGridContextMenu
+                mousePos={showContextMenu}
+                onHide={handleHideContextMenu}
+                dispatch={dispatch}
+            />
         </div>
     );
 }

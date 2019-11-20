@@ -1,10 +1,10 @@
 import React, { useReducer, useMemo } from 'react';
+import produce from 'immer';
 
 import { Column } from './dataGridTypes';
 import DataGridToolbar from './DataGridToolbar';
 import DataGridHeaders from './DataGridHeaders';
 import DataGridBody from './DataGridBody';
-import produce from 'immer';
 
 type Props = {
     columns: Column[];
@@ -32,14 +32,20 @@ export enum ActionType {
     RESIZE_COLUMN,
     CHANGE_CELL_VALUE,
     TOGGLE_SELECT_ROW,
-    TOGGLE_SELECT_ALL
+    TOGGLE_SELECT_ALL,
+    DELETE_SELECTED_ROWS,
+    INSERT_ROW_BEFORE,
+    INSERT_ROW_AFTER
 }
 
 export type Action =
     | { type: ActionType.RESIZE_COLUMN; col: number; width: number }
     | { type: ActionType.CHANGE_CELL_VALUE; col: number; row: number; value: string }
     | { type: ActionType.TOGGLE_SELECT_ALL }
-    | { type: ActionType.TOGGLE_SELECT_ROW; row: number };
+    | { type: ActionType.TOGGLE_SELECT_ROW; row: number }
+    | { type: ActionType.DELETE_SELECTED_ROWS }
+    | { type: ActionType.INSERT_ROW_BEFORE }
+    | { type: ActionType.INSERT_ROW_AFTER };
 
 function init(params: { data: string[][]; columns: Column[] }): State {
     const columns = params.columns.map((column): ColumnState => {
@@ -66,6 +72,15 @@ function init(params: { data: string[][]; columns: Column[] }): State {
 
 function areAllRowsSelected(rows: RowState[]): boolean {
     return !rows.some(row => !row.selected);
+}
+
+function createRow(numCols: number): RowState {
+    const values: string[] = new Array(numCols);
+    values.fill('');
+    return {
+        selected: true,
+        values
+    };
 }
 
 function reducer(state: State, action: Action): State {
@@ -98,6 +113,37 @@ function reducer(state: State, action: Action): State {
                     row.selected = !toggled;
                 }
             });
+        }
+
+        case ActionType.DELETE_SELECTED_ROWS: {
+            const rows = state.rows.filter(row => !row.selected);
+            return { ...state, rows };
+        }
+
+        case ActionType.INSERT_ROW_AFTER: {
+            const rows = state.rows.flatMap(row => {
+                if (row.selected) {
+                    row = { ...row, selected: false };
+                    const newRow = createRow(state.columns.length);
+                    return [row, newRow];
+                } else {
+                    return [row];
+                }
+            });
+            return { ...state, rows };
+        }
+
+        case ActionType.INSERT_ROW_BEFORE: {
+            const rows = state.rows.flatMap(row => {
+                if (row.selected) {
+                    row = { ...row, selected: false };
+                    const newRow = createRow(state.columns.length);
+                    return [newRow, row];
+                } else {
+                    return [row];
+                }
+            });
+            return { ...state, rows };
         }
 
         default:
