@@ -34,6 +34,8 @@ export default function TextEditable({ value, onChange, dark }: Props) {
             <div
                 className="text-editable-label"
                 onClick={handleBeginEdit}
+                onFocus={handleBeginEdit}
+                tabIndex={0}
             >
                 { value || '-' }
             </div>
