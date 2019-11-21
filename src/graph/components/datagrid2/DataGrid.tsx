@@ -278,10 +278,11 @@ export default function DataGrid({ columns, data }: Props): React.ReactElement |
         const cols: string[] = [];
         cols.push('40px');
 
-        state.columns.forEach((col, i, arr) => {
-            cols.push(i === arr.length - 1 ? 'auto' : col.width + 'px');
+        state.columns.forEach(col => {
+            cols.push(col.width + 'px');
         });
 
+        cols.push('auto');
         return cols.join(' ');
     }, [state.columns]);
 

@@ -20,7 +20,7 @@ function DataGridRow({ rowNo, row, dispatch }: RowProps) {
 
     return (
         <div className="datagrid-row">
-            <div className="bg-inherit p-2" onClick={handleRowSelected}>
+            <div className="datagrid-cell" onClick={handleRowSelected}>
                 <input type="checkbox" checked={row.selected} readOnly/>
             </div>
             {row.values.map((cell, i) => {
@@ -30,6 +30,7 @@ function DataGridRow({ rowNo, row, dispatch }: RowProps) {
                     </div>
                 );
             })}
+            <div className="datagrid-cell"/>
         </div>
     );
 }

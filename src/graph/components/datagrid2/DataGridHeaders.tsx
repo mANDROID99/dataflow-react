@@ -9,10 +9,9 @@ type HeaderProps = {
     col: number;
     column: ColumnState;
     dispatch: React.Dispatch<Action>;
-    autoColumn: boolean;
 }
 
-function DataGridHeader({ col, column, dispatch, autoColumn }: HeaderProps): React.ReactElement {
+function DataGridHeader({ col, column, dispatch }: HeaderProps): React.ReactElement {
     const [showDropdown, setShowDropdown] = useState(false);
 
     const handleToggleDropdown = (): void => {
@@ -31,14 +30,12 @@ function DataGridHeader({ col, column, dispatch, autoColumn }: HeaderProps): Rea
             <div className="datagrid-header-title">
                 <TextEditable onChange={handleNameChanged} value={column.name} dark/>
             </div>
-            { !autoColumn ? (
-                <DataGridResizer
-                    col={col}
-                    width={column.width}
-                    column={column.column}
-                    dispatch={dispatch}
-                />
-            ) : undefined }
+            <DataGridResizer
+                col={col}
+                width={column.width}
+                column={column.column}
+                dispatch={dispatch}
+            />
             <DataGridHeaderDropdown
                 col={col}
                 onHide={handleToggleDropdown}
@@ -72,9 +69,9 @@ function DataGridHeaders({ allSelected, columns, dispatch }: Props) {
                     col={i}
                     column={column}
                     dispatch={dispatch}
-                    autoColumn={i >= columns.length - 1}
                 />
             ))}
+            <div className="datagrid-header"/>
         </div>
     );
 }
