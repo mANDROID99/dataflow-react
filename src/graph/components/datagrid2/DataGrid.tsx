@@ -1,11 +1,10 @@
-import React, { useReducer, useMemo, useState } from 'react';
+import React, { useReducer, useMemo } from 'react';
 import produce from 'immer';
 
 import { Column } from './dataGridTypes';
 import DataGridToolbar from './DataGridToolbar';
 import DataGridHeaders from './DataGridHeaders';
 import DataGridRows from './DataGridRows';
-import DataGridContextMenu from './DataGridContextMenu';
 
 type Props = {
     columns: Column[];
@@ -14,7 +13,6 @@ type Props = {
 
 export type RowState = {
     values: string[];
-    selected: boolean;
 }
 
 export type ColumnState = {
@@ -28,15 +26,14 @@ type State = {
     originalColumns: Column[];
     columns: ColumnState[];
     rows: RowState[];
+    selection: number[];
 }
 
 export enum ActionType {
     RESIZE_COLUMN,
     CHANGE_CELL_VALUE,
     CHANGE_COLUMN_HEADER,
-    TOGGLE_SELECT_ROW,
-    TOGGLE_SELECT_ALL,
-    DELETE_SELECTED_ROWS,
+    DELETE_ROW,
     INSERT_ROW_BEFORE,
     INSERT_ROW_AFTER,
     DELETE_COLUMN,
@@ -50,11 +47,9 @@ export type Action =
     | { type: ActionType.RESIZE_COLUMN; col: number; width: number }
     | { type: ActionType.CHANGE_CELL_VALUE; col: number; row: number; value: string }
     | { type: ActionType.CHANGE_COLUMN_HEADER; col: number; value: string }
-    | { type: ActionType.TOGGLE_SELECT_ALL }
-    | { type: ActionType.TOGGLE_SELECT_ROW; row: number }
-    | { type: ActionType.DELETE_SELECTED_ROWS }
-    | { type: ActionType.INSERT_ROW_BEFORE }
-    | { type: ActionType.INSERT_ROW_AFTER }
+    | { type: ActionType.DELETE_ROW; row: number }
+    | { type: ActionType.INSERT_ROW_BEFORE; row: number }
+    | { type: ActionType.INSERT_ROW_AFTER; row: number }
     | { type: ActionType.DELETE_COLUMN; col: number }
     | { type: ActionType.INSERT_COLUMN_BEFORE; col: number }
     | { type: ActionType.INSERT_COLUMN_AFTER; col: number }
@@ -71,22 +66,16 @@ function init(params: { data: string[][]; columns: Column[] }): State {
     });
 
     const rows = params.data.map((values): RowState => {
-        return {
-            values,
-            selected: false
-        };
+        return { values };
     });
 
     return {
         originalColumns: params.columns,
         originalData: params.data,
         columns,
-        rows
+        rows,
+        selection: []
     };
-}
-
-function areAllRowsSelected(rows: RowState[]): boolean {
-    return !rows.some(row => !row.selected);
 }
 
 function createColumnState(): ColumnState {
@@ -101,10 +90,7 @@ function createColumnState(): ColumnState {
 function createRowState(numCols: number): RowState {
     const values: string[] = new Array(numCols);
     values.fill('');
-    return {
-        selected: false,
-        values
-    };
+    return { values };
 }
 
 function reducer(state: State, action: Action): State {
@@ -130,48 +116,23 @@ function reducer(state: State, action: Action): State {
             });
         }
 
-        case ActionType.TOGGLE_SELECT_ROW: {
-            return produce(state, (draft) => {
-                const row = draft.rows[action.row];
-                if (row) row.selected = !row.selected;
-            });
-        }
-
-        case ActionType.TOGGLE_SELECT_ALL: {
-            const toggled = areAllRowsSelected(state.rows);
-            return produce(state, (draft) => {
-                for (const row of draft.rows) {
-                    row.selected = !toggled;
-                }
-            });
-        }
-
-        case ActionType.DELETE_SELECTED_ROWS: {
-            const rows = state.rows.filter(row => !row.selected);
+        case ActionType.DELETE_ROW: {
+            const rows = state.rows.slice(0);
+            rows.splice(action.row, 1);
             return { ...state, rows };
         }
 
         case ActionType.INSERT_ROW_AFTER: {
-            const rows = state.rows.flatMap(row => {
-                if (row.selected) {
-                    const newRow = createRowState(state.columns.length);
-                    return [row, newRow];
-                } else {
-                    return [row];
-                }
-            });
+            const rows = state.rows.slice(0);
+            const newRow = createRowState(state.columns.length);
+            rows.splice(action.row + 1, 0, newRow);
             return { ...state, rows };
         }
 
         case ActionType.INSERT_ROW_BEFORE: {
-            const rows = state.rows.flatMap(row => {
-                if (row.selected) {
-                    const newRow = createRowState(state.columns.length);
-                    return [newRow, row];
-                } else {
-                    return [row];
-                }
-            });
+            const rows = state.rows.slice(0);
+            const newRow = createRowState(state.columns.length);
+            rows.splice(action.row, 0, newRow);
             return { ...state, rows };
         }
 
@@ -257,27 +218,11 @@ function reducer(state: State, action: Action): State {
     }
 }
 
-export default function DataGrid({ columns, data }: Props): React.ReactElement | null {
+export default function DataGrid({ columns, data }: Props) {
     const [state, dispatch] = useReducer(reducer, { columns, data }, init);
-
-    const [showContextMenu, setShowContextMenu] = useState<{ x: number; y: number } | undefined>(undefined);
-
-    const handleShowContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        setShowContextMenu({
-            x: event.pageX,
-            y: event.pageY
-        });
-    };
-
-    const handleHideContextMenu = () => {
-        setShowContextMenu(undefined);
-    };
 
     const gridTemplateColumns = useMemo(() => {
         const cols: string[] = [];
-        cols.push('40px');
-
         state.columns.forEach(col => {
             cols.push(col.width + 'px');
         });
@@ -286,16 +231,11 @@ export default function DataGrid({ columns, data }: Props): React.ReactElement |
         return cols.join(' ');
     }, [state.columns]);
 
-    const allSelected = useMemo(() => {
-        return areAllRowsSelected(state.rows);
-    }, [state.rows]);
-
     return (
         <>
-            <div className="datagrid-container" onContextMenu={handleShowContextMenu}>
+            <div className="datagrid-container">
                 <div className="datagrid" style={{ gridTemplateColumns }}>
                     <DataGridHeaders
-                        allSelected={allSelected}
                         columns={state.columns}
                         dispatch={dispatch}
                     />
@@ -304,11 +244,6 @@ export default function DataGrid({ columns, data }: Props): React.ReactElement |
                         dispatch={dispatch}
                     />
                 </div>
-                <DataGridContextMenu
-                    mousePos={showContextMenu}
-                    onHide={handleHideContextMenu}
-                    dispatch={dispatch}
-                />
             </div>
             <DataGridToolbar
                 numCols={state.columns.length}

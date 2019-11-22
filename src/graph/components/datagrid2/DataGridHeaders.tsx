@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { Action, ColumnState, ActionType } from './DataGrid';
 import DataGridResizer from './DataGridResizer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import DataGridHeaderDropdown from './DataGridHeaderDropdown';
 import TextEditable from './TextEditable';
+import Dropdown, { DropdownAction } from '../common/Dropdown';
 
 type HeaderProps = {
     col: number;
@@ -11,11 +12,38 @@ type HeaderProps = {
     dispatch: React.Dispatch<Action>;
 }
 
-function DataGridHeader({ col, column, dispatch }: HeaderProps): React.ReactElement {
-    const [showDropdown, setShowDropdown] = useState(false);
+function createDropdownActions(col: number, dispatch: React.Dispatch<Action>): DropdownAction[] {
+    return [
+        {
+            label: 'Delete Column',
+            action() {
+                dispatch({ type: ActionType.DELETE_COLUMN, col });
+            }
+        },
+        {
+            label: 'Insert Before',
+            action() {
+                dispatch({ type: ActionType.INSERT_COLUMN_BEFORE, col });
+            }
+        },
+        {
+            label: 'Insert After',
+            action() {
+                dispatch({ type: ActionType.INSERT_COLUMN_AFTER, col });
+            }
+        }
+    ];
+}
 
-    const handleToggleDropdown = (): void => {
-        setShowDropdown(!showDropdown);
+function DataGridHeader({ col, column, dispatch }: HeaderProps): React.ReactElement {
+    const [isShowMenu, setShowMenu] = useState(false);
+
+    const dropdownActions = useMemo(() => {
+        return createDropdownActions(col, dispatch);
+    }, [col, dispatch]);
+
+    const handleToggleMenu = () => {
+        setShowMenu(!isShowMenu);
     };
 
     const handleNameChanged = (value: string): void => {
@@ -24,7 +52,7 @@ function DataGridHeader({ col, column, dispatch }: HeaderProps): React.ReactElem
     
     return (
         <div className="datagrid-header">
-            <div className="datagrid-header-dropdown-icon" onClick={handleToggleDropdown}>
+            <div className="datagrid-header-dropdown-icon" onClick={handleToggleMenu}>
                 <FontAwesomeIcon icon="bars"/>
             </div>
             <div className="datagrid-header-title">
@@ -36,33 +64,19 @@ function DataGridHeader({ col, column, dispatch }: HeaderProps): React.ReactElem
                 column={column.column}
                 dispatch={dispatch}
             />
-            <DataGridHeaderDropdown
-                col={col}
-                onHide={handleToggleDropdown}
-                show={showDropdown}
-                dispatch={dispatch}
-            />
+            <Dropdown show={isShowMenu} actions={dropdownActions} onHide={handleToggleMenu}/>
         </div>
     );
 }
 
 type Props = {
-    allSelected: boolean;
     columns: ColumnState[];
     dispatch: React.Dispatch<Action>;
 }
 
-function DataGridHeaders({ allSelected, columns, dispatch }: Props) {
-
-    const handleSelectAll = () => {
-        dispatch({ type: ActionType.TOGGLE_SELECT_ALL });
-    }
-
+function DataGridHeaders({ columns, dispatch }: Props) {
     return (
         <div className="datagrid-headers">
-            <div className="datagrid-header" onClick={handleSelectAll}>
-                <input type="checkbox" checked={allSelected} readOnly/>
-            </div>
             {columns.map((column, i) => (
                 <DataGridHeader
                     key={i}

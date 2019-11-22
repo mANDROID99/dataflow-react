@@ -1,0 +1,30 @@
+.dropdown-menu {
+    color: white;
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    top: 100%;
+}
+
+.dropdown-menu.right {
+    right: 0;
+    left: auto;
+}
+
+.dropdown-menu-item {
+    background-color: theme('colors.container');
+    cursor: pointer;
+    padding: 0.5rem;
+    white-space: nowrap;
+}
+
+.dropdown-menu-item:hover {
+    background-color: theme('colors.primary');
+}
+
+.dropdown-menu-title {
+    background-color: theme('colors.container');
+    cursor: auto;
+    padding: 0.5rem;
+    white-space: nowrap;
+}

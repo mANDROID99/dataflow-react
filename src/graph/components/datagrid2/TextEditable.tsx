@@ -23,7 +23,7 @@ export default function TextEditable({ value, onChange, dark }: Props) {
     if (editing) {
         return (
             <Input
-                className={classNames("text-editable-input", { dark })}
+                className={classNames("datagrid-text-editable-input", { dark })}
                 value={value}
                 onChange={handleInputChange}
                 focus
@@ -32,7 +32,7 @@ export default function TextEditable({ value, onChange, dark }: Props) {
     } else {
         return (
             <div
-                className="text-editable-label"
+                className="datagrid-text-editable-label"
                 onClick={handleBeginEdit}
                 onFocus={handleBeginEdit}
                 tabIndex={0}

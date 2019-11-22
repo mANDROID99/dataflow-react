@@ -18,9 +18,11 @@ export default function DataGridInput(props: GraphFieldInputProps): React.ReactE
     }, []);
 
     return (
-        <div className="form-btn" onClick={showModal}>
-            <span className="select-none">Edit</span>
-            <FontAwesomeIcon className="ml-2" icon="edit"/>
+        <div className="relative">
+            <div className="form-btn" onClick={showModal}>
+                <span className="select-none">Edit</span>
+                <FontAwesomeIcon className="ml-2" icon="edit"/>
+            </div>
             <Modal show={modalShowing} onHide={hideModal}>
                 <DataGridModalContent onHide={hideModal} onSave={hideModal}/>
             </Modal>

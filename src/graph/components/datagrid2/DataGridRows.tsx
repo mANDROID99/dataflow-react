@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Action, RowState, ActionType } from './DataGrid';
 import TextEditable from './TextEditable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Dropdown, { DropdownAction } from '../common/Dropdown';
 
 type RowProps = {
     rowNo: number;
@@ -8,10 +10,47 @@ type RowProps = {
     dispatch: React.Dispatch<Action>;
 }
 
-function DataGridRow({ rowNo, row, dispatch }: RowProps) {
+function createDropdownActions(row: number, dispatch: React.Dispatch<Action>): DropdownAction[] {
+    return [
+        {
+            label: 'Delete Row',
+            action() {
+                dispatch({ type: ActionType.DELETE_ROW, row });
+            }
+        },
+        {
+            label: 'Insert Before',
+            action() {
+                dispatch({ type: ActionType.INSERT_ROW_BEFORE, row });
+            }
+        },
+        {
+            label: 'Insert After',
+            action() {
+                dispatch({ type: ActionType.INSERT_ROW_AFTER, row });
+            }
+        }
+    ];
+}
 
-    const handleRowSelected = () => {
-        dispatch({ type: ActionType.TOGGLE_SELECT_ROW, row: rowNo });
+function DataGridRow({ rowNo, row, dispatch }: RowProps) {
+    const [isSelected, setSelected] = useState(false);
+    const [isShowMenu, setShowMenu] = useState(false);
+
+    const dropdownActions = useMemo(() => {
+        return createDropdownActions(rowNo, dispatch);
+    }, [rowNo, dispatch]);
+
+    const handleMouseOver = () => {
+        setSelected(true);
+    };
+
+    const handleMouseOut = () => {
+        setSelected(false);
+    };
+
+    const handleToggleMenu = () => {
+        setShowMenu(!isShowMenu);
     };
 
     const handleCellValueChanged = (col: number) => (value: string) => {
@@ -19,10 +58,7 @@ function DataGridRow({ rowNo, row, dispatch }: RowProps) {
     };
 
     return (
-        <div className="datagrid-row">
-            <div className="datagrid-cell" onClick={handleRowSelected}>
-                <input type="checkbox" checked={row.selected} readOnly/>
-            </div>
+        <div className="datagrid-row" onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
             {row.values.map((cell, i) => {
                 return (
                     <div key={i} className="datagrid-cell">
@@ -30,7 +66,12 @@ function DataGridRow({ rowNo, row, dispatch }: RowProps) {
                     </div>
                 );
             })}
-            <div className="datagrid-cell"/>
+            <div className="datagrid-cell">
+                <div className="datagrid-row-actions" onClick={handleToggleMenu}>
+                    <FontAwesomeIcon icon="bars" style={{ visibility: isSelected ? 'visible' : 'hidden' }} />
+                    <Dropdown right show={isShowMenu} actions={dropdownActions} onHide={handleToggleMenu}/>
+                </div>
+            </div>
         </div>
     );
 }

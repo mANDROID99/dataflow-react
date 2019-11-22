@@ -26,6 +26,16 @@
     background-color: #eeeeee;
 }
 
+.datagrid-row-actions {
+    cursor: pointer;
+    float: right;
+    position: relative;
+}
+
+.datagrid-row-actions:hover {
+    color: theme('colors.primary');
+}
+
 .datagrid-header {
     background-color: theme('colors.container');
     display: flex;;
@@ -60,22 +70,22 @@
     padding: 0.75rem 1rem;
 }
 
-.text-editable-label {
+.datagrid-text-editable-label {
     cursor: pointer;
     width: 100%;
     height: 100%;
 }
 
-.text-editable-label:hover {
+.datagrid-text-editable-label:hover {
     text-decoration: underline;
 }
 
-.text-editable-input {
+.datagrid-text-editable-input {
     width: 100%;
     max-width: 150px;
 }
 
-.text-editable-input.dark {
+.datagrid-text-editable-input.dark {
     color: black;
 }
 
@@ -95,22 +105,4 @@
     cursor: pointer;
     display: inline;
     text-decoration: underline;
-}
-
-.dropdown-container {
-    position: absolute;
-    z-index: 3;
-    left: 0;
-    top: 100%;
-}
-
-.menu-item {
-    background-color: theme('colors.container');
-    cursor: pointer;
-    padding: 0.5rem;
-    white-space: nowrap;
-}
-
-.menu-item:hover {
-    background-color: theme('colors.primary');
 }
