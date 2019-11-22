@@ -27,6 +27,7 @@ export default function GraphComponent(props: Props): React.ReactElement {
 
     const graphNodes = useSelector(selectGraphNodes(graphId));
 
+    const [scroll, setScroll] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
     const [modalRoot] = useState(createModalRootDiv);
     const graphContainerRef = useRef<HTMLDivElement>(null);
 
@@ -47,20 +48,23 @@ export default function GraphComponent(props: Props): React.ReactElement {
         };
     }, [graphId, spec, modalRoot]);
 
+    const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+        const el = event.target as HTMLDivElement;
+        setScroll({ x: el.scrollLeft, y: el.scrollTop });
+    };
+
     return (
         <graphContext.Provider value={context}>
             <div ref={graphContainerRef} className="graph">
-                <div className="graph-scroll">
-                    <GraphSVG graphId={graphId}/>
-                    <div className="graph-nodes">
-                        {(graphNodes ? Object.keys(graphNodes) : []).map(nodeId => (
-                            <GraphNodeComponent
-                                key={nodeId}
-                                nodeId={nodeId}
-                                graphNode={graphNodes![nodeId]}
-                            />
-                        ))}
-                    </div>
+                <GraphSVG graphId={graphId} scroll={scroll}/>
+                <div className="graph-nodes" onScroll={handleScroll}>
+                    {(graphNodes ? Object.keys(graphNodes) : []).map(nodeId => (
+                        <GraphNodeComponent
+                            key={nodeId}
+                            nodeId={nodeId}
+                            graphNode={graphNodes![nodeId]}
+                        />
+                    ))}
                 </div>
                 <Menu/>
             </div>

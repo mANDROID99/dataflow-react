@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { GraphState } from '../../store/storeTypes';
 import { useSelector } from 'react-redux';
 import { selectGraphState } from '../selectors';
@@ -7,6 +7,7 @@ import classNames from 'classnames';
 
 type Props = {
     graphId: string;
+    scroll: { x: number; y: number };
 }
 
 type Connection = {
@@ -75,7 +76,7 @@ function getConnections(graphState: GraphState): Connection[] {
     return connections;
 }
 
-function renderDragConnection(state: GraphState): React.ReactElement | undefined {
+function renderDragConnection(state: GraphState, scroll: { x: number; y: number }): React.ReactElement | undefined {
     const drag = state.portDrag;
     if (!drag) return;
 
@@ -85,22 +86,21 @@ function renderDragConnection(state: GraphState): React.ReactElement | undefined
     
     const hasTarget = drag.target != null;
 
-    const d = plot(start.x, start.y, drag.mouseX, drag.mouseY);
+    const d = plot(start.x - scroll.x, start.y - scroll.y, drag.mouseX, drag.mouseY);
     return <path className={classNames("graph-drag-connection", { target: hasTarget })} d={d}/>;
 }
 
-export default function GraphSVG(props: Props): React.ReactElement {
-    const graphState = useSelector(selectGraphState(props.graphId));
+export default function GraphSVG({ graphId, scroll }: Props): React.ReactElement {
+    const graphState = useSelector(selectGraphState(graphId));
     const connections = graphState ? getConnections(graphState) : [];
 
     return (
         <svg className="graph-connections">
             {connections.map(conn => {
-                const d = plot(conn.sx, conn.sy, conn.ex, conn.ey);
+                const d = plot(conn.sx - scroll.x, conn.sy - scroll.y, conn.ex - scroll.x, conn.ey - scroll.y);
                 return <path key={conn.key} className="graph-connection" d={d}/>;
             })}
-
-            { graphState ? renderDragConnection(graphState) : undefined }
+            {graphState ? renderDragConnection(graphState, scroll) : undefined}
         </svg>
     );
 }
