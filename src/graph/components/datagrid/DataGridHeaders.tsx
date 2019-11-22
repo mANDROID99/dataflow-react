@@ -1,94 +1,93 @@
-import React, { Dispatch, useRef } from 'react';
-import classNames from 'classnames';
+import React, { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { Column, Action, ActionType } from "./DataGrid";
-import InputEditor from './InputEditor';
-import { useDrag } from '../../helpers/useDrag';
+import { Action, ColumnState, ActionType } from './DataGrid';
+import DataGridResizer from './DataGridResizer';
+import TextEditable from './TextEditable';
+import Dropdown, { DropdownAction } from '../common/Dropdown';
+
+type HeaderProps = {
+    col: number;
+    column: ColumnState;
+    dispatch: React.Dispatch<Action>;
+}
+
+function createDropdownActions(col: number, dispatch: React.Dispatch<Action>): DropdownAction[] {
+    return [
+        {
+            label: 'Delete Column',
+            action() {
+                dispatch({ type: ActionType.DELETE_COLUMN, col });
+            }
+        },
+        {
+            label: 'Insert Before',
+            action() {
+                dispatch({ type: ActionType.INSERT_COLUMN_BEFORE, col });
+            }
+        },
+        {
+            label: 'Insert After',
+            action() {
+                dispatch({ type: ActionType.INSERT_COLUMN_AFTER, col });
+            }
+        }
+    ];
+}
+
+function DataGridHeader({ col, column, dispatch }: HeaderProps): React.ReactElement {
+    const [isShowMenu, setShowMenu] = useState(false);
+
+    const dropdownActions = useMemo(() => {
+        return createDropdownActions(col, dispatch);
+    }, [col, dispatch]);
+
+    const handleToggleMenu = () => {
+        setShowMenu(!isShowMenu);
+    };
+
+    const handleNameChanged = (value: string): void => {
+        dispatch({ type: ActionType.CHANGE_COLUMN_HEADER, col, value });
+    };
+    
+    return (
+        <div className="datagrid-header">
+            <div className="datagrid-header-dropdown-icon" onClick={handleToggleMenu}>
+                <FontAwesomeIcon icon="bars"/>
+            </div>
+            <div className="datagrid-header-title">
+                <TextEditable onChange={handleNameChanged} value={column.name} dark/>
+            </div>
+            <DataGridResizer
+                col={col}
+                width={column.width}
+                column={column.column}
+                dispatch={dispatch}
+            />
+            <Dropdown show={isShowMenu} actions={dropdownActions} onHide={handleToggleMenu}/>
+        </div>
+    );
+}
 
 type Props = {
-    col: number;
-    column: Column;
-    columnWidth: number;
-    last: boolean;
-    dispatch: Dispatch<Action>;
+    columns: ColumnState[];
+    dispatch: React.Dispatch<Action>;
 }
 
-function DataGridHeaderComponent({ col, column, columnWidth, last, dispatch }: Props): React.ReactElement {
-    const ref = useRef<HTMLDivElement>(null);
-
-    const onValueChanged = (value: string): void => {
-        dispatch({ type: ActionType.SET_COLUMN_NAME, col, name: value });
-    };
-
-    const removeColumn = (): void => {
-        dispatch({ type: ActionType.DELETE_COLUMN, col });
-    };
-
-    useDrag<{ startX: number; startWidth: number }>(ref, {
-        onStart: (event) => {
-            return {
-                startX: event.clientX,
-                startWidth: columnWidth
-            };
-        },
-        onDrag: (event, { startX, startWidth }) => {
-            const width = Math.max(column.minWidth ?? 0, startWidth + event.clientX - startX);
-            dispatch({ type: ActionType.SET_COLUMN_WIDTH, col, width });
-        }
-    });
-
-    return (
-        <div className={classNames("datagrid-header", { grow: last })} style={{ width: columnWidth, minWidth: columnWidth }}>
-            <div className="datagrid-cell-content">
-                <div className="datagrid-header-label">
-                    <InputEditor value={column.name} onValueChanged={onValueChanged}/>
-                </div>
-                <div className="datagrid-action-btn" onClick={removeColumn}>
-                    <FontAwesomeIcon icon="times"/>
-                </div>
-            </div>
-            <div ref={ref} className="datagrid-resizer" style={{ visibility: last ? 'hidden' : 'visible' }}/>
-        </div>
-    );
-}
-
-const DataGridHeader = React.memo(DataGridHeaderComponent);
-
-type HeaderGroupProps = {
-    columns: Column[];
-    columnWidths: number[];
-    dispatch: Dispatch<Action>;
-}
-
-function DataGridHeaderGroupComponent({ columns, columnWidths, dispatch }: HeaderGroupProps): React.ReactElement {
-
-    const addColumn = (): void => {
-        const column: Column = { name: 'Column', width: 100, minWidth: 50 };
-        dispatch({ type: ActionType.ADD_COLUMN, column });
-    };
-
+function DataGridHeaders({ columns, dispatch }: Props) {
     return (
         <div className="datagrid-headers">
-            <div className="datagrid-header">
-                <div className="datagrid-cell-content">
-                    <div className="datagrid-action-btn" onClick={addColumn}>
-                        <FontAwesomeIcon icon="plus-square"/>
-                    </div>
-                </div>
-            </div>
-            {columns.map((column, index) => (
+            {columns.map((column, i) => (
                 <DataGridHeader
-                    key={index}
-                    col={index}
+                    key={i}
+                    col={i}
                     column={column}
-                    columnWidth={columnWidths[index]}
                     dispatch={dispatch}
-                    last={index === columns.length - 1}
                 />
             ))}
+            <div className="datagrid-header"/>
         </div>
     );
 }
 
-export const DataGridHeaderGroup = React.memo(DataGridHeaderGroupComponent);
+export default React.memo(DataGridHeaders);

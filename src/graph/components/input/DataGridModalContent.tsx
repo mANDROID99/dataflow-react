@@ -1,6 +1,6 @@
 import React from 'react';
-import DataGrid from '../datagrid2/DataGrid';
-import { Column } from '../datagrid2/dataGridTypes';
+import DataGrid from '../datagrid/DataGrid';
+import { Column } from '../datagrid/dataGridTypes';
 
 type Props = {
     onHide: () => void;
