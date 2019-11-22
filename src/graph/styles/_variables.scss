@@ -1,10 +1,19 @@
-$color-text: white;
-$color-darker: #151515;
-$color-lighter: #d7d7d7;
-$color-light: #cccccc;
-$color-grey: #6c6c6ccc;
-$color-dark: #2d2d2d;
 $color-primary: #2d94fb;
-$color-bg-interface: rgba(62, 62, 62, 0.75);
-$border-interface: 1px solid #6c6c6ccc;
-$border-radius: 5px;
+$color-secondary: #6c6c6c;
+$color-text: white;
+$color-text-dark: black;
+$color-lightest: #f3f3f3;
+$color-lighter: #e5e5e5;
+$color-light: #cccccc;
+$color-dark: #2d2d2d;
+$color-darker: #151515;
+
+$color-control-bg: #2d2d2d;
+$color-control-border: #5d5d5d;
+$color-control-container: $color-darker;
+
+$color-node-bg: #4a4a4abf;
+$color-node-border: #6a6a6acc;
+$color-node-header: #1e1e1e;
+
+$border-radius: 7px;

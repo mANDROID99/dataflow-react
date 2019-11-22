@@ -20,7 +20,7 @@
 }
 
 .modal-content {
-    background-color: #191919;
+    background-color: $color-control-container;
     border-radius: $border-radius;
     display: flex;
     flex-direction: column;
@@ -37,7 +37,7 @@
 }
 
 .modal-footer {
-    margin-top: 1rem;
+    padding: 0.5rem;
     text-align: end;
     .btn {
         margin-left: 0.5rem;

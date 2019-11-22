@@ -12,11 +12,10 @@
 }
 
 .graph-menu-item {
-    background-color: rgba($color-dark, 0.25);
+    background-color: $color-control-bg;
     display: flex;
-    color: $color-light;
     border-radius: $border-radius;
-    border: 1px solid $color-grey;
+    border: 1px solid $color-control-border;
     cursor: pointer;
     padding: 1rem;
     &:hover {
@@ -35,12 +34,12 @@
 }
 
 .graph-menu-dropdown {
-    background-color: $color-bg-interface;
-    border: $border-interface;
-    color: $color-light;
+    background-color: $color-control-bg;
+    border: 1px solid $color-control-border;
     position: absolute;
     border-radius: $border-radius;
     min-width: 100%;
+    z-index: 3;
 }
 
 .graph-menu-dropdown-group {

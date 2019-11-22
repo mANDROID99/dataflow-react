@@ -1,0 +1,45 @@
+.form-btn {
+    background-color: $color-secondary;
+    border: none;
+    border-radius: $border-radius;
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    position: relative;
+}
+
+.form-btn:hover::before {
+    content: '';
+    background-color: rgba(white, 0.2);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.form-btn.primary {
+    background-color: $color-primary;
+}
+
+.form-label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.form-control {
+    background-color: $color-control-bg;
+    border: none;
+    border-radius: $border-radius;
+    outline: none;
+    padding: 0.5rem;
+    transition: background-color 0.5s ease;
+}
+
+.form-control:focus {
+    background-color: lighten($color-control-bg, 10%);
+}
+
+.form-control-sm {
+    width: 80px;
+}

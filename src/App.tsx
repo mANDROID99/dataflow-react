@@ -9,9 +9,6 @@ import './fa';
 
 import 'normalize.css';
 import './styles/app.css';
-import './graph/styles/datagrid.css';
-import './graph/styles/dropdown.css';
-import './graph/styles/form.css';
 import './graph/styles/main.scss';
 
 const App: React.FC = () => {

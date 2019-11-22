@@ -7,7 +7,7 @@ import DataGridModalContent from './DataGridModalContent';
 
 
 export default function DataGridInput(props: GraphFieldInputProps): React.ReactElement {
-    const [modalShowing, setModalShowing] = useState(true);
+    const [modalShowing, setModalShowing] = useState(false);
 
     const showModal = useCallback(() => {
         setModalShowing(true);

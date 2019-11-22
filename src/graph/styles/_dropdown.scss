@@ -12,18 +12,17 @@
 }
 
 .dropdown-menu-item {
-    background-color: theme('colors.container');
+    background-color: $color-control-container;
     cursor: pointer;
     padding: 0.5rem;
     white-space: nowrap;
-}
-
-.dropdown-menu-item:hover {
-    background-color: theme('colors.primary');
+    &:hover {
+        background-color: $color-primary;
+    }
 }
 
 .dropdown-menu-title {
-    background-color: theme('colors.container');
+    background-color: $color-control-container;
     cursor: auto;
     padding: 0.5rem;
     white-space: nowrap;

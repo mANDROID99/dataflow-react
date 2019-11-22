@@ -1,5 +1,5 @@
 .datagrid-container {
-    background-color: theme('colors.light.200');
+    background-color: $color-lighter;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -18,12 +18,12 @@
 }
 
 .datagrid-row {
-    background-color: #f5f5f5;
+    background-color: $color-lightest;
     position: relative;
 }
 
 .datagrid-row:nth-child(even) {
-    background-color: #eeeeee;
+    background-color: $color-lighter;
 }
 
 .datagrid-row-actions {
@@ -33,11 +33,11 @@
 }
 
 .datagrid-row-actions:hover {
-    color: theme('colors.primary');
+    color: $color-primary;
 }
 
 .datagrid-header {
-    background-color: theme('colors.container');
+    background-color: $color-control-container;
     display: flex;;
     padding: 1rem 0.5rem;
     position: sticky;
@@ -55,7 +55,7 @@
 }
 
 .datagrid-resizer {
-    background-color: theme('colors.primary');
+    background-color: $color-primary;
     cursor: ew-resize;
     position: absolute;
     width: 3px;
