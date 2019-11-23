@@ -5,7 +5,7 @@ import GraphNodeHeader from './GraphNodeHeader';
 import GraphNodePorts from './GraphNodePorts';
 import { useDrag } from '../helpers/useDrag';
 import { useDispatch, useSelector } from 'react-redux';
-import { startNodeDrag, updateNodeDrag, endNodeDrag } from '../graphActions';
+import { startNodeDrag, updateNodeDrag, endNodeDrag } from '../editorActions';
 import { selectNodeDrag } from '../selectors';
 import GraphNodeFields from './GraphNodeFields';
 

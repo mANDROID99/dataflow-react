@@ -3,7 +3,7 @@ import { GraphNodeFieldSpec, GraphNodeInputSpec } from '../types/graphSpecTypes'
 import { graphContext } from './Graph';
 import { GraphFieldInputProps } from '../types/graphInputTypes';
 import { useDispatch } from 'react-redux';
-import { setFieldValue } from '../graphActions';
+import { setFieldValue } from '../editorActions';
 
 type Props = {
     nodeId: string;

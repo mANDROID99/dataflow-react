@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GraphNodeSpec } from '../types/graphSpecTypes';
 
 import { graphContext } from './Graph';
-import { removeNode } from '../graphActions';
+import { removeNode } from '../editorActions';
 
 type Props = {
     nodeId: string;

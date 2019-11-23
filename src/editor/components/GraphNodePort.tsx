@@ -7,7 +7,7 @@ import { GraphNodePortSpec } from '../types/graphSpecTypes';
 import { TargetPort } from '../types/graphTypes';
 import { useDrag } from '../helpers/useDrag';
 import { selectPortDrag } from '../selectors';
-import { startPortDrag, updatePortDrag, endPortDrag, mountPort, unmountPort, setPortDragTarget, unsetPortDragTarget } from '../graphActions';
+import { startPortDrag, updatePortDrag, endPortDrag, mountPort, unmountPort, setPortDragTarget, unsetPortDragTarget } from '../editorActions';
 import { PortRef, StoreState } from '../../store/storeTypes';
 import { isPortConnectable, comparePortRefs } from '../helpers/portHelpers';
 

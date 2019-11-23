@@ -6,7 +6,7 @@ import MenuDropdown, { MenuItemGroup, MenuItem } from './MenuDropdown';
 import { graphContext } from '../Graph';
 import { GraphSpec } from '../../types/graphSpecTypes';
 import { createGraphNodeFromSpec } from '../../helpers/graphNodeFactory';
-import { createNode } from '../../graphActions';
+import { createNode } from '../../editorActions';
 
 function sortBy<T>(key: keyof T) {
     return (left: T, right: T): number => {

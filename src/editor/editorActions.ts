@@ -2,19 +2,19 @@ import { PortRef } from "../store/storeTypes";
 import { GraphNode } from "./types/graphTypes";
 
 export enum ActionType {
-    CREATE_NODE = 'node-graph.ADD_NODE',
-    REMOVE_NODE = 'node-graph.REMOVE_NODE',
-    START_NODE_DRAG = 'node-graph.START_NODE_DRAG',
-    UPDATE_NODE_DRAG = 'node-graph.UPDATE_NODE_DRAG',
-    END_NODE_DRAG = 'node-graph.END_NODE_DRAG',
-    START_PORT_DRAG = 'node-graph.START_PORT_DRAG',
-    UPDATE_PORT_DRAG = 'node-graph.UPDATE_PORT_DRAG',
-    END_PORT_DRAG = 'node-graph.END_PORT_DRAG',
-    MOUNT_PORT = 'node-graph.MOUNT_PORT',
-    UNMOUNT_PORT = 'node-graph.UNMOUNT_PORT',
-    SET_PORT_DRAG_TARGET = 'node-graph.SET_PORT_DRAG_TARGET',
-    UNSET_PORT_DRAG_TARGET = 'node-graph.UNSET_PORT_DRAG_TARGET',
-    SET_NODE_FIELD_VALUE = 'node-graph.SET_NODE_FIELD_VALUE'
+    CREATE_NODE = 'editor.ADD_NODE',
+    REMOVE_NODE = 'editor.REMOVE_NODE',
+    START_NODE_DRAG = 'editor.START_NODE_DRAG',
+    UPDATE_NODE_DRAG = 'editor.UPDATE_NODE_DRAG',
+    END_NODE_DRAG = 'editor.END_NODE_DRAG',
+    START_PORT_DRAG = 'editor.START_PORT_DRAG',
+    UPDATE_PORT_DRAG = 'editor.UPDATE_PORT_DRAG',
+    END_PORT_DRAG = 'editor.END_PORT_DRAG',
+    MOUNT_PORT = 'editor.MOUNT_PORT',
+    UNMOUNT_PORT = 'editor.UNMOUNT_PORT',
+    SET_PORT_DRAG_TARGET = 'editor.SET_PORT_DRAG_TARGET',
+    UNSET_PORT_DRAG_TARGET = 'editor.UNSET_PORT_DRAG_TARGET',
+    SET_NODE_FIELD_VALUE = 'editor.SET_NODE_FIELD_VALUE'
 }
 
 export function createNode(graph: string, node: GraphNode): CreateNodeAction {

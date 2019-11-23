@@ -39,8 +39,14 @@ export type GraphEditorStates = {
     [graphId: string]: GraphEditorState | undefined;
 }
 
+
+export type AppState = {
+    splitSize: number;
+}
+
 export type StoreState = {
     editor: {
         [graphId: string]: GraphEditorState | undefined;
-    }
+    };
+    app: AppState;
 }
