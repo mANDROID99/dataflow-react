@@ -2,7 +2,6 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { GraphSpec } from '../types/graphSpecTypes';
-import { GraphContext } from '../types/graphEditorTypes';
 import GraphNodeComponent from './GraphNode';
 import { selectGraphNodes } from '../selectors';
 import GraphSVG from './GraphSVG';
@@ -13,8 +12,13 @@ type Props = {
     spec: GraphSpec;
 }
 
-export const graphContext = React.createContext<GraphContext>(null as any);
+export type GraphContext = {
+    graphId: string;
+    spec: GraphSpec;
+    modalRoot: Element;
+}
 
+export const graphContext = React.createContext<GraphContext>(null as any);
 
 function createModalRootDiv(): HTMLDivElement {
     const el = document.createElement('div');

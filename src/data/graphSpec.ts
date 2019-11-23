@@ -1,5 +1,5 @@
-import { GraphNodeSpec, GraphSpec } from "./graph/types/graphSpecTypes";
-import { inputs, InputType } from "./graph/components/input/standardInputs";
+import { GraphNodeSpec, GraphSpec } from "../editor/types/graphSpecTypes";
+import { inputs, InputType } from "../editor/components/input/standardInputs";
 
 const grid: GraphNodeSpec = {
     title: 'Grid',

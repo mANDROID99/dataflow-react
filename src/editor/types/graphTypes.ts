@@ -14,7 +14,6 @@ export type GraphNodePorts = {
 }
 
 export type GraphNode = {
-    // id: string;
     type: string;
     x: number;
     y: number;

@@ -1,4 +1,4 @@
-import { Graph } from "../graph/types/graphTypes";
+import { Graph } from "../editor/types/graphTypes";
 
 export type PortRef = {
     nodeId: string;
@@ -26,22 +26,21 @@ export type PortState = {
     offsetY: number;
 }
 
-export type GraphState = {
+export type GraphEditorState = {
     graph: Graph;
     ports: {
         [portKey: string]: PortState | undefined;
     };
     nodeDrag?: NodeDrag;
     portDrag?: PortDrag;
-
 }
 
-export type GraphsState = {
-    graphs: {
-        [graphId: string]: GraphState | undefined;
-    };
+export type GraphEditorStates = {
+    [graphId: string]: GraphEditorState | undefined;
 }
 
 export type StoreState = {
-    graph: GraphsState;
+    editor: {
+        [graphId: string]: GraphEditorState | undefined;
+    }
 }

@@ -1,25 +1,25 @@
-import { StoreState, PortDrag, NodeDrag, GraphState } from "../store/storeTypes";
+import { StoreState, PortDrag, NodeDrag, GraphEditorState } from "../store/storeTypes";
 import { GraphNode } from "./types/graphTypes";
 
 export function selectPortDrag(state: StoreState, graphId: string): PortDrag | undefined {
-    return state.graph.graphs[graphId]?.portDrag;
+    return state.editor[graphId]?.portDrag;
 }
 
 export function selectGraphState(graphId: string) {
-    return (state: StoreState): GraphState | undefined => {
-        return state.graph.graphs[graphId];
+    return (state: StoreState): GraphEditorState | undefined => {
+        return state.editor[graphId];
     }; 
 }
 
 export function selectGraphNodes(graphId: string) {
     return (state: StoreState): { [id: string]: GraphNode } | undefined => {
-        return state.graph.graphs[graphId]?.graph.nodes;
+        return state.editor[graphId]?.graph.nodes;
     };
 }
 
 export function selectNodeDrag(graphId: string) {
     return (state: StoreState): NodeDrag | undefined => {
-        return state.graph.graphs[graphId]?.nodeDrag;
+        return state.editor[graphId]?.nodeDrag;
     };
 }
 

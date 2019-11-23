@@ -1,63 +1,10 @@
 import { produce } from 'immer';
-import { Graph, TargetPort } from '../graph/types/graphTypes';
-import { GraphAction, ActionType, setFieldValueAction, RemoveNodeAction, StartPortDragAction, SetPortDragTargetAction, UnsetPortDragTargetAction, UpdatePortDragAction, EndPortDragAction, StartNodeDragAction, UpdateNodeDragAction, EndNodeDragAction, MountPortAction, UnmountPortAction, CreateNodeAction } from "../graph/graphActions";
-import { GraphsState, PortRef } from './storeTypes';
-import { comparePortRefs, getPortKeyFromRef } from '../graph/helpers/portHelpers';
+import { Graph, TargetPort } from './types/graphTypes';
+import { GraphAction, ActionType, setFieldValueAction, RemoveNodeAction, StartPortDragAction, SetPortDragTargetAction, UnsetPortDragTargetAction, UpdatePortDragAction, EndPortDragAction, StartNodeDragAction, UpdateNodeDragAction, EndNodeDragAction, MountPortAction, UnmountPortAction, CreateNodeAction } from "./graphActions";
+import { PortRef, GraphEditorStates } from '../store/storeTypes';
+import { comparePortRefs, getPortKeyFromRef } from './helpers/portHelpers';
 import { v4 } from 'uuid';
-
-const INIT_GRAPH: Graph = {
-    nodes: {
-        grid: {
-            type: 'grid',
-            fields: {},
-            x: 120,
-            y: 300,
-            ports: {
-                in: {},
-                out: {}
-            }
-        },
-        groupBy: {
-            type: 'group',
-            fields: {},
-            x: 100,
-            y: 120,
-            ports: {
-                in: {},
-                out: {
-                    group: [{
-                        node: 'sum',
-                        port: 'in'
-                    }]
-                }
-            }
-        },
-        sum: {
-            type: 'sum',
-            fields: {},
-            x: 400,
-            y: 200,
-            ports: {
-                in: {
-                    in: [{
-                        node: 'groupBy',
-                        port: 'group'
-                    }]
-                },
-                out: {}
-            }
-        }
-    }
-};
-
-const INIT_STATE: GraphsState = {
-    graphs: {
-        'graph-1': {
-            graph: INIT_GRAPH,
-            ports: {}
-        }
-    }
-};
+import { INIT_STATE } from '../data/graphState';
 
 function clearPortTargets(graph: Graph, targets: TargetPort[], nodeId: string, portOut: boolean): void {
     for (const target of targets) {
@@ -153,8 +100,8 @@ function createConnection(graph: Graph, start: PortRef, end: PortRef): void {
     }
 }
 
-const handleStartNodeDrag = produce((state: GraphsState, action: StartNodeDragAction) => {
-    const graphState = state.graphs[action.graph];
+const handleStartNodeDrag = produce((state: GraphEditorStates, action: StartNodeDragAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     graphState.nodeDrag = {
@@ -164,8 +111,8 @@ const handleStartNodeDrag = produce((state: GraphsState, action: StartNodeDragAc
     };
 });
 
-const handleUpdateNodeDrag = produce((state: GraphsState, action: UpdateNodeDragAction) => {
-    const graphState = state.graphs[action.graph];
+const handleUpdateNodeDrag = produce((state: GraphEditorStates, action: UpdateNodeDragAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const nodeDrag = graphState.nodeDrag;
@@ -175,8 +122,8 @@ const handleUpdateNodeDrag = produce((state: GraphsState, action: UpdateNodeDrag
     nodeDrag.dragY = action.dragY;
 });
 
-const handleEndNodeDrag = produce((state: GraphsState, action: EndNodeDragAction) => {
-    const graphState = state.graphs[action.graph];
+const handleEndNodeDrag = produce((state: GraphEditorStates, action: EndNodeDragAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const nodeDrag = graphState.nodeDrag;
@@ -191,8 +138,8 @@ const handleEndNodeDrag = produce((state: GraphsState, action: EndNodeDragAction
     node.y += nodeDrag.dragY;
 });
 
-const handleCreateNode = produce((state: GraphsState, action: CreateNodeAction) => {
-    const graphState = state.graphs[action.graph];
+const handleCreateNode = produce((state: GraphEditorStates, action: CreateNodeAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const graph = graphState.graph;
@@ -202,8 +149,8 @@ const handleCreateNode = produce((state: GraphsState, action: CreateNodeAction) 
     graph.nodes[nodeId] = node;
 });
 
-const handleRemoveNode = produce((state: GraphsState, action: RemoveNodeAction) => {
-    const graphState = state.graphs[action.graph];
+const handleRemoveNode = produce((state: GraphEditorStates, action: RemoveNodeAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const graph = graphState.graph;
@@ -230,8 +177,8 @@ const handleRemoveNode = produce((state: GraphsState, action: RemoveNodeAction) 
     delete graph.nodes[nodeId];
 });
 
-const handleSetNodeFieldValue = produce((state: GraphsState, action: setFieldValueAction) => {
-    const graphState = state.graphs[action.graph];
+const handleSetNodeFieldValue = produce((state: GraphEditorStates, action: setFieldValueAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const graph = graphState.graph;
@@ -241,8 +188,8 @@ const handleSetNodeFieldValue = produce((state: GraphsState, action: setFieldVal
     node.fields[action.field] = action.value;
 });
 
-const handleStartPortDrag = produce((state: GraphsState, action: StartPortDragAction) => {
-    const graphState = state.graphs[action.graph];
+const handleStartPortDrag = produce((state: GraphEditorStates, action: StartPortDragAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const port = action.port;
@@ -257,8 +204,8 @@ const handleStartPortDrag = produce((state: GraphsState, action: StartPortDragAc
     };
 });
 
-const handleUpdatePortDrag = produce((state: GraphsState, action: UpdatePortDragAction) => {
-    const graphState = state.graphs[action.graph];
+const handleUpdatePortDrag = produce((state: GraphEditorStates, action: UpdatePortDragAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const portDrag = graphState.portDrag;
@@ -268,8 +215,8 @@ const handleUpdatePortDrag = produce((state: GraphsState, action: UpdatePortDrag
     portDrag.mouseY = action.mouseY;
 });
 
-const handleEndPortDrag = produce((state: GraphsState, action: EndPortDragAction) => {
-    const graphState = state.graphs[action.graph];
+const handleEndPortDrag = produce((state: GraphEditorStates, action: EndPortDragAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const portDrag = graphState.portDrag;
@@ -283,8 +230,8 @@ const handleEndPortDrag = produce((state: GraphsState, action: EndPortDragAction
     }
 }); 
 
-const handleSetPortDragTarget = produce((state: GraphsState, action: SetPortDragTargetAction) => {
-    const graphState = state.graphs[action.graph];
+const handleSetPortDragTarget = produce((state: GraphEditorStates, action: SetPortDragTargetAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const portDrag = graphState.portDrag;
@@ -293,8 +240,8 @@ const handleSetPortDragTarget = produce((state: GraphsState, action: SetPortDrag
     portDrag.target = action.port;
 });
 
-const handleUnsetPortDragTarget = produce((state: GraphsState, action: UnsetPortDragTargetAction) => {
-    const graphState = state.graphs[action.graph];
+const handleUnsetPortDragTarget = produce((state: GraphEditorStates, action: UnsetPortDragTargetAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const portDrag = graphState.portDrag;
@@ -306,8 +253,8 @@ const handleUnsetPortDragTarget = produce((state: GraphsState, action: UnsetPort
     }
 });
 
-const handleMountPort = produce((state: GraphsState, action: MountPortAction) => {
-    const graphState = state.graphs[action.graph];
+const handleMountPort = produce((state: GraphEditorStates, action: MountPortAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const port = action.port;
@@ -319,8 +266,8 @@ const handleMountPort = produce((state: GraphsState, action: MountPortAction) =>
     };
 });
 
-const handleUnmountPort = produce((state: GraphsState, action: UnmountPortAction) => {
-    const graphState = state.graphs[action.graph];
+const handleUnmountPort = produce((state: GraphEditorStates, action: UnmountPortAction) => {
+    const graphState = state[action.graph];
     if (!graphState) return;
 
     const port = action.port;
@@ -328,7 +275,7 @@ const handleUnmountPort = produce((state: GraphsState, action: UnmountPortAction
     delete graphState.ports[portKey];
 });
 
-export default function(state: GraphsState = INIT_STATE, action: GraphAction): GraphsState {
+export default function(state: GraphEditorStates = INIT_STATE, action: GraphAction): GraphEditorStates {
     switch (action.type) {
         case ActionType.CREATE_NODE:
             return handleCreateNode(state, action);

@@ -1,15 +1,15 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import Graph from './graph/components/Graph';
-import { spec } from './graphSpec';
+import Graph from './editor/components/Graph';
+import { spec } from './data/graphSpec';
 
 import '@fortawesome/fontawesome-free';
 import './fa';
 
 import 'normalize.css';
 import './styles/app.css';
-import './graph/styles/main.scss';
+import './editor/styles/main.scss';
 
 const App: React.FC = () => {
   return (

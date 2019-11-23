@@ -1,9 +1,9 @@
 import { createStore, combineReducers } from 'redux';
-import graphReducer from './graphReducer';
+import graphReducer from '../editor/graphReducer';
 import { StoreState } from './storeTypes';
 
 const reducer = combineReducers<StoreState>({
-    graph: graphReducer
+    editor: graphReducer
 });
 
 export const store = createStore(

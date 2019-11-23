@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraphState } from '../../store/storeTypes';
+import { GraphEditorState } from '../../store/storeTypes';
 import { useSelector } from 'react-redux';
 import { selectGraphState } from '../selectors';
 import { getPortKey, getConnectionKey } from '../helpers/portHelpers';
@@ -22,7 +22,7 @@ function plot(sx: number, sy: number, ex: number, ey: number): string {
     return `M${sx},${sy}L${ex},${ey}`;
 }
 
-function getPortPos(state: GraphState, nodeId: string, portId: string, portOut: boolean): { x: number; y: number } | undefined {
+function getPortPos(state: GraphEditorState, nodeId: string, portId: string, portOut: boolean): { x: number; y: number } | undefined {
     const node = state.graph.nodes[nodeId];
     if (!node) return;
 
@@ -42,7 +42,7 @@ function getPortPos(state: GraphState, nodeId: string, portId: string, portOut: 
     return { x, y };
 }
 
-function getConnections(graphState: GraphState): Connection[] {
+function getConnections(graphState: GraphEditorState): Connection[] {
     const connections: Connection[] = [];
     const nodes = graphState.graph.nodes;
 
@@ -76,7 +76,7 @@ function getConnections(graphState: GraphState): Connection[] {
     return connections;
 }
 
-function renderDragConnection(state: GraphState, scroll: { x: number; y: number }): React.ReactElement | undefined {
+function renderDragConnection(state: GraphEditorState, scroll: { x: number; y: number }): React.ReactElement | undefined {
     const drag = state.portDrag;
     if (!drag) return;
 
