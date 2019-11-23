@@ -1,24 +1,29 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import SplitPane from 'react-split-pane';
+
 import { store } from './store/store';
-import Graph from './editor/components/Graph';
 import { spec } from './data/graphSpec';
+import Graph from './editor/components/Graph';
+import Chart from './chart/components/Chart';
 
 import '@fortawesome/fontawesome-free';
 import './fa';
 
 import 'normalize.css';
 import './styles/app.css';
-import './editor/styles/main.scss';
+import './styles/resizer.css';
+import './styles/main.scss';
 
-const App: React.FC = () => {
+export default function App() {
   return (
     <Provider store={store}>
       <div className="App">
-        <Graph graphId="graph-1" spec={spec}/>
+        <SplitPane split="vertical" minSize={100} defaultSize={300} primary="second">
+          <Graph graphId="graph-1" spec={spec}/>
+          <Chart graphId="graph-1"/>
+        </SplitPane>
       </div>
     </Provider>
   );
-};
-
-export default App;
+}

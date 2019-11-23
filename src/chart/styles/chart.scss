@@ -1,0 +1,10 @@
+.chart {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chart-canvas {
+    flex-grow: 1;
+
+}

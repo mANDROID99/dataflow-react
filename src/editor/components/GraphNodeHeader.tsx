@@ -28,7 +28,7 @@ function GraphNodeHeader(props: Props): React.ReactElement {
             <div className="graph-node-header-title">
                 { props.spec ? props.spec.title : TITLE_UNKNOWN }
             </div>
-            <div className="graph-node-header-close-icon p-2" onClick={handleRemove}>
+            <div className="graph-node-header-close-icon" onClick={handleRemove}>
                 <FontAwesomeIcon icon="times"/>
             </div>
         </>

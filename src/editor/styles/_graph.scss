@@ -1,5 +1,8 @@
-@import './variables';
-@import'./utils';
+@import './form';
+@import './dropdown';
+@import './modal';
+@import './datagrid';
+@import './graph-menu';
 
 .graph {
     background-color: $color-control-container;
@@ -8,6 +11,7 @@
     font-size: 12px;
     height: 100%;
     letter-spacing: 0.0625em;
+    overflow: hidden;
     position: relative;
     width: 100%;
     user-select: none;
@@ -52,11 +56,10 @@
     background-color: $color-node-header;
     border-top-left-radius: $border-radius;
     border-top-right-radius: $border-radius;
-    color: $color-lighter;
     cursor: move;
     align-items: center;
     display: flex;
-    padding: 0.5rem;
+    padding: 0.25rem 0.5rem;
 }
 
 .graph-node-header-title {
