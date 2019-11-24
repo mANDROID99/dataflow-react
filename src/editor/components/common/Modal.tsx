@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { createPortal } from 'react-dom';
 
-import { graphContext } from '../Graph';
+import { graphContext } from '../GraphEditor';
 import Transition from './Transition';
 import ModalOverlay from './ModalOverlay';
 

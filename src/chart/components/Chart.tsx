@@ -2,6 +2,8 @@ import React, { useRef, useEffect } from 'react';
 import { Chart } from 'chart.js';
 import '../styles/chart.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useSelector } from 'react-redux';
+import { selectGraphState, selectGraph } from '../../editor/selectors';
 
 type Props = {
     graphId: string;
@@ -63,9 +65,10 @@ function createChart(canvas: HTMLCanvasElement): Chart {
 }
 
 
-export default function ChartComponent({ splitSize }: Props) {
+export default function ChartComponent({ graphId, splitSize }: Props) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart>();
+    const graph = useSelector(selectGraph(graphId));
 
     useEffect(() => {
         const canvas = canvasRef.current;

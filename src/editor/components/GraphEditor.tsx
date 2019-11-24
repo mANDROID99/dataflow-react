@@ -9,13 +9,15 @@ import Menu from './menu/Menu';
 
 type Props = {
     graphId: string;
-    spec: GraphSpec;
+    graphSpec: GraphSpec;
+    context?: unknown;
 }
 
 export type GraphContext = {
     graphId: string;
-    spec: GraphSpec;
+    graphSpec: GraphSpec;
     modalRoot: Element;
+    ctx: unknown;
 }
 
 export const graphContext = React.createContext<GraphContext>(null as any);
@@ -26,14 +28,12 @@ function createModalRootDiv(): HTMLDivElement {
     return el;
 }
 
-export default function GraphComponent(props: Props): React.ReactElement {
-    const { graphId, spec } = props;
-
-    const graphNodes = useSelector(selectGraphNodes(graphId));
-
+export default function GraphEditor({ graphId, graphSpec: spec, context: ctx }: Props) {
     const [scroll, setScroll] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
     const [modalRoot] = useState(createModalRootDiv);
     const graphContainerRef = useRef<HTMLDivElement>(null);
+
+    const graphNodes = useSelector(selectGraphNodes(graphId));
 
     useEffect(() => {
         const container = graphContainerRef.current;
@@ -47,10 +47,11 @@ export default function GraphComponent(props: Props): React.ReactElement {
     const context = useMemo((): GraphContext => {
         return {
             graphId,
-            spec,
-            modalRoot
+            graphSpec: spec,
+            modalRoot,
+            ctx
         };
-    }, [graphId, spec, modalRoot]);
+    }, [graphId, spec, modalRoot, ctx]);
 
     const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
         const el = event.target as HTMLDivElement;

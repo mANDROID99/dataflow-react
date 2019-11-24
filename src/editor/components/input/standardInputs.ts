@@ -1,17 +1,25 @@
 import TextInput from "./TextInput"
 import { GraphNodeInputSpec } from "../../types/graphSpecTypes";
 import DataGridInput from "./DataGridInput";
+import SelectInput from "./SelectInput";
 
 export enum InputType {
     TEXT='text',
-    DATA_GRID='data-grid'
+    SELECT='select',
+    DATA_GRID='datagrid'
 }
 
 export const inputs: { [type: string]: GraphNodeInputSpec | undefined } = {
     [InputType.TEXT]: {
-        component: TextInput
+        component: TextInput,
+        initialValue: ''
+    },
+    [InputType.SELECT]: {
+        component: SelectInput,
+        initialValue: ''
     },
     [InputType.DATA_GRID]: {
-        component: DataGridInput
+        component: DataGridInput,
+        initialValue: []
     }
 };

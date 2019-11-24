@@ -3,6 +3,7 @@
 @import './modal';
 @import './datagrid';
 @import './graph-menu';
+@import './input';
 
 .graph {
     background-color: $color-control-container;
@@ -174,9 +175,4 @@
 
 .graph-node-field:not(:last-child) {
     margin-bottom: 10px;
-}
-
-.text-input {
-    width: 120px;
-    color: $color-text-dark;
 }

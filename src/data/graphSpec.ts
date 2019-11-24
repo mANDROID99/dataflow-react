@@ -1,9 +1,15 @@
-import { GraphNodeSpec, GraphSpec } from "../editor/types/graphSpecTypes";
+import { GraphNodeSpec, GraphSpec, GraphNodeType } from "../editor/types/graphSpecTypes";
 import { inputs, InputType } from "../editor/components/input/standardInputs";
 
+export type ChartContext = {
+    properties: string[];
+}
+
 const grid: GraphNodeSpec = {
+    input: true,
     title: 'Grid',
-    category: 'input',
+    type: GraphNodeType.IN,
+    menuGroup: 'Input',
     fields: [
         { label: 'Data', name: 'data', type: InputType.DATA_GRID }
     ],
@@ -17,7 +23,8 @@ const grid: GraphNodeSpec = {
 
 const group: GraphNodeSpec = {
     title: 'Group',
-    category: 'transform',
+    type: GraphNodeType.TRANSFORM,
+    menuGroup: 'Transform',
     fields: [
         { label: 'Column', name: 'column', type: InputType.TEXT }
     ],
@@ -34,7 +41,8 @@ const group: GraphNodeSpec = {
 
 const sum: GraphNodeSpec = {
     title: 'Sum',
-    category: 'transform',
+    type: GraphNodeType.TRANSFORM,
+    menuGroup: 'Transform',
     fields: [
         { label: 'Column', name: 'column', type: InputType.TEXT }
     ],
@@ -48,12 +56,37 @@ const sum: GraphNodeSpec = {
     }
 };
 
-export const spec: GraphSpec = {
+const output: GraphNodeSpec = {
+    title: 'Output',
+    type: GraphNodeType.OUT,
+    menuGroup: 'Output',
+    fields: [
+        {
+            label: 'Property',
+            name: 'property',
+            type: InputType.SELECT,
+            inputParams: (context) => {
+                return {
+                    options: (context as ChartContext).properties
+                };
+            }
+        }
+    ],
+    ports: {
+        in: [
+            { name: 'in', type: 'scalar', match: 'scalar' }
+        ],
+        out: []
+    }
+};
+
+export const graphSpec: GraphSpec = {
     inputs,
     nodes: {
         grid,
         group,
-        sum
+        sum,
+        output
     },
     portTypes: {
         row: {
@@ -64,16 +97,6 @@ export const spec: GraphSpec = {
         },
         scalar: {
             color: 'green'
-        }
-    },
-    categories: {
-        input: {
-            color: 'red',
-            label: 'Input'
-        },
-        transform: {
-            color: 'blue',
-            label: 'Transform'
         }
     }
 };

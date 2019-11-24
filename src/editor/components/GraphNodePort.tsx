@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useMemo, useCallback } from 'reac
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import classNames from 'classnames';
 
-import { graphContext } from './Graph';
+import { graphContext } from './GraphEditor';
 import { GraphNodePortSpec } from '../types/graphSpecTypes';
 import { TargetPort } from '../types/graphTypes';
 import { useDrag } from '../helpers/useDrag';
@@ -23,7 +23,7 @@ function GraphNodePort(props: Props): React.ReactElement {
     const { nodeId, nodeType, portSpec, portOut, portTargets } = props;
     const portId = portSpec.name;
 
-    const { graphId, spec } = useContext(graphContext);
+    const { graphId, graphSpec: spec } = useContext(graphContext);
     const { dragTarget, dragPort } = useSelector((state: StoreState) => {
         const drag = selectPortDrag(state, graphId);
         return {

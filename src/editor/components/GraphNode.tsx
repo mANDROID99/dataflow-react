@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from 'react';
 import { GraphNode } from '../types/graphTypes';
-import { graphContext } from './Graph';
+import { graphContext } from './GraphEditor';
 import GraphNodeHeader from './GraphNodeHeader';
 import GraphNodePorts from './GraphNodePorts';
 import { useDrag } from '../helpers/useDrag';
@@ -16,11 +16,11 @@ type Props = {
 
 function GraphNodeComponent(props: Props): React.ReactElement {
     const { nodeId, graphNode } = props;
-    const { graphId, spec } = useContext(graphContext);
+    const { graphId, graphSpec } = useContext(graphContext);
 
     const dispatch = useDispatch();
     const nodeType = graphNode.type;
-    const nodeSpec = spec.nodes[nodeType];
+    const nodeSpec = graphSpec.nodes[nodeType];
     const drag = useSelector(selectNodeDrag(graphId));
 
     const elRef = useRef<HTMLDivElement>(null);

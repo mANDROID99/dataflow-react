@@ -3,10 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { GraphFieldInputProps } from "../../types/graphInputTypes";
 import Modal from '../common/Modal';
-import DataGridModalContent from './DataGridModalContent';
+import DataGridModalContent from './DataGridModal';
 
 
-export default function DataGridInput(props: GraphFieldInputProps): React.ReactElement {
+export default function DataGridInput({ value, onChanged }: GraphFieldInputProps): React.ReactElement {
     const [modalShowing, setModalShowing] = useState(false);
 
     const showModal = useCallback(() => {

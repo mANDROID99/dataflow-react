@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GraphNodeSpec } from '../types/graphSpecTypes';
 
-import { graphContext } from './Graph';
+import { graphContext } from './GraphEditor';
 import { removeNode } from '../editorActions';
 
 type Props = {

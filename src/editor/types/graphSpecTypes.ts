@@ -2,15 +2,25 @@ import { GraphFieldInputProps } from "./graphInputTypes";
 
 export type PortMatcher = string | string[] | ((portType: string, nodeType: string) => boolean);
 
+export enum GraphNodeType {
+    IN = 'in',
+    OUT = 'out',
+    TRANSFORM = 'transform'
+}
+
 export type GraphNodeInputSpec = {
     component: React.ComponentType<GraphFieldInputProps>;
+    initialValue: unknown;
 }
+
+export type Resolvable<T> = [T] | ((context: unknown) => T);
 
 export type GraphNodeFieldSpec = {
     name: string;
     label: string;
     type: string;
-    initialValue?: unknown;
+    initialValue?: Resolvable<unknown>;
+    inputParams?: Resolvable<{ [key: string]: unknown }>;
 }
 
 export type GraphNodePortSpec = {
@@ -25,9 +35,10 @@ export type GraphNodePortsSpec = {
 }
 
 export type GraphNodeSpec = {
+    input?: boolean;
+    type: GraphNodeType;
+    menuGroup: string;
     title: string;
-    category: string;
-    menuOrder?: number;
     fields: GraphNodeFieldSpec[];
     ports: GraphNodePortsSpec;
 }
@@ -38,7 +49,6 @@ export type PortTypeSpec = {
 
 export type NodeCategorySpec = {
     label: string;
-    color: string;
     menuOrder?: number;
 }
 
@@ -51,8 +61,5 @@ export type GraphSpec = {
     };
     portTypes: {
         [type: string]: PortTypeSpec | undefined;
-    };
-    categories: {
-        [category: string]: NodeCategorySpec | undefined;
     };
 }

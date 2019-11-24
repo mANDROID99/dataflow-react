@@ -2,64 +2,41 @@ import React, { useState, useCallback, useContext, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 
-import MenuDropdown, { MenuItemGroup, MenuItem } from './MenuDropdown';
-import { graphContext } from '../Graph';
+import MenuDropdown, { MenuItemGroup } from './MenuDropdown';
+import { graphContext } from '../GraphEditor';
 import { GraphSpec } from '../../types/graphSpecTypes';
 import { createGraphNodeFromSpec } from '../../helpers/graphNodeFactory';
 import { createNode } from '../../editorActions';
 
-function sortBy<T>(key: keyof T) {
-    return (left: T, right: T): number => {
-        return (left[key] as unknown as number) - (right[key] as unknown as number);
-    };
-}
-
 function resolveMenuItems(spec: GraphSpec): MenuItemGroup[] {
-    const itemsByCategory = new Map<string, MenuItem[]>();
+    const groupsByName = new Map<string, MenuItemGroup>();
 
-    let i = 0;
     for (const [nodeId, node] of Object.entries(spec.nodes)) {
-        if (node) {
-            const category = node.category;
-            let items = itemsByCategory.get(category);
-            if (!items) {
-                items = [];
-                itemsByCategory.set(category, items);
-            }
+        if (!node) continue;
 
-            items.push({
-                label: node.title,
-                value: nodeId,
-                order: node.menuOrder ?? i++
-            });
+        const groupName = node.menuGroup;
+        let group: MenuItemGroup | undefined = groupsByName.get(groupName);
+        
+        if (!group) {
+            group = { items: [], label: groupName }
+            groupsByName.set(groupName, group);
         }
+
+        group.items.push({
+            label: node.title,
+            value: nodeId
+        });
     }
 
-    i = 0;
-    const groups: MenuItemGroup[] = [];
-    for (const [categoryId, category] of Object.entries(spec.categories)) {
-        if (category) {
-            const items = itemsByCategory.get(categoryId);
-            if (items) {
-                items.sort(sortBy('order'));
-                groups.push({
-                    label: category.label,
-                    items,
-                    order: category.menuOrder ?? i++
-                });
-            }
-        }
-    }
-
-    return groups.sort(sortBy('order'));
+    return Array.from(groupsByName.values());
 }
 
 export default function Menu(): React.ReactElement {
     const [isShowDropdown, setShowDropdown] = useState(false);
-    const { graphId, spec } = useContext(graphContext);
+    const { graphId, graphSpec, ctx } = useContext(graphContext);
     const dispatch = useDispatch();
 
-    const menuItems = useMemo(() => resolveMenuItems(spec), [spec]);
+    const menuItems = useMemo(() => resolveMenuItems(graphSpec), [graphSpec]);
     
     const toggleDropdown = useCallback(() => {
         setShowDropdown(!isShowDropdown);
@@ -69,15 +46,11 @@ export default function Menu(): React.ReactElement {
         setShowDropdown(false);
     }, []);
         
-    const nodeSpecs = spec.nodes;
     const onItemSelected = useCallback((nodeType: string) => {
         setShowDropdown(false);
-        const nodeSpec = nodeSpecs[nodeType];
-        if (nodeSpec) {
-            const graphNode = createGraphNodeFromSpec(nodeType, nodeSpec);
-            dispatch(createNode(graphId, graphNode));
-        }
-    }, [graphId, dispatch, nodeSpecs]);
+        const graphNode = createGraphNodeFromSpec(nodeType, graphSpec, ctx);
+        dispatch(createNode(graphId, graphNode));
+    }, [graphId, dispatch, graphSpec, ctx]);
 
     return (
         <div className="graph-menu">

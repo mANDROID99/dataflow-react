@@ -6,14 +6,12 @@ import Overlay from '../common/Overlay';
 export type MenuItem = {
     label: string;
     value: string;
-    order: number;
     group?: string;
 }
 
 export type MenuItemGroup = {
     label: string;
     items: MenuItem[];
-    order: number;
 }
 
 type Props = {
