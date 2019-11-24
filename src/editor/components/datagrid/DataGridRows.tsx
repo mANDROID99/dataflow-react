@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Action, RowState, ActionType } from './DataGrid';
-import TextEditable from './TextEditable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Action, ActionType } from './DataGrid';
+import TextEditable from './TextEditable';
 import Dropdown, { DropdownAction } from '../common/Dropdown';
 
 type RowProps = {
     rowNo: number;
-    row: RowState;
+    row: string[];
     dispatch: React.Dispatch<Action>;
 }
 
@@ -59,7 +59,7 @@ function DataGridRow({ rowNo, row, dispatch }: RowProps) {
 
     return (
         <div className="datagrid-row" onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
-            {row.values.map((cell, i) => {
+            {row.map((cell, i) => {
                 return (
                     <div key={i} className="datagrid-cell">
                         <TextEditable value={cell} onChange={handleCellValueChanged(i)}/>
@@ -79,7 +79,7 @@ function DataGridRow({ rowNo, row, dispatch }: RowProps) {
 const Row = React.memo(DataGridRow);
 
 type Props = {
-    rows: RowState[];
+    rows: string[][];
     dispatch: React.Dispatch<Action>;
 }
 

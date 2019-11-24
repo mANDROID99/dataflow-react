@@ -66,7 +66,7 @@ function GraphNodeComponent(props: Props): React.ReactElement {
                 <GraphNodeFields
                     nodeId={nodeId}
                     fieldSpecs={nodeSpec?.fields}
-                    fields={graphNode.fields}
+                    fieldValues={graphNode.fields}
                 />
                 <GraphNodePorts
                     nodeId={nodeId}

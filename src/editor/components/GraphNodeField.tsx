@@ -24,7 +24,6 @@ function GraphNodeField(props: Props): React.ReactElement {
         dispatch(setFieldValue(graphId, nodeId, fieldName, value));
     }, [dispatch, graphId, nodeId, fieldName]);
 
-
     const inputProps: GraphFieldInputProps = {
         onChanged,
         value: fieldValue,

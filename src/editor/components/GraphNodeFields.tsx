@@ -5,27 +5,27 @@ import GraphNodeField from './GraphNodeField';
 type Props = {
     nodeId: string;
     fieldSpecs: GraphNodeFieldSpec[] | undefined;
-    fields: {
+    fieldValues: {
         [name: string]: unknown;
     };
 }
 
 function GraphNodeFields(props: Props): React.ReactElement {
     const fieldSpecs = props.fieldSpecs;
-    const fields = props.fields;
+    const fieldValues = props.fieldValues;
     const nodeId = props.nodeId;
 
     return (
         <div className="graph-node-fields">
             { (fieldSpecs || []).map((fieldSpec: GraphNodeFieldSpec) => {
                 const fieldName = fieldSpec.name;
-                const field = fields[fieldName];
+                const fieldValue = fieldValues[fieldName];
                 return (
                     <GraphNodeField
                         key={fieldName}
                         nodeId={nodeId}
                         fieldSpec={fieldSpec}
-                        fieldValue={field}
+                        fieldValue={fieldValue}
                     />
                 );
             })}

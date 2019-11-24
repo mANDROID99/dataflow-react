@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { Action, ColumnState, ActionType } from './DataGrid';
+import { Action, ActionType } from './DataGrid';
 import DataGridResizer from './DataGridResizer';
 import TextEditable from './TextEditable';
 import Dropdown, { DropdownAction } from '../common/Dropdown';
+import { Column } from './dataGridTypes';
 
 type HeaderProps = {
     col: number;
-    column: ColumnState;
+    column: Column;
     dispatch: React.Dispatch<Action>;
 }
 
@@ -60,8 +61,7 @@ function DataGridHeader({ col, column, dispatch }: HeaderProps): React.ReactElem
             </div>
             <DataGridResizer
                 col={col}
-                width={column.width}
-                column={column.column}
+                column={column}
                 dispatch={dispatch}
             />
             <Dropdown show={isShowMenu} actions={dropdownActions} onHide={handleToggleMenu}/>
@@ -70,7 +70,7 @@ function DataGridHeader({ col, column, dispatch }: HeaderProps): React.ReactElem
 }
 
 type Props = {
-    columns: ColumnState[];
+    columns: Column[];
     dispatch: React.Dispatch<Action>;
 }
 

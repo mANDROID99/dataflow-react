@@ -5,7 +5,12 @@ const INIT_GRAPH: Graph = {
     nodes: {
         grid: {
             type: 'grid',
-            fields: {},
+            fields: {
+                data: {
+                    columns: [],
+                    rows: []
+                }
+            },
             x: 120,
             y: 300,
             ports: {

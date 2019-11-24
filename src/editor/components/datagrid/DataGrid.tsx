@@ -8,25 +8,16 @@ import DataGridRows from './DataGridRows';
 
 type Props = {
     columns: Column[];
-    data: string[][];
-}
-
-export type RowState = {
-    values: string[];
-}
-
-export type ColumnState = {
-    column: Column;
-    width: number;
-    name: string;
+    rows: string[][];
+    onHide: () => void;
+    onSave: (column: Column[], rows: string[][]) => void;
 }
 
 type State = {
     originalData: string[][];
     originalColumns: Column[];
-    columns: ColumnState[];
-    rows: RowState[];
-    selection: number[];
+    rows: string[][];
+    columns: Column[];
 }
 
 export enum ActionType {
@@ -57,40 +48,26 @@ export type Action =
     | { type: ActionType.SET_NUM_COLS; count: number };
 
 function init(params: { data: string[][]; columns: Column[] }): State {
-    const columns = params.columns.map((column): ColumnState => {
-        return {
-            column,
-            width: column.width,
-            name: column.name
-        };
-    });
-
-    const rows = params.data.map((values): RowState => {
-        return { values };
-    });
-
     return {
         originalColumns: params.columns,
         originalData: params.data,
-        columns,
-        rows,
-        selection: []
+        columns: params.columns,
+        rows: params.data
     };
 }
 
-function createColumnState(): ColumnState {
-    const column: Column = { name: '', width: 100, minWidth: 50 };
+function createColumn(): Column {
     return {
-        column,
-        width: column.width,
-        name: ''
+        name: '',
+        width: 100,
+        minWidth: 50
     };
 }
 
-function createRowState(numCols: number): RowState {
+function createRow(numCols: number): string[] {
     const values: string[] = new Array(numCols);
     values.fill('');
-    return { values };
+    return values;
 }
 
 function reducer(state: State, action: Action): State {
@@ -105,7 +82,7 @@ function reducer(state: State, action: Action): State {
         case ActionType.CHANGE_CELL_VALUE: {
             return produce(state, (draft) => {
                 const row = draft.rows[action.row];
-                if (row) row.values[action.col] = action.value;
+                if (row) row[action.col] = action.value;
             });
         }
 
@@ -124,14 +101,14 @@ function reducer(state: State, action: Action): State {
 
         case ActionType.INSERT_ROW_AFTER: {
             const rows = state.rows.slice(0);
-            const newRow = createRowState(state.columns.length);
+            const newRow = createRow(state.columns.length);
             rows.splice(action.row + 1, 0, newRow);
             return { ...state, rows };
         }
 
         case ActionType.INSERT_ROW_BEFORE: {
             const rows = state.rows.slice(0);
-            const newRow = createRowState(state.columns.length);
+            const newRow = createRow(state.columns.length);
             rows.splice(action.row, 0, newRow);
             return { ...state, rows };
         }
@@ -141,9 +118,9 @@ function reducer(state: State, action: Action): State {
             columns.splice(action.col, 1);
 
             const rows = state.rows.map(row => {
-                const values = row.values.slice(0);
-                values.splice(action.col, 1);
-                return { ...row, values };
+                row = row.slice(0);
+                row.splice(action.col, 1);
+                return row;
             });
 
             return { ...state, columns, rows };
@@ -151,13 +128,13 @@ function reducer(state: State, action: Action): State {
 
         case ActionType.INSERT_COLUMN_AFTER: {
             const columns = state.columns.slice(0);
-            const newColumn = createColumnState();
+            const newColumn = createColumn();
             columns.splice(action.col + 1, 0, newColumn);
 
             const rows = state.rows.map(row => {
-                const values = row.values.slice(0);
-                values.splice(action.col + 1, 0, '');
-                return { ...row, values };
+                row = row.slice(0);
+                row.splice(action.col + 1, 0, '');
+                return row;
             });
 
             return { ...state, columns, rows };
@@ -165,13 +142,13 @@ function reducer(state: State, action: Action): State {
 
         case ActionType.INSERT_COLUMN_BEFORE: {
             const columns = state.columns.slice(0);
-            const newColumn = createColumnState();
+            const newColumn = createColumn();
             columns.splice(action.col, 0, newColumn);
 
             const rows = state.rows.map(row => {
-                const values = row.values.slice(0);
-                values.splice(action.col, 0, '');
-                return { ...row, values };
+                row = row.slice(0);
+                row.splice(action.col, 0, '');
+                return row;
             });
 
             return { ...state, columns, rows };
@@ -183,19 +160,17 @@ function reducer(state: State, action: Action): State {
             columns.length = action.count;
 
             for (let i = n; i < action.count; i++) {
-                columns[i] = createColumnState();
+                columns[i] = createColumn();
             }
 
             const rows = state.rows.map(row => {
-                const values = row.values.slice(0);
-                const n = values.length;
-                values.length = action.count;
-
+                row = row.slice(0);
+                const n = row.length;
+                row.length = action.count;
                 for (let i = n; i < action.count; i++) {
-                    values[i] = '';
+                    row[i] = '';
                 }
-
-                return { ...row, values };
+                return row;
             });
 
             return { ...state, columns, rows };
@@ -207,7 +182,7 @@ function reducer(state: State, action: Action): State {
             rows.length = action.count;
 
             for (let i = n; i < action.count; i++) {
-                rows[i] = createRowState(state.columns.length);
+                rows[i] = createRow(state.columns.length);
             }
 
             return { ...state, rows };
@@ -218,7 +193,7 @@ function reducer(state: State, action: Action): State {
     }
 }
 
-export default function DataGrid({ columns, data }: Props) {
+export default function DataGrid({ columns, rows: data, onHide, onSave }: Props) {
     const [state, dispatch] = useReducer(reducer, { columns, data }, init);
 
     const gridTemplateColumns = useMemo(() => {
@@ -231,8 +206,12 @@ export default function DataGrid({ columns, data }: Props) {
         return cols.join(' ');
     }, [state.columns]);
 
+    const handleSaveChanges = () => {
+        onSave(state.columns, state.rows);
+    };
+
     return (
-        <>
+        <div className="modal-content">
             <div className="datagrid-container">
                 <div className="datagrid" style={{ gridTemplateColumns }}>
                     <DataGridHeaders
@@ -250,6 +229,10 @@ export default function DataGrid({ columns, data }: Props) {
                 numRows={state.rows.length}
                 dispatch={dispatch}
             />
-        </>
+            <div className="modal-footer">
+                <button className="form-btn" onClick={onHide}>Cancel</button>
+                <button className="form-btn primary ml-2" onClick={handleSaveChanges}>Save Changes</button>
+            </div>
+        </div>
     );
 }
