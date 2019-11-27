@@ -2,7 +2,7 @@ import React from 'react';
 import SplitPane from 'react-split-pane';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { graphSpec, ChartContext } from './data/graphSpec';
+import { graphSpec, ChartContext } from './data/graphConfig';
 import Chart from './chart/components/Chart';
 import Graph from './editor/components/GraphEditor';
 import { selectSplitSize } from './store/appSelectors';

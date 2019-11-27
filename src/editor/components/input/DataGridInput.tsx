@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { GraphFieldInputProps } from "../../types/graphInputTypes";
+import { GraphFieldInputProps } from "../../../types/graphInputTypes";
 import Modal from '../common/Modal';
 import DataGrid from '../datagrid/DataGrid';
 import { Column } from '../datagrid/dataGridTypes';

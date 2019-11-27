@@ -1,6 +1,6 @@
 import { PortRef } from "../../store/storeTypes";
-import { TargetPort } from "../types/graphTypes";
-import { GraphNodePortSpec } from "../types/graphSpecTypes";
+import { TargetPort } from "../../types/graphTypes";
+import { GraphNodePortConfig } from "../../types/graphConfigTypes";
 
 export function comparePortRefs(left: PortRef, right: PortRef): boolean {
     return left.nodeId === right.nodeId
@@ -8,15 +8,28 @@ export function comparePortRefs(left: PortRef, right: PortRef): boolean {
         && left.portOut === right.portOut;
 }
 
-
-export function isPortConnectable(targetPort: PortRef | undefined, portTargets: TargetPort[] | undefined, portRef: PortRef, portSpec: GraphNodePortSpec): boolean {
-    // check whether the target node can be connected to
-    if (!targetPort || targetPort.portOut === portRef.portOut || targetPort.nodeId === portRef.nodeId) {
+export function isPortConnectable(targetPort: PortRef | undefined, portTargets: TargetPort[] | undefined, portRef: PortRef, portSpec: GraphNodePortConfig): boolean {
+    if (!targetPort) {
         return false;
-    } 
-    
-    // check whether the port is already connected to the target
-    if (portTargets) {
+    }
+
+    // must be connecting in the right direction
+    if (targetPort.portOut === portRef.portOut) {
+        return false;
+    }
+
+    // can't connect to itself
+    if (targetPort.nodeId === portRef.nodeId) {
+        return false;
+    }
+
+    if (portTargets && portTargets.length) {
+        // ports can have at most one incoming connection
+        if (!portRef.portOut) {
+            return false;
+        }        
+        
+        // check whether the port is already connected to the target
         for (const target of portTargets) {
             if (target.node === targetPort.nodeId && target.port === targetPort.portId) {
                 return false;
@@ -24,20 +37,23 @@ export function isPortConnectable(targetPort: PortRef | undefined, portTargets: 
         }
     }
 
-    // check whether the target port-type is connectable
-    if (portSpec.match) {
-        if (typeof portSpec.match === 'string') {
-            return portSpec.match === targetPort.portType;
+    // check whether the port-types match
+    const portType = portSpec.type;
+    const targetType = targetPort.portType;
 
-        } else if (Array.isArray(portSpec.match)) {
-            return portSpec.match.some(m => m === targetPort.portType);
-
-        } else {
-            return portSpec.match(targetPort.portType, targetPort.nodeType);
-        }
+    if (Array.isArray(portType)) {
+        return portType.some(t => matchesType(targetType, t));
+    } else {
+        return matchesType(targetType, portType);
     }
+}
 
-    return true;
+function matchesType(type: string | string[], test: string): boolean {
+    if (typeof type === 'string') {
+        return type === test;
+    } else {
+        return type.some(t => t === test);
+    }
 }
 
 export function getPortKey(nodeId: string, portId: string, portOut: boolean): string {

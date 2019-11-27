@@ -1,5 +1,5 @@
 import TextInput from "./TextInput"
-import { GraphNodeInputSpec } from "../../types/graphSpecTypes";
+import { GraphNodeInputConfig } from "../../../types/graphConfigTypes";
 import DataGridInput, { DataGridInputValue } from "./DataGridInput";
 import SelectInput from "./SelectInput";
 
@@ -17,7 +17,7 @@ function initialDataGridValue(): DataGridInputValue {
     };
 }
 
-export const inputs: { [type: string]: GraphNodeInputSpec | undefined } = {
+export const inputs: { [type: string]: GraphNodeInputConfig | undefined } = {
     [InputType.TEXT]: {
         component: TextInput,
         initialValue: ''

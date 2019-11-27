@@ -1,8 +1,8 @@
-import { GraphSpec } from "../types/graphSpecTypes";
-import { GraphNode } from "../types/graphTypes";
+import { GraphConfig } from "../../types/graphConfigTypes";
+import { GraphNode } from "../../types/graphTypes";
 import { resolve } from "./inputHelpers";
 
-export function createGraphNodeFromSpec(type: string, spec: GraphSpec, context: unknown): GraphNode {
+export function createGraphNodeFromSpec(type: string, spec: GraphConfig, context: unknown): GraphNode {
     const fields: { [name: string]: unknown } = {};
     const nodeSpec = spec.nodes[type];
     if (!nodeSpec) throw new Error('No node exists with type - ' + type);

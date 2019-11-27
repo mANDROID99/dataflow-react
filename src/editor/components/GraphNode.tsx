@@ -1,5 +1,5 @@
 import React, { useContext, useRef } from 'react';
-import { GraphNode } from '../types/graphTypes';
+import { GraphNode } from '../../types/graphTypes';
 import { graphContext } from './GraphEditor';
 import GraphNodeHeader from './GraphNodeHeader';
 import GraphNodePorts from './GraphNodePorts';

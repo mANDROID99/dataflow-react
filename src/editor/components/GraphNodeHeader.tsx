@@ -1,14 +1,14 @@
 import React, { useContext, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GraphNodeSpec } from '../types/graphSpecTypes';
+import { GraphNodeConfig } from '../../types/graphConfigTypes';
 
 import { graphContext } from './GraphEditor';
 import { removeNode } from '../editorActions';
 
 type Props = {
     nodeId: string;
-    spec: GraphNodeSpec | undefined;
+    spec: GraphNodeConfig | undefined;
 }
 
 const TITLE_UNKNOWN = 'Unknown';

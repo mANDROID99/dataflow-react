@@ -3,8 +3,8 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import classNames from 'classnames';
 
 import { graphContext } from './GraphEditor';
-import { GraphNodePortSpec } from '../types/graphSpecTypes';
-import { TargetPort } from '../types/graphTypes';
+import { GraphNodePortConfig } from '../../types/graphConfigTypes';
+import { TargetPort } from '../../types/graphTypes';
 import { useDrag } from '../helpers/useDrag';
 import { selectPortDrag } from '../selectors';
 import { startPortDrag, updatePortDrag, endPortDrag, mountPort, unmountPort, setPortDragTarget, unsetPortDragTarget } from '../editorActions';
@@ -15,7 +15,7 @@ type Props = {
     nodeId: string;
     nodeType: string;
     portTargets: TargetPort[] | undefined;
-    portSpec: GraphNodePortSpec;
+    portSpec: GraphNodePortConfig;
     portOut: boolean;
 }
 

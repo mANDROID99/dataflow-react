@@ -1,4 +1,4 @@
-import { Graph } from "../editor/types/graphTypes";
+import { Graph } from "../types/graphTypes";
 import { GraphEditorState } from "../store/storeTypes";
 
 const INIT_GRAPH: Graph = {
@@ -7,8 +7,14 @@ const INIT_GRAPH: Graph = {
             type: 'grid',
             fields: {
                 data: {
-                    columns: [],
-                    rows: []
+                    columns: [
+                        { name: 'column1', width: 100, minWidth: 50 },
+                        { name: 'column2', width: 100, minWidth: 50 }
+                    ],
+                    rows: [
+                        ['cell1', 'cell2'],
+                        ['cell3', 'cell4']
+                    ]
                 }
             },
             x: 120,
@@ -25,12 +31,7 @@ const INIT_GRAPH: Graph = {
             y: 120,
             ports: {
                 in: {},
-                out: {
-                    group: [{
-                        node: 'sum',
-                        port: 'in'
-                    }]
-                }
+                out: {}
             }
         },
         sum: {
@@ -39,12 +40,7 @@ const INIT_GRAPH: Graph = {
             x: 400,
             y: 200,
             ports: {
-                in: {
-                    in: [{
-                        node: 'groupBy',
-                        port: 'group'
-                    }]
-                },
+                in: {},
                 out: {}
             }
         }

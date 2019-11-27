@@ -1,4 +1,4 @@
-import { Resolvable } from "../types/graphSpecTypes";
+import { Resolvable } from "../../types/graphConfigTypes";
 
 export function resolve<T>(resolvable: Resolvable<T>, context: unknown): T {
     return typeof resolvable === 'function' ? resolvable(context) : resolvable[0];

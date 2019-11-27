@@ -4,11 +4,11 @@ import { useDispatch } from 'react-redux';
 
 import MenuDropdown, { MenuItemGroup } from './MenuDropdown';
 import { graphContext } from '../GraphEditor';
-import { GraphSpec } from '../../types/graphSpecTypes';
+import { GraphConfig } from '../../../types/graphConfigTypes';
 import { createGraphNodeFromSpec } from '../../helpers/graphNodeFactory';
 import { createNode } from '../../editorActions';
 
-function resolveMenuItems(spec: GraphSpec): MenuItemGroup[] {
+function resolveMenuItems(spec: GraphConfig): MenuItemGroup[] {
     const groupsByName = new Map<string, MenuItemGroup>();
 
     for (const [nodeId, node] of Object.entries(spec.nodes)) {

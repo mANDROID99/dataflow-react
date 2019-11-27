@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { GraphFieldInputProps } from "../../types/graphInputTypes";
+import { GraphFieldInputProps } from "../../../types/graphInputTypes";
 import { resolve, resolveProperty } from '../../helpers/inputHelpers';
 
 type Option = string | { value: string, label: string };

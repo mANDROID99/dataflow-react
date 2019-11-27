@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { GraphSpec } from '../types/graphSpecTypes';
+import { GraphConfig } from '../../types/graphConfigTypes';
 import GraphNodeComponent from './GraphNode';
 import { selectGraphNodes } from '../selectors';
 import GraphSVG from './GraphSVG';
@@ -9,13 +9,13 @@ import Menu from './menu/Menu';
 
 type Props = {
     graphId: string;
-    graphSpec: GraphSpec;
+    graphSpec: GraphConfig;
     context?: unknown;
 }
 
 export type GraphContext = {
     graphId: string;
-    graphSpec: GraphSpec;
+    graphSpec: GraphConfig;
     modalRoot: Element;
     ctx: unknown;
 }

@@ -1,13 +1,13 @@
 import React, { useContext, useCallback } from 'react';
-import { GraphNodeFieldSpec, GraphNodeInputSpec } from '../types/graphSpecTypes';
+import { GraphNodeFieldConfig, GraphNodeInputConfig } from '../../types/graphConfigTypes';
 import { graphContext } from './GraphEditor';
-import { GraphFieldInputProps } from '../types/graphInputTypes';
+import { GraphFieldInputProps } from '../../types/graphInputTypes';
 import { useDispatch } from 'react-redux';
 import { setFieldValue } from '../editorActions';
 
 type Props = {
     nodeId: string;
-    fieldSpec: GraphNodeFieldSpec;
+    fieldSpec: GraphNodeFieldConfig;
     fieldValue: unknown;
 }
 
@@ -17,7 +17,7 @@ function GraphNodeField(props: Props): React.ReactElement {
     const fieldType = fieldSpec.type;
     
     const { graphSpec, graphId, ctx } = useContext(graphContext);
-    const input: GraphNodeInputSpec | undefined = graphSpec.inputs[fieldType];
+    const input: GraphNodeInputConfig | undefined = graphSpec.inputs[fieldType];
     
     const dispatch = useDispatch();
     const onChanged = useCallback((value: unknown) => {

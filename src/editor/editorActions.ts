@@ -1,5 +1,5 @@
 import { PortRef } from "../store/storeTypes";
-import { GraphNode } from "./types/graphTypes";
+import { GraphNode } from "../types/graphTypes";
 
 export enum ActionType {
     CREATE_NODE = 'editor.ADD_NODE',

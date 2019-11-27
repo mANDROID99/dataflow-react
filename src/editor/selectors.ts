@@ -1,5 +1,5 @@
 import { StoreState, PortDrag, NodeDrag, GraphEditorState } from "../store/storeTypes";
-import { GraphNode, Graph } from "./types/graphTypes";
+import { GraphNode, Graph } from "../types/graphTypes";
 
 export function selectPortDrag(state: StoreState, graphId: string): PortDrag | undefined {
     return state.editor[graphId]?.portDrag;

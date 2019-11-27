@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { GraphFieldInputProps } from "../../types/graphInputTypes";
+import { GraphFieldInputProps } from "../../../types/graphInputTypes";
 
 function toString(value: unknown): string {
     if (value == null) {

@@ -1,10 +1,10 @@
-import { Graph } from "../editor/types/graphTypes";
+import { Graph } from "../types/graphTypes";
 
 export type PortRef = {
     nodeId: string;
     portId: string;
     portOut: boolean;
-    portType: string;
+    portType: string | string[];
     nodeType: string;
 }
 
