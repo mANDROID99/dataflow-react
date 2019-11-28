@@ -1,7 +1,7 @@
 import React from 'react';
-import { GraphEditorState } from '../../store/storeTypes';
+import { GraphEditorState, StoreState } from '../../store/storeTypes';
 import { useSelector } from 'react-redux';
-import { selectGraphState } from '../selectors';
+import { selectEditorState } from '../selectors';
 import { getPortKey, getConnectionKey } from '../helpers/portHelpers';
 import classNames from 'classnames';
 
@@ -91,7 +91,7 @@ function renderDragConnection(state: GraphEditorState, scroll: { x: number; y: n
 }
 
 export default function GraphSVG({ graphId, scroll }: Props): React.ReactElement {
-    const graphState = useSelector(selectGraphState(graphId));
+    const graphState = useSelector((state: StoreState) => selectEditorState(state, graphId));
     const connections = graphState ? getConnections(graphState) : [];
 
     return (

@@ -1,4 +1,4 @@
-import { OutputValue } from "./processorTypes";
+import { OutputValue } from "./nodeDataTypes";
 
 type Point = {
     [key: string]: string | number | boolean;

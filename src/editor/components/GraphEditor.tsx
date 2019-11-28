@@ -6,6 +6,7 @@ import GraphNodeComponent from './GraphNode';
 import { selectGraphNodes } from '../selectors';
 import GraphSVG from './GraphSVG';
 import Menu from './menu/Menu';
+import { StoreState } from '../../store/storeTypes';
 
 type Props = {
     graphId: string;
@@ -15,7 +16,7 @@ type Props = {
 
 export type GraphContext = {
     graphId: string;
-    graphSpec: GraphConfig;
+    graphConfig: GraphConfig;
     modalRoot: Element;
     ctx: unknown;
 }
@@ -33,7 +34,7 @@ export default function GraphEditor({ graphId, graphSpec: spec, context: ctx }: 
     const [modalRoot] = useState(createModalRootDiv);
     const graphContainerRef = useRef<HTMLDivElement>(null);
 
-    const graphNodes = useSelector(selectGraphNodes(graphId));
+    const graphNodes = useSelector((state: StoreState) => selectGraphNodes(state, graphId));
 
     useEffect(() => {
         const container = graphContainerRef.current;
@@ -47,7 +48,7 @@ export default function GraphEditor({ graphId, graphSpec: spec, context: ctx }: 
     const context = useMemo((): GraphContext => {
         return {
             graphId,
-            graphSpec: spec,
+            graphConfig: spec,
             modalRoot,
             ctx
         };

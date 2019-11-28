@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { GraphFieldInputProps } from "../../../types/graphInputTypes";
+import { GraphFieldEditorProps } from "../../../types/graphEditorTypes";
 
 function toString(value: unknown): string {
     if (value == null) {
@@ -9,7 +9,7 @@ function toString(value: unknown): string {
     }
 }
 
-export default function TextInput(props: GraphFieldInputProps): React.ReactElement {
+export default function TextEditor(props: GraphFieldEditorProps<string>): React.ReactElement {
     const [value, setValue] = useState(toString(props.value));
 
     function onBlur(): void {

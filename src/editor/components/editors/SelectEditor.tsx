@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { GraphFieldInputProps } from "../../../types/graphInputTypes";
+import { GraphFieldEditorProps } from "../../../types/graphEditorTypes";
 import { resolve, resolveProperty } from '../../helpers/inputHelpers';
 
 type Option = string | { value: string, label: string };
@@ -12,15 +12,15 @@ function resolveOptionValue(option: Option): string {
     return typeof option === 'string' ? option : option.value;
 }
 
-export default function SelectInput({ value, onChanged, ctx, fieldSpec }: GraphFieldInputProps): React.ReactElement {
+export default function SelectEditor({ value, onChanged, ctx, field }: GraphFieldEditorProps<string>): React.ReactElement {
     const handleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
         onChanged(e.target.value);
     }, []);
 
     const options: Option[] = useMemo(() => {
-        const properties = fieldSpec.inputParams ? resolve(fieldSpec.inputParams, ctx) : {};
+        const properties = field.inputParams ? resolve(field.inputParams, ctx) : {};
         return resolveProperty<Option[]>(properties, 'options', []);
-    }, [fieldSpec, ctx]);
+    }, [field, ctx]);
 
     return (
         <select

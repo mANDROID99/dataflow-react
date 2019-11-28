@@ -8,20 +8,30 @@ import { useDispatch, useSelector } from 'react-redux';
 import { startNodeDrag, updateNodeDrag, endNodeDrag } from '../editorActions';
 import { selectNodeDrag } from '../selectors';
 import GraphNodeFields from './GraphNodeFields';
+import { StoreState } from '../../store/storeTypes';
+import { GraphNodeConfig } from '../../types/graphConfigTypes';
 
 type Props = {
     nodeId: string;
     graphNode: GraphNode;
 }
 
+function getPortNamesIn(nodeConfig: GraphNodeConfig<any, any, any>): string[] {
+    return Object.keys(nodeConfig.ports.in);
+}
+
+function getPortNamesOut(nodeConfig: GraphNodeConfig<any, any, any>): string[] {
+    return Object.keys(nodeConfig.ports.out);
+}
+
 function GraphNodeComponent(props: Props): React.ReactElement {
     const { nodeId, graphNode } = props;
-    const { graphId, graphSpec } = useContext(graphContext);
+    const { graphId, graphConfig: graphSpec } = useContext(graphContext);
 
     const dispatch = useDispatch();
     const nodeType = graphNode.type;
     const nodeSpec = graphSpec.nodes[nodeType];
-    const drag = useSelector(selectNodeDrag(graphId));
+    const drag = useSelector((state: StoreState) => selectNodeDrag(state, graphId));
 
     const elRef = useRef<HTMLDivElement>(null);
     useDrag<{ startX: number; startY: number }>(elRef, {
@@ -53,26 +63,25 @@ function GraphNodeComponent(props: Props): React.ReactElement {
     return (
         <div className="graph-node" style={{ left: x, top: y }}>
             <div ref={elRef} className="graph-node-header">
-                <GraphNodeHeader spec={nodeSpec} nodeId={nodeId}/>
+                <GraphNodeHeader
+                    title={nodeSpec?.title}
+                    nodeId={nodeId}
+                />
             </div>
             <div className="graph-node-body">
                 <GraphNodePorts
                     nodeId={nodeId}
-                    nodeType={nodeType}
-                    portSpecs={nodeSpec?.ports.in ?? []}
-                    portTargets={graphNode.ports.in}
+                    portNames={nodeSpec ? getPortNamesIn(nodeSpec) : []}
                     portsOut={false}
                 />
                 <GraphNodeFields
                     nodeId={nodeId}
-                    fieldSpecs={nodeSpec?.fields}
+                    fieldSpecs={nodeSpec?.fields ?? {}}
                     fieldValues={graphNode.fields}
                 />
                 <GraphNodePorts
                     nodeId={nodeId}
-                    nodeType={nodeType}
-                    portSpecs={nodeSpec?.ports.out ?? []}
-                    portTargets={graphNode.ports.out}
+                    portNames={nodeSpec ? getPortNamesOut(nodeSpec) : []}
                     portsOut={true}
                 />
             </div>

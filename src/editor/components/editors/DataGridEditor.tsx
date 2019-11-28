@@ -1,19 +1,26 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { GraphFieldInputProps } from "../../../types/graphInputTypes";
+import { GraphFieldEditorProps } from "../../../types/graphEditorTypes";
 import Modal from '../common/Modal';
 import DataGrid from '../datagrid/DataGrid';
 import { Column } from '../datagrid/dataGridTypes';
 
-export type DataGridInputValue = {
+export type DataGridValue = {
     columns: Column[];
     rows: string[][];
 }
 
-export default function DataGridInput({ value, onChanged }: GraphFieldInputProps): React.ReactElement {
+export function emptyDataGrid(): DataGridValue {
+    return {
+        columns: [],
+        rows: []
+    };
+}
+
+export default function DataGridEditor({ value, onChanged }: GraphFieldEditorProps<DataGridValue>): React.ReactElement {
     const [modalShowing, setModalShowing] = useState(false);
-    const data = value as DataGridInputValue;
+    const data = value as DataGridValue;
 
     const showModal = useCallback(() => {
         setModalShowing(true);
@@ -24,7 +31,7 @@ export default function DataGridInput({ value, onChanged }: GraphFieldInputProps
     }, []);
 
     const onSaveGridData = useCallback((columns: Column[], rows: string[][]) => {
-        const value: DataGridInputValue = { columns, rows };
+        const value: DataGridValue = { columns, rows };
         onChanged(value);
         setModalShowing(false);
     }, []);

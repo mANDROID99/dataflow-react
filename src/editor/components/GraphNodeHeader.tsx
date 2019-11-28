@@ -1,14 +1,13 @@
 import React, { useContext, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { GraphNodeConfig } from '../../types/graphConfigTypes';
 
 import { graphContext } from './GraphEditor';
 import { removeNode } from '../editorActions';
 
 type Props = {
     nodeId: string;
-    spec: GraphNodeConfig | undefined;
+    title: string | undefined
 }
 
 const TITLE_UNKNOWN = 'Unknown';
@@ -26,7 +25,7 @@ function GraphNodeHeader(props: Props): React.ReactElement {
     return (
         <>
             <div className="graph-node-header-title">
-                { props.spec ? props.spec.title : TITLE_UNKNOWN }
+                { props.title ?? TITLE_UNKNOWN }
             </div>
             <div className="graph-node-header-close-icon" onClick={handleRemove}>
                 <FontAwesomeIcon icon="times"/>

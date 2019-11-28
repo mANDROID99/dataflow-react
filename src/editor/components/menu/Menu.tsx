@@ -33,7 +33,7 @@ function resolveMenuItems(spec: GraphConfig): MenuItemGroup[] {
 
 export default function Menu(): React.ReactElement {
     const [isShowDropdown, setShowDropdown] = useState(false);
-    const { graphId, graphSpec, ctx } = useContext(graphContext);
+    const { graphId, graphConfig: graphSpec, ctx } = useContext(graphContext);
     const dispatch = useDispatch();
 
     const menuItems = useMemo(() => resolveMenuItems(graphSpec), [graphSpec]);

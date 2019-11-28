@@ -4,8 +4,6 @@ export type PortRef = {
     nodeId: string;
     portId: string;
     portOut: boolean;
-    portType: string | string[];
-    nodeType: string;
 }
 
 export type PortDrag = {

@@ -1,9 +1,9 @@
-import { createRow, createRowGroup, createScalar, GraphNodeProcessor } from '../src/processor/processorTypes';
-import { DataGridProcessor } from '../src/processor/DataGridProcessor';
-import { GroupProcessor } from '../src/processor/GroupProcessor';
-import { SumProcessor } from '../src/processor/SumProcessor';
-import { OutputProcessor } from '../src/processor/OutputProcessor';
-import { resultCollector } from '../src/processor/resultCollector';
+import { createRow, createRowGroup, createScalar, GraphNodeProcessor } from '../src/nodes/nodeDataTypes';
+import { DataGridProcessor } from '../src/nodes/DataGridNode';
+import { GroupProcessor } from '../src/nodes/GroupNode';
+import { SumProcessor } from '../src/nodes/SumNode';
+import { OutputProcessor } from '../src/nodes/OutputNode';
+import { resultCollector } from '../src/nodes/resultCollector';
 
 function process<In, Out>(input: In, processor: GraphNodeProcessor<In, Out>): Promise<Out> {
     return new Promise((resolve) => {

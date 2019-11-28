@@ -1,39 +1,39 @@
 import React, { useContext, useCallback } from 'react';
-import { GraphNodeFieldConfig, GraphNodeInputConfig } from '../../types/graphConfigTypes';
+import { GraphNodeFieldConfig, GraphNodeEditorConfig } from '../../types/graphConfigTypes';
 import { graphContext } from './GraphEditor';
-import { GraphFieldInputProps } from '../../types/graphInputTypes';
+import { GraphFieldEditorProps } from '../../types/graphEditorTypes';
 import { useDispatch } from 'react-redux';
 import { setFieldValue } from '../editorActions';
 
-type Props = {
+type Props<T> = {
     nodeId: string;
-    fieldSpec: GraphNodeFieldConfig;
+    fieldName: string;
+    fieldConfig: GraphNodeFieldConfig<T>;
     fieldValue: unknown;
 }
 
-function GraphNodeField(props: Props): React.ReactElement {
-    const { fieldSpec, fieldValue, nodeId } = props;
-    const fieldName = fieldSpec.name;
-    const fieldType = fieldSpec.type;
+function GraphNodeField<T>(props: Props<T>): React.ReactElement {
+    const { nodeId, fieldName, fieldConfig, fieldValue } = props;
+    const fieldEditor = fieldConfig.editor;
     
-    const { graphSpec, graphId, ctx } = useContext(graphContext);
-    const input: GraphNodeInputConfig | undefined = graphSpec.inputs[fieldType];
+    const { graphConfig, graphId, ctx } = useContext(graphContext);
+    const input: GraphNodeEditorConfig<any> | undefined = graphConfig.editors[fieldEditor];
     
     const dispatch = useDispatch();
     const onChanged = useCallback((value: unknown) => {
         dispatch(setFieldValue(graphId, nodeId, fieldName, value));
     }, [dispatch, graphId, nodeId, fieldName]);
 
-    const inputProps: GraphFieldInputProps = {
+    const inputProps: GraphFieldEditorProps<any> = {
         onChanged,
         value: fieldValue,
         ctx,
-        fieldSpec
+        field: fieldConfig
     };
 
     return (
         <div className="graph-node-field">
-            <div className="graph-node-field-label">{ fieldSpec.label }</div>
+            <div className="graph-node-field-label">{ fieldConfig.label }</div>
             <div className="graph-node-field-input">
                 { input ? React.createElement(input.component, inputProps) : 'Unknown Input Type' }
             </div>

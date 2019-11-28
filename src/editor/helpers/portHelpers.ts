@@ -1,6 +1,7 @@
 import { PortRef } from "../../store/storeTypes";
-import { TargetPort } from "../../types/graphTypes";
-import { GraphNodePortConfig } from "../../types/graphConfigTypes";
+import { Graph } from "../../types/graphTypes";
+import { GraphConfig, GraphNodePortOutConfig } from "../../types/graphConfigTypes";
+import { getPortOutConfig, getPortInConfig } from "./configHelpers";
 
 export function comparePortRefs(left: PortRef, right: PortRef): boolean {
     return left.nodeId === right.nodeId
@@ -8,52 +9,50 @@ export function comparePortRefs(left: PortRef, right: PortRef): boolean {
         && left.portOut === right.portOut;
 }
 
-export function isPortConnectable(targetPort: PortRef | undefined, portTargets: TargetPort[] | undefined, portRef: PortRef, portSpec: GraphNodePortConfig): boolean {
-    if (!targetPort) {
-        return false;
-    }
-
+export function isPortConnectable(target: PortRef, port: PortRef, graph: Graph, graphConfig: GraphConfig): boolean {
     // must be connecting in the right direction
-    if (targetPort.portOut === portRef.portOut) {
+    if (target.portOut === port.portOut) {
         return false;
     }
 
     // can't connect to itself
-    if (targetPort.nodeId === portRef.nodeId) {
+    if (target.nodeId === port.nodeId) {
         return false;
     }
 
-    if (portTargets && portTargets.length) {
-        // ports can have at most one incoming connection
-        if (!portRef.portOut) {
-            return false;
-        }        
-        
-        // check whether the port is already connected to the target
-        for (const target of portTargets) {
-            if (target.node === targetPort.nodeId && target.port === targetPort.portId) {
-                return false;
+    let portOut = port;
+    let portIn = target;
+
+    if (!port.portOut) {
+        portOut = target;
+        portIn = port;
+    }
+
+    const nodeOut = graph.nodes[portOut.nodeId];
+    const nodeIn = graph.nodes[portIn.nodeId];
+
+    // check whether the port-types match
+
+    if (nodeOut && nodeIn) {
+        const portOutConfig = getPortOutConfig(graphConfig, nodeOut.type, portOut.portId);
+        const portInConfig = getPortInConfig(graphConfig, nodeIn.type, portIn.portId);
+
+        if (portOutConfig && portInConfig) {
+            const match = portInConfig.match;
+
+            if (typeof match === 'string') {
+                return portOutConfig.type === match;
+
+            } else if (typeof match === 'function') {
+                return match(portOutConfig.type, nodeOut.type);
+
+            } else {
+                return match.some(m => m === portOutConfig.type);
             }
         }
     }
 
-    // check whether the port-types match
-    const portType = portSpec.type;
-    const targetType = targetPort.portType;
-
-    if (Array.isArray(portType)) {
-        return portType.some(t => matchesType(targetType, t));
-    } else {
-        return matchesType(targetType, portType);
-    }
-}
-
-function matchesType(type: string | string[], test: string): boolean {
-    if (typeof type === 'string') {
-        return type === test;
-    } else {
-        return type.some(t => t === test);
-    }
+    return false;
 }
 
 export function getPortKey(nodeId: string, portId: string, portOut: boolean): string {

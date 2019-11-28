@@ -1,4 +1,5 @@
-import { GraphFieldInputProps } from "./graphInputTypes";
+import { GraphFieldEditorProps } from "./graphEditorTypes";
+import { GraphNodeProcessor } from "../nodes/nodeDataTypes";
 
 export interface Observable<T> {
     subscribe(fn: (value: T) => void): void;
@@ -11,38 +12,46 @@ export enum GraphNodeRole {
     OUTPUT = 'out'
 }
 
-export type GraphNodeInputConfig = {
-    component: React.ComponentType<GraphFieldInputProps>;
-    initialValue: unknown;
+export type GraphNodeEditorConfig<T> = {
+    component: React.ComponentType<GraphFieldEditorProps<T>>;
 }
 
-export type Resolvable<T> = [T] | ((context: unknown) => T);
+export type Resolvable<T> = T | ((context: unknown) => T);
 
-export type GraphNodeFieldConfig = {
-    name: string;
+export type GraphNodeFieldConfig<T> = {
     label: string;
-    type: string;
-    initialValue?: Resolvable<unknown>;
+    editor: string;
+    initialValue: Resolvable<T>;
     inputParams?: Resolvable<{ [key: string]: unknown }>;
 }
 
-export type GraphNodePortConfig = {
-    name: string;
-    type: string | string[];
+export type PortTypeMatcher = string | string[] | ((portType: string, nodeType: string) => boolean);
+
+export type GraphNodePortOutConfig<T> = {
+    type: string;
 }
 
-export type GraphNodePortsConfig = {
-    in: GraphNodePortConfig[];
-    out: GraphNodePortConfig[];
+export type GraphNodePortInConfig<T> = {
+    match: PortTypeMatcher;
+    initialValue: T;
 }
 
-export type GraphNodeConfig = {
+export type GraphNodeConfig<In, Out, Config> = {
     role?: GraphNodeRole;
     menuGroup: string;
     title: string;
-    fields: GraphNodeFieldConfig[];
-    ports: GraphNodePortsConfig;
-    run?: (input: any, next: (value: any) => void) => void; 
+    fields: {
+        [K in keyof Config]: GraphNodeFieldConfig<Config[K]>;
+    }
+    ports: {
+        in: {
+            [K in keyof In]: GraphNodePortInConfig<In[K]>;
+        },
+        out: {
+            [K in keyof Out]: GraphNodePortOutConfig<Out[K]>;
+        }
+    }
+    createProcessor: (config: Config) => GraphNodeProcessor<In, Out>;
 }
 
 export type PortTypeConfig = {
@@ -51,12 +60,14 @@ export type PortTypeConfig = {
 
 export type GraphConfig = {
     nodes: {
-        [type: string]: GraphNodeConfig | undefined;
+        [type: string]: GraphNodeConfig<any, any, any> | undefined;
     };
-    inputs: {
-        [type: string]: GraphNodeInputConfig | undefined;
+    editors: {
+        [type: string]: GraphNodeEditorConfig<any> | undefined;
     };
-    portTypes: {
-        [type: string]: PortTypeConfig | undefined;
-    };
+    colors?: {
+        ports?: {
+            [portType: string]: string;
+        }
+    }
 }

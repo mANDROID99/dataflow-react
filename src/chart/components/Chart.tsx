@@ -3,7 +3,8 @@ import { Chart } from 'chart.js';
 import '../styles/chart.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector } from 'react-redux';
-import { selectGraphState, selectGraph } from '../../editor/selectors';
+import { selectEditorState, selectGraph } from '../../editor/selectors';
+import { StoreState } from '../../store/storeTypes';
 
 type Props = {
     graphId: string;
@@ -68,7 +69,7 @@ function createChart(canvas: HTMLCanvasElement): Chart {
 export default function ChartComponent({ graphId, splitSize }: Props) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart>();
-    const graph = useSelector(selectGraph(graphId));
+    const graph = useSelector((state: StoreState) => selectGraph(state, graphId));
 
     useEffect(() => {
         const canvas = canvasRef.current;

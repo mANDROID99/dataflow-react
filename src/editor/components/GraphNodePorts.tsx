@@ -1,33 +1,23 @@
 import React from 'react';
 import classNames from 'classnames';
-
-import { GraphNodePortConfig } from '../../types/graphConfigTypes';
 import GraphNodePort from './GraphNodePort';
-import { TargetPort } from '../../types/graphTypes';
 
 type Props = {
     nodeId: string;
-    nodeType: string;
-    portSpecs: GraphNodePortConfig[];
+    portNames: string[];
     portsOut: boolean;
-    portTargets: {
-        [portId: string]: TargetPort[] | undefined;
-    };
 }
 
 function GraphNodePorts(props: Props): React.ReactElement {
-    const { nodeId, nodeType, portsOut, portSpecs, portTargets } = props;
+    const { nodeId, portsOut, portNames } = props;
     return (
         <div className={classNames("graph-node-ports", { out: portsOut })}>
-            { portSpecs.map((portSpec: GraphNodePortConfig) => {
-                const targets = portTargets[portSpec.name];
+            { portNames.map((portName: string) => {
                 return (
                     <GraphNodePort
-                        key={portSpec.name}
-                        portTargets={targets}
+                        key={portName}
                         nodeId={nodeId}
-                        nodeType={nodeType}
-                        portSpec={portSpec}
+                        portId={portName}
                         portOut={portsOut}
                     />
                 );
