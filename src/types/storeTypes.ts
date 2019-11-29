@@ -1,4 +1,4 @@
-import { Graph } from "../types/graphTypes";
+import { Graph } from "./graphTypes";
 
 export type PortRef = {
     nodeId: string;
@@ -36,7 +36,6 @@ export type GraphEditorState = {
 export type GraphEditorStates = {
     [graphId: string]: GraphEditorState | undefined;
 }
-
 
 export type AppState = {
     splitSize: number;

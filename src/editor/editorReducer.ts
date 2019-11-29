@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Graph, TargetPort } from '../types/graphTypes';
 import { GraphAction, ActionType, setFieldValueAction, RemoveNodeAction, StartPortDragAction, SetPortDragTargetAction, UnsetPortDragTargetAction, UpdatePortDragAction, EndPortDragAction, StartNodeDragAction, UpdateNodeDragAction, EndNodeDragAction, MountPortAction, UnmountPortAction, CreateNodeAction } from "./editorActions";
-import { PortRef, GraphEditorStates } from '../store/storeTypes';
+import { PortRef, GraphEditorStates } from '../types/storeTypes';
 import { comparePortRefs, getPortKeyFromRef } from './helpers/portHelpers';
 import { v4 } from 'uuid';
 import { INIT_STATE } from '../data/graphState';

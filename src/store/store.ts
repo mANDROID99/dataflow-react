@@ -1,5 +1,5 @@
 import { createStore, combineReducers } from 'redux';
-import { StoreState } from './storeTypes';
+import { StoreState } from '../types/storeTypes';
 import editorReducer from '../editor/editorReducer';
 import appReducer from './appReducers';
 

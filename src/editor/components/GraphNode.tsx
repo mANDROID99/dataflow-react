@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { startNodeDrag, updateNodeDrag, endNodeDrag } from '../editorActions';
 import { selectNodeDrag } from '../selectors';
 import GraphNodeFields from './GraphNodeFields';
-import { StoreState } from '../../store/storeTypes';
+import { StoreState } from '../../types/storeTypes';
 import { GraphNodeConfig } from '../../types/graphConfigTypes';
 
 type Props = {
@@ -16,11 +16,11 @@ type Props = {
     graphNode: GraphNode;
 }
 
-function getPortNamesIn(nodeConfig: GraphNodeConfig<any, any, any>): string[] {
+function getPortNamesIn(nodeConfig: GraphNodeConfig): string[] {
     return Object.keys(nodeConfig.ports.in);
 }
 
-function getPortNamesOut(nodeConfig: GraphNodeConfig<any, any, any>): string[] {
+function getPortNamesOut(nodeConfig: GraphNodeConfig): string[] {
     return Object.keys(nodeConfig.ports.out);
 }
 

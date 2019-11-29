@@ -1,5 +1,5 @@
 import { Graph } from "../types/graphTypes";
-import { GraphEditorState } from "../store/storeTypes";
+import { GraphEditorState } from "../types/storeTypes";
 
 const INIT_GRAPH: Graph = {
     nodes: {

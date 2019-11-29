@@ -1,15 +1,9 @@
 import { GraphFieldEditorProps } from "./graphEditorTypes";
-import { GraphNodeProcessor } from "../nodes/nodeDataTypes";
 
 export interface Observable<T> {
     subscribe(fn: (value: T) => void): void;
 
     unsubscribe(fn: (value: T) => void): void;
-}
-
-export enum GraphNodeRole {
-    INPUT = 'in',
-    OUTPUT = 'out'
 }
 
 export type GraphNodeEditorConfig<T> = {
@@ -18,40 +12,46 @@ export type GraphNodeEditorConfig<T> = {
 
 export type Resolvable<T> = T | ((context: unknown) => T);
 
-export type GraphNodeFieldConfig<T> = {
+export type GraphNodeFieldConfig = {
     label: string;
     editor: string;
-    initialValue: Resolvable<T>;
+    initialValue: Resolvable<unknown>;
     inputParams?: Resolvable<{ [key: string]: unknown }>;
 }
 
 export type PortTypeMatcher = string | string[] | ((portType: string, nodeType: string) => boolean);
 
-export type GraphNodePortOutConfig<T> = {
+export type GraphNodePortOutConfig = {
     type: string;
 }
 
-export type GraphNodePortInConfig<T> = {
+export type GraphNodePortInConfig = {
     match: PortTypeMatcher;
-    initialValue: T;
+    initialValue: unknown;
 }
 
-export type GraphNodeConfig<In, Out, Config> = {
-    role?: GraphNodeRole;
+export type ProcessFn = (
+    input: { [key: string]: unknown },
+    next: (portName: string, output: unknown) => void
+) => (void | (() => void));
+
+export type GraphNodeConfig = {
     menuGroup: string;
     title: string;
+    isOutput?: boolean;
+    autoStart?: boolean;
     fields: {
-        [K in keyof Config]: GraphNodeFieldConfig<Config[K]>;
+        [key: string]: GraphNodeFieldConfig;
     }
     ports: {
         in: {
-            [K in keyof In]: GraphNodePortInConfig<In[K]>;
+            [key: string]: GraphNodePortInConfig;
         },
         out: {
-            [K in keyof Out]: GraphNodePortOutConfig<Out[K]>;
+            [key: string]: GraphNodePortOutConfig;
         }
     }
-    createProcessor: (config: Config) => GraphNodeProcessor<In, Out>;
+    process: (config: { [key: string]: unknown }) => ProcessFn;
 }
 
 export type PortTypeConfig = {
@@ -60,10 +60,10 @@ export type PortTypeConfig = {
 
 export type GraphConfig = {
     nodes: {
-        [type: string]: GraphNodeConfig<any, any, any> | undefined;
+        [type: string]: GraphNodeConfig;
     };
     editors: {
-        [type: string]: GraphNodeEditorConfig<any> | undefined;
+        [type: string]: GraphNodeEditorConfig<any>;
     };
     colors?: {
         ports?: {

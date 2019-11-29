@@ -6,11 +6,11 @@ import GraphNodeComponent from './GraphNode';
 import { selectGraphNodes } from '../selectors';
 import GraphSVG from './GraphSVG';
 import Menu from './menu/Menu';
-import { StoreState } from '../../store/storeTypes';
+import { StoreState } from '../../types/storeTypes';
 
 type Props = {
     graphId: string;
-    graphSpec: GraphConfig;
+    graphConfig: GraphConfig;
     context?: unknown;
 }
 
@@ -29,7 +29,7 @@ function createModalRootDiv(): HTMLDivElement {
     return el;
 }
 
-export default function GraphEditor({ graphId, graphSpec: spec, context: ctx }: Props) {
+export default function GraphEditor({ graphId, graphConfig: spec, context: ctx }: Props) {
     const [scroll, setScroll] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
     const [modalRoot] = useState(createModalRootDiv);
     const graphContainerRef = useRef<HTMLDivElement>(null);

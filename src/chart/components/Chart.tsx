@@ -1,13 +1,17 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import { Chart } from 'chart.js';
 import '../styles/chart.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector } from 'react-redux';
-import { selectEditorState, selectGraph } from '../../editor/selectors';
-import { StoreState } from '../../store/storeTypes';
+import { selectGraph } from '../../editor/selectors';
+import { StoreState } from '../../types/storeTypes';
+import { graphContext } from '../../editor/components/GraphEditor';
+import { GraphProcessor } from '../../processor/GraphProcessor';
+import { GraphConfig } from '../../types/graphConfigTypes';
 
 type Props = {
     graphId: string;
+    graphConfig: GraphConfig;
     splitSize: number;
 }
 
@@ -66,10 +70,19 @@ function createChart(canvas: HTMLCanvasElement): Chart {
 }
 
 
-export default function ChartComponent({ graphId, splitSize }: Props) {
+export default function ChartComponent({ graphId, graphConfig, splitSize }: Props) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart>();
     const graph = useSelector((state: StoreState) => selectGraph(state, graphId));
+
+    useEffect(() => {
+        if (graph) {
+            const processor = GraphProcessor.fromGraph(graph, graphConfig);
+            return processor.subscribe((index, value) => {
+                console.log(index + ':' + value);
+            })
+        }
+    }, [graphConfig, graph]);
 
     useEffect(() => {
         const canvas = canvasRef.current;

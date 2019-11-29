@@ -1,6 +1,6 @@
-import { PortRef } from "../../store/storeTypes";
+import { PortRef } from "../../types/storeTypes";
 import { Graph } from "../../types/graphTypes";
-import { GraphConfig, GraphNodePortOutConfig } from "../../types/graphConfigTypes";
+import { GraphConfig } from "../../types/graphConfigTypes";
 import { getPortOutConfig, getPortInConfig } from "./configHelpers";
 
 export function comparePortRefs(left: PortRef, right: PortRef): boolean {

@@ -1,4 +1,4 @@
-import { OutputValue } from "./nodeDataTypes";
+import { OutputValue } from "../types/nodeProcessorTypes";
 
 type Point = {
     [key: string]: string | number | boolean;
@@ -55,7 +55,7 @@ function flatten(node: Node): Point[] {
 export function resultCollector(results: OutputValue[]): Point[] {
     const rootNode: Node = createNode();
 
-    // write results to tree
+    // write results to a tree structure
     for (let result of results) {
         let node = rootNode;
 
@@ -67,6 +67,6 @@ export function resultCollector(results: OutputValue[]): Point[] {
         node.values[result.outputKey] = result.outputValue;
     }
 
-    // flatten the tree to points
+    // flatten the tree to data-points
     return flatten(rootNode);
 }

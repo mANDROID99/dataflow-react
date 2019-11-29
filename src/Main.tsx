@@ -2,7 +2,7 @@ import React from 'react';
 import SplitPane from 'react-split-pane';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { graphSpec, ChartContext } from './data/graphConfig';
+import { graphConfig, ChartContext } from './data/graphConfig';
 import Chart from './chart/components/Chart';
 import Graph from './editor/components/GraphEditor';
 import { selectSplitSize } from './store/appSelectors';
@@ -26,8 +26,8 @@ export default function Main() {
     return (
         <div className="App">
             <SplitPane split="vertical" minSize={100} defaultSize={splitSize} primary="second" onChange={handleSizeChanged}>
-                <Graph graphId="graph-1" graphSpec={graphSpec} context={CONTEXT}/>
-                <Chart graphId="graph-1" splitSize={splitSize}/>
+                <Graph graphId="graph-1" graphConfig={graphConfig} context={CONTEXT}/>
+                <Chart graphId="graph-1" graphConfig={graphConfig} splitSize={splitSize}/>
             </SplitPane>
         </div>
     );

@@ -5,14 +5,14 @@ import { GraphFieldEditorProps } from '../../types/graphEditorTypes';
 import { useDispatch } from 'react-redux';
 import { setFieldValue } from '../editorActions';
 
-type Props<T> = {
+type Props = {
     nodeId: string;
     fieldName: string;
-    fieldConfig: GraphNodeFieldConfig<T>;
+    fieldConfig: GraphNodeFieldConfig;
     fieldValue: unknown;
 }
 
-function GraphNodeField<T>(props: Props<T>): React.ReactElement {
+function GraphNodeField(props: Props): React.ReactElement {
     const { nodeId, fieldName, fieldConfig, fieldValue } = props;
     const fieldEditor = fieldConfig.editor;
     

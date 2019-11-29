@@ -1,4 +1,4 @@
-import { PortRef } from "../store/storeTypes";
+import { PortRef } from "../types/storeTypes";
 import { GraphNode } from "../types/graphTypes";
 
 export enum ActionType {

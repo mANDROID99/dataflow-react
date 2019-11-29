@@ -5,7 +5,7 @@ import GraphNodeField from './GraphNodeField';
 type Props = {
     nodeId: string;
     fieldSpecs: {
-        [name: string]: GraphNodeFieldConfig<any>;
+        [name: string]: GraphNodeFieldConfig;
     };
     fieldValues: {
         [name: string]: unknown;

@@ -6,7 +6,7 @@ import { graphContext } from './GraphEditor';
 import { useDrag } from '../helpers/useDrag';
 import { selectPortDrag, selectPortTargets } from '../selectors';
 import { startPortDrag, updatePortDrag, endPortDrag, mountPort, unmountPort, setPortDragTarget, unsetPortDragTarget } from '../editorActions';
-import { PortRef, StoreState } from '../../store/storeTypes';
+import { PortRef, StoreState } from '../../types/storeTypes';
 import { isPortConnectable, comparePortRefs } from '../helpers/portHelpers';
 
 type Props = {

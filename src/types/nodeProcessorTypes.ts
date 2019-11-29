@@ -34,10 +34,6 @@ export type OutputValue = {
     outputValue: string | number | boolean;
 }
 
-export interface GraphNodeProcessor<In, Out> {
-    process(input: In, next: (out: Out) => void): void;
-}
-
 export function createRow(correlationId: string, parent: string[], data: { [key: string]: string | undefined }): Row {
     return {
         type: DataType.ROW,

@@ -4,13 +4,17 @@ export type TargetPort = {
     port: string;
 }
 
-export type Ports = {
-    [name: string]: TargetPort[] | undefined;
-}
+// export type Ports = {
+//     [name: string]: TargetPort[] | undefined;
+// }
 
 export type GraphNodePorts = {
-    in: Ports;
-    out: Ports;
+    in: {
+        [name: string]: TargetPort[] | undefined;
+    };
+    out: {
+        [name: string]: TargetPort[] | undefined;
+    };
 }
 
 export type GraphNode = {

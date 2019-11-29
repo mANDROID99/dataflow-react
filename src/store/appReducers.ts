@@ -1,5 +1,5 @@
 import produce from "immer";
-import { AppState } from "./storeTypes";
+import { AppState } from "../types/storeTypes";
 import { AppAction, ActionType, ResizePaneAction } from "./appActions";
 
 const INITIAL_STATE: AppState = {

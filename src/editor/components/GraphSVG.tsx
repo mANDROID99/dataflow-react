@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraphEditorState, StoreState } from '../../store/storeTypes';
+import { GraphEditorState, StoreState } from '../../types/storeTypes';
 import { useSelector } from 'react-redux';
 import { selectEditorState } from '../selectors';
 import { getPortKey, getConnectionKey } from '../helpers/portHelpers';
