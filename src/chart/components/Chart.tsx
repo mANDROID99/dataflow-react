@@ -8,8 +8,8 @@ import { selectGraph } from '../../editor/selectors';
 import { StoreState } from '../../types/storeTypes';
 import { GraphProcessor } from '../../processor/GraphProcessor';
 import { GraphConfig } from '../../types/graphConfigTypes';
-import { join } from '../../processor/joinResults';
-import { KeyValue, NodeValue } from '../../types/nodeProcessorTypes';
+import { mergeResults } from '../../processor/resultsMerger';
+import { Selection, NodeValue, DataType } from '../../types/nodeProcessorTypes';
 
 type Props = {
     graphId: string;
@@ -73,10 +73,8 @@ export default function ChartComponent({ graphId, graphConfig, splitSize }: Prop
         if (graph) {
             const processor = GraphProcessor.create({
                 resultCombiner: (results) => {
-                    return join<{ [key: string]: string | number | boolean }, KeyValue>(results as NodeValue<KeyValue>[][], {}, (left, right) => {
-                        const value = Object.assign({}, left);
-                        value[right.key] = right.value;
-                        return value;
+                    return mergeResults(results as NodeValue<Selection>[][], x => x.values, (left, right) => {
+                        return Object.assign({}, left, right);
                     });
                 },
                 graph,

@@ -2,7 +2,7 @@ export enum DataType {
     ROW = 'row',
     ROW_GROUP = 'rowgroup',
     SCALAR = 'scalar',
-    KEY_VALUE = 'output'
+    SELECTION = 'selection'
 }
 
 export type NodeValue<T> = {
@@ -26,10 +26,11 @@ export type Scalar = {
     value: string | number | boolean;
 }
 
-export type KeyValue = {
-    type: DataType.KEY_VALUE;
-    key: string;
-    value: string | number | boolean;
+export type Selection = {
+    type: DataType.SELECTION;
+    values: {
+        [key: string]: string | number | boolean;
+    };
 }
 
 export function createRowValue(correlationId: string, parent: string[], data: { [key: string]: string | undefined }): NodeValue<Row> {
@@ -65,14 +66,13 @@ export function createScalarValue(correlationId: string, parent: string[], value
     };
 }
 
-export function createKeyValueValue(correlationId: string, parent: string[], key: string, value: string | number | boolean): NodeValue<KeyValue> {
+export function createSelectionValue(correlationId: string, parent: string[], values: { [key: string]: string | number | boolean }): NodeValue<Selection> {
     return {
         correlationId,
         parent,
         data: {
-            type: DataType.KEY_VALUE,
-            key,
-            value
+            type: DataType.SELECTION,
+            values
         }
     };
 }

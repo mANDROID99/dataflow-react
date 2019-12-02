@@ -10,7 +10,7 @@ type ProcessorOpts<T> = {
 
 
 export class GraphProcessor<T> {
-    private readonly outputs: NodeProcessor[];
+    private readonly inputs: NodeProcessor[];
 
     private readonly subscribers: ((value: T) => void)[] = [];
     private readonly subscriptions: (() => void)[] = [];
@@ -19,16 +19,16 @@ export class GraphProcessor<T> {
     private readonly results: unknown[] = [];
     private readonly options: ProcessorOpts<T>;
 
-    constructor(options: ProcessorOpts<T>, outputs: NodeProcessor[]) {
-        this.options = options;
-        this.outputs = outputs;
+    constructor(inputs: ProcessorOpts<T>, outputs: NodeProcessor[]) {
+        this.options = inputs;
+        this.inputs = outputs;
     }
 
     static create<T>(options: ProcessorOpts<T>): GraphProcessor<T> {
         const graph = options.graph;
         const graphConfig = options.graphConfig;
 
-        const outputs: NodeProcessor[] = [];
+        const inputs: NodeProcessor[] = [];
         const processorsLookup: Map<string, NodeProcessor> = new Map();
 
         // recursively create processors
@@ -69,12 +69,12 @@ export class GraphProcessor<T> {
             if (nodeConfig.isOutput) {
                 const processor = getOrCreateProcessor(nodeId);
                 if (processor) {
-                    outputs.push(processor);
+                    inputs.push(processor);
                 }
             }
         }
 
-        return new GraphProcessor(options, outputs);
+        return new GraphProcessor(options, inputs);
     }
     
     subscribe(fn: (value: T) => void): () => void {
@@ -83,12 +83,12 @@ export class GraphProcessor<T> {
         if (this.subscribers.length === 1) {
             // initialize
 
-            for (let i = this.outputs.length - 1; i >= 0; i--) {
-                const sub = this.outputs[i].subscribe('out', this.onResult.bind(this, i));
+            for (let i = this.inputs.length - 1; i >= 0; i--) {
+                const sub = this.inputs[i].subscribe('out', this.onResult.bind(this, i));
                 this.subscriptions.push(sub);
             }
 
-            for (const processor of this.outputs) {
+            for (const processor of this.inputs) {
                 processor.start();
             }
         }
@@ -108,20 +108,20 @@ export class GraphProcessor<T> {
 
             this.subscriptions.length = 0;
 
-            for (const processor of this.outputs) {
+            for (const processor of this.inputs) {
                 processor.stop();
             }
         }
     }
 
     private onResult(index: number, result: unknown) {
-        if (this.numResults < this.subscribers.length) {
+        if (this.numResults < this.inputs.length) {
             ++this.numResults;
         }
 
-        if (this.numResults === this.subscribers.length) {
-            this.results[index] = result;
-
+        this.results[index] = result;
+        
+        if (this.numResults === this.inputs.length) {
             const combined = this.options.resultCombiner(this.results);
             for (const sub of this.subscribers) {
                 sub(combined);

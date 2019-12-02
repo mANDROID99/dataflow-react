@@ -8,12 +8,14 @@ const INIT_GRAPH: Graph = {
             fields: {
                 data: {
                     columns: [
-                        { name: 'column1', width: 100, minWidth: 50 },
-                        { name: 'column2', width: 100, minWidth: 50 }
+                        { name: 'a', width: 100, minWidth: 50 },
+                        { name: 'b', width: 100, minWidth: 50 }
                     ],
                     rows: [
-                        ['cell1', 'cell2'],
-                        ['cell3', 'cell4']
+                        ['groupA', '0'],
+                        ['groupA', '1'],
+                        ['groupB', '2'],
+                        ['groupB', '3']
                     ]
                 }
             },

@@ -23,7 +23,7 @@ function getOrCreateNode<T>(node: TreeNode<T>, childName: string): TreeNode<T> {
     return childNode;
 }
 
-export function join<S, T>(allResults: NodeValue<T>[][], seed: S, reducer: (left: S, right: T) => S): S[] {
+export function mergeResults<S, T>(allResults: NodeValue<S>[][], mapper: (value: S) => T, reducer: (left: T, right: T) => T): T[] {
     const rootNode: TreeNode<T> = emptyNode();
 
     // write results to tree
@@ -36,34 +36,38 @@ export function join<S, T>(allResults: NodeValue<T>[][], seed: S, reducer: (left
             }
 
             node = getOrCreateNode(node, result.correlationId);
-            node.value = result.data;
+            if (node.value !== undefined) {
+                node.value = reducer(node.value, mapper(result.data));
+            } else {
+                node.value = mapper(result.data);
+            }
         }
     }
 
-    function flatten(value: S, node: TreeNode<T>): S[] {
-        if (node.value !== undefined) {
-            value = reducer(value, node.value);
-        }
-
+    function flatten(node: TreeNode<T>): T[] {
         const children = node.children;
         if (children && children.size) {
-            const results: S[] = [];
+            const results: T[] = [];
 
             for (const child of children.values()) {
-                const childValues = flatten(value, child);
+                const childValues = flatten(child);
 
-                for (const childValue of childValues) {
-                    results.push(childValue);
+                for (let value of childValues) {
+                    if (node.value !== undefined) {
+                        value = reducer(node.value, value);
+                    }
+
+                    results.push(value);
                 }
             }
 
             return results;
 
         } else {
-            return [value];
+            return [node.value!];
         }
     }
 
     // flatten the tree to a list of results
-    return flatten(seed, rootNode);
+    return flatten(rootNode);
 }

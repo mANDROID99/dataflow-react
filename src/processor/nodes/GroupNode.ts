@@ -3,7 +3,7 @@ import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
 
 export const GROUP_NODE: GraphNodeConfig = {
-    title: 'Group',
+    title: 'Group-By',
     menuGroup: 'Transform',
     ports: {
         in: {
@@ -13,10 +13,10 @@ export const GROUP_NODE: GraphNodeConfig = {
             }
         },
         out: {
-            groupNames: {
+            name: {
                 type: 'scalar[]'
             },
-            groups: {
+            group: {
                 type: 'rowgroup[]'
             }
         }
@@ -78,8 +78,8 @@ export const GROUP_NODE: GraphNodeConfig = {
                 }
             }
 
-            next('groups', groups);
-            next('groupNames', groupNames);
+            next('group', groups);
+            next('name', groupNames);
         };
     }
 };
