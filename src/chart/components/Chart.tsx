@@ -1,13 +1,15 @@
-import React, { useRef, useEffect, useContext } from 'react';
 import { Chart } from 'chart.js';
-import '../styles/chart.scss';
+import React, { useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector } from 'react-redux';
+
+import '../styles/chart.scss';
 import { selectGraph } from '../../editor/selectors';
 import { StoreState } from '../../types/storeTypes';
-import { graphContext } from '../../editor/components/GraphEditor';
 import { GraphProcessor } from '../../processor/GraphProcessor';
 import { GraphConfig } from '../../types/graphConfigTypes';
+import { join } from '../../processor/joinResults';
+import { KeyValue, NodeValue } from '../../types/nodeProcessorTypes';
 
 type Props = {
     graphId: string;
@@ -33,14 +35,6 @@ function toNumber(input: unknown): number {
         return NaN;
     }
 }
-
-// function mapData(data: { [key: string]: unknown }[]): [number, number][] {
-//     return data.map((d): [number, number] => {
-//         const x: number = toNumber(d.x);
-//         const y: number = toNumber(d.y);
-//         return [x, y];
-//     })
-// }
 
 function createChart(canvas: HTMLCanvasElement): Chart {
     return new Chart(canvas, {
@@ -77,10 +71,21 @@ export default function ChartComponent({ graphId, graphConfig, splitSize }: Prop
 
     useEffect(() => {
         if (graph) {
-            const processor = GraphProcessor.fromGraph(graph, graphConfig);
-            return processor.subscribe((index, value) => {
-                console.log(index + ':' + value);
-            })
+            const processor = GraphProcessor.create({
+                resultCombiner: (results) => {
+                    return join<{ [key: string]: string | number | boolean }, KeyValue>(results as NodeValue<KeyValue>[][], {}, (left, right) => {
+                        const value = Object.assign({}, left);
+                        value[right.key] = right.value;
+                        return value;
+                    });
+                },
+                graph,
+                graphConfig
+            });
+
+            return processor.subscribe((results) => {
+                console.log(results);
+            });
         }
     }, [graphConfig, graph]);
 

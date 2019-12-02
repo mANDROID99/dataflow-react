@@ -1,4 +1,4 @@
-import { Row, createRow } from "../../types/nodeProcessorTypes";
+import { Row, createRowValue, NodeValue } from "../../types/nodeProcessorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { emptyDataGrid, DataGridValue } from "../../editor/components/editors/DataGridEditor";
 import { EditorType } from "../../editor/components/editors/standardEditors";
@@ -6,7 +6,6 @@ import { EditorType } from "../../editor/components/editors/standardEditors";
 export const DATA_GRID_NODE: GraphNodeConfig = {
     title: 'Grid',
     menuGroup: 'Input',
-    autoStart: true,
     fields: {
         data: {
             label: 'Data',
@@ -29,15 +28,15 @@ export const DATA_GRID_NODE: GraphNodeConfig = {
 
         return (input, next) => {
             const gridId = 'data-grid';
-            const data: Row[] = rowValues.map((values, index): Row => {
+            const data: NodeValue<Row>[] = rowValues.map((values, index): NodeValue<Row> => {
                 const data: { [key: string]: string } = {};
                 for (let i = 0, n = Math.min(columnNames.length, values.length); i < n; i++) {
                     data[columnNames[i]] = values[i];
                 }
-                return createRow('' + index, [gridId], data);
+                return createRowValue('' + index, [gridId], data);
             });
 
             next('out', data);
-        }
+        };
     }
-}
+};

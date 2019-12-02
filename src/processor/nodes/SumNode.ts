@@ -1,7 +1,6 @@
-import { RowGroup, Scalar, createScalar } from "../../types/nodeProcessorTypes";
+import { RowGroup, Scalar, createScalarValue, NodeValue } from "../../types/nodeProcessorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
-import { NodeProcessor } from "../NodeProcessor";
 
 function asNumber(input: string | undefined): number {
     if (input) {
@@ -37,18 +36,18 @@ export const SUM_NODE: GraphNodeConfig = {
     process(config) {
         const column = config.column as string;
         return (input, next) => {
-            const data = input.in as RowGroup[];
-            const result: Scalar[] = [];  
+            const data = input.in as NodeValue<RowGroup>[];
+            const result: NodeValue<Scalar>[] = [];  
 
             for (const item of data) {
-                let amt: number = 0;
-                for (const row of item.rows) {
+                let amt = 0;
+                for (const row of item.data.rows) {
                     amt += asNumber(row.data[column]);
                 }
-                result.push(createScalar(item.correlationId, item.parent, amt));
+                result.push(createScalarValue(item.correlationId, item.parent, amt));
             }
     
             next('out', result); 
-        }
+        };
     }
-}
+};

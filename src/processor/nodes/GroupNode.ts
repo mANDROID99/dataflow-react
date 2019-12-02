@@ -1,4 +1,4 @@
-import { RowGroup, DataType, Row, Scalar, createScalar, createRowGroup } from "../../types/nodeProcessorTypes";
+import { RowGroup, DataType, Row, Scalar, createScalarValue, createRowGroupValue, NodeValue } from "../../types/nodeProcessorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
 
@@ -32,46 +32,47 @@ export const GROUP_NODE: GraphNodeConfig = {
         const groupKey = config.column as string;
 
         return (input, next) => {
-            const data = input.in as Row[] | RowGroup[];
+            const data = input.in as NodeValue<Row>[] | NodeValue<RowGroup>[];
 
-            const groups: RowGroup[] = [];
-            const groupNames: Scalar[] = [];
-            let groupsLookup = new Map<string, RowGroup>();
+            const groups: NodeValue<RowGroup>[] = [];
+            const groupNames: NodeValue<Scalar>[] = [];
+            let groupsLookup = new Map<string, NodeValue<RowGroup>>();
 
-            for (const row of data) {
-                if (row.type === DataType.ROW) {
-                    const groupName = row.data[groupKey];
+            for (const value of data) {
+                const datum = value.data;
+                if (datum.type === DataType.ROW) {
+                    const groupName = datum.data[groupKey];
                     if (groupName !== undefined) {
-                        let group: RowGroup | undefined = groupsLookup.get(groupName);
+                        let group: NodeValue<RowGroup> | undefined = groupsLookup.get(groupName);
                         if (!group) {
                             const correlationId = groupName;
-                            group = createRowGroup(correlationId, row.parent, []);
-                            groupNames.push(createScalar(correlationId, row.parent, groupName));
+                            group = createRowGroupValue(correlationId, value.parent, []);
+                            groupNames.push(createScalarValue(correlationId, value.parent, groupName));
 
                             groups.push(group);
                             groupsLookup.set(groupName, group);
                         }
-                        group.rows.push(row);
+                        group.data.rows.push(datum);
                     }
 
                 } else {
-                    groupsLookup = new Map<string, RowGroup>();
-                    for (const subRow of row.rows) {
+                    groupsLookup = new Map<string, NodeValue<RowGroup>>();
+                    for (const subRow of datum.rows) {
                         const groupName = subRow.data[groupKey];
                         
                         if (groupName !== undefined) {
-                            let group: RowGroup | undefined = groupsLookup.get(groupName);
+                            let group: NodeValue<RowGroup> | undefined = groupsLookup.get(groupName);
                             if (!group) {
                                 const correlationId = groupName;
-                                const parent = row.parent.concat(row.correlationId);
+                                const parent = value.parent.concat(value.correlationId);
 
-                                group = createRowGroup(correlationId, parent, []);
-                                groupNames.push(createScalar(correlationId, parent, groupName));
+                                group = createRowGroupValue(correlationId, parent, []);
+                                groupNames.push(createScalarValue(correlationId, parent, groupName));
 
                                 groups.push(group);
                                 groupsLookup.set(groupName, group);
                             }
-                            group.rows.push(subRow);
+                            group.data.rows.push(subRow);
                         }
                     }
                 }
@@ -79,7 +80,6 @@ export const GROUP_NODE: GraphNodeConfig = {
 
             next('groups', groups);
             next('groupNames', groupNames);
-        }
+        };
     }
-}
-
+};

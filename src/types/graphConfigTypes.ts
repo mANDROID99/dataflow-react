@@ -39,18 +39,17 @@ export type GraphNodeConfig = {
     menuGroup: string;
     title: string;
     isOutput?: boolean;
-    autoStart?: boolean;
     fields: {
         [key: string]: GraphNodeFieldConfig;
-    }
+    };
     ports: {
         in: {
             [key: string]: GraphNodePortInConfig;
-        },
+        };
         out: {
             [key: string]: GraphNodePortOutConfig;
-        }
-    }
+        };
+    };
     process: (config: { [key: string]: unknown }) => ProcessFn;
 }
 
@@ -68,6 +67,6 @@ export type GraphConfig = {
     colors?: {
         ports?: {
             [portType: string]: string;
-        }
-    }
+        };
+    };
 }
