@@ -7,7 +7,7 @@ import { removeNode } from '../editorActions';
 
 type Props = {
     nodeId: string;
-    title: string | undefined
+    title: string | undefined;
 }
 
 const TITLE_UNKNOWN = 'Unknown';

@@ -1,8 +1,8 @@
 import { GraphNodeFieldConfig } from "./graphConfigTypes";
 
-export type GraphFieldEditorProps<T> = {
+export type GraphFieldEditorProps<Context, T> = {
     value: T;
     onChanged: (value: T) => void;
-    field: GraphNodeFieldConfig;
-    ctx: unknown;
+    field: GraphNodeFieldConfig<Context>;
+    context: Context;
 }

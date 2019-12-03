@@ -5,29 +5,29 @@ import { GraphFieldEditorProps } from '../../types/graphEditorTypes';
 import { useDispatch } from 'react-redux';
 import { setFieldValue } from '../editorActions';
 
-type Props = {
+type Props<Ctx> = {
     nodeId: string;
     fieldName: string;
-    fieldConfig: GraphNodeFieldConfig;
+    fieldConfig: GraphNodeFieldConfig<Ctx>;
     fieldValue: unknown;
 }
 
-function GraphNodeField(props: Props): React.ReactElement {
+function GraphNodeField<Ctx>(props: Props<Ctx>): React.ReactElement {
     const { nodeId, fieldName, fieldConfig, fieldValue } = props;
     const fieldEditor = fieldConfig.editor;
     
-    const { graphConfig, graphId, ctx } = useContext(graphContext);
-    const input: GraphNodeEditorConfig<any> | undefined = graphConfig.editors[fieldEditor];
+    const { graphConfig, graphId, baseContext } = useContext(graphContext);
+    const input: GraphNodeEditorConfig<Ctx, any> | undefined = graphConfig.editors[fieldEditor];
     
     const dispatch = useDispatch();
     const onChanged = useCallback((value: unknown) => {
         dispatch(setFieldValue(graphId, nodeId, fieldName, value));
     }, [dispatch, graphId, nodeId, fieldName]);
 
-    const inputProps: GraphFieldEditorProps<any> = {
+    const inputProps: GraphFieldEditorProps<Ctx, any> = {
         onChanged,
         value: fieldValue,
-        ctx,
+        context,
         field: fieldConfig
     };
 

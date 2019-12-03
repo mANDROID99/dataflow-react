@@ -9,10 +9,11 @@ import { StoreState } from '../../types/storeTypes';
 import { GraphProcessor } from '../../processor/GraphProcessor';
 import { GraphConfig } from '../../types/graphConfigTypes';
 
-type Props = {
+type Props<Ctx> = {
     graphId: string;
-    graphConfig: GraphConfig;
+    graphConfig: GraphConfig<Ctx>;
     splitSize: number;
+    baseContext: Ctx;
 }
 
 const testData: { [key: string]: unknown }[] = [
@@ -61,8 +62,7 @@ function createChart(canvas: HTMLCanvasElement): Chart {
     });
 }
 
-
-export default function ChartComponent({ graphId, graphConfig, splitSize }: Props) {
+export default function ChartComponent<Ctx>({ graphId, graphConfig, baseContext, splitSize }: Props<Ctx>) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart>();
     const graph = useSelector((state: StoreState) => selectGraph(state, graphId));
@@ -71,14 +71,15 @@ export default function ChartComponent({ graphId, graphConfig, splitSize }: Prop
         if (graph) {
             const processor = GraphProcessor.create({
                 graph,
-                graphConfig
+                graphConfig,
+                baseContext
             });
 
             return processor.subscribe((results) => {
                 console.log(results);
             });
         }
-    }, [graphConfig, graph]);
+    }, [graphConfig, graph, baseContext]);
 
     useEffect(() => {
         const canvas = canvasRef.current;

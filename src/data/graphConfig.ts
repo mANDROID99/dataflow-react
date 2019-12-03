@@ -5,12 +5,11 @@ import { GROUP_NODE } from "../processor/nodes/GroupNode";
 import { SUM_NODE } from "../processor/nodes/SumNode";
 import { SELECT_NODE } from "../processor/nodes/SelectNode";
 import { OUTPUT_NODE } from "../processor/nodes/OutputNode";
+import { ChartContext } from "../processor/nodes/context";
+import { mergeContexts } from '../processor/nodes/context';
 
-export type ChartContext = {
-    properties: string[];
-}
-
-export const graphConfig: GraphConfig = {
+export const graphConfig: GraphConfig<ChartContext> = {
+    mergeContexts,
     editors,
     nodes: {
         grid: DATA_GRID_NODE,

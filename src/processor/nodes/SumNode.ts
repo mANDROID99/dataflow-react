@@ -1,6 +1,7 @@
-import { RowGroup, createRowGroup, Primitive } from "../../types/nodeProcessorTypes";
+import { RowGroup, createRowGroup, Primitive } from "../../types/processorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
+import { ChartContext } from "./context";
 
 function asNumber(input: Primitive): number {
     if (input) {
@@ -10,7 +11,7 @@ function asNumber(input: Primitive): number {
     }
 }
 
-export const SUM_NODE: GraphNodeConfig = {
+export const SUM_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Sum',
     menuGroup: 'Transform',
     ports: {
@@ -30,17 +31,22 @@ export const SUM_NODE: GraphNodeConfig = {
         column: {
             label: 'Column',
             initialValue: '',
-            editor: EditorType.TEXT
+            editor: EditorType.SELECT,
+            inputParams(context) {
+                return {
+                    options: context.columns
+                };
+            }
         },
-        alias: {
-            label: 'Alias',
+        key: {
+            label: 'Key',
             initialValue: '',
             editor: EditorType.TEXT
         }
     },
-    process({ config }) {
-        const column = config.column as string;
-        const alias = config.alias as string;
+    process({ node }) {
+        const column = node.fields.column as string;
+        const key = node.fields.key as string;
 
         return (input, next) => {
             const data = input.in as RowGroup[];
@@ -54,11 +60,15 @@ export const SUM_NODE: GraphNodeConfig = {
                 }
 
                 const nextRowGroup = createRowGroup(rowGroup.rowId, rowGroup.data);
-                nextRowGroup.selection = { ...rowGroup.selection, [alias]: amt };
+                nextRowGroup.selection = { ...rowGroup.selection, [key]: amt };
                 result.push(nextRowGroup);
             }
     
             next('data', result);
         };
+    },
+    modifyContext({ node, context }) {
+        const key = node.fields.key as string;
+        context.keys.push(key);
     }
 };

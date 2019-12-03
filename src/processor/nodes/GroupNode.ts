@@ -1,12 +1,13 @@
-import { DataType, RowGroup, Row, createRowGroup, Primitive } from "../../types/nodeProcessorTypes";
+import { DataType, RowGroup, Row, createRowGroup, Primitive } from "../../types/processorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
+import { ChartContext } from "./context";
 
 function toString(x: Primitive) {
     return x === undefined ? '' : '' + x;
 }
 
-export const GROUP_NODE: GraphNodeConfig = {
+export const GROUP_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Group-By',
     menuGroup: 'Transform',
     ports: {
@@ -28,15 +29,15 @@ export const GROUP_NODE: GraphNodeConfig = {
             initialValue: '',
             editor: EditorType.TEXT 
         },
-        alias: {
-            label: 'Alias',
+        key: {
+            label: 'Key',
             initialValue: '',
             editor: EditorType.TEXT
         }
     },
-    process({ config }) {
-        const groupKey = config.column as string;
-        const alias = config.alias as string;
+    process({ node }) {
+        const groupKey = node.fields.column as string;
+        const key = node.fields.key as string;
 
         return (input, next) => {
             const data = input.in as Row[] | RowGroup[];
@@ -52,7 +53,7 @@ export const GROUP_NODE: GraphNodeConfig = {
 
                         if (!group) {
                             group = createRowGroup(groupName, []);
-                            group.selection = { [alias]: groupName };
+                            group.selection = { [key]: groupName };
 
                             groups.push(group);
                             groupsLookup.set(groupName, group);
@@ -71,7 +72,7 @@ export const GROUP_NODE: GraphNodeConfig = {
 
                             if (!group) {
                                 group = createRowGroup(datum.rowId + '-' + groupName, []);
-                                group.selection = { ...datum.selection, [alias]: groupName };
+                                group.selection = { ...datum.selection, [key]: groupName };
 
                                 groups.push(group);
                                 groupsLookup.set(groupName, group);
@@ -85,5 +86,9 @@ export const GROUP_NODE: GraphNodeConfig = {
 
             next('data', groups);
         };
+    },
+    modifyContext({ node, context }) {
+        const key = node.fields.key as string;
+        context.keys.push(key);
     }
 };

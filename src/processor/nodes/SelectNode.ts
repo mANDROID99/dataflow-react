@@ -1,8 +1,9 @@
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
-import { Row, RowGroup, Scalar, createScalar } from "../../types/nodeProcessorTypes";
+import { Row, RowGroup, Scalar, createScalar } from "../../types/processorTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
+import { ChartContext } from "./context";
 
-export const SELECT_NODE: GraphNodeConfig = {
+export const SELECT_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Select',
     menuGroup: 'Transform',
     ports: {
@@ -22,11 +23,14 @@ export const SELECT_NODE: GraphNodeConfig = {
         key: {
             initialValue: '',
             label: 'Key',
-            editor: EditorType.TEXT
+            editor: EditorType.SELECT,
+            inputParams: (context) => ({
+                options: context.keys
+            })
         }
     },
-    process({ config }) {
-        const key = config.key as string;
+    process({ node }) {
+        const key = node.fields.key as string;
 
         return (input, next) => {
             const data = input.data as (Row | RowGroup)[];

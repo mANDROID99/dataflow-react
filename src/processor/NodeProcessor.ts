@@ -5,10 +5,10 @@ type Output = {
     subscribers: ((value: unknown) => void)[];
 }
 
-export class NodeProcessor {
+export class NodeProcessor<Ctx> {
     private readonly outputs = new Map<string, Output>();
 
-    private readonly sources: NodeProcessor[] = [];
+    private readonly sources: NodeProcessor<Ctx>[] = [];
     private readonly latestValues: { [key: string]: unknown } = {};
     private readonly fn: ProcessFn;
 
@@ -16,17 +16,17 @@ export class NodeProcessor {
     private disposable?: (() => void) | void;
     private received = 0;
 
-    constructor(nodeId: string, node: GraphNode, config: GraphNodeConfig) {
+    constructor(node: GraphNode, config: GraphNodeConfig<Ctx>, context: Ctx) {
         this.latestValues = this.extractInitialValues(config);
         this.onPortOutput = this.onPortOutput.bind(this);
         
         this.fn = config.process({
-            nodeId,
-            config: node.fields
+            context,
+            node
         });
     }
 
-    addSource(portNameIn: string, portNameOut: string, processor: NodeProcessor) {
+    addSource(portNameIn: string, portNameOut: string, processor: NodeProcessor<Ctx>) {
         this.sources.push(processor);
         processor.subscribe(portNameOut, this.onPortInput.bind(this, portNameIn));
     }
@@ -102,7 +102,7 @@ export class NodeProcessor {
         }
     }
 
-    private extractInitialValues(config: GraphNodeConfig) {
+    private extractInitialValues(config: GraphNodeConfig<Ctx>) {
         const ports = config.ports.in;
         const values: { [key: string]: unknown } = {};
         for (const portName in ports) {

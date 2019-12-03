@@ -16,11 +16,11 @@ type Props = {
     graphNode: GraphNode;
 }
 
-function getPortNamesIn(nodeConfig: GraphNodeConfig): string[] {
+function getPortNamesIn(nodeConfig: GraphNodeConfig<any>): string[] {
     return Object.keys(nodeConfig.ports.in);
 }
 
-function getPortNamesOut(nodeConfig: GraphNodeConfig): string[] {
+function getPortNamesOut(nodeConfig: GraphNodeConfig<any>): string[] {
     return Object.keys(nodeConfig.ports.out);
 }
 
@@ -30,7 +30,7 @@ function GraphNodeComponent(props: Props): React.ReactElement {
 
     const dispatch = useDispatch();
     const nodeType = graphNode.type;
-    const nodeSpec = graphSpec.nodes[nodeType];
+    const nodeConfig = graphSpec.nodes[nodeType];
     const drag = useSelector((state: StoreState) => selectNodeDrag(state, graphId));
 
     const elRef = useRef<HTMLDivElement>(null);
@@ -64,24 +64,24 @@ function GraphNodeComponent(props: Props): React.ReactElement {
         <div className="graph-node" style={{ left: x, top: y }}>
             <div ref={elRef} className="graph-node-header">
                 <GraphNodeHeader
-                    title={nodeSpec?.title}
+                    title={nodeConfig?.title}
                     nodeId={nodeId}
                 />
             </div>
             <div className="graph-node-body">
                 <GraphNodePorts
                     nodeId={nodeId}
-                    portNames={nodeSpec ? getPortNamesIn(nodeSpec) : []}
+                    portNames={nodeConfig ? getPortNamesIn(nodeConfig) : []}
                     portsOut={false}
                 />
                 <GraphNodeFields
                     nodeId={nodeId}
-                    fieldSpecs={nodeSpec?.fields ?? {}}
+                    fieldConfigs={nodeConfig?.fields ?? {}}
                     fieldValues={graphNode.fields}
                 />
                 <GraphNodePorts
                     nodeId={nodeId}
-                    portNames={nodeSpec ? getPortNamesOut(nodeSpec) : []}
+                    portNames={nodeConfig ? getPortNamesOut(nodeConfig) : []}
                     portsOut={true}
                 />
             </div>

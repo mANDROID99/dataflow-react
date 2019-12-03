@@ -8,20 +8,20 @@ import GraphSVG from './GraphSVG';
 import Menu from './menu/Menu';
 import { StoreState } from '../../types/storeTypes';
 
-type Props = {
+type Props<Ctx> = {
     graphId: string;
-    graphConfig: GraphConfig;
-    context?: unknown;
+    graphConfig: GraphConfig<Ctx>;
+    baseContext: Ctx;
 }
 
-export type GraphContext = {
+export type GraphContext<Ctx> = {
     graphId: string;
-    graphConfig: GraphConfig;
+    graphConfig: GraphConfig<Ctx>;
     modalRoot: Element;
-    ctx: unknown;
+    baseContext: Ctx;
 }
 
-export const graphContext = React.createContext<GraphContext>(null as any);
+export const graphContext = React.createContext<GraphContext<any>>(null as any);
 
 function createModalRootDiv(): HTMLDivElement {
     const el = document.createElement('div');
@@ -29,8 +29,8 @@ function createModalRootDiv(): HTMLDivElement {
     return el;
 }
 
-export default function GraphEditor({ graphId, graphConfig: spec, context: ctx }: Props) {
-    const [scroll, setScroll] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+export default function GraphEditor<Ctx>({ graphId, graphConfig, baseContext }: Props<Ctx>) {
+    const [scroll, setScroll] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
     const [modalRoot] = useState(createModalRootDiv);
     const graphContainerRef = useRef<HTMLDivElement>(null);
 
@@ -45,14 +45,14 @@ export default function GraphEditor({ graphId, graphConfig: spec, context: ctx }
         };
     }, [modalRoot]);
 
-    const context = useMemo((): GraphContext => {
+    const context = useMemo((): GraphContext<Ctx> => {
         return {
             graphId,
-            graphConfig: spec,
+            graphConfig,
             modalRoot,
-            ctx
+            baseContext
         };
-    }, [graphId, spec, modalRoot, ctx]);
+    }, [graphId, graphConfig, modalRoot, baseContext]);
 
     const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
         const el = event.target as HTMLDivElement;

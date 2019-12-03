@@ -1,8 +1,9 @@
-import { Scalar, OutputValue, createOutputValue } from "../../types/nodeProcessorTypes";
+import { Scalar, OutputValue, createOutputValue } from "../../types/processorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
+import { ChartContext } from "./context";
 
-export const OUTPUT_NODE: GraphNodeConfig = {
+export const OUTPUT_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Output',
     isOutput: true,
     menuGroup: 'Output',
@@ -20,15 +21,15 @@ export const OUTPUT_NODE: GraphNodeConfig = {
             label: 'Property',
             editor: EditorType.SELECT,
             initialValue: '',
-            inputParams: (context: any) => {
+            inputParams: (context) => {
                 return {
-                    options: context.properties
+                    options: context.base.properties
                 };
             }
         }
     },
-    process({ config }) {
-        const propertyName = config.property as string;
+    process({ node }) {
+        const propertyName = node.fields.property as string;
 
         return (input, next) => {
             const data = input.in as Scalar[];

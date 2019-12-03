@@ -2,14 +2,14 @@ import { Graph } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
 import { NodeProcessor } from "./NodeProcessor";
 
-type ProcessorOpts = {
+type ProcessorOpts<Ctx> = {
     graph: Graph;
-    graphConfig: GraphConfig;
+    graphConfig: GraphConfig<Ctx>;
+    baseContext: Ctx;
 }
 
-
-export class GraphProcessor {
-    private readonly inputs: NodeProcessor[];
+export class GraphProcessor<Ctx> {
+    private readonly inputs: NodeProcessor<Ctx>[];
 
     private readonly subscribers: ((value: unknown[]) => void)[] = [];
     private readonly subscriptions: (() => void)[] = [];
@@ -17,19 +17,20 @@ export class GraphProcessor {
     private numResults = 0;
     private readonly results: unknown[] = [];
 
-    constructor(inputs: NodeProcessor[]) {
+    constructor(inputs: NodeProcessor<Ctx>[]) {
         this.inputs = inputs;
     }
 
-    static create(options: ProcessorOpts): GraphProcessor {
+    static create<Ctx>(options: ProcessorOpts<Ctx>): GraphProcessor<Ctx> {
         const graph = options.graph;
         const graphConfig = options.graphConfig;
+        const baseContext = options.baseContext;
 
-        const inputs: NodeProcessor[] = [];
-        const processorsLookup: Map<string, NodeProcessor> = new Map();
+        const inputs: NodeProcessor<Ctx>[] = [];
+        const processorsLookup: Map<string, NodeProcessor<Ctx>> = new Map();
 
         // recursively create processors
-        function getOrCreateProcessor(nodeId: string): NodeProcessor | undefined {
+        function getOrCreateProcessor(nodeId: string): NodeProcessor<Ctx> | undefined {
             const node = graph.nodes[nodeId];
             if (!node) return;
 
@@ -39,7 +40,7 @@ export class GraphProcessor {
             }
 
             const nodeConfig = graphConfig.nodes[node.type];
-            processor = new NodeProcessor(nodeId, node, nodeConfig);
+            processor = new NodeProcessor(node, nodeConfig, baseContext);
             processorsLookup.set(nodeId, processor);
 
             const inPorts = node.ports.in;

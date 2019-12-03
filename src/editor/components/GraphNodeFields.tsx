@@ -4,8 +4,8 @@ import GraphNodeField from './GraphNodeField';
 
 type Props = {
     nodeId: string;
-    fieldSpecs: {
-        [name: string]: GraphNodeFieldConfig;
+    fieldConfigs: {
+        [name: string]: GraphNodeFieldConfig<any>;
     };
     fieldValues: {
         [name: string]: unknown;
@@ -13,20 +13,20 @@ type Props = {
 }
 
 function GraphNodeFields(props: Props): React.ReactElement {
-    const fieldSpecs = props.fieldSpecs;
+    const fieldSpecs = props.fieldConfigs;
     const fieldValues = props.fieldValues;
     const nodeId = props.nodeId;
 
     return (
         <div className="graph-node-fields">
-            {Object.entries(fieldSpecs).map(([fieldName, fieldSpec]) => {
+            {Object.entries(fieldSpecs).map(([fieldName, fieldConfig]) => {
                 const fieldValue = fieldValues[fieldName];
                 return (
                     <GraphNodeField
                         key={fieldName}
                         nodeId={nodeId}
                         fieldName={fieldName}
-                        fieldConfig={fieldSpec}
+                        fieldConfig={fieldConfig}
                         fieldValue={fieldValue}
                     />
                 );
