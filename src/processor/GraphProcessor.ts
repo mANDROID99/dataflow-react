@@ -2,29 +2,26 @@ import { Graph } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
 import { NodeProcessor } from "./NodeProcessor";
 
-type ProcessorOpts<T> = {
-    resultCombiner: (results: unknown[]) => T;
+type ProcessorOpts = {
     graph: Graph;
     graphConfig: GraphConfig;
 }
 
 
-export class GraphProcessor<T> {
+export class GraphProcessor {
     private readonly inputs: NodeProcessor[];
 
-    private readonly subscribers: ((value: T) => void)[] = [];
+    private readonly subscribers: ((value: unknown[]) => void)[] = [];
     private readonly subscriptions: (() => void)[] = [];
 
     private numResults = 0;
     private readonly results: unknown[] = [];
-    private readonly options: ProcessorOpts<T>;
 
-    constructor(inputs: ProcessorOpts<T>, outputs: NodeProcessor[]) {
-        this.options = inputs;
-        this.inputs = outputs;
+    constructor(inputs: NodeProcessor[]) {
+        this.inputs = inputs;
     }
 
-    static create<T>(options: ProcessorOpts<T>): GraphProcessor<T> {
+    static create(options: ProcessorOpts): GraphProcessor {
         const graph = options.graph;
         const graphConfig = options.graphConfig;
 
@@ -42,7 +39,7 @@ export class GraphProcessor<T> {
             }
 
             const nodeConfig = graphConfig.nodes[node.type];
-            processor = new NodeProcessor(node, nodeConfig);
+            processor = new NodeProcessor(nodeId, node, nodeConfig);
             processorsLookup.set(nodeId, processor);
 
             const inPorts = node.ports.in;
@@ -74,10 +71,10 @@ export class GraphProcessor<T> {
             }
         }
 
-        return new GraphProcessor(options, inputs);
+        return new GraphProcessor(inputs);
     }
     
-    subscribe(fn: (value: T) => void): () => void {
+    subscribe(fn: (value: unknown[]) => void): () => void {
         this.subscribers.push(fn);
 
         if (this.subscribers.length === 1) {
@@ -96,7 +93,7 @@ export class GraphProcessor<T> {
         return this.unsubscribe.bind(this, fn);
     }
 
-    private unsubscribe(fn: (value: T) => void) {
+    private unsubscribe(fn: (value: unknown[]) => void) {
         this.subscribers.splice(this.subscribers.indexOf(fn), 1);
 
         if (!this.subscribers.length) {
@@ -122,9 +119,8 @@ export class GraphProcessor<T> {
         this.results[index] = result;
         
         if (this.numResults === this.inputs.length) {
-            const combined = this.options.resultCombiner(this.results);
             for (const sub of this.subscribers) {
-                sub(combined);
+                sub(this.results);
             }
         }
     }

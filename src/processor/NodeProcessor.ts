@@ -16,10 +16,14 @@ export class NodeProcessor {
     private disposable?: (() => void) | void;
     private received = 0;
 
-    constructor(node: GraphNode, config: GraphNodeConfig) {
+    constructor(nodeId: string, node: GraphNode, config: GraphNodeConfig) {
         this.latestValues = this.extractInitialValues(config);
         this.onPortOutput = this.onPortOutput.bind(this);
-        this.fn = config.process(node.fields);
+        
+        this.fn = config.process({
+            nodeId,
+            config: node.fields
+        });
     }
 
     addSource(portNameIn: string, portNameOut: string, processor: NodeProcessor) {

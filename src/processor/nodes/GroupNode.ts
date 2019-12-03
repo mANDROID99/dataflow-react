@@ -1,6 +1,10 @@
-import { RowGroup, DataType, Row, Scalar, createScalarValue, createRowGroupValue, NodeValue } from "../../types/nodeProcessorTypes";
+import { DataType, RowGroup, Row, createRowGroup, Primitive } from "../../types/nodeProcessorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
+
+function toString(x: Primitive) {
+    return x === undefined ? '' : '' + x;
+}
 
 export const GROUP_NODE: GraphNodeConfig = {
     title: 'Group-By',
@@ -13,10 +17,7 @@ export const GROUP_NODE: GraphNodeConfig = {
             }
         },
         out: {
-            name: {
-                type: 'scalar[]'
-            },
-            group: {
+            data: {
                 type: 'rowgroup[]'
             }
         }
@@ -26,60 +27,63 @@ export const GROUP_NODE: GraphNodeConfig = {
             label: 'Column',
             initialValue: '',
             editor: EditorType.TEXT 
+        },
+        alias: {
+            label: 'Alias',
+            initialValue: '',
+            editor: EditorType.TEXT
         }
     },
-    process(config) {
+    process({ config }) {
         const groupKey = config.column as string;
+        const alias = config.alias as string;
 
         return (input, next) => {
-            const data = input.in as NodeValue<Row>[] | NodeValue<RowGroup>[];
+            const data = input.in as Row[] | RowGroup[];
 
-            const groups: NodeValue<RowGroup>[] = [];
-            const groupNames: NodeValue<Scalar>[] = [];
-            let groupsLookup = new Map<string, NodeValue<RowGroup>>();
+            const groups: RowGroup[] = [];
+            let groupsLookup = new Map<string, RowGroup>();
 
-            for (const value of data) {
-                const datum = value.data;
+            for (const datum of data) {
                 if (datum.type === DataType.ROW) {
-                    const groupName = datum.data[groupKey];
+                    const groupName = toString(datum.data[groupKey]);
                     if (groupName !== undefined) {
-                        let group: NodeValue<RowGroup> | undefined = groupsLookup.get(groupName);
+                        let group: RowGroup | undefined = groupsLookup.get(groupName);
+
                         if (!group) {
-                            const correlationId = groupName;
-                            group = createRowGroupValue(correlationId, value.parent, []);
-                            groupNames.push(createScalarValue(correlationId, value.parent, groupName));
+                            group = createRowGroup(groupName, []);
+                            group.selection = { [alias]: groupName };
 
                             groups.push(group);
                             groupsLookup.set(groupName, group);
                         }
-                        group.data.rows.push(datum);
+
+                        group.data.push(datum);
                     }
 
                 } else {
-                    groupsLookup = new Map<string, NodeValue<RowGroup>>();
-                    for (const subRow of datum.rows) {
-                        const groupName = subRow.data[groupKey];
+                    groupsLookup = new Map<string, RowGroup>();
+                    for (const subRow of datum.data) {
+                        const groupName = toString(subRow.data[groupKey]);
                         
                         if (groupName !== undefined) {
-                            let group: NodeValue<RowGroup> | undefined = groupsLookup.get(groupName);
-                            if (!group) {
-                                const correlationId = groupName;
-                                const parent = value.parent.concat(value.correlationId);
+                            let group: RowGroup | undefined = groupsLookup.get(groupName);
 
-                                group = createRowGroupValue(correlationId, parent, []);
-                                groupNames.push(createScalarValue(correlationId, parent, groupName));
+                            if (!group) {
+                                group = createRowGroup(datum.rowId + '-' + groupName, []);
+                                group.selection = { ...datum.selection, [alias]: groupName };
 
                                 groups.push(group);
                                 groupsLookup.set(groupName, group);
                             }
-                            group.data.rows.push(subRow);
+
+                            group.data.push(subRow);
                         }
                     }
                 }
             }
 
-            next('group', groups);
-            next('name', groupNames);
+            next('data', groups);
         };
     }
 };

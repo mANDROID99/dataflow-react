@@ -1,4 +1,4 @@
-import { Scalar, NodeValue, Selection, createSelectionValue } from "../../types/nodeProcessorTypes";
+import { Scalar, OutputValue, createOutputValue } from "../../types/nodeProcessorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
 
@@ -27,22 +27,17 @@ export const OUTPUT_NODE: GraphNodeConfig = {
             }
         }
     },
-    process(config) {
+    process({ config }) {
         const propertyName = config.property as string;
 
         return (input, next) => {
-            const data = input.in as NodeValue<Scalar>[];
+            const data = input.in as Scalar[];
             
-            const values = data.map((value): NodeValue<Selection> => {
-                const values = { [propertyName]: value.data.value };
-                return createSelectionValue(
-                    value.correlationId,
-                    value.parent,
-                    values
-                );
+            const values = data.map((value): OutputValue => {
+                return createOutputValue(value.rowId, propertyName, value.value);
             });
 
             next('out', values);
-        }
+        };
     }
-} 
+};

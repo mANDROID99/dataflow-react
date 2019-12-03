@@ -8,8 +8,6 @@ import { selectGraph } from '../../editor/selectors';
 import { StoreState } from '../../types/storeTypes';
 import { GraphProcessor } from '../../processor/GraphProcessor';
 import { GraphConfig } from '../../types/graphConfigTypes';
-import { mergeResults } from '../../processor/resultsMerger';
-import { Selection, NodeValue, DataType } from '../../types/nodeProcessorTypes';
 
 type Props = {
     graphId: string;
@@ -72,11 +70,6 @@ export default function ChartComponent({ graphId, graphConfig, splitSize }: Prop
     useEffect(() => {
         if (graph) {
             const processor = GraphProcessor.create({
-                resultCombiner: (results) => {
-                    return mergeResults(results as NodeValue<Selection>[][], x => x.values, (left, right) => {
-                        return Object.assign({}, left, right);
-                    });
-                },
                 graph,
                 graphConfig
             });

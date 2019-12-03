@@ -1,8 +1,8 @@
-import { RowGroup, Scalar, createScalarValue, NodeValue } from "../../types/nodeProcessorTypes";
+import { RowGroup, createRowGroup, Primitive } from "../../types/nodeProcessorTypes";
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { EditorType } from "../../editor/components/editors/standardEditors";
 
-function asNumber(input: string | undefined): number {
+function asNumber(input: Primitive): number {
     if (input) {
         return +input;
     } else {
@@ -21,8 +21,8 @@ export const SUM_NODE: GraphNodeConfig = {
             }
         },
         out: {
-            out: {
-                type: 'scalar[]'
+            data: {
+                type: 'rowgroup[]'
             }
         }
     },
@@ -31,23 +31,34 @@ export const SUM_NODE: GraphNodeConfig = {
             label: 'Column',
             initialValue: '',
             editor: EditorType.TEXT
+        },
+        alias: {
+            label: 'Alias',
+            initialValue: '',
+            editor: EditorType.TEXT
         }
     },
-    process(config) {
+    process({ config }) {
         const column = config.column as string;
-        return (input, next) => {
-            const data = input.in as NodeValue<RowGroup>[];
-            const result: NodeValue<Scalar>[] = [];  
+        const alias = config.alias as string;
 
-            for (const item of data) {
+        return (input, next) => {
+            const data = input.in as RowGroup[];
+            const result: RowGroup[] = [];  
+
+            for (const rowGroup of data) {
                 let amt = 0;
-                for (const row of item.data.rows) {
-                    amt += asNumber(row.data[column]);
+
+                for (const subRow of rowGroup.data) {
+                    amt += asNumber(subRow.data[column]);
                 }
-                result.push(createScalarValue(item.correlationId, item.parent, amt));
+
+                const nextRowGroup = createRowGroup(rowGroup.rowId, rowGroup.data);
+                nextRowGroup.selection = { ...rowGroup.selection, [alias]: amt };
+                result.push(nextRowGroup);
             }
     
-            next('out', result); 
+            next('data', result);
         };
     }
 };

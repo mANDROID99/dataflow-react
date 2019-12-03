@@ -35,6 +35,11 @@ export type ProcessFn = (
     next: (portName: string, output: unknown) => void
 ) => (void | (() => void));
 
+export type CreateProcessorOptions = {
+    nodeId: string;
+    config: { [key: string]: unknown };
+}
+
 export type GraphNodeConfig = {
     menuGroup: string;
     title: string;
@@ -50,7 +55,7 @@ export type GraphNodeConfig = {
             [key: string]: GraphNodePortOutConfig;
         };
     };
-    process: (config: { [key: string]: unknown }) => ProcessFn;
+    process: (options: CreateProcessorOptions) => ProcessFn;
 }
 
 export type PortTypeConfig = {

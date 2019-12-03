@@ -2,77 +2,82 @@ export enum DataType {
     ROW = 'row',
     ROW_GROUP = 'rowgroup',
     SCALAR = 'scalar',
-    SELECTION = 'selection'
+    SELECTION = 'selection',
+    OUTPUT = 'output'
 }
 
-export type NodeValue<T> = {
-    correlationId: string;
-    parent: string[];
-    data: T;
-}
+export type Primitive = string | number | boolean | undefined;
 
 export type Row = {
     type: DataType.ROW;
-    data: { [key: string]: string | undefined };
+    rowId: string;
+    selection: { [key: string]: Primitive };
+    data: { [key: string]: Primitive };
 }
 
 export type RowGroup = {
     type: DataType.ROW_GROUP;
-    rows: Row[];
+    rowId: string;
+    selection: { [key: string]: Primitive };
+    data: Row[];
 }
 
 export type Scalar = {
     type: DataType.SCALAR;
-    value: string | number | boolean;
+    rowId: string;
+    value: Primitive;
 }
 
 export type Selection = {
     type: DataType.SELECTION;
-    values: {
-        [key: string]: string | number | boolean;
+    key: string;
+}
+
+export type OutputValue = {
+    type: DataType.OUTPUT;
+    rowId: string;
+    key: string;
+    value: Primitive;
+}
+
+export function createRow(rowId: string, data: { [key: string]: string | undefined }): Row {
+    return {
+        type: DataType.ROW,
+        rowId,
+        selection: {},
+        data
     };
 }
 
-export function createRowValue(correlationId: string, parent: string[], data: { [key: string]: string | undefined }): NodeValue<Row> {
+export function createRowGroup(rowId: string, data: Row[]): RowGroup {
     return {
-        correlationId,
-        parent,
-        data: {
-            type: DataType.ROW,
-            data
-        }
+        type: DataType.ROW_GROUP,
+        rowId,
+        selection: {},
+        data
     };
 }
 
-export function createRowGroupValue(correlationId: string, parent: string[], rows: Row[]): NodeValue<RowGroup> {
+export function createScalar(rowId: string, value: Primitive): Scalar {
     return {
-        correlationId,
-        parent,
-        data: {
-            type: DataType.ROW_GROUP,
-            rows
-        }
+        type: DataType.SCALAR,
+        rowId,
+        value
     };
 }
 
-export function createScalarValue(correlationId: string, parent: string[], value: string | number | boolean): NodeValue<Scalar> {
+export function createSelection(key: string): Selection {
     return {
-        correlationId,
-        parent,
-        data: {
-            type: DataType.SCALAR,
-            value
-        }
+        type: DataType.SELECTION,
+        key
     };
 }
 
-export function createSelectionValue(correlationId: string, parent: string[], values: { [key: string]: string | number | boolean }): NodeValue<Selection> {
+export function createOutputValue(rowId: string, key: string, value: Primitive): OutputValue {
     return {
-        correlationId,
-        parent,
-        data: {
-            type: DataType.SELECTION,
-            values
-        }
+        type: DataType.OUTPUT,
+        rowId,
+        key,
+        value
     };
 }
