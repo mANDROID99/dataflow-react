@@ -3,24 +3,62 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const isDevelopment = (process.env.NODE_ENV || 'development') === 'development';
+
 module.exports = {
     devtool: 'eval-source-map',
     entry: './src/index.tsx',
     module: {
         rules: [
             {
+                test: /\.module\.s?css$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: {
+                                localIdentName: isDevelopment ? '[path][name]__[local]' : '[hash:base64]'
+                            },
+                            sourceMap: isDevelopment ? true : false
+                        }
+                    },
+                    'sass-loader'
+                ]
+            },
+            {
                 test: /\.s?css$/,
-                use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+                exclude: /\.module.s?css$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: isDevelopment ? true : false
+                        }
+                    }
+                ]
             },
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            transpileOnly: true
+                        }
+                    }
+                ]
             }
         ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js']
+        extensions: ['.tsx', '.ts', '.js', '.scss'],
+        alias: {
+            graph: path.resolve(__dirname, 'src/graph')
+        }
     },
     output: {
         filename: 'bundle.js',

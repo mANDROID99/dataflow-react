@@ -1,20 +1,41 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { store } from './store/store';
-import Main from './Main';
 
-import '@fortawesome/fontawesome-free';
-import './fa';
+import './styles/app.scss';
 
-import 'normalize.css';
-import './styles/app.css';
-import './styles/resizer.css';
-import './styles/main.scss';
+// import '@fortawesome/fontawesome-free';
+// import './fa';
+
+// import 'normalize.css';
+// import './styles/app.css';
+// import './styles/resizer.css';
+// import './styles/main.scss';
+import GraphEditor from 'graph/editor/GraphEditor';
+import { Graph } from 'graph/types/graphTypes';
+import { graphConfig } from './config/graphConfig';
+
+const INITIAL_GRAPH: Graph = {
+    nodes: {
+      'group': {
+        type: 'group',
+        fields: {},
+        ports: {
+          in: {},
+          out: {}
+        },
+        x: 100,
+        y: 100
+      }
+    }
+}
 
 export default function App() {
   return (
-    <Provider store={store}>
-      <Main/>
-    </Provider>
+    <div className="app">
+        <GraphEditor
+          graphConfig={graphConfig}
+          graph={INITIAL_GRAPH}
+          onChanged={() => {}}
+        />
+    </div>
   );
 }

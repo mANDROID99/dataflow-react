@@ -1,0 +1,60 @@
+@import '../styles/variables.scss';
+
+.editor {
+    background-color: $color-editor-bg;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.0625em;
+    overflow: hidden;
+    user-select: none;
+}
+
+.graphNodeContainer {
+    fill:  $color-node-bg;
+    rx: 7px;
+    ry: 7px;
+}
+
+.graphNodeTitle {
+    dominant-baseline: middle;
+    text-anchor: middle;
+    fill: $color-text-light;
+}
+
+.wrapIcon {
+    user-select: none;
+    pointer-events: none;
+}
+
+.icon {
+    height: 100% !important;
+    width: 100% !important;
+    color: $color-text-light;
+    
+}
+
+.iconOverlay {
+    fill: transparent;
+    transition: 0.2s fill ease;
+    cursor: pointer;
+    &:hover {
+        fill: $primary;   
+    }
+}
+
+.portHandle {
+    fill: $color-port-handle;
+}
+
+.portLabel {
+    fill: $color-text-light;
+    text-anchor: end;
+    dominant-baseline: middle;
+}
+
+.portLabel:global(.out) {
+    text-anchor: start;
+}
