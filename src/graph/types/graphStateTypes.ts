@@ -7,7 +7,7 @@ export type PortRef = {
 }
 
 export type NodeDrag = {
-    node: string;
+    nodeId: string;
     dragX: number;
     dragY: number;   
 }
@@ -27,9 +27,18 @@ export type GraphState = {
 }
 
 export enum GraphActionType {
-    INIT
+    INIT,
+    NODE_DRAG_BEGIN,
+    NODE_DRAG_UPDATE,
+    NODE_DRAG_FINISH
 }
 
-export type GraphAction =
-    { type: GraphActionType.INIT, graph: Graph };
+export type NodeDragBeginAction = { type: GraphActionType.NODE_DRAG_BEGIN, nodeId: string };
+export type NodeDragUpdateAction = { type: GraphActionType.NODE_DRAG_UPDATE, dx: number, dy: number };
+export type NodeDragEndAction = { type: GraphActionType.NODE_DRAG_FINISH };
 
+export type GraphAction =
+    | { type: GraphActionType.INIT, graph: Graph }
+    | NodeDragBeginAction
+    | NodeDragUpdateAction
+    | NodeDragEndAction;

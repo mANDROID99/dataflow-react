@@ -4,43 +4,34 @@ export const HEADER_ICON_INNER_SIZE = 14;
 export const HEADER_ICON_OUTER_W = 30;
 export const HEADER_ICON_OUTER_H = 25;
 
-export const NODE_WIDTH = 100;
-
+export const NODE_CONTENT_WIDTH = 150;
 export const HEADER_HEIGHT = 25;
 export const PORT_HEIGHT = 25;
-export const EDITOR_LABEL_HEIGHT = 15;
-export const EDITOR_FIELD_HEIGHT = 30;
 
 export const PORT_LABEL_OFFSET_X = 12;
+export const FIELD_PAD_X = 10;
+export const FIELD_GAP = 10;
+export const FIELD_LABEL_HEIGHT = 15;
+export const FIELD_EDITOR_HEIGHT = 30;
 
-
-export type NodeDimensions = {
-    fullWidth: number;
-    fullHeight: number;
-    fieldsHeight: number;
-    portsInHeight: number;
-    portsOutHeight: number
-    contentHeight: number;
-    headerHeight: number;
+export type Dims = {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
 }
 
-function computeWidth(nodeType: string, config: GraphConfig<any>): number {
-    const nodeConfig = config.nodes[nodeType];
-    return (nodeConfig.width ?? NODE_WIDTH) + HEADER_ICON_OUTER_W * 2;
+export type Point = {
+    x: number;
+    y: number;
 }
 
-function computeFieldsHeight(nodeConfig: GraphNodeConfig<any>, config: GraphConfig<any>): number {
-    let fieldsHeight = 0;
-
-    for (const field of Object.values(nodeConfig.fields)) {
-        const editor = config.editors[field.editor];
-
-        if (editor) {
-            fieldsHeight += (editor.height ?? EDITOR_FIELD_HEIGHT) + EDITOR_LABEL_HEIGHT;
-        }
-    }
-
-    return fieldsHeight;
+export type GraphNodeDims = {
+    header: Dims;
+    outer: Dims;
+    fields: Map<string, Dims>;
+    portsIn: Map<string, Point>;
+    portsOut: Map<string, Point>;
 }
 
 function computePortsInHeight(nodeConfig: GraphNodeConfig<any>): number {
@@ -51,41 +42,130 @@ function computePortsOutHeight(nodeConfig: GraphNodeConfig<any>): number {
     return Object.keys(nodeConfig.ports.out).length * PORT_HEIGHT;
 }
 
-export function computeDimensions(nodeType: string, config: GraphConfig<any>): NodeDimensions {
-    const nodeConfig = config.nodes[nodeType];
-    const fieldsHeight = computeFieldsHeight(nodeConfig, config);
-    const portsInHeight = computePortsInHeight(nodeConfig);
-    const portsOutHeight = computePortsOutHeight(nodeConfig);
+function computeFieldsHeight(nodeConfig: GraphNodeConfig<any>, config: GraphConfig<any>): number {
+    const fieldsConfig = nodeConfig.fields;
+    let h = FIELD_GAP;
 
-    let contentHeight = fieldsHeight;
-
-    if (portsInHeight > contentHeight) {
-        contentHeight = portsInHeight;
+    for (const fieldId in fieldsConfig) {
+        const field = fieldsConfig[fieldId];
+        const editor = config.editors[field.editor];
+        h += FIELD_GAP + FIELD_LABEL_HEIGHT;
+        h += (editor ? editor.height ?? FIELD_EDITOR_HEIGHT : 0);
     }
 
-    if (portsOutHeight > contentHeight) {
-        contentHeight = portsOutHeight;
+    return h;
+}
+
+function computeOuterHeight(nodeConfig: GraphNodeConfig<any>, config: GraphConfig<any>): number {
+    let height = computePortsInHeight(nodeConfig);
+    
+    let h = HEADER_HEIGHT + computeFieldsHeight(nodeConfig, config);
+    if (h > height) {
+        height = h;
     }
 
-    const headerHeight = HEADER_HEIGHT;
+    h = computePortsOutHeight(nodeConfig);
+    if (h > height) {
+        height = h;
+    }
 
-    const fullWidth = computeWidth(nodeType, config)
-    const fullHeight = contentHeight + headerHeight;
+    return height;
+}
 
+function computeOuterWidth(nodeConfig: GraphNodeConfig<any>) {
+    return nodeConfig.width ?? NODE_CONTENT_WIDTH;
+}
+
+function computeFieldDims(nodeConfig: GraphNodeConfig<any>, contentWidth: number, config: GraphConfig<any>): Map<string, Dims> {
+    const fieldsConfig = nodeConfig.fields;
+    const width = contentWidth - FIELD_PAD_X * 2;
+    const dims = new Map<string, Dims>();
+
+    let h = HEADER_HEIGHT + FIELD_GAP;
+
+    for (const fieldId in fieldsConfig) {
+        const field = fieldsConfig[fieldId];
+        const editor = config.editors[field.editor];
+        const height = FIELD_GAP + FIELD_LABEL_HEIGHT + (editor ? editor.height ?? FIELD_EDITOR_HEIGHT : 0);
+
+        const x = FIELD_PAD_X;
+        const y = h;
+
+        h += height;
+
+        dims.set(fieldId, {
+            x, y, width, height
+        });
+    }
+
+    return dims;
+}
+
+function computePortsInDims(nodeConfig: GraphNodeConfig<any>, contentHeight: number): Map<string, Point> {
+    const ports = nodeConfig.ports.in;
+    const dims = new Map<string, Point>();
+    const totalHeight = computePortsInHeight(nodeConfig);
+
+    let i = 0;
+    for (const portId in ports) {
+        const y = (contentHeight - totalHeight + PORT_HEIGHT) / 2 + (i++) * PORT_HEIGHT;
+        dims.set(portId, { x: 0, y });
+    }
+
+    return dims;
+}
+
+function computePortsOutDims(nodeConfig: GraphNodeConfig<any>, contentWidth: number, contentHeight: number): Map<string, Point> {
+    const ports = nodeConfig.ports.out;
+    const dims = new Map<string, Point>();
+    const totalHeight = computePortsOutHeight(nodeConfig);
+
+    let i = 0;
+    for (const portId in ports) {
+        const y = (contentHeight - totalHeight + PORT_HEIGHT) / 2 + (i++) * PORT_HEIGHT;
+        dims.set(portId, { x: contentWidth, y });
+    }
+
+    return dims;
+}
+
+function computeHeaderDims(width: number): Dims {
     return {
-        headerHeight,
-        fullWidth,
-        fullHeight,
-        fieldsHeight,
-        contentHeight,
-        portsInHeight,
-        portsOutHeight
+        x: 0,
+        y: 0,
+        width,
+        height: HEADER_HEIGHT
     };
 }
 
-export function computePortY(portIndex: number, portOut: boolean, dims: NodeDimensions): number {
-    const portHeight = portOut ? dims.portsOutHeight : dims.portsInHeight;
-    return dims.headerHeight + (dims.contentHeight - portHeight + PORT_HEIGHT) / 2 + portIndex * PORT_HEIGHT;
+function computeOuterDims(width: number, height: number): Dims {
+    return {
+        x: 0,
+        y: 0,
+        width,
+        height
+    };
+}
+
+export function computeDimensions(nodeType: string, config: GraphConfig<any>): GraphNodeDims {
+    const nodeConfig = config.nodes[nodeType];
+
+    const outerWidth = computeOuterWidth(nodeConfig);
+    const outerHeight = computeOuterHeight(nodeConfig, config);
+
+    const fields = computeFieldDims(nodeConfig, outerWidth, config);
+    const portsIn = computePortsInDims(nodeConfig, outerHeight);
+    const portsOut = computePortsOutDims(nodeConfig, outerWidth, outerHeight);
+    const header = computeHeaderDims(outerWidth);
+    const outer = computeOuterDims(outerWidth, outerHeight);
+
+    return {
+        outer,
+        header,
+        fields,
+        portsIn,
+        portsOut
+    };
 }
 
 export function translate(x: number, y: number) {

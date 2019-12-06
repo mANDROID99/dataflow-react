@@ -1,6 +1,6 @@
 import React from 'react';
 import { TargetPort } from 'graph/types/graphTypes';
-import { NodeDimensions, computePortY } from './dimensions';
+import { Point } from './dimensions';
 import { GraphNodePortOutConfig } from 'graph/types/graphConfigTypes';
 import Port from './Port';
 
@@ -9,15 +9,16 @@ type Props = {
     nodeId: string;
     portId: string;
     targets: TargetPort[] | undefined;
-    dims: NodeDimensions;
+    dims: Point;
     portConfig: GraphNodePortOutConfig;
 }
 
 function GraphNodePortOut(props: Props) {
     const portConfig = props.portConfig;
 
-    const x = props.dims.fullWidth;
-    const y = computePortY(props.index, true, props.dims);
+    const x = props.dims.x;
+    const y = props.dims.y;
+
     return (
         <Port
             label={portConfig.label}

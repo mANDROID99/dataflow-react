@@ -54,7 +54,12 @@ export default function GraphEditor<Ctx>(props: Props<Ctx>) {
                 {Object.keys(nodes).map((nodeId) => {
                     const node = nodes[nodeId];
                     return (
-                        <GraphNode key={nodeId} graphNode={node}/>
+                        <GraphNode
+                            key={nodeId}
+                            nodeId={nodeId}
+                            graphNode={node}
+                            drag={state.nodeDrag}
+                        />
                     );
                 })}
             </svg>

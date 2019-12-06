@@ -13,6 +13,7 @@
 }
 
 .graphNodeContainer {
+    cursor: move;
     fill:  $color-node-bg;
     rx: 7px;
     ry: 7px;
@@ -41,7 +42,7 @@
     transition: 0.2s fill ease;
     cursor: pointer;
     &:hover {
-        fill: $primary;   
+        fill: $danger;   
     }
 }
 
@@ -57,4 +58,8 @@
 
 .portLabel:global(.out) {
     text-anchor: start;
+}
+
+.fieldLabel {
+    fill: $color-text-light;
 }
