@@ -1,0 +1,215 @@
+{
+    "nodes": {
+      "d3a2f84f-7021-4e05-871c-27c39919544c": {
+        "type": "grid",
+        "x": 56,
+        "y": 45.88888931274414,
+        "width": 170,
+        "fields": {
+          "data": {
+            "columns": [
+              "X",
+              "Y"
+            ],
+            "rows": [
+              [
+                "1",
+                "2"
+              ],
+              [
+                "2",
+                "4"
+              ],
+              [
+                "3",
+                "3"
+              ],
+              [
+                "4",
+                "4"
+              ],
+              [
+                "5",
+                "1"
+              ]
+            ]
+          }
+        },
+        "ports": {
+          "in": {},
+          "out": {
+            "rows": [
+              {
+                "node": "a9422013-2b10-4fc4-bc76-ac8a806cb170",
+                "port": "rows"
+              }
+            ]
+          }
+        }
+      },
+      "91284556-8927-4407-8925-eef034995652": {
+        "type": "dataset",
+        "x": 582,
+        "y": 48.88888931274414,
+        "width": 170,
+        "fields": {
+          "type": "line",
+          "series": {
+            "type": "column",
+            "value": ""
+          },
+          "label": "label",
+          "borderColor": "blue",
+          "backgroundColor": "blue",
+          "params": [
+            {
+              "key": "fill",
+              "value": "none"
+            }
+          ]
+        },
+        "ports": {
+          "in": {
+            "points": [
+              {
+                "node": "a9422013-2b10-4fc4-bc76-ac8a806cb170",
+                "port": "points"
+              }
+            ]
+          },
+          "out": {
+            "datasets": [
+              {
+                "node": "55c698aa-5714-41cc-9bbd-6576ee9543b1",
+                "port": "datasets"
+              }
+            ]
+          }
+        }
+      },
+      "a9422013-2b10-4fc4-bc76-ac8a806cb170": {
+        "type": "datapoint",
+        "x": 308,
+        "y": 47.88888931274414,
+        "width": 170,
+        "fields": {
+          "x": {
+            "type": "column",
+            "value": "X"
+          },
+          "y": {
+            "type": "column",
+            "value": "Y"
+          },
+          "r": {
+            "type": "column",
+            "value": ""
+          },
+          "color": {
+            "type": "column",
+            "value": ""
+          }
+        },
+        "ports": {
+          "in": {
+            "rows": [
+              {
+                "node": "d3a2f84f-7021-4e05-871c-27c39919544c",
+                "port": "rows"
+              }
+            ]
+          },
+          "out": {
+            "points": [
+              {
+                "node": "91284556-8927-4407-8925-eef034995652",
+                "port": "points"
+              }
+            ]
+          }
+        }
+      },
+      "55c698aa-5714-41cc-9bbd-6576ee9543b1": {
+        "type": "chart",
+        "x": 959,
+        "y": 405.88888931274414,
+        "width": 170,
+        "fields": {
+          "type": "line",
+          "params": []
+        },
+        "ports": {
+          "in": {
+            "datasets": [
+              {
+                "node": "91284556-8927-4407-8925-eef034995652",
+                "port": "datasets"
+              }
+            ],
+            "yAxes": [
+              {
+                "node": "c88dbd52-88f2-4092-bb7f-7385a941df82",
+                "port": "axis"
+              }
+            ],
+            "xAxes": [
+              {
+                "node": "11d5ae5c-05cd-4a1f-971e-5e2ce3df06c9",
+                "port": "axis"
+              }
+            ]
+          },
+          "out": {}
+        }
+      },
+      "c88dbd52-88f2-4092-bb7f-7385a941df82": {
+        "type": "axis",
+        "x": 582,
+        "y": 712.8888893127441,
+        "width": 170,
+        "fields": {
+          "type": "linear",
+          "params": [
+            {
+              "key": "ticks.beginAtZero",
+              "value": "true"
+            }
+          ],
+          "label": "Y"
+        },
+        "ports": {
+          "in": {},
+          "out": {
+            "axis": [
+              {
+                "node": "55c698aa-5714-41cc-9bbd-6576ee9543b1",
+                "port": "yAxes"
+              }
+            ]
+          }
+        }
+      },
+      "11d5ae5c-05cd-4a1f-971e-5e2ce3df06c9": {
+        "type": "axis",
+        "x": 584,
+        "y": 464.88888931274414,
+        "width": 170,
+        "fields": {
+          "type": "linear",
+          "label": "X",
+          "params": []
+        },
+        "ports": {
+          "in": {},
+          "out": {
+            "axis": [
+              {
+                "node": "55c698aa-5714-41cc-9bbd-6576ee9543b1",
+                "port": "xAxes"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }

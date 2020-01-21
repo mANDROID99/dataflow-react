@@ -1,0 +1,224 @@
+{
+  "nodes": {
+    "ab908581-a59b-4df6-9a36-c805cbaae191": {
+      "type": "dataFetcher",
+      "x": 137,
+      "y": 91.79999923706055,
+      "width": 170,
+      "fields": {
+        "url": "http://dummy.restapiexample.com/api/v1/employees",
+        "method": "GET",
+        "headers": [],
+        "mapData": "= data.data",
+        "columns": [
+          "id",
+          "employee_name",
+          "employee_salary"
+        ]
+      },
+      "ports": {
+        "in": {},
+        "out": {
+          "rows": [
+            {
+              "node": "8a716abd-fd2b-46af-83c5-95fbd3ae1b69",
+              "port": "in"
+            }
+          ]
+        }
+      }
+    },
+    "d527c4c8-0d88-435c-a4b9-abdb8239f11a": {
+      "type": "chart",
+      "x": 1120,
+      "y": 627.7999992370605,
+      "width": 170,
+      "fields": {
+        "type": "bar",
+        "params": []
+      },
+      "ports": {
+        "in": {
+          "yAxes": [
+            {
+              "node": "2ed6c3ae-7f81-4baa-8bb2-7681e8a29fb9",
+              "port": "axis"
+            }
+          ],
+          "xAxes": [
+            {
+              "node": "b4eb0274-7690-4b20-98fa-d5db93d0a019",
+              "port": "axis"
+            }
+          ],
+          "datasets": [
+            {
+              "node": "6cf9e969-0161-41cd-b26a-4c9b0840d133",
+              "port": "datasets"
+            }
+          ]
+        },
+        "out": {}
+      }
+    },
+    "33ccdc95-f430-4f88-97ac-d19702dd9496": {
+      "type": "datapoint",
+      "x": 414,
+      "y": 155.79999923706055,
+      "width": 170,
+      "fields": {
+        "x": {
+          "type": "column",
+          "value": "employee_name"
+        },
+        "y": {
+          "type": "column",
+          "value": "employee_salary"
+        },
+        "r": {
+          "type": "column",
+          "value": ""
+        },
+        "color": ""
+      },
+      "ports": {
+        "in": {
+          "rows": [
+            {
+              "node": "8a716abd-fd2b-46af-83c5-95fbd3ae1b69",
+              "port": "out"
+            }
+          ]
+        },
+        "out": {
+          "points": [
+            {
+              "node": "6cf9e969-0161-41cd-b26a-4c9b0840d133",
+              "port": "points"
+            }
+          ]
+        }
+      }
+    },
+    "6cf9e969-0161-41cd-b26a-4c9b0840d133": {
+      "type": "dataset",
+      "x": 683,
+      "y": 176.79999923706055,
+      "width": 235,
+      "fields": {
+        "type": "bar",
+        "series": {
+          "type": "column",
+          "value": "Group"
+        },
+        "label": {
+          "type": "column",
+          "value": "Group"
+        },
+        "borderColor": "",
+        "backgroundColor": "= row.Group == \"A\" ? \"red\" : \"blue\"",
+        "params": []
+      },
+      "ports": {
+        "in": {
+          "points": [
+            {
+              "node": "33ccdc95-f430-4f88-97ac-d19702dd9496",
+              "port": "points"
+            }
+          ]
+        },
+        "out": {
+          "datasets": [
+            {
+              "node": "d527c4c8-0d88-435c-a4b9-abdb8239f11a",
+              "port": "datasets"
+            }
+          ]
+        }
+      }
+    },
+    "2ed6c3ae-7f81-4baa-8bb2-7681e8a29fb9": {
+      "type": "axis",
+      "x": 743,
+      "y": 833.7999992370605,
+      "width": 170,
+      "fields": {
+        "type": "linear",
+        "label": "Salary",
+        "params": [
+          {
+            "key": "ticks.beginAtZero",
+            "value": "true"
+          }
+        ]
+      },
+      "ports": {
+        "in": {},
+        "out": {
+          "axis": [
+            {
+              "node": "d527c4c8-0d88-435c-a4b9-abdb8239f11a",
+              "port": "yAxes"
+            }
+          ]
+        }
+      }
+    },
+    "b4eb0274-7690-4b20-98fa-d5db93d0a019": {
+      "type": "axis",
+      "x": 744,
+      "y": 592.7999992370605,
+      "width": 170,
+      "fields": {
+        "type": "category",
+        "label": "Employee Name",
+        "params": [
+          {
+            "key": "ticks.beginAtZero",
+            "value": "true"
+          }
+        ]
+      },
+      "ports": {
+        "in": {},
+        "out": {
+          "axis": [
+            {
+              "node": "d527c4c8-0d88-435c-a4b9-abdb8239f11a",
+              "port": "xAxes"
+            }
+          ]
+        }
+      }
+    },
+    "8a716abd-fd2b-46af-83c5-95fbd3ae1b69": {
+      "type": "compute",
+      "x": 311,
+      "y": 480.79999923706055,
+      "width": 170,
+      "fields": {
+        "value": "= row.employee_salary > 200000 ? \"A\" : \"B\"",
+        "alias": "Group"
+      },
+      "ports": {
+        "in": {
+          "in": [
+            {
+              "node": "ab908581-a59b-4df6-9a36-c805cbaae191",
+              "port": "rows"
+            }
+          ]
+        },
+        "out": {
+          "out": [
+            {
+              "node": "33ccdc95-f430-4f88-97ac-d19702dd9496",
+              "port": "rows"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
