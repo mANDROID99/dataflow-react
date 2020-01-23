@@ -2,9 +2,10 @@ import React, { useCallback, useMemo } from 'react';
 
 import { GraphNodeFieldConfig, GraphFieldInputConfig } from '../../../types/graphConfigTypes';
 import { FieldInputProps, GraphNodeContext } from '../../../types/graphFieldInputTypes';
-import { GraphActionType } from '../../../types/graphReducerTypes';
 import { useGraphContext } from '../../graphEditorContext';
 import { resolve } from '../../../utils/graph/inputUtils';
+import { setNodeFieldValue } from '../../../store/actions';
+import { useDispatch } from 'react-redux';
 
 type Props<Ctx, Params> = {
     nodeId: string;
@@ -18,11 +19,12 @@ function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
     const { nodeId, fieldName, nodeContext, fieldConfig, fieldValue } = props;
     const fieldEditor = fieldConfig.type;
     
-    const { graphConfig, dispatch } = useGraphContext<Ctx, Params>();
+    const dispatch = useDispatch();
+    const { graphConfig } = useGraphContext<Ctx, Params>();
     const input: GraphFieldInputConfig | undefined = graphConfig.inputs[fieldEditor];
     
     const onChanged = useCallback((value: unknown) => {
-        dispatch({ type: GraphActionType.SET_FIELD_VALUE, nodeId, fieldName, value });
+        dispatch(setNodeFieldValue(nodeId, fieldName, value));
     }, [dispatch, nodeId, fieldName]);
 
     const fieldParams = fieldConfig.params;
@@ -32,6 +34,8 @@ function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
 
     const inputProps: FieldInputProps<any> = {
         value: fieldValue,
+        fieldName,
+        nodeId,
         params,
         onChanged
     };

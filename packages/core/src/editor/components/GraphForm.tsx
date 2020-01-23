@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { FormConfig, FormProps } from "../../types/formConfigTypes";
 
 import Modal from "../../common/Modal";
-import { createFormStateSelector } from "../../store/selectors";
+import { selectFormState } from "../../store/selectors";
 import { clearForm, hideForm, submitForm } from "../../store/actions";
 import { useGraphContext } from "../graphEditorContext";
 
@@ -15,7 +15,7 @@ type Props<T> = {
 
 function GraphForm<T>(props: Props<T>) {
     const { formId, formConfig } = props;
-    const formState = useSelector(createFormStateSelector(formId));
+    const formState = useSelector(selectFormState(formId));
     const dispatch = useDispatch();
     const { graphConfig } = useGraphContext();
 

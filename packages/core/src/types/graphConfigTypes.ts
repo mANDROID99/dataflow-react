@@ -22,15 +22,9 @@ export type GraphNodeFieldConfig<Ctx, Params> = {
     params?: Resolvable<Ctx, Params, { [key: string]: unknown }>;
 }
 
-export type PortTypeMatcher = (portType: string, nodeType: string) => boolean;
-
-export type GraphNodePortOutConfig = {
+export type GraphNodePortConfig = {
     type: string;
-}
-
-export type GraphNodePortInConfig = {
-    type: string | string[];
-    match?: PortTypeMatcher;
+    match?: string[];
     multi?: boolean;
 }
 
@@ -63,10 +57,10 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
     };
     ports: {
         in: {
-            [key: string]: GraphNodePortInConfig;
+            [key: string]: GraphNodePortConfig;
         };
         out: {
-            [key: string]: GraphNodePortOutConfig;
+            [key: string]: GraphNodePortConfig;
         };
     };
     mapContext?: (params: MapContextParams<Ctx, Params>) => Ctx;

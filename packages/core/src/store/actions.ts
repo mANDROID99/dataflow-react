@@ -1,5 +1,5 @@
 import { Graph, GraphNode } from "../types/graphTypes";
-import { ContextMenuTarget, PortRef } from "../types/storeTypes";
+import { ContextMenuTarget, Receiver, PortTarget } from "../types/storeTypes";
 
 export enum GraphActionType {
     LOAD_GRAPH = 'LOAD_GRAPH',
@@ -187,12 +187,12 @@ export function setNodeWidth(nodeId: string, width: number): SetNodeWidthAction 
 
 export type BeginPortDragAction = {
     type: GraphActionType.BEGIN_PORT_DRAG;
-    port: PortRef;
+    port: PortTarget;
     dragX: number;
     dragY: number;
 }
 
-export function beginPortDrag(port: PortRef, dragX: number, dragY: number): BeginPortDragAction {
+export function beginPortDrag(port: PortTarget, dragX: number, dragY: number): BeginPortDragAction {
     return {
         type: GraphActionType.BEGIN_PORT_DRAG,
         port,
@@ -207,30 +207,74 @@ export type UpdatePortDragAction = {
     dragY: number;
 }
 
+export function updatePortDrag(dragX: number, dragY: number): UpdatePortDragAction {
+    return {
+        type: GraphActionType.UPDATE_PORT_DRAG,
+        dragX,
+        dragY
+    };
+}
+
 export type EndPortDragAction = {
     type: GraphActionType.END_PORT_DRAG;
 }
 
+export function endPortDrag(): EndPortDragAction {
+    return {
+        type: GraphActionType.END_PORT_DRAG
+    };
+}
+
 export type SetPortDragTargetAction = {
     type: GraphActionType.SET_PORT_DRAG_TARGET;
-    port: PortRef;
+    port: PortTarget;
+}
+
+export function setPortDragTarget(port: PortTarget): SetPortDragTargetAction {
+    return {
+        type: GraphActionType.SET_PORT_DRAG_TARGET,
+        port
+    };
 }
 
 export type ClearPortDragTargetAction = {
     type: GraphActionType.CLEAR_PORT_DRAG_TARGET;
-    port: PortRef;
+    port: PortTarget;
+}
+
+export function clearPortDragTarget(port: PortTarget) {
+    return {
+        type: GraphActionType.CLEAR_PORT_DRAG_TARGET,
+        port
+    };
 }
 
 export type SetPortPosAction = {
     type: GraphActionType.SET_PORT_POS;
-    port: PortRef;
+    port: PortTarget;
     x: number;
     y: number;
 }
 
+export function setPortPos(port: PortTarget, x: number, y: number): SetPortPosAction {
+    return {
+        type: GraphActionType.SET_PORT_POS,
+        port,
+        x,
+        y
+    };
+}
+
 export type ClearPortPosAction = {
     type: GraphActionType.CLEAR_PORT_POS;
-    port: PortRef;
+    port: PortTarget;
+}
+
+export function clearPortPos(port: PortTarget): ClearPortPosAction {
+    return {
+        type: GraphActionType.CLEAR_PORT_POS,
+        port
+    };
 }
 
 export type ShowFormAction = {
@@ -238,7 +282,17 @@ export type ShowFormAction = {
     formId: string;
     value: unknown;
     params: unknown;
-    onResult: (value: unknown) => void;
+    receiver: Receiver;
+}
+
+export function showForm(formId: string, value: unknown, params: unknown, receiver: Receiver): ShowFormAction {
+    return {
+        type: GraphActionType.SHOW_FORM,
+        formId,
+        value,
+        params,
+        receiver
+    };
 }
 
 export type HideFormAction = {

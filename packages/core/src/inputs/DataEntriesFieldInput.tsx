@@ -1,28 +1,25 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import { FieldInputProps, Entry } from '../types/graphFieldInputTypes';
 
 import { DATA_ENTRIES_FORM_ID } from '../forms/dataentries/DataEntriesForm';
 import Button from '../common/Button';
-import { FieldInputProps, Entry } from '../types/graphFieldInputTypes';
-import { useGraphContext } from '../editor/graphEditorContext';
-import { GraphActionType } from '../types/graphReducerTypes';
+import { showForm } from '../store/actions';
+import { nodeFieldReceiver } from '../types/storeTypes';
 
 export default function DataEntriesFieldInput(props: FieldInputProps<Entry<string>[]>) {
-    const { value, onChanged, params } = props;
-    const { dispatch } = useGraphContext();
+    const { value, params } = props;
+    const dispatch = useDispatch();
 
-    const showForm = () => {
-        dispatch({
-            type: GraphActionType.SHOW_FORM,
-            formId: DATA_ENTRIES_FORM_ID,
-            value,
-            params,
-            onResult: onChanged as any
-        });
+    const handleShowForm = () => {
+        const receiver = nodeFieldReceiver(props.nodeId, props.fieldName);
+        dispatch(showForm(DATA_ENTRIES_FORM_ID, value, params, receiver));
     };
 
     return (
-        <Button onClick={showForm}>
+        <Button onClick={handleShowForm}>
             <span>Edit</span>
             <FontAwesomeIcon className="ngraph-btn-icon" icon="edit"/>
         </Button>

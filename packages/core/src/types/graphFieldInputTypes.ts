@@ -6,6 +6,8 @@ export type GraphNodeContext<Ctx, Params> = {
 }
 
 export type FieldInputProps<T> = {
+    nodeId: string;
+    fieldName: string;
     value: T | undefined;
     params: { [key: string]: unknown };
     onChanged: (value: T) => void;

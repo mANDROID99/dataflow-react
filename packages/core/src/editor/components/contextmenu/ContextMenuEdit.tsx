@@ -1,21 +1,21 @@
 import React from 'react';
-import { GraphActionType, GraphAction } from '../../../types/graphReducerTypes';
+import { useDispatch } from 'react-redux';
+import { deleteNode, cloneNode } from '../../../store/actions';
 
 type Props = {
     nodeId: string;
-    dispatch: React.Dispatch<GraphAction>;
 }
 
 function ContextMenuEdit(props: Props) {
-    const nodeId = props.nodeId;
-    const dispatch = props.dispatch;
+    const { nodeId } = props;
+    const dispatch = useDispatch();
 
     const handleDeleteNode = () => {
-        dispatch({ type: GraphActionType.DELETE_NODE, nodeId });
+        dispatch(deleteNode(nodeId));
     };
 
-    const handleCopyNode = () => {
-        dispatch({ type: GraphActionType.COPY_NODE, nodeId });
+    const handleCloneNode = () => {
+        dispatch(cloneNode(nodeId));
     };
 
     return (
@@ -24,8 +24,8 @@ function ContextMenuEdit(props: Props) {
             <div className="ngraph-contextmenu-item" onClick={handleDeleteNode}>
                 <div className="ngraph-contextmenu-item-label" style={{ textAlign: 'center' }}>Delete</div>
             </div>
-            <div className="ngraph-contextmenu-item" onClick={handleCopyNode}>
-                <div className="ngraph-contextmenu-item-label" style={{ textAlign: 'center' }}>Copy</div>
+            <div className="ngraph-contextmenu-item" onClick={handleCloneNode}>
+                <div className="ngraph-contextmenu-item-label" style={{ textAlign: 'center' }}>Clone</div>
             </div>
         </div>
     );

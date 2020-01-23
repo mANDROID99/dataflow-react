@@ -1,8 +1,12 @@
 import React from 'react';
-import { useDrag } from '../../../utils/hooks/useDrag';
-import { GraphAction, GraphActionType } from '../../../types/graphReducerTypes';
+import { useDispatch } from 'react-redux';
+
 import { GraphNodeConfig } from '../../../types/graphConfigTypes';
+import { GraphNode } from '../../../types/graphTypes';
+
+import { useDrag } from '../../../utils/hooks/useDrag';
 import GraphNodeDragHandle, { DragWidthState } from './GraphNodeDragHandle';
+import { selectNode, setNodePos } from '../../../store/actions';
 
 export type DragPosState = {
     x: number;
@@ -11,11 +15,8 @@ export type DragPosState = {
 
 type Props = {
     nodeId: string;
-    nodeX: number;
-    nodeY: number;
-    nodeWidth: number;
-    nodeConfig: GraphNodeConfig<any, any>;
-    dispatch: React.Dispatch<GraphAction>;
+    graphNode: GraphNode;
+    graphNodeConfig: GraphNodeConfig<any, any>;
     onDrag: (state: DragPosState | undefined) => void;
     onDragWidth: (state: DragWidthState | undefined) => void;
 }
@@ -30,20 +31,21 @@ type DragState = {
 }
 
 function GraphNodeHeader(props: Props) {
-    const { nodeId, nodeX, nodeY, nodeWidth, nodeConfig, onDrag, onDragWidth, dispatch } = props;
+    const { nodeId, graphNode, graphNodeConfig, onDrag, onDragWidth } = props;
+    const dispatch = useDispatch();
 
     // setup drag behaviour
     const startDrag = useDrag<DragState>({
         onStart(event) {
-            dispatch({ type: GraphActionType.SELECT_NODE, nodeId });
+            dispatch(selectNode(nodeId));
 
             return {
                 startMouseX: event.clientX,
                 startMouseY: event.clientY,
-                startPosX: nodeX,
-                startPosY: nodeY,
-                x: nodeX,
-                y: nodeY
+                startPosX: graphNode.x,
+                startPosY: graphNode.y,
+                x: graphNode.x,
+                y: graphNode.y
             };
         },
         onDrag(event, state) {
@@ -56,15 +58,9 @@ function GraphNodeHeader(props: Props) {
             onDrag({ x, y });
         },
         onEnd(event, state) {
-            dispatch({
-                type: GraphActionType.SET_NODE_POS,
-                nodeId,
-                x: state.x,
-                y: state.y
-            });
+            dispatch(setNodePos(nodeId, state.x, state.y));
         }
     });
-
 
     const handleMouseDownHeader = (event: React.MouseEvent) => {
         if (event.button === 0) {
@@ -76,13 +72,12 @@ function GraphNodeHeader(props: Props) {
     return (
         <div onMouseDown={handleMouseDownHeader} className="ngraph-node-header">
             <span className="ngraph-node-title">
-                { nodeConfig.title }
+                { graphNodeConfig.title }
             </span>
             <GraphNodeDragHandle
-                dispatch={dispatch}
-                nodeConfig={nodeConfig}
                 nodeId={nodeId}
-                nodeWidth={nodeWidth}
+                graphNodeWidth={graphNode.width}
+                graphNodeConfig={graphNodeConfig}
                 onDrag={onDragWidth}
             />
         </div>

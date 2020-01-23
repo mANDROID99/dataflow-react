@@ -1,24 +1,26 @@
 import React, { useEffect, useRef, useMemo } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { createSelector } from 'reselect';
 import classNames from 'classnames';
 
+import { GraphConfig, GraphNodePortConfig } from '../../../types/graphConfigTypes';
+import { PortTarget } from '../../../types/storeTypes';
+
 import { useDrag } from '../../../utils/hooks/useDrag';
-import { isPortConnectable, comparePortRefs, resolvePortColors } from '../../../utils/graph/portUtils';
-import { PortRef, GraphActionType } from '../../../types/graphReducerTypes';
-import { TargetPort } from '../../../types/graphTypes';
+import { isPortConnectable, comparePortTargets, resolvePortColors, getPortConfig } from '../../../utils/graph/portUtils';
 import { useGraphContext } from '../../graphEditorContext';
+import { beginPortDrag, updatePortDrag, endPortDrag, setPortPos, clearPortPos, setPortDragTarget, clearPortDragTarget } from '../../../store/actions';
+import { selectPortDrag } from '../../../store/selectors';
 import Port from './Port';
 
 type Props = {
     nodeId: string;
     nodeType: string;
-    nodeX: number;
-    nodeY: number;
-    nodeWidth: number;
-    portId: string;
+    portName: string;
     portOut: boolean;
-    portDrag: PortRef | undefined;
-    portDragTarget: PortRef | undefined;
-    portTargets: TargetPort[] | undefined;
+    x: number;
+    y: number;
+    w: number;
 }
 
 function getPortXOffset(elRef: React.RefObject<HTMLDivElement>): number {
@@ -31,87 +33,113 @@ function getPortYOffset(elRef: React.RefObject<HTMLDivElement>): number {
     return el ? el.offsetTop + el.clientHeight / 2 : 0;
 }
 
+/**
+ * Constructs a memoized selector for the port state
+ */
+function createPortStateSelector(graphConfig: GraphConfig<any, any>, port: PortTarget) {
+    return createSelector(selectPortDrag, (dragState) => {
+        let isConnectable = false;
+        let isDragged = false;
+        let isDragTarget = false;
+        let isHidden = false;
+        let isDragCandidate = false;
+        
+        if (dragState) {
+            // is the current port connectable?
+            isConnectable = isPortConnectable(dragState.port, port, graphConfig);
+
+            // is the current port the drag target?
+            if (dragState.target) {
+                isDragTarget = comparePortTargets(dragState.target, port);
+            }
+
+            // is the current port being dragged?
+            isDragged = comparePortTargets(dragState.port, port);
+
+             // is the port hidden, because it is not a valid target?
+            isHidden = !isDragged && !isConnectable;
+
+            // is the port a potential drag target?
+            isDragCandidate = !isDragged && !isDragTarget;
+        }
+
+        return {
+            isConnectable,
+            isDragged,
+            isDragTarget,
+            isHidden,
+            isDragCandidate
+        };
+    });
+}
+
+function createPortTarget(nodeId: string, nodeType: string, portName: string, portOut: boolean, portConfig?: GraphNodePortConfig): PortTarget {
+    const connectMulti: boolean = portConfig?.multi ?? false;
+
+    return {
+        nodeId,
+        nodeType,
+        portName,
+        portOut,
+        connectMulti
+    };
+}
+
 function GraphNodePort(props: Props): React.ReactElement {
-    const { nodeId, nodeType, nodeX, nodeY, nodeWidth, portId, portOut, portDrag, portDragTarget } = props;
-    const { graphConfig, dispatch } = useGraphContext();
-
-    const portRef: PortRef = useMemo((): PortRef => ({
-        nodeId, nodeType, portId, portOut
-    }), [nodeId, nodeType, portId, portOut]);
-
+    const { nodeId, nodeType, x, y, w, portName, portOut } = props;
+    const dispatch = useDispatch();
     const elRef = useRef<HTMLDivElement>(null);
+    
+    // resolve the config for the port
+    const { graphConfig } = useGraphContext();
+    const portConfig = getPortConfig(graphConfig, nodeType, portName, portOut);
+
+    // port target is how the port will be referred to in the store
+    const portTarget = useMemo(() => {
+        return createPortTarget(nodeId, nodeType, portName, portOut, portConfig);
+    }, [nodeId, nodeType, portName, portOut, portConfig]);
 
     // drag behaviour
     const startDrag = useDrag({
         onStart(event) {
             const mouseX = event.clientX;
             const mouseY = event.clientY;
-
-            dispatch({
-                type: GraphActionType.BEGIN_PORT_DRAG,
-                port: portRef,
-                dragX: mouseX,
-                dragY: mouseY
-            });
+            dispatch(beginPortDrag(portTarget, mouseX, mouseY));
         },
         onDrag(event) {
             const mouseX = event.clientX;
             const mouseY = event.clientY;
-
-            dispatch({
-                type: GraphActionType.UPDATE_PORT_DRAG,
-                dragX: mouseX,
-                dragY: mouseY
-            });
+            dispatch(updatePortDrag(mouseX, mouseY));
         },
         onEnd() {
-            dispatch({
-                type: GraphActionType.END_PORT_DRAG
-            });
+            dispatch(endPortDrag());
         }
     });
 
     // mount / unmount the port
     useEffect(() => {
         return () => {
-            dispatch({
-                type: GraphActionType.CLEAR_PORT_POS,
-                port: portRef
-            });
+            dispatch(clearPortPos(portTarget));
         };
-    }, [portRef, dispatch]);
+    }, [portTarget, dispatch]);
 
-    // update the port position
+    // update the port position in the store
     useEffect(() => {
-        const x = nodeX + getPortXOffset(elRef);
-        const y = nodeY + getPortYOffset(elRef);
+        const portX = x + getPortXOffset(elRef);
+        const portY = y + getPortYOffset(elRef);
+        dispatch(setPortPos(portTarget, portX, portY));
+    }, [portTarget, x, y, w, dispatch]);
 
-        dispatch({
-            type: GraphActionType.SET_PORT_POS,
-            port: portRef,
-            x, y
-        });
-    }, [portRef, nodeX, nodeY, nodeWidth, dispatch]);
+    // select the current node "state" from the store
+    const selector = useMemo(() => createPortStateSelector(graphConfig, portTarget), [graphConfig, portTarget]);
+    const {
+        isConnectable,
+        isHidden,
+        isDragCandidate
+    } = useSelector(selector, shallowEqual);
 
-    // resolve the "colour" of the port
-    const portColors: string[] = useMemo(() => resolvePortColors(graphConfig, portRef), [graphConfig, portRef]);
-
-    // port can be connected to the current drag target
-    const isConnectable = useMemo(() =>
-        portDrag ? isPortConnectable(portDrag, portRef, graphConfig) : false,
-    [portDrag, portRef, graphConfig]);
-
-    // port is being dragged
-    const isDragged = portDrag ? comparePortRefs(portDrag, portRef) : false;
-
-    // port is the current drag taget
-    const isDragTarget = portDragTarget ? comparePortRefs(portDragTarget, portRef) : false;
-
-    // port is hidden when it is not a valid drag target
-    const hidden = !isDragged && !!portDrag && !isConnectable;
-
-    // port is a potential drag target
-    const candidate = !isDragged && !!portDrag && !isDragTarget;
+    // resolve the port colour
+    const portColors: string[] = useMemo(() => resolvePortColors(graphConfig, portTarget), [graphConfig, portTarget]);
 
     /**
      * event handlers
@@ -119,19 +147,13 @@ function GraphNodePort(props: Props): React.ReactElement {
 
     const handleEnter = () => {
         if (isConnectable) {
-            dispatch({
-                type: GraphActionType.SET_PORT_DRAG_TARGET,
-                port: portRef
-            });
+            dispatch(setPortDragTarget(portTarget));
         }
     };
 
     const handleExit = () => {
         if (isConnectable) {
-            dispatch({
-                type: GraphActionType.CLEAR_PORT_DRAG_TARGET,
-                port: portRef
-            });
+            dispatch(clearPortDragTarget(portTarget));
         }
     };
 
@@ -142,15 +164,15 @@ function GraphNodePort(props: Props): React.ReactElement {
     };
 
     function renderLabel(): React.ReactElement {
-        return <div className="ngraph-node-port-label">{ portId }</div>;
+        return <div className="ngraph-node-port-label">{ portName }</div>;
     }
 
     return (
         <div ref={elRef} className="ngraph-node-port-container">
             <div
                 className={classNames("ngraph-node-port", {
-                    candidate,
-                    hidden,
+                    candidate: isDragCandidate,
+                    hidden: isHidden,
                     out: portOut
                 })}
                 onMouseDown={handleMouseDown}

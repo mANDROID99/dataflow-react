@@ -23,7 +23,9 @@ export { forms } from './forms/forms';
 import * as expressionUtils from './utils/expressionUtils';
 export { expressionUtils };
 
-// re-export jexl so the user can modify it with
-// additional transforms etc.
+// re-export jexl so the user can modify it with additional transforms etc.
 import jexl from 'jexl';
 export { jexl };
+
+// redux
+export { reducer } from './store/reducer';

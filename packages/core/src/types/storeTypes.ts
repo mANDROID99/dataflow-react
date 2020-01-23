@@ -1,10 +1,11 @@
 import { Graph } from "./graphTypes";
 
-export type PortRef = {
+export type PortTarget = {
     nodeId: string;
-    portId: string;
-    portOut: boolean;
     nodeType: string;
+    portName: string;
+    portOut: boolean;
+    connectMulti: boolean;
 }
 
 export enum ContextMenuTargetType {
@@ -22,8 +23,8 @@ export type ContextMenuState = {
 }
 
 export type PortDragState = {
-    port: PortRef;
-    target: PortRef | undefined;
+    port: PortTarget;
+    target: PortTarget | undefined;
     dragX: number;
     dragY: number;
 }
@@ -37,11 +38,18 @@ export type PortStates = {
     [portKey: string]: PortState | undefined;
 }
 
+export enum ReceiverType {
+    NODE_FIELD
+}
+
+export type Receiver =
+    | { type: ReceiverType.NODE_FIELD; nodeId: string; fieldId: string };
+
 export type FormState = {
     show: boolean;
     value: unknown;
     params: unknown;
-    onResult: (value: unknown) => void;
+    receiver: Receiver;
 }
 
 export type FormStates = {
@@ -61,4 +69,12 @@ export type GraphEditorState = {
 
 export type StoreState = {
     graphEditor: GraphEditorState;
+}
+
+export function nodeFieldReceiver(nodeId: string, fieldId: string): Receiver {
+    return {
+        type: ReceiverType.NODE_FIELD,
+        nodeId,
+        fieldId
+    };
 }

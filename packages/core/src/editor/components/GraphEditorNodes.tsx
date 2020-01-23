@@ -5,6 +5,7 @@ import { GraphConfig } from "../../types/graphConfigTypes";
 
 import { selectGraphNodes } from "../../store/selectors";
 import { computeGraphNodeContexts } from "../../processor/computeGraphNodeContexts";
+import GraphNodeComponent from './graphnode/GraphNode';
 
 type Props<Ctx, P> = {
     graphConfig: GraphConfig<Ctx, P>;
@@ -32,10 +33,7 @@ function GraphEditorNodes<Ctx, P>(props: Props<Ctx, P>) {
                         key={nodeId}
                         nodeId={nodeId}
                         nodeContext={nodeContext}
-                        selected={isSelected}
                         graphNode={graphNodes![nodeId]}
-                        portDragPort={portDragPort}
-                        portDragTarget={portDragTarget}
                     />
                 );
             })}

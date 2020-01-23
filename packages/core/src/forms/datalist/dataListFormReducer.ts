@@ -7,13 +7,13 @@ export enum ActionType {
 
 export type AddItemAction = {
     type: ActionType.ADD_ITEM;
-    value: unknown;
+    value: string;
 }
 
 export type ChangeItemAction = {
     type: ActionType.CHANGE_ITEM;
     index: number;
-    value: unknown;
+    value: string;
 }
 
 export type RemoveItemAction = {
@@ -23,7 +23,7 @@ export type RemoveItemAction = {
 
 export type Action = AddItemAction | ChangeItemAction | RemoveItemAction;
 
-export function reducer(state: unknown[], action: Action): unknown[] {
+export function reducer(state: string[], action: Action): string[] {
     switch (action.type) {
         case ActionType.ADD_ITEM:
             state = state.slice(0);

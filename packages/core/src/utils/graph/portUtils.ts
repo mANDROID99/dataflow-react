@@ -1,6 +1,6 @@
-import { PortRef } from "../../types/graphReducerTypes";
 import { GraphNode } from "../../types/graphTypes";
-import { GraphConfig, GraphNodePortOutConfig, GraphNodePortInConfig } from "../../types/graphConfigTypes";
+import { GraphConfig, GraphNodePortConfig } from "../../types/graphConfigTypes";
+import { PortTarget } from "../../types/storeTypes";
 
 export const DEFAULT_PORT_COLOR = '#808080';
 
@@ -17,91 +17,68 @@ export function anyPortHasOutConnection(node: GraphNode) {
     return false;
 }
 
-export function comparePortRefs(left: PortRef, right: PortRef): boolean {
+export function comparePortTargets(left: PortTarget, right: PortTarget): boolean {
     return left.nodeId === right.nodeId
-        && left.portId === right.portId
+        && left.portName === right.portName
         && left.portOut === right.portOut;
 }
 
-export function getPortOutConfig<Ctx, Params>(config: GraphConfig<Ctx, Params>, nodeType: string, portId: string): GraphNodePortOutConfig | undefined {
+export function getPortConfig(config: GraphConfig<any, any>, nodeType: string, portName: string, portOut: boolean): GraphNodePortConfig | undefined {
     const node = config.nodes[nodeType];
-    return node ? node.ports.out[portId] : undefined;
+    if (!node) return undefined;
+
+    return portOut
+        ? node.ports.out[portName]
+        : node.ports.in[portName];
 }
 
-export function getPortInConfig<Ctx, Params>(config: GraphConfig<Ctx, Params>, nodeType: string, portId: string): GraphNodePortInConfig | undefined {
-    const node = config.nodes[nodeType];
-    return node ? node.ports.in[portId] : undefined;
-}
-
-export function isPortConnectable<Ctx, Params>(portDrag: PortRef, port: PortRef, graphConfig: GraphConfig<Ctx, Params>): boolean {
-    // must be connecting in the right direction
-    if (portDrag.portOut === port.portOut) {
+export function isPortConnectable<Ctx, Params>(draggedPort: PortTarget, port: PortTarget, graphConfig: GraphConfig<Ctx, Params>): boolean {
+    // must be connecting in the same direction
+    if (draggedPort.portOut === port.portOut) {
         return false;
     }
 
     // can't connect to itself
-    if (portDrag.nodeId === port.nodeId) {
+    if (draggedPort.nodeId === port.nodeId) {
         return false;
-    }
-
-    let portOut = port;
-    let portIn = portDrag;
-
-    if (!port.portOut) {
-        portOut = portDrag;
-        portIn = port;
     }
 
     // check whether the port-types match
 
-    const portOutConfig = getPortOutConfig(graphConfig, portOut.nodeType, portOut.portId);
-    const portInConfig = getPortInConfig(graphConfig, portIn.nodeType, portIn.portId);
+    const p1 = getPortConfig(graphConfig, port.nodeType, port.portName, port.portOut);
+    const p2 = getPortConfig(graphConfig, draggedPort.nodeType, draggedPort.portName, draggedPort.portOut);
 
-    if (portOutConfig && portInConfig) {
-        const match = portInConfig.match;
-        if (match) {
-            return match(portOutConfig.type, portOut.nodeType);
+    if (p1 && p2) {
+        const m1 = p1.match;
+        const m2 = p2.match;
+
+        if (m1 && !m1.some(m => m === p2.type)) {
+            return false;
         }
 
-        const typeIn = portInConfig.type;
-        const typeOut = portOutConfig.type;
-
-        if (typeof typeIn === 'string') {
-            return typeOut === typeIn;
-
-        } else {
-            return typeIn.some(m => m === typeOut);
+        if (m2 && !m2.some(m => m === p1.type)) {
+            return false;
         }
+
+        return p1.type === p2.type;
     }
 
     return false;
 }
 
-export function resolvePortColors<Ctx, Params>(config: GraphConfig<Ctx, Params>, port: PortRef): string[] {
+export function resolvePortColors<Ctx, Params>(config: GraphConfig<Ctx, Params>, port: PortTarget): string[] {
     const portColors = config.colors?.ports;
-    if (portColors ) {
-        if (port.portOut) {
-            const portConfig = getPortOutConfig(config, port.nodeType, port.portId);
 
-            if (portConfig) {
-                const color = portColors[portConfig.type];
-                if (color) return [color];
-            }
+    if (portColors) {
+        const portConfig = getPortConfig(config, port.nodeType, port.portName, port.portOut);
 
-        } else {
-            const portConfig = getPortInConfig(config, port.nodeType, port.portId);
+        if (portConfig) {
+            const types = portConfig.match || [portConfig.type];
 
-            if (portConfig) {
-                let type = portConfig.type;
-                if (typeof type === 'string') {
-                    type = [type];
-                }
-                
-                return type.map(type => {
-                    const color = portColors[type];
-                    return color ?? DEFAULT_PORT_COLOR;
-                });
-            }
+            return types.map(type => {
+                const color = portColors[type];
+                return color ?? DEFAULT_PORT_COLOR;
+            });
         }
     }
 
@@ -112,8 +89,8 @@ export function getPortKey(nodeId: string, portId: string, portOut: boolean): st
     return nodeId + '__' + portId + (portOut ? '__out' : '__in');
 }
 
-export function getPortKeyFromRef(port: PortRef): string {
-    return getPortKey(port.nodeId, port.portId, port.portOut);
+export function getPortKeyFromTarget(port: PortTarget): string {
+    return getPortKey(port.nodeId, port.portName, port.portOut);
 }
 
 export function getConnectionKey(startNode: string, startPort: string, endNode: string, endPort: string): string {

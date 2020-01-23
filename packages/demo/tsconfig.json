@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declarationDir": "types",
-    "baseUrl": "../",
+    "baseUrl": ".",
     "paths": {
-      "@react-ngraph/core": ["core/src"]
+      "@react-ngraph/core": ["../core/src"]
     }
   },
   "include": [

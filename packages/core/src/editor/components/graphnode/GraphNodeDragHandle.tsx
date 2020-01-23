@@ -1,9 +1,12 @@
 import React from 'react';
-import { useDrag } from '../../../utils/hooks/useDrag';
-import { GraphAction, GraphActionType } from '../../../types/graphReducerTypes';
-import { GraphNodeConfig } from '../../../types/graphConfigTypes';
-import { getNodeMinWidth, getNodeMaxWidth } from '../../../utils/graph/graphNodeFactory';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import { GraphNodeConfig } from '../../../types/graphConfigTypes';
+
+import { useDrag } from '../../../utils/hooks/useDrag';
+import { getNodeMinWidth, getNodeMaxWidth } from '../../../utils/graph/graphNodeFactory';
+import { setNodeWidth } from '../../../store/actions';
+import { useDispatch } from 'react-redux';
 
 export type DragWidthState = {
     width: number;
@@ -11,9 +14,8 @@ export type DragWidthState = {
 
 type Props = {
     nodeId: string;
-    nodeWidth: number;
-    nodeConfig: GraphNodeConfig<any, any>;
-    dispatch: React.Dispatch<GraphAction>;
+    graphNodeWidth: number;
+    graphNodeConfig: GraphNodeConfig<any, any>;
     onDrag: (state: DragWidthState | undefined) => void;
 }
 
@@ -24,17 +26,18 @@ type DragState = {
 }
 
 function GraphNodeDragHandle(props: Props) {
-    const { nodeId, nodeWidth, nodeConfig, onDrag, dispatch } = props;
-    const minWidth = getNodeMinWidth(nodeConfig);
-    const maxWidth = getNodeMaxWidth(nodeConfig);
+    const { nodeId, graphNodeWidth, graphNodeConfig, onDrag } = props;
+    const minWidth = getNodeMinWidth(graphNodeConfig);
+    const maxWidth = getNodeMaxWidth(graphNodeConfig);
+    const dispatch = useDispatch();
 
     // setup drag behaviour
     const startDrag = useDrag<DragState>({
         onStart(event) {
             return {
                 startX: event.clientX,
-                startWidth: nodeWidth,
-                width: nodeWidth
+                startWidth: graphNodeWidth,
+                width: graphNodeWidth
             };
         },
         onDrag(event, state) {
@@ -53,11 +56,7 @@ function GraphNodeDragHandle(props: Props) {
             onDrag({ width: w });
         },
         onEnd(event, state) {
-            dispatch({
-                type: GraphActionType.SET_NODE_WIDTH,
-                nodeId,
-                width: state.width
-            });
+            dispatch(setNodeWidth(nodeId, state.width));
         }
     });
 
@@ -73,9 +72,6 @@ function GraphNodeDragHandle(props: Props) {
         <div className="ngraph-node-drag-handle" onMouseDown={handleMouseDown}>
             <FontAwesomeIcon icon="arrows-alt-h"/>
         </div>
-        // <svg className="ngraph-node-drag-handle" onMouseDown={handleMouseDown}>
-        //     <path d="M0 0 L7 0 L7 7"/>
-        // </svg>
     );
 }
 

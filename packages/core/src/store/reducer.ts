@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 
 import { GraphEditorState, ContextMenuTargetType } from "../types/storeTypes";
 import { GraphNode } from "../types/graphTypes";
-import { clearPortTargets, createConnection } from "../utils/graph/connectionUtils";
+import { clearPortTargets, createConnection } from "../utils/store/connectionUtils";
 import {
     GraphAction,
     GraphActionType,
@@ -28,8 +28,9 @@ import {
     SubmitFormAction,
     ClearFormAction
 } from "./actions";
-import { comparePortRefs, getPortKeyFromRef } from "../utils/graph/portUtils";
+import { comparePortTargets, getPortKeyFromTarget } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
+import { receiveValue } from "../utils/store/receiverUtils";
 
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
     [GraphActionType.LOAD_GRAPH]: produce((state: GraphEditorState, action: LoadGraphAction) => {
@@ -168,9 +169,9 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
             const node = graph.nodes[port.nodeId];
     
             if (node) {
-                const targets = node.ports.in[port.portId];
+                const targets = node.ports.in[port.portName];
                 if (targets) {
-                    clearPortTargets(graph, targets, port.nodeId, port.portId, false);
+                    clearPortTargets(graph, targets, port.nodeId, port.portName, false);
                 }
             }
         }
@@ -218,13 +219,13 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     [GraphActionType.CLEAR_PORT_DRAG_TARGET]: produce((state: GraphEditorState, action: ClearPortDragTargetAction) => {
         const portDrag = state.portDrag;
     
-        if (portDrag && portDrag.target && comparePortRefs(portDrag.target, action.port)) {
+        if (portDrag && portDrag.target && comparePortTargets(portDrag.target, action.port)) {
             portDrag.target = undefined;
         }
     }),
 
     [GraphActionType.SET_PORT_POS]: produce((state: GraphEditorState, action: SetPortPosAction) => {
-        const portKey = getPortKeyFromRef(action.port);
+        const portKey = getPortKeyFromTarget(action.port);
 
         state.ports[portKey] = {
             portX: action.x,
@@ -233,7 +234,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     }),
 
     [GraphActionType.CLEAR_PORT_POS]: produce((state: GraphEditorState, action: ClearPortPosAction) => {
-        const portKey = getPortKeyFromRef(action.port);
+        const portKey = getPortKeyFromTarget(action.port);
         delete state.ports[portKey];
     }),
 
@@ -242,7 +243,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
             show: true,
             value: action.value,
             params: action.params,
-            onResult: action.onResult
+            receiver: action.receiver
         };
     }),
 
@@ -259,9 +260,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     
         if (form) {
             form.show = false;
-
-            // TODO: dont store function in redux store!
-            form.onResult(action.value);
+            receiveValue(state, form.value, form.receiver);
         }
     }),
     

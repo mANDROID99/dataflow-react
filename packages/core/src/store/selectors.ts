@@ -36,8 +36,14 @@ export function selectContextMenu(state: StoreState) {
     return state.graphEditor.contextMenu;
 }
 
-export function createFormStateSelector(formId: string) {
+export function selectFormState(formId: string) {
     return (state: StoreState) => {
         return state.graphEditor.forms[formId];
+    };
+}
+
+export function selectNodeSelected(nodeId: string) {
+    return (state: StoreState) => {
+        return state.graphEditor.selectedNode === nodeId;
     };
 }

@@ -1,28 +1,25 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDispatch } from 'react-redux';
+
+import { FieldInputProps, DataGridInputValue } from '../types/graphFieldInputTypes';
+import { nodeFieldReceiver } from '../types/storeTypes';
 
 import { DATA_GRID_FORM_ID } from '../forms/datatable/DataGridForm';
-import { FieldInputProps, DataGridInputValue } from '../types/graphFieldInputTypes';
 import Button from '../common/Button';
-import { useGraphContext } from '../editor/graphEditorContext';
-import { GraphActionType } from '../types/graphReducerTypes';
+import { showForm } from '../store/actions';
 
 export default function DataGridFieldInput(props: FieldInputProps<DataGridInputValue>): React.ReactElement {
-    const { value, onChanged } = props;
-    const { dispatch } = useGraphContext();
+    const { nodeId, fieldName: fieldId, value, params } = props;
+    const dispatch = useDispatch();
 
-    const showForm = () => {
-        dispatch({
-            type: GraphActionType.SHOW_FORM,
-            formId: DATA_GRID_FORM_ID,
-            params: props.params,
-            value,
-            onResult: onChanged as any
-        });
+    const handleShowForm = () => {
+        const receiver = nodeFieldReceiver(nodeId, fieldId);
+        dispatch(showForm(DATA_GRID_FORM_ID, value, params, receiver));
     };
 
     return (
-        <Button onClick={showForm}>
+        <Button onClick={handleShowForm}>
             <span>Edit</span>
             <FontAwesomeIcon className="ngraph-btn-icon" icon="edit"/>
         </Button>

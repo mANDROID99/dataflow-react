@@ -1,32 +1,23 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FieldInputProps } from '../../types/graphFieldInputTypes';
-import { Action, ActionType } from './dataListFormReducer';
 
-type Props<T> = {
-    value: T;
-    inputComponent: React.ComponentType<FieldInputProps<T>>;
-    inputParams: { [key: string]: unknown };
+import { Action, ActionType } from './dataListFormReducer';
+import CommonTextInput from '../../common/CommonTextInput';
+
+type Props = {
+    value: string;
     index: number;
     dispatch: React.Dispatch<Action>;
 }
 
-function DataListItem<T>(props: Props<T>) {
+function DataListItem(props: Props) {
     const handleRemove = () => {
         props.dispatch({ type: ActionType.REMOVE_ITEM, index: props.index });
     };
 
-    const handleChanged = (value: T) => {
+    const handleChanged = (value: string) => {
         props.dispatch({ type: ActionType.CHANGE_ITEM, index: props.index, value });
     };
-
-    function renderInput() {
-        return React.createElement(props.inputComponent, {
-            value: props.value,
-            params: props.inputParams,
-            onChanged: handleChanged
-        });
-    }
 
     return (
         <div className="ngraph-datalist-item">
@@ -34,7 +25,7 @@ function DataListItem<T>(props: Props<T>) {
                 <span>{props.index + '.'}</span>
             </div>
             <div className="ngraph-datalist-item-input">
-                {renderInput()}
+                <CommonTextInput value={props.value} onChange={handleChanged}/>
             </div>
             <div className="ngraph-datalist-item-remove" onClick={handleRemove}>
                 <FontAwesomeIcon icon="times"/>

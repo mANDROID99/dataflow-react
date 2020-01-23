@@ -28,7 +28,7 @@ function ContextMenu() {
     function renderContent() {
         if (target) {
             if (target.type === ContextMenuTargetType.GRAPH_NODE) {
-                return <ContextMenuEdit nodeId={target.nodeId} dispatch={dispatch}/>;
+                return <ContextMenuEdit nodeId={target.nodeId}/>;
             }
         }
         return <ContextMenuCreate x={x} y={y}/>;

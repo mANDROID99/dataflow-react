@@ -1,4 +1,4 @@
-import { PortStates } from "../../../types/graphReducerTypes";
+import { PortStates } from "../../../types/storeTypes";
 import { getPortKey } from "../../../utils/graph/portUtils";
 
 export function plot(sx: number, sy: number, ex: number, ey: number, portOut: boolean): string {

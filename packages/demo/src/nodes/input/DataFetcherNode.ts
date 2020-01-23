@@ -38,11 +38,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         columns: {
             label: 'Columns',
             type: FieldInputType.DATA_LIST,
-            initialValue: [],
-            params: {
-                inputType: FieldInputType.TEXT,
-                inputInitialValue: ''
-            }
+            initialValue: []
         }
     },
     ports: {

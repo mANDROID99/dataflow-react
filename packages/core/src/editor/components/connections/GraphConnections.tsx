@@ -18,7 +18,7 @@ function GraphConnections(): React.ReactElement {
     function renderDragConnection(): React.ReactElement | undefined {
         if (portDrag) {
             const port = portDrag.port;
-            const start = getPortPos(ports, port.nodeId, port.portId, port.portOut);
+            const start = getPortPos(ports, port.nodeId, port.portName, port.portOut);
             if (!start) return;
         
             let x = portDrag.dragX;
