@@ -1,18 +1,18 @@
 import React, { useRef } from 'react';
-import { Graph } from '../../../types/graphTypes';
-import { PortStates, PortDragState } from '../../../types/graphReducerTypes';
+import { useSelector, shallowEqual } from 'react-redux';
+
+import { StoreState } from '../../../types/storeTypes';
+
 import GraphNodeConnections from './GraphNodeConnections';
 import { plot, getPortPos } from './connectionHelpers';
+import { selectPortDrag, selectPorts } from '../../../store/selectors';
 
-type Props = {
-    graph: Graph;
-    ports: PortStates;
-    portDrag: PortDragState | undefined;
-}
+function GraphConnections(): React.ReactElement {
+    const { portDrag, ports } = useSelector((state: StoreState) => ({
+        portDrag: selectPortDrag(state),
+        ports: selectPorts(state)
+    }), shallowEqual);
 
-
-function GraphConnections(props: Props): React.ReactElement {
-    const { graph, portDrag, ports } = props;
     const containerRef = useRef<SVGSVGElement>(null);
 
     function renderDragConnection(): React.ReactElement | undefined {
@@ -37,7 +37,7 @@ function GraphConnections(props: Props): React.ReactElement {
 
     return (
         <svg ref={containerRef} className="ngraph-graph-connections">
-            <GraphNodeConnections graph={graph} ports={ports}/>
+            <GraphNodeConnections/>
             {renderDragConnection()}
         </svg>
     );

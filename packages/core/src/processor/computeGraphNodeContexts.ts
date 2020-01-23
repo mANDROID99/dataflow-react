@@ -1,8 +1,13 @@
-import { Graph } from "../types/graphTypes";
+import { GraphNode } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
 import { GraphNodeContext } from "../types/graphFieldInputTypes";
 
-export function computeGraphNodeContexts<Ctx, Params>(params: Params | undefined, graph: Graph, graphConfig: GraphConfig<Ctx, Params>): Map<string, GraphNodeContext<Ctx, Params>> {
+export function computeGraphNodeContexts<Ctx, Params>(
+    params: Params | undefined,
+    graphNodes: { [id: string]: GraphNode },
+    graphConfig: GraphConfig<Ctx, Params>
+): Map<string, GraphNodeContext<Ctx, Params>> {
+
     const baseContext = graphConfig.context;
     const baseParams: Params = params ?? graphConfig.params!;
 
@@ -10,7 +15,7 @@ export function computeGraphNodeContexts<Ctx, Params>(params: Params | undefined
     const seen = new Set<string>();
 
     function resolve(nodeId: string): Ctx {
-        const node = graph.nodes[nodeId];
+        const node = graphNodes[nodeId];
         if (!node) {
             return baseContext;
         }
@@ -85,8 +90,7 @@ export function computeGraphNodeContexts<Ctx, Params>(params: Params | undefined
         }
     }
 
-    const nodes = graph.nodes;
-    for (const nodeId in nodes) {
+    for (const nodeId in graphNodes) {
         resolve(nodeId);
     }
 

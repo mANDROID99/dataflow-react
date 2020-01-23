@@ -1,8 +1,12 @@
 import React from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
+
 import { Graph } from '../../../types/graphTypes';
-import { PortStates } from '../../../types/graphReducerTypes';
+import { PortStates, StoreState } from '../../../types/storeTypes';
+
 import { plot, getPortPos } from "./connectionHelpers";
 import { getConnectionKey } from '../../../utils/graph/portUtils';
+import { selectGraph, selectPorts } from '../../../store/selectors';
 
 type Connection = {
     key: string;
@@ -11,11 +15,6 @@ type Connection = {
     ex: number;
     ey: number;
 };
-
-type Props = {
-    graph: Graph;
-    ports: PortStates;
-}
 
 function getConnections(graph: Graph, portStates: PortStates): Connection[] {
     const connections: Connection[] = [];
@@ -51,8 +50,14 @@ function getConnections(graph: Graph, portStates: PortStates): Connection[] {
     return connections;
 }
 
-function GraphNodeConnections(props: Props) {
-    const connections = getConnections(props.graph, props.ports);
+function GraphNodeConnections() {
+    const { graph, ports } = useSelector((state: StoreState) => ({
+        graph: selectGraph(state),
+        ports: selectPorts(state)
+    }), shallowEqual);
+
+    const connections = getConnections(graph, ports);
+    
     return (
         <>
             {connections.map(conn => {

@@ -17,12 +17,7 @@
       "moduleResolution": "node",
       "resolveJsonModule": true,
       "isolatedModules": true,
-      "jsx": "react",
-      "baseUrl": ".",
-      "paths": {
-        "@react-ngraph/core": ["packages/core/src"],
-        "@react-ngraph/demo": ["packages/demo/src"]
-      }
+      "jsx": "react"
     }
   }
   

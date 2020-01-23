@@ -1,25 +1,28 @@
 import React from 'react';
-import { useGraphContext } from '../../graphEditorContext';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { ContextMenuTargetType } from '../../../types/storeTypes';
+
 import Overlay from '../../../common/Overlay';
-import { GraphActionType, ContextMenuState, ContextMenuTargetType } from '../../../types/graphReducerTypes';
 import ContextMenuCreate from './ContextMenuCreate';
 import ContextMenuEdit from './ContextMenuEdit';
+import { hideContextMenu } from '../../../store/actions';
+import { selectContextMenu } from '../../../store/selectors';
 
-type Props = {
-    contextMenu: ContextMenuState;
-}
+function ContextMenu() {
+    const dispatch = useDispatch();
+    const contextMenu = useSelector(selectContextMenu);
 
-function ContextMenu(props: Props) {
-    const contextMenu = props.contextMenu;
+    if (!contextMenu) {
+        return null;
+    }
+
     const target = contextMenu.target;
     const x = contextMenu.x;
     const y = contextMenu.y;
-    const { dispatch } = useGraphContext();
 
     const handleHide = () => {
-        dispatch({
-            type: GraphActionType.HIDE_CONTEXT_MENU
-        });
+        dispatch(hideContextMenu());
     };
 
     function renderContent() {

@@ -1,20 +1,14 @@
 import React from 'react';
 import GraphTemplateChooser from './GraphTemplateChooser';
 import GraphDataExporter from './GraphDataEditor';
-import { Graph } from '../types/graphTypes';
 
-type Props = {
-    templateId: string | undefined;
-    graph: Graph;
-}
-
-function GraphHeader(props: Props) {
+function GraphHeader() {
     return (
         <div className="ngraph-header">
             <div className="ngraph-header-mid">
-                <GraphTemplateChooser templateId={props.templateId}/>
+                <GraphTemplateChooser/>
             </div>
-            <GraphDataExporter graph={props.graph}/>
+            <GraphDataExporter/>
         </div>
     );
 }

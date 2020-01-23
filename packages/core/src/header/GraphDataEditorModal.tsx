@@ -1,20 +1,21 @@
 import React, { useMemo, useState } from 'react';
-import { Graph } from "../types/graphTypes";
-import { GraphActionType } from '../types/graphReducerTypes';
 import Button from '../common/Button';
-import { useGraphContext } from '../editor/graphEditorContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectGraph } from '../store/selectors';
+import { loadGraph } from '../store/actions';
 
 type Props = {
-    graph: Graph;
     onHide: () => void;
 }
 
 function GraphDataExporterModal(props: Props) {
+    const graph = useSelector(selectGraph);
+    const dispatch = useDispatch();
+
     // convert the graph to JSON
-    const dataJSON = useMemo(() => JSON.stringify(props.graph, null, 2), [props.graph]);
+    const dataJSON = useMemo(() => JSON.stringify(graph, null, 2), [graph]);
 
     const [input, setInput] = useState(dataJSON);
-    const { dispatch } = useGraphContext();
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInput(event.target.value);
@@ -23,8 +24,9 @@ function GraphDataExporterModal(props: Props) {
     const handleSubmit = () => {
         try {
             const graph = JSON.parse(input);
-            dispatch({ type: GraphActionType.LOAD_GRAPH, graph });
+            dispatch(loadGraph(graph));
             props.onHide();
+            
         } catch (e) {
             console.error('Could not be converted to JSON');
         }

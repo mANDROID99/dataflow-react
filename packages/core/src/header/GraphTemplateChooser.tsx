@@ -1,29 +1,26 @@
 import React from 'react';
-import { GraphActionType } from '../types/graphReducerTypes';
+import { useDispatch, useSelector } from 'react-redux';
 import { useGraphContext } from '../editor/graphEditorContext';
+import { loadGraph } from '../store/actions';
+import { createTemplateIdSelector } from '../store/selectors';
 
-type Props = {
-    templateId: string | undefined;
-}
-
-function GraphTemplateChooser(props: Props) {
-    const { dispatch, templates } = useGraphContext();
+function GraphTemplateChooser() {
+    const dispatch = useDispatch();
+    const { templates } = useGraphContext();
+    const templateId = useSelector(createTemplateIdSelector(templates));
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const template = templates.find(t => t.id === e.target.value);
 
         if (template) {
-            dispatch({
-                type: GraphActionType.LOAD_GRAPH,
-                graph: template.graph
-            });
+            dispatch(loadGraph(template.graph));
         }
     };
 
     return (
         <div className="ngraph-templates">
             <span className="ngraph-header-label">Template</span>
-            <select className="ngraph-input" value={props.templateId ?? ''} onChange={handleChange}>
+            <select className="ngraph-input" value={templateId ?? ''} onChange={handleChange}>
                 <option disabled value=""></option>
                 {templates.map((template) => (
                     <option key={template.id} value={template.id}>{template.label}</option>

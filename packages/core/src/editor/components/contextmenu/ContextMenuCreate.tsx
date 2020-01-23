@@ -1,8 +1,13 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
+import { useDispatch } from "react-redux";
+
 import { GraphConfig } from "../../../types/graphConfigTypes";
-import { GraphActionType } from "../../../types/graphReducerTypes";
+
 import { useGraphContext } from "../../graphEditorContext";
 import ContextMenuGroup, { MenuItemGroup } from "./ContextMenuGroup";
+import { addNode } from "../../../store/actions";
+import { createGraphNode } from "../../../utils/graph/graphNodeFactory";
+import { v4 } from "uuid";
 
 function resolveMenuItems<Ctx, Params>(graphConfig: GraphConfig<Ctx, Params>): MenuItemGroup[] {
     const groupsByName = new Map<string, MenuItemGroup>();
@@ -36,19 +41,19 @@ type Props = {
 function ContextMenuContentCreate(props: Props) {
     const x = props.x;
     const y = props.y;
-    const { dispatch, graphConfig } = useGraphContext();
+
+    const dispatch = useDispatch();
+    const { graphConfig } = useGraphContext();
 
     const menuItems = useMemo(() => {
         return resolveMenuItems(graphConfig);
     }, [graphConfig]);
 
-    const handleCreateNode = useCallback((nodeType: string) => {
-        dispatch({
-            type: GraphActionType.CREATE_NODE,
-            nodeType,
-            x, y
-        });
-    }, [dispatch, x, y]);
+    const handleCreateNode = (nodeType: string) => {
+        const node = createGraphNode(x, y, nodeType, graphConfig);
+        const nodeId = v4();
+        dispatch(addNode(nodeId, node));
+    };
 
     return (
         <div className="ngraph-contextmenu-content">

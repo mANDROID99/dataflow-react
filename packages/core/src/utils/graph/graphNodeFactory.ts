@@ -17,7 +17,7 @@ export function getNodeWidth(nodeConfig: GraphNodeConfig<any>) {
     return nodeConfig.width ?? WIDTH;
 }
 
-export function createGraphNode(x: number, y: number, type: string, config: GraphConfig<any>): GraphNode {
+export function createGraphNode(x: number, y: number, type: string, config: GraphConfig<any, any>): GraphNode {
     const nodeConfig = config.nodes[type];
     if (!nodeConfig) throw new Error('No node exists with type - ' + type);
     

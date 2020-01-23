@@ -8,7 +8,7 @@ import { GraphPreviewParams } from '../../types/graphEditorTypes';
 import GraphEditorInner from './GraphEditorInner';
 
 type Props<Ctx, Params> = {
-    graph?: Graph;
+    initialGraph?: Graph;
     graphConfig: GraphConfig<Ctx, Params>;
     params?: Params;
     forms?: FormConfigs;
@@ -23,7 +23,6 @@ export default function GraphEditor<Ctx, Params>(props: Props<Ctx, Params>) {
 
     useEffect(() => {
         const el = modalRootRef.current;
-
         if (el) {
             setModalRoot(el);
         }

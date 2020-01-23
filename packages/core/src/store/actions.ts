@@ -1,69 +1,11 @@
-import { Graph } from "../types/graphTypes";
-
-export type PortRef = {
-    nodeId: string;
-    portId: string;
-    portOut: boolean;
-    nodeType: string;
-}
-
-export enum ContextMenuTargetType {
-    GRAPH_NODE
-}
-
-export type ContextMenuTarget =
-    | { type: ContextMenuTargetType.GRAPH_NODE; nodeId: string }
-    ;
-
-export type ContextMenuState = {
-    target: ContextMenuTarget | undefined;
-    x: number;
-    y: number;
-}
-
-export type PortDragState = {
-    port: PortRef;
-    target: PortRef | undefined;
-    dragX: number;
-    dragY: number;
-}
-
-export type PortState = {
-    portX: number;
-    portY: number;
-}
-
-export type PortStates = {
-    [portKey: string]: PortState | undefined;
-}
-
-export type FormState = {
-    show: boolean;
-    value: unknown;
-    params: unknown;
-    onResult: (value: unknown) => void;
-}
-
-export type FormStates = {
-    [formId: string]: FormState | undefined;
-}
-
-export type GraphState = {
-    graph: Graph;
-    contextMenu: ContextMenuState | undefined;
-    scrollX: number;
-    scrollY: number;
-    selectedNode: string | undefined;
-    portDrag: PortDragState | undefined;
-    ports: PortStates;
-    forms: FormStates;
-}
+import { Graph, GraphNode } from "../types/graphTypes";
+import { ContextMenuTarget, PortRef } from "../types/storeTypes";
 
 export enum GraphActionType {
     LOAD_GRAPH = 'LOAD_GRAPH',
-    CREATE_NODE = 'CREATE_NODE',
+    ADD_NODE = 'CREATE_NODE',
     DELETE_NODE = 'DELETE_NODE',
-    COPY_NODE = 'COPY_NODE',
+    CLONE_NODE = 'COPY_NODE',
     SET_FIELD_VALUE = 'SET_FIELD_VALUE',
     SET_NODE_POS = 'SET_NODE_POS',
     SET_NODE_WIDTH = 'SET_NODE_WIDTH',
@@ -77,12 +19,12 @@ export enum GraphActionType {
     END_PORT_DRAG = 'END_PORT_DRAG',
     SET_PORT_DRAG_TARGET = 'SET_PORT_DRAG_TARGET',
     CLEAR_PORT_DRAG_TARGET = 'CLEAR_PORT_DRAG_TARGET',
-    SET_PORT_POS = 'UPDATE_PORT_POS',
+    SET_PORT_POS = 'SET_PORT_POS',
     CLEAR_PORT_POS = 'CLEAR_PORT_POS',
-    SHOW_FORM = 'SHOW_FORM_FIELD_EDITOR',
-    HIDE_FORM = 'HIDE_FORM_FIELD_EDITOR',
-    CLEAR_FORM = 'CLEAR_FORM_FIELD_EDITOR',
-    SUBMIT_FORM = 'SUBMIT_FORM_FIELD_EDITOR'
+    SHOW_FORM = 'SHOW_FORM',
+    HIDE_FORM = 'HIDE_FORM',
+    CLEAR_FORM = 'CLEAR_FORM',
+    SUBMIT_FORM = 'SUBMIT_FORM'
 }
 
 export type LoadGraphAction = {
@@ -90,11 +32,25 @@ export type LoadGraphAction = {
     graph: Graph;
 }
 
-export type CreateNodeAction = {
-    type: GraphActionType.CREATE_NODE;
-    nodeType: string;
-    x: number;
-    y: number;
+export function loadGraph(graph: Graph): LoadGraphAction {
+    return {
+        type: GraphActionType.LOAD_GRAPH,
+        graph
+    };
+}
+
+export type AddNodeAction = {
+    type: GraphActionType.ADD_NODE;
+    nodeId: string;
+    node: GraphNode;
+}
+
+export function addNode(nodeId: string, node: GraphNode): AddNodeAction {
+    return {
+        type: GraphActionType.ADD_NODE,
+        nodeId,
+        node
+    };
 }
 
 export type DeleteNodeAction = {
@@ -102,9 +58,23 @@ export type DeleteNodeAction = {
     nodeId: string;
 }
 
-export type CopyNodeAction = {
-    type: GraphActionType.COPY_NODE;
+export function deleteNode(nodeId: string): DeleteNodeAction {
+    return {
+        type: GraphActionType.DELETE_NODE,
+        nodeId
+    };
+}
+
+export type CloneNodeAction = {
+    type: GraphActionType.CLONE_NODE;
     nodeId: string;
+}
+
+export function cloneNode(nodeId: string): CloneNodeAction {
+    return {
+        type: GraphActionType.CLONE_NODE,
+        nodeId
+    };
 }
 
 export type SetFieldValueAction = {
@@ -114,6 +84,15 @@ export type SetFieldValueAction = {
     value: unknown;
 }
 
+export function setNodeFieldValue(nodeId: string, fieldName: string, value: unknown): SetFieldValueAction {
+    return {
+        type: GraphActionType.SET_FIELD_VALUE,
+        nodeId,
+        fieldName,
+        value
+    };
+}
+
 export type ShowContextMenuAction = {
     type: GraphActionType.SHOW_CONTEXT_MENU;
     target: ContextMenuTarget | undefined;
@@ -121,8 +100,23 @@ export type ShowContextMenuAction = {
     y: number;
 }
 
+export function showContextMenu(target: ContextMenuTarget | undefined, x: number, y: number): ShowContextMenuAction {
+    return {
+        type: GraphActionType.SHOW_CONTEXT_MENU,
+        target,
+        x,
+        y
+    };
+}
+
 export type HideContextMenuAction = {
     type: GraphActionType.HIDE_CONTEXT_MENU;
+}
+
+export function hideContextMenu(): HideContextMenuAction {
+    return {
+        type: GraphActionType.HIDE_CONTEXT_MENU
+    };
 }
 
 export type UpdateScrollAction = {
@@ -131,13 +125,34 @@ export type UpdateScrollAction = {
     scrollY: number;
 }
 
+export function updateScroll(scrollX: number, scrollY: number): UpdateScrollAction {
+    return {
+        type: GraphActionType.UPDATE_SCROLL,
+        scrollX,
+        scrollY
+    };
+}
+
 export type SelectNodeAction = {
     type: GraphActionType.SELECT_NODE;
     nodeId: string;
 }
 
+export function selectNode(nodeId: string): SelectNodeAction {
+    return {
+        type: GraphActionType.SELECT_NODE,
+        nodeId
+    };
+}
+
 export type ClearSelectedNodeAction = {
     type: GraphActionType.CLEAR_SELECTED_NODE;
+}
+
+export function clearSelectedNode(): ClearSelectedNodeAction {
+    return {
+        type: GraphActionType.CLEAR_SELECTED_NODE
+    };
 }
 
 export type SetNodePosAction = {
@@ -147,10 +162,27 @@ export type SetNodePosAction = {
     y: number;
 }
 
+export function setNodePos(nodeId: string, x: number,y: number): SetNodePosAction {
+    return {
+        type: GraphActionType.SET_NODE_POS,
+        nodeId,
+        x,
+        y
+    };
+}
+
 export type SetNodeWidthAction = {
     type: GraphActionType.SET_NODE_WIDTH;
     nodeId: string;
     width: number;
+}
+
+export function setNodeWidth(nodeId: string, width: number): SetNodeWidthAction {
+    return {
+        type: GraphActionType.SET_NODE_WIDTH,
+        nodeId,
+        width
+    };
 }
 
 export type BeginPortDragAction = {
@@ -158,6 +190,15 @@ export type BeginPortDragAction = {
     port: PortRef;
     dragX: number;
     dragY: number;
+}
+
+export function beginPortDrag(port: PortRef, dragX: number, dragY: number): BeginPortDragAction {
+    return {
+        type: GraphActionType.BEGIN_PORT_DRAG,
+        port,
+        dragX,
+        dragY
+    };
 }
 
 export type UpdatePortDragAction = {
@@ -205,9 +246,23 @@ export type HideFormAction = {
     formId: string;
 }
 
+export function hideForm(formId: string): HideFormAction {
+    return {
+        type: GraphActionType.HIDE_FORM,
+        formId
+    };
+}
+
 export type ClearFormAction = {
     type: GraphActionType.CLEAR_FORM;
     formId: string;
+}
+
+export function clearForm(formId: string): ClearFormAction {
+    return {
+        type: GraphActionType.CLEAR_FORM,
+        formId
+    };
 }
 
 export type SubmitFormAction = {
@@ -216,11 +271,19 @@ export type SubmitFormAction = {
     value: unknown;
 }
 
+export function submitForm(formId: string, value: unknown): SubmitFormAction {
+    return {
+        type: GraphActionType.SUBMIT_FORM,
+        formId,
+        value
+    };
+}
+
 export type GraphAction = 
     | LoadGraphAction
-    | CreateNodeAction
+    | AddNodeAction
     | DeleteNodeAction
-    | CopyNodeAction
+    | CloneNodeAction
     | SetFieldValueAction
     | SelectNodeAction
     | ClearSelectedNodeAction
@@ -241,3 +304,4 @@ export type GraphAction =
     | ClearFormAction
     | SubmitFormAction
     ;
+

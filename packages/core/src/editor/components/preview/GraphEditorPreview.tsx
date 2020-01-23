@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { Graph } from "../../../types/graphTypes";
 import { GraphPreviewParams } from '../../../types/graphEditorTypes';
 import { useToggle } from '../../../utils/hooks/useToggle';
-
+import { useSelector } from 'react-redux';
+import { selectGraph } from '../../../store/selectors';
 
 type Props = {
-    graph: Graph;
     renderPreview: (params: GraphPreviewParams) => React.ReactNode | null;
 }
 
 function GraphEditorPreview(props: Props) {
     const [expanded, toggleMaximized] = useToggle(true);
     const [dims, setDims] = useState({ width: 300, height: 300 });
+    const graph = useSelector(selectGraph);
 
     return (
         <div className="ngraph-preview">
@@ -30,7 +30,7 @@ function GraphEditorPreview(props: Props) {
                     }}
                 >
                     {props.renderPreview({
-                        graph: props.graph,
+                        graph: graph,
                         width: dims.width,
                         height: dims.height
                     })}
