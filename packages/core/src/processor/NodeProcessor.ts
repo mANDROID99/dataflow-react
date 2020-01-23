@@ -1,6 +1,6 @@
 import { Processor, GraphNodeConfig } from "../types/graphConfigTypes";
 import { GraphNode } from "../types/graphTypes";
-import { ProcessorValues } from "./ProcessorValues";
+import { ProcessorCachedValues } from "./ProcessorCachedValues";
 import { TaskQueue } from "./TaskQueue";
 
 type Subscriber = (value: unknown) => void;
@@ -8,7 +8,7 @@ type Subscriber = (value: unknown) => void;
 export class NodeProcessor<Params> {
     private readonly sources: NodeProcessor<Params>[] = [];
     private readonly subscribers = new Map<string, Subscriber[]>();
-    private readonly values: ProcessorValues;
+    private readonly values: ProcessorCachedValues;
     private readonly fn: Processor;
     
     private taskQueue: TaskQueue | undefined;
@@ -20,7 +20,7 @@ export class NodeProcessor<Params> {
         this.recompute = this.recompute.bind(this);
 
         const initialValues = this.resolveInitialValues(Object.keys(config.ports.in));
-        this.values = new ProcessorValues(initialValues);
+        this.values = new ProcessorCachedValues(initialValues);
         
         // create processor function
         this.fn = config.createProcessor({ node, params });

@@ -3,8 +3,8 @@ import { NodeProcessor } from "./NodeProcessor";
 export class ProcessorResultsCollector<Ctx> {
     private readonly processors: NodeProcessor<Ctx>[];
     private readonly subscribers: ((value: unknown[]) => void)[] = [];
-
     private readonly results: unknown[] = [];
+    
     private received = 0;
 
     constructor(processors: NodeProcessor<Ctx>[]) {

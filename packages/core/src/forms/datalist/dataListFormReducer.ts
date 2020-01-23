@@ -23,7 +23,7 @@ export type RemoveItemAction = {
 
 export type Action = AddItemAction | ChangeItemAction | RemoveItemAction;
 
-export function reducer(state: unknown[], action: Action) {
+export function reducer(state: unknown[], action: Action): unknown[] {
     switch (action.type) {
         case ActionType.ADD_ITEM:
             state = state.slice(0);

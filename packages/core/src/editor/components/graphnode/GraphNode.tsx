@@ -7,7 +7,7 @@ import { GraphNodeContext } from '../../../types/graphFieldInputTypes';
 import GraphNodeField from './GraphNodeField';
 import GraphNodePort from './GraphNodePort';
 import { useGraphContext } from '../../graphEditorContext';
-import GraphNodeDragHandle, { DragWidthState } from './GraphNodeDragHandle';
+import { DragWidthState } from './GraphNodeDragHandle';
 import GraphNodeHeader, { DragPosState } from './GraphNodeHeader';
 
 type Props<Ctx, Params> = {
@@ -15,12 +15,12 @@ type Props<Ctx, Params> = {
     nodeContext: GraphNodeContext<Ctx, Params>;
     selected: boolean;
     graphNode: GraphNode;
-    portDrag: PortRef | undefined;
+    portDragPort: PortRef | undefined;
     portDragTarget: PortRef | undefined;
 }
 
 function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.ReactElement {
-    const { nodeId, graphNode, nodeContext, selected, portDrag, portDragTarget } = props;
+    const { nodeId, graphNode, nodeContext, selected, portDragPort, portDragTarget } = props;
     const { graphConfig, dispatch } = useGraphContext<Ctx, Params>();
 
     // drag-state. Track it in internal state so we only update the graph
@@ -99,7 +99,7 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
                             nodeWidth={0}
                             portId={portName}
                             portOut={false}
-                            portDrag={portDrag}
+                            portDrag={portDragPort}
                             portDragTarget={portDragTarget}
                             portTargets={graphNode.ports.in[portName]}
                         />
@@ -131,19 +131,12 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
                             nodeWidth={width}
                             portId={portName}
                             portOut={true}
-                            portDrag={portDrag}
+                            portDrag={portDragPort}
                             portDragTarget={portDragTarget}
                             portTargets={graphNode.ports.out[portName]}
                         />
                     ))}
                 </div>
-                {/* <GraphNodeDragHandle
-                    nodeId={nodeId}
-                    dispatch={dispatch}
-                    nodeWidth={graphNode.width}
-                    nodeConfig={nodeConfig}
-                    onDrag={setDragWidth}
-                /> */}
             </div>
         </div>
     );

@@ -88,7 +88,7 @@ function GraphEditorInner<Ctx, Params>(props: Props<Ctx, Params>) {
                                 nodeContext={nodeContext}
                                 selected={isSelected}
                                 graphNode={graphNodes![nodeId]}
-                                portDrag={portDragPort}
+                                portDragPort={portDragPort}
                                 portDragTarget={portDragTarget}
                             />
                         );

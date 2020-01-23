@@ -30,7 +30,7 @@ export class PortValue {
     }
 }
 
-export class PortValues {
+export class PortCachedValues {
     private _values: PortValue[];
     private _results: unknown[];
     private _remaining: number;
@@ -86,9 +86,10 @@ export class PortValues {
     }
 }
 
-export class ProcessorValues {
-    private readonly _values: { [key: string]: PortValues | undefined };
-    private _results: { [key: string]: unknown[] };
+export class ProcessorCachedValues {
+    private readonly _values: { [key: string]: PortCachedValues | undefined };
+    private readonly _results: { [key: string]: unknown[] };
+    
     private _size: number;
     private _remaining: number;
 
@@ -117,7 +118,7 @@ export class ProcessorValues {
         let values = this._values[portName];
 
         if (!values) {
-            values = new PortValues();
+            values = new PortCachedValues();
             this._values[portName] = values;
             this._size++;
             this._remaining++;
