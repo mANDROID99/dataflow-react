@@ -1,4 +1,4 @@
-import { Entry } from "@react-ngraph/editor"
+import { Entry } from "@react-ngraph/core"
 
 export enum JoinType {
     LEFT = 'left',

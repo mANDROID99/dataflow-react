@@ -6,7 +6,7 @@ import {
     createGraphNodeProcessors,
     findProcessorsByType,
     runProcessors
-} from '@react-ngraph/editor';
+} from '@react-ngraph/core';
 
 import { createChartConfiguration } from './createChart';
 import { ChartConfig } from '../types/nodeTypes';

@@ -18,10 +18,10 @@
       "resolveJsonModule": true,
       "isolatedModules": true,
       "jsx": "react",
-      "baseUrl": "packages",
+      "baseUrl": ".",
       "paths": {
-        "@react-ngraph/editor": ["nodegraph/src"],
-        "@react-ngraph/demo": ["demo/src"]
+        "@react-ngraph/core": ["packages/core/src"],
+        "@react-ngraph/demo": ["packages/demo/src"]
       }
     }
   }

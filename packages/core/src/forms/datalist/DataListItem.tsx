@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FieldInputProps } from 'nodegraph/src/types/graphFieldInputTypes';
+import { FieldInputProps } from '../../types/graphFieldInputTypes';
 import { Action, ActionType } from './dataListFormReducer';
 
 type Props<T> = {

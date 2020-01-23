@@ -1,4 +1,4 @@
-import { GraphConfig, inputs } from '@react-ngraph/editor';
+import { GraphConfig, inputs } from '@react-ngraph/core';
 import { ChartContext, mergeContexts, ChartParams } from '../chartContext';
 import { DATA_GRID_NODE } from '../nodes/input/DataGridNode';
 import { COMPUTE_NODE } from '../nodes/transform/ComputeNode';

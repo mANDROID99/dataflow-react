@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, Entry, expressionUtils } from "@react-ngraph/editor";
+import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, Entry, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { DataPoint, DataSet } from "../../types/nodeTypes";
 import { asString } from '../../utils/converters';

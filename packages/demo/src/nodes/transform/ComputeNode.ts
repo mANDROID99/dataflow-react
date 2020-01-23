@@ -1,4 +1,4 @@
-import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressionUtils } from '@react-ngraph/editor';
+import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressionUtils } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from '../../chartContext';
 import { pushDistinct } from '../../utils/arrayUtils';
 import { Row } from '../../types/nodeTypes';

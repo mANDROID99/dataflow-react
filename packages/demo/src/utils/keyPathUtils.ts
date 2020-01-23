@@ -1,4 +1,4 @@
-import { Entry } from "@react-ngraph/editor";
+import { Entry } from "@react-ngraph/core";
 import { asNumber } from "./converters";
 
 const CHAR_PERIOD = 46;

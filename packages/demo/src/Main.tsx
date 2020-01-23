@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraphEditor, Graph } from '@react-ngraph/editor';
+import { GraphEditor, Graph } from '@react-ngraph/core';
 
 import { GRAPH_CONFIG } from './config/graphConfig';
 import ChartPreview from './chart/ChartPreview';

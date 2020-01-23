@@ -38,7 +38,8 @@ module.exports = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         alias: {
-            "@react-ngraph/editor": path.resolve(__dirname, '../nodegraph/src/index.ts')
+            "@react-ngraph/core/src/styles": path.resolve(__dirname, '../core/src/styles'),
+            "@react-ngraph/core": path.resolve(__dirname, '../core/src/index.ts')
         }
     },
     output: {

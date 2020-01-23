@@ -1,16 +1,16 @@
 {
   "name": "@react-ngraph/demo",
   "version": "0.1.0",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack"
+  },
   "dependencies": {
-    "@react-ngraph/editor": "0.1.0",
+    "@react-ngraph/core": "0.1.0",
     "chart.js": "^2.9.3",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-split-pane": "^0.1.89"
-  },
-  "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack"
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.2",

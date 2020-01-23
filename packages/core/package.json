@@ -1,9 +1,14 @@
 {
-  "name": "@react-ngraph/editor",
+  "name": "@react-ngraph/core",
   "version": "0.1.0",
   "main": "./dist/bundle.js",
   "types": "./lib",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
+    "test": "jest",
+    "build": "webpack --mode=development"
+  },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
@@ -18,11 +23,6 @@
     "jexl": "^2.2.2",
     "react-contextmenu": "^2.13.0",
     "uuid": "^3.3.3"
-  },
-  "scripts": {
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
-    "test": "jest",
-    "build": "webpack --mode=development"
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.2",

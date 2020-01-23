@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue } from "@react-ngraph/editor";
+import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue } from "@react-ngraph/core";
 import { ChartContext } from "../../chartContext";
 import { Row } from "../../types/nodeTypes";
 

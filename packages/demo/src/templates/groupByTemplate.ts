@@ -1,4 +1,4 @@
-import { GraphTemplate } from '@react-ngraph/editor';
+import { GraphTemplate } from '@react-ngraph/core';
 import graph from './groupBy.json';
 
 export const GROUP_BY_TEMPLATE: GraphTemplate = {

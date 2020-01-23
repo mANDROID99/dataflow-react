@@ -1,4 +1,4 @@
-import { GraphTemplate } from '@react-ngraph/editor';
+import { GraphTemplate } from '@react-ngraph/core';
 import graph from './apiDataConditional.json';
 
 export const API_DATA_CONDITIONAL_TEMPLATE: GraphTemplate = {
