@@ -43,4 +43,4 @@ function ContextMenu() {
     );
 }
 
-export default React.memo(ContextMenu);
+export default ContextMenu;

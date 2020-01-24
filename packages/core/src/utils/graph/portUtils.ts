@@ -84,15 +84,3 @@ export function resolvePortColors<Ctx, Params>(config: GraphConfig<Ctx, Params>,
 
     return [];
 }
-
-export function getPortKey(nodeId: string, portId: string, portOut: boolean): string {
-    return nodeId + '__' + portId + (portOut ? '__out' : '__in');
-}
-
-export function getPortKeyFromTarget(port: PortTarget): string {
-    return getPortKey(port.nodeId, port.portName, port.portOut);
-}
-
-export function getConnectionKey(startNode: string, startPort: string, endNode: string, endPort: string): string {
-    return startNode + '__' + startPort + '__' + endNode + '__' + endPort;
-}

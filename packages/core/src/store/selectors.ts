@@ -1,5 +1,7 @@
 import { StoreState } from "../types/storeTypes";
 import { GraphTemplate } from "../types/graphTemplateTypes";
+import { PortId } from "../editor/GraphNodePortRefs";
+import { TargetPort } from "../types/graphTypes";
 
 export function selectScrollX(state: StoreState) {
     return state.graphEditor.scrollX;
@@ -15,10 +17,6 @@ export function selectGraph(state: StoreState) {
 
 export function selectPortDrag(state: StoreState) {
     return state.graphEditor.portDrag;
-}
-
-export function selectPorts(state: StoreState) {
-    return state.graphEditor.ports;
 }
 
 export function selectGraphNodes(state: StoreState) {
@@ -45,5 +43,15 @@ export function selectFormState(formId: string) {
 export function selectNodeSelected(nodeId: string) {
     return (state: StoreState) => {
         return state.graphEditor.selectedNode === nodeId;
+    };
+}
+
+export function selectPortTargets(port: PortId) {
+    return (state: StoreState): TargetPort[] | undefined => {
+        const node = state.graphEditor.graph.nodes[port.nodeId];
+        if (!node) return;
+
+        const ports = port.portOut ? node.ports.out : node.ports.in;
+        return ports[port.portName];
     };
 }

@@ -34,14 +34,10 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
     const nodeType = graphNode.type;
     const graphNodeConfig = graphConfig.nodes[nodeType];
 
-    const handleClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        dispatch(selectNode(nodeId));
-    };
-
     const handleMouseDownContainer = (event: React.MouseEvent) => {
         // stop the canvas from dragging when the node is selected
         event.stopPropagation();
+        dispatch(selectNode(nodeId));
     };
 
     const handleContextMenu = (event: React.MouseEvent) => {
@@ -78,7 +74,6 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
         <div
             className={cn('ngraph-node', { selected })}
             style={{ left: x, top: y, width }}
-            onClick={handleClick}
             onContextMenu={handleContextMenu}
             onMouseDown={handleMouseDownContainer}
         >
@@ -98,9 +93,9 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
                             nodeType={nodeType}
                             portName={portName}
                             portOut={false}
-                            x={x}
-                            y={y}
-                            w={0}
+                            nodeX={x}
+                            nodeY={y}
+                            nodeWidth={0}
                         />
                     ))}
                 </div>
@@ -127,9 +122,9 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
                             nodeType={nodeType}
                             portName={portName}
                             portOut={true}
-                            x={x}
-                            y={y}
-                            w={width}
+                            nodeX={x}
+                            nodeY={y}
+                            nodeWidth={width}
                         />
                     ))}
                 </div>

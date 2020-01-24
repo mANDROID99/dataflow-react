@@ -25,17 +25,6 @@ export type ContextMenuState = {
 export type PortDragState = {
     port: PortTarget;
     target: PortTarget | undefined;
-    dragX: number;
-    dragY: number;
-}
-
-export type PortState = {
-    portX: number;
-    portY: number;
-}
-
-export type PortStates = {
-    [portKey: string]: PortState | undefined;
 }
 
 export enum ReceiverType {
@@ -63,7 +52,6 @@ export type GraphEditorState = {
     scrollY: number;
     selectedNode: string | undefined;
     portDrag: PortDragState | undefined;
-    ports: PortStates;
     forms: FormStates;
 }
 

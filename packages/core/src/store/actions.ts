@@ -15,12 +15,9 @@ export enum GraphActionType {
     SELECT_NODE = 'SELECT_NODE',
     CLEAR_SELECTED_NODE = 'CLEAR_SELECTED_NODE',
     BEGIN_PORT_DRAG = 'BEGIN_PORT_DRAG',
-    UPDATE_PORT_DRAG = 'UPDATE_PORT_DRAG',
     END_PORT_DRAG = 'END_PORT_DRAG',
     SET_PORT_DRAG_TARGET = 'SET_PORT_DRAG_TARGET',
     CLEAR_PORT_DRAG_TARGET = 'CLEAR_PORT_DRAG_TARGET',
-    SET_PORT_POS = 'SET_PORT_POS',
-    CLEAR_PORT_POS = 'CLEAR_PORT_POS',
     SHOW_FORM = 'SHOW_FORM',
     HIDE_FORM = 'HIDE_FORM',
     CLEAR_FORM = 'CLEAR_FORM',
@@ -188,30 +185,12 @@ export function setNodeWidth(nodeId: string, width: number): SetNodeWidthAction 
 export type BeginPortDragAction = {
     type: GraphActionType.BEGIN_PORT_DRAG;
     port: PortTarget;
-    dragX: number;
-    dragY: number;
 }
 
-export function beginPortDrag(port: PortTarget, dragX: number, dragY: number): BeginPortDragAction {
+export function beginPortDrag(port: PortTarget): BeginPortDragAction {
     return {
         type: GraphActionType.BEGIN_PORT_DRAG,
-        port,
-        dragX,
-        dragY
-    };
-}
-
-export type UpdatePortDragAction = {
-    type: GraphActionType.UPDATE_PORT_DRAG;
-    dragX: number;
-    dragY: number;
-}
-
-export function updatePortDrag(dragX: number, dragY: number): UpdatePortDragAction {
-    return {
-        type: GraphActionType.UPDATE_PORT_DRAG,
-        dragX,
-        dragY
+        port
     };
 }
 
@@ -245,34 +224,6 @@ export type ClearPortDragTargetAction = {
 export function clearPortDragTarget(port: PortTarget) {
     return {
         type: GraphActionType.CLEAR_PORT_DRAG_TARGET,
-        port
-    };
-}
-
-export type SetPortPosAction = {
-    type: GraphActionType.SET_PORT_POS;
-    port: PortTarget;
-    x: number;
-    y: number;
-}
-
-export function setPortPos(port: PortTarget, x: number, y: number): SetPortPosAction {
-    return {
-        type: GraphActionType.SET_PORT_POS,
-        port,
-        x,
-        y
-    };
-}
-
-export type ClearPortPosAction = {
-    type: GraphActionType.CLEAR_PORT_POS;
-    port: PortTarget;
-}
-
-export function clearPortPos(port: PortTarget): ClearPortPosAction {
-    return {
-        type: GraphActionType.CLEAR_PORT_POS,
         port
     };
 }
@@ -347,12 +298,9 @@ export type GraphAction =
     | SetNodePosAction
     | SetNodeWidthAction
     | BeginPortDragAction
-    | UpdatePortDragAction
     | EndPortDragAction
     | SetPortDragTargetAction
     | ClearPortDragTargetAction
-    | ClearPortPosAction
-    | SetPortPosAction
     | ShowFormAction
     | HideFormAction
     | ClearFormAction

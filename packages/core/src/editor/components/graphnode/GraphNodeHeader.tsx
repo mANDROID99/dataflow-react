@@ -6,7 +6,7 @@ import { GraphNode } from '../../../types/graphTypes';
 
 import { useDrag } from '../../../utils/hooks/useDrag';
 import GraphNodeDragHandle, { DragWidthState } from './GraphNodeDragHandle';
-import { selectNode, setNodePos } from '../../../store/actions';
+import { setNodePos } from '../../../store/actions';
 
 export type DragPosState = {
     x: number;
@@ -37,8 +37,6 @@ function GraphNodeHeader(props: Props) {
     // setup drag behaviour
     const startDrag = useDrag<DragState>({
         onStart(event) {
-            dispatch(selectNode(nodeId));
-
             return {
                 startMouseX: event.clientX,
                 startMouseY: event.clientY,
@@ -64,7 +62,6 @@ function GraphNodeHeader(props: Props) {
 
     const handleMouseDownHeader = (event: React.MouseEvent) => {
         if (event.button === 0) {
-            event.stopPropagation();
             startDrag(event.nativeEvent);
         }
     };

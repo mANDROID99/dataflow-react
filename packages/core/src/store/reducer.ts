@@ -18,17 +18,14 @@ import {
     SetNodePosAction,
     SetNodeWidthAction,
     BeginPortDragAction,
-    UpdatePortDragAction,
     SetPortDragTargetAction,
     ClearPortDragTargetAction,
-    SetPortPosAction,
-    ClearPortPosAction,
     ShowFormAction,
     HideFormAction,
     SubmitFormAction,
     ClearFormAction
 } from "./actions";
-import { comparePortTargets, getPortKeyFromTarget } from "../utils/graph/portUtils";
+import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
 import { receiveValue } from "../utils/store/receiverUtils";
 
@@ -178,19 +175,8 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     
         state.portDrag = {
             port,
-            dragX: action.dragX,
-            dragY: action.dragY,
             target: undefined
         };
-    }),
-
-    [GraphActionType.UPDATE_PORT_DRAG]: produce((state: GraphEditorState, action: UpdatePortDragAction) => {
-        const portDrag = state.portDrag;
-    
-        if (portDrag) {
-            portDrag.dragX = action.dragX;
-            portDrag.dragY = action.dragY;
-        }
     }),
 
     [GraphActionType.END_PORT_DRAG]: produce((state: GraphEditorState) => {
@@ -222,20 +208,6 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         if (portDrag && portDrag.target && comparePortTargets(portDrag.target, action.port)) {
             portDrag.target = undefined;
         }
-    }),
-
-    [GraphActionType.SET_PORT_POS]: produce((state: GraphEditorState, action: SetPortPosAction) => {
-        const portKey = getPortKeyFromTarget(action.port);
-
-        state.ports[portKey] = {
-            portX: action.x,
-            portY: action.y
-        };
-    }),
-
-    [GraphActionType.CLEAR_PORT_POS]: produce((state: GraphEditorState, action: ClearPortPosAction) => {
-        const portKey = getPortKeyFromTarget(action.port);
-        delete state.ports[portKey];
     }),
 
     [GraphActionType.SHOW_FORM]: produce((state: GraphEditorState, action: ShowFormAction) => {

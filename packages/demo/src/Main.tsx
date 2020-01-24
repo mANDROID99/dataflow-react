@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
-import { GraphEditor, Graph } from '@react-ngraph/core';
+import { GraphEditor } from '@react-ngraph/core';
 
 import { GRAPH_CONFIG } from './config/graphConfig';
 import ChartPreview from './chart/ChartPreview';
@@ -13,16 +13,12 @@ const PARAMS: ChartParams = {
 };
 
 export default function Main() {
-    const [graph, setGraph] = useState<Graph>({ nodes: {} });
-
     return (
         <div className="App">
             <Provider store={store}>
                 <GraphEditor
-                    initialGraph={graph}
                     templates={templates}
                     graphConfig={GRAPH_CONFIG}
-                    onGraphChanged={setGraph}
                     params={PARAMS}
                     renderPreview={({ graph, width, height }) => {
                         return (

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import { useDrag } from '../../utils/hooks/useDrag';
@@ -52,8 +52,8 @@ function GraphScrollContainer(props: Props) {
             state.scrollX = state.startScrollX + dx;
             state.scrollY = state.startScrollY + dy;
 
-            // set the new scroll position directly on the element.
-            // Don't update the store to avoid spamming actions.
+            // set the new scroll position directly on the element, to
+            // avoid spamming the store with actions.
             const scrollEl = scrollRef.current;
             if (scrollEl) {
                 scrollEl.style.left = state.scrollX + 'px';
@@ -67,13 +67,10 @@ function GraphScrollContainer(props: Props) {
     });
       
     const handleBeginDrag = (event: React.MouseEvent) => {
+        dispatch(clearSelectedNode());
         if (event.button === 0) {
             drag(event.nativeEvent);
         }
-    };
-
-    const handleClearSelected = () => {
-        dispatch(clearSelectedNode());
     };
 
     const handleContextMenu = (event: React.MouseEvent) => {
@@ -86,7 +83,6 @@ function GraphScrollContainer(props: Props) {
     
     return (
         <div ref={ref}
-            onClick={handleClearSelected}
             onMouseDown={handleBeginDrag}
             onContextMenu={handleContextMenu}
             className={classNames("ngraph-wrap-scroller")}
@@ -101,4 +97,4 @@ function GraphScrollContainer(props: Props) {
     );
 }
 
-export default React.memo(GraphScrollContainer);
+export default GraphScrollContainer;

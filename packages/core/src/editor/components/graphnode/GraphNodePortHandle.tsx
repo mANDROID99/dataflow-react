@@ -8,7 +8,7 @@ type Props = {
     colors: string[];
 }
 
-export default function Port(props: Props) {
+export default function GraphNodePortHandle(props: Props) {
     let colors = props.colors;
     
     if (colors.length === 0) {

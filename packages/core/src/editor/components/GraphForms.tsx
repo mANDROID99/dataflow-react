@@ -25,4 +25,4 @@ function GraphForms(props: Props) {
     );
 }
 
-export default React.memo(GraphForms);
+export default GraphForms;
