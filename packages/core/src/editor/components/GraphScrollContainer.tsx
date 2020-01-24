@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import { useDrag } from '../../utils/hooks/useDrag';
@@ -11,35 +11,58 @@ type Props = {
 }
 
 type DragState = {
+    startMouseX: number;
+    startMouseY: number;
+    startScrollX: number;
+    startScrollY: number;
     scrollX: number;
     scrollY: number;
-    startX: number;
-    startY: number;
 }
 
 function GraphScrollContainer(props: Props) {
     const dispatch = useDispatch();
+
+    // select the current scroll state from the store
     const { scrollX, scrollY } = useSelector((state: StoreState) => ({
         scrollX: selectScrollX(state),
         scrollY: selectScrollY(state)
     }), shallowEqual);
 
     const ref = useRef<HTMLDivElement>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
     const drag = useDrag<DragState>({
         onStart(event) {
-            const startX = event.clientX;
-            const startY = event.clientY;
-            return { startX, startY, scrollX, scrollY };
+            const startMouseX = event.clientX;
+            const startMouseY = event.clientY;
+
+            return {
+                startMouseX,
+                startMouseY,
+                startScrollX: scrollX,
+                startScrollY: scrollY,
+                scrollX,
+                scrollY
+            };
         },
         onDrag(event, state) {
-            const dx = event.clientX - state.startX;
-            const dy = event.clientY - state.startY;
+            const dx = event.clientX - state.startMouseX;
+            const dy = event.clientY - state.startMouseY;
 
-            const scrollX = state.scrollX + dx;
-            const scrollY = state.scrollY + dy; 
+            state.scrollX = state.startScrollX + dx;
+            state.scrollY = state.startScrollY + dy;
 
-            dispatch(updateScroll(scrollX, scrollY));
+            // set the new scroll position directly on the element.
+            // Don't update the store to avoid spamming actions.
+            const scrollEl = scrollRef.current;
+            if (scrollEl) {
+                scrollEl.style.left = state.scrollX + 'px';
+                scrollEl.style.top = state.scrollY + 'px';
+            }
+
+        },
+        onEnd(event, state) {
+            dispatch(updateScroll(state.scrollX, state.scrollY));
         }
     });
       
@@ -68,7 +91,7 @@ function GraphScrollContainer(props: Props) {
             onContextMenu={handleContextMenu}
             className={classNames("ngraph-wrap-scroller")}
         >
-            <div className="ngraph-scroller" style={{
+            <div ref={scrollRef} className="ngraph-scroller" style={{
                 left: scrollX,
                 top: scrollY
             }}>
