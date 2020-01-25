@@ -1,5 +1,10 @@
 import { Entry } from "@react-ngraph/core"
 
+export enum ValueType {
+    ROWS = 'rows',
+    ROW_GROUPS = 'row-groups'
+}
+
 export enum JoinType {
     LEFT = 'left',
     INNER = 'inner',
@@ -14,8 +19,24 @@ export enum AxisType {
 }
 
 export type Row = {
-    values: { [key: string]: unknown };
-    group?: Row[];
+    [key: string]: unknown;
+}
+
+export type Rows = {
+    type: ValueType.ROWS;
+    rows: Row[];
+}
+
+export type RowGroup = {
+    selection: {
+        [key: string]: unknown;
+    };
+    rows: Row[];
+}
+
+export type RowGroups = {
+    type: ValueType.ROW_GROUPS,
+    groups: RowGroup[];
 }
 
 export type ChartDataPoint = {
@@ -57,4 +78,23 @@ export type ChartConfig = {
     yAxes: ChartAxisConfig[];
     params: Entry<unknown>[];
     events: ChartEventConfig[];
+}
+
+export const EMPTY_ROWS: Rows = {
+    type: ValueType.ROWS,
+    rows: []
+}
+
+export function createRows(rows: Row[]): Rows {
+    return {
+        type: ValueType.ROWS,
+        rows
+    };
+}
+
+export function createRowGroups(groups: RowGroup[]): RowGroups {
+    return {
+        type: ValueType.ROW_GROUPS,
+        groups
+    };
 }

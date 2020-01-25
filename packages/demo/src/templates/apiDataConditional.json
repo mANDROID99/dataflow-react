@@ -23,6 +23,10 @@
             {
               "node": "8a716abd-fd2b-46af-83c5-95fbd3ae1b69",
               "port": "in"
+            },
+            {
+              "node": "8a716abd-fd2b-46af-83c5-95fbd3ae1b69",
+              "port": "rows"
             }
           ]
         }
@@ -204,6 +208,12 @@
       "ports": {
         "in": {
           "in": [
+            {
+              "node": "ab908581-a59b-4df6-9a36-c805cbaae191",
+              "port": "rows"
+            }
+          ],
+          "rows": [
             {
               "node": "ab908581-a59b-4df6-9a36-c805cbaae191",
               "port": "rows"

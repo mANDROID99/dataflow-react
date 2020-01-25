@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { Row } from "../../types/valueTypes";
+import { Row, createRows, RowGroups } from "../../types/valueTypes";
 import { asNumber } from "../../utils/converters";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { AggregatorType, createAggregator } from "./aggregators";
@@ -12,7 +12,7 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     ports: {
         in: {
             groups: {
-                type: 'row[]'
+                type: 'rowgroup[]'
             }
         },
         out: {
@@ -53,52 +53,30 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
 
         return {
             onNext(inputs) {
-                const allRows = inputs.groups as Row[][];
-                const rows = allRows[0] ?? [];
-                const result: Row[] = [];
-    
+                const rg = (inputs.groups[0] || []) as RowGroups;
+                const rows: Row[] = [];
                 const aggregator = createAggregator(type);
-                let amt: number | undefined;
     
-                for (let i = 0, n = rows.length; i < n; i++) {
-                    const row = rows[i];
-                    const subRows = row.group;
-    
-                    if (subRows) {
-                        let subAmt: number | undefined = undefined;
-    
-                        for (let j = 0, m = subRows.length; j < m; j++) {
-                            const subRow = subRows[j];
-                            const ctx = rowToEvalContext(subRow, j, params.variables);
-                            const value = asNumber(mapColumn(ctx));
-                            subAmt = aggregator(subAmt, value, j);
-                        }
-    
-                        result.push({
-                            values: {
-                                ...row.values,
-                                [alias]: subAmt
-                            },
-                            group: row.group
-                        });
-    
-                    } else {
-                        const ctx = rowToEvalContext(row, i, params.variables);
+                const rowGroups = rg.groups;
+                for (let i = 0, n = rowGroups.length; i < n; i++) {
+                    const rowGroup = rowGroups[i];
+                    const subRows = rowGroup.rows;
+                    let subAmt: number | undefined = undefined;
+
+                    for (let j = 0, m = subRows.length; j < m; j++) {
+                        const subRow = subRows[j];
+                        const ctx = rowToEvalContext(subRow, j, params.variables);
                         const value = asNumber(mapColumn(ctx));
-                        amt = aggregator(amt, value, i);
+                        subAmt = aggregator(subAmt, value, j);
                     }
-                }
-    
-                if (amt != null) {
-                    result.push({
-                        values: {
-                            [alias]: amt
-                        },
-                        group: rows
+
+                    rows.push({
+                        ...rowGroup.selection,
+                        [alias]: subAmt
                     });
                 }
-    
-                next('rows', result);
+                
+                next('rows', createRows(rows));
             }
         }
     },

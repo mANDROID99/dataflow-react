@@ -34,10 +34,10 @@ export const GRAPH_CONFIG: GraphConfig<ChartContext, ChartParams> = {
     colors: {
         ports: {
             'row[]': 'red',
-            'datapoint[]': 'blue',
+            'rowgroup[]': 'blue',
+            'datapoint[]': 'orange',
             'dataset[]': 'yellow',
-            'axis': 'green',
-            'scheduler': 'orange'
+            'axis': 'pink'
         }
     }
 };

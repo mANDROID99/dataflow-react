@@ -21,8 +21,8 @@ export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             }
         },
         out: {
-            selection: {
-                type: 'row[]'
+            onClick: {
+                type: 'row'
             }
         }
     },
@@ -79,7 +79,7 @@ export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                                 const datum = ds.data[index];
                                 if (!datum) return;
 
-                                next('selection', [datum.row]);
+                                next('onClick', [datum.row]);
                             }
                         }
                     ]

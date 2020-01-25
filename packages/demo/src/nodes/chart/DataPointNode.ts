@@ -1,7 +1,7 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../chartContext";
-import { Row, ChartDataPoint } from "../../types/valueTypes";
+import { ChartDataPoint, EMPTY_ROWS, Rows } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 
@@ -73,10 +73,8 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
 
         return {
             onNext(inputs) {
-                const allRows = inputs.rows as Row[][];
-                const rows: Row[] = allRows[0] ?? [];
-    
-                const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
+                const r = (inputs.rows[0] || EMPTY_ROWS) as Rows;
+                const points: ChartDataPoint[] = r.rows.map((row, i): ChartDataPoint => {
                     const ctx = rowToEvalContext(row, i, params.variables);
                     const x = asValue(mapX(ctx), 0);
                     const y = asValue(mapY(ctx), 0);

@@ -49,18 +49,25 @@ export function isPortConnectable<Ctx, Params>(draggedPort: PortTarget, port: Po
     const p2 = getPortConfig(graphConfig, draggedPort.nodeType, draggedPort.portName, draggedPort.portOut);
 
     if (p1 && p2) {
-        const m1 = p1.match;
-        const m2 = p2.match;
+        const t1 = p1.type;
+        const t2 = p2.type;
 
-        if (m1 && !m1.some(m => m === p2.type)) {
-            return false;
+        if (typeof t1 === 'string') {
+            if (typeof t2 === 'string') {
+                return t1 === t2;
+
+            } else {
+                return t2.some(t => t === t1);
+            }
+
+        } else {
+            if (typeof t2 === 'string') {
+                return t1.some(t => t === t2);
+
+            } else {
+                return t1.some(t => t2.indexOf(t) >= 0);
+            }
         }
-
-        if (m2 && !m2.some(m => m === p1.type)) {
-            return false;
-        }
-
-        return p1.type === p2.type;
     }
 
     return false;
@@ -73,7 +80,11 @@ export function resolvePortColors<Ctx, Params>(config: GraphConfig<Ctx, Params>,
         const portConfig = getPortConfig(config, port.nodeType, port.portName, port.portOut);
 
         if (portConfig) {
-            const types = portConfig.match || [portConfig.type];
+            let types = portConfig.type;
+
+            if (typeof types === 'string') {
+                types = [types];
+            }
 
             return types.map(type => {
                 const color = portColors[type];

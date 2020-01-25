@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { Row } from "../../types/valueTypes";
+import { Row, Rows, EMPTY_ROWS, createRows } from "../../types/valueTypes";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 
 export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
@@ -41,8 +41,8 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
 
         return {
             onNext(inputs) {
-                const rows = (inputs.rows as Row[][])[0] ?? [];
-                const rowsSorted = rows.slice(0);
+                const r = (inputs.rows[0] || EMPTY_ROWS) as Rows;
+                const rowsSorted = r.rows.slice(0);
     
                 rowsSorted.sort((a, b) => {
                     const sortKeyA = mapColumn(rowToEvalContext(a, null, params.variables)) as any;
@@ -59,7 +59,7 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                     }
                 });
     
-                next('rows', rowsSorted);
+                next('rows', createRows(rowsSorted));
             }
         };
     }

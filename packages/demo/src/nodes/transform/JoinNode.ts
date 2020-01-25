@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
 
-import { Row, JoinType } from "../../types/valueTypes";
+import { Row, JoinType, EMPTY_ROWS, Rows, createRows } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
@@ -158,27 +158,28 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
 
         return {
             onNext(inputs) {
-                const allLeft = inputs.left as Row[][];
-                const allRight = inputs.right as Row[][];
-                const left: Row[] = allLeft[0] ?? [];
-                const right: Row[] = allRight[0] ?? [];
+                const l = (inputs.left[0] || EMPTY_ROWS) as Rows;
+                const r = (inputs.right[0] || EMPTY_ROWS) as Rows;
 
-                let result: Row[];
+                const left: Row[] = l.rows;
+                const right: Row[] = r.rows;
+
+                let rows: Row[];
                 switch (joinType) {
                     case JoinType.INNER:
-                        result = joinInner(left, right, extractKeyLeft, extractKeyRight);
+                        rows = joinInner(left, right, extractKeyLeft, extractKeyRight);
                         break;
 
                     case JoinType.LEFT:
-                        result = joinLeft(left, right, extractKeyLeft, extractKeyRight);
+                        rows = joinLeft(left, right, extractKeyLeft, extractKeyRight);
                         break;
                     
                     case JoinType.FULL:
-                        result = joinFull(left, right, extractKeyLeft, extractKeyRight);
+                        rows = joinFull(left, right, extractKeyLeft, extractKeyRight);
                         break;
                 }
 
-                next('rows', result);
+                next('rows', createRows(rows));
             }
         };
     }

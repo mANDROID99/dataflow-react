@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue, Processor } from "@react-ngraph/core";
 import { ChartContext } from "../../chartContext";
-import { Row } from "../../types/valueTypes";
+import { Row, createRows } from "../../types/valueTypes";
 
 export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Data-Grid',
@@ -29,17 +29,16 @@ export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
 
                 const data: Row[] = rowValues.map((values): Row => {
                     const data: { [key: string]: string } = {};
+                    const nRows = Math.min(columnNames.length, values.length);
                     
-                    for (let i = 0, n = Math.min(columnNames.length, values.length); i < n; i++) {
+                    for (let i = 0; i < nRows; i++) {
                         data[columnNames[i]] = values[i];
                     }
 
-                    return {
-                        values: data
-                    };
+                    return data;
                 });
 
-                next('rows', data);
+                next('rows', createRows(data));
             }
         };
     },

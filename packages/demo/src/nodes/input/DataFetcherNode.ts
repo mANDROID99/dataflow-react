@@ -1,7 +1,7 @@
 import { GraphNodeConfig, FieldInputType, Entry, expressionUtils, Processor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
-import { Row } from "../../types/valueTypes";
+import { Row, EMPTY_ROWS, Rows, createRows } from "../../types/valueTypes";
 
 enum HttpMethodType {
     GET = 'GET',
@@ -47,8 +47,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 type: 'scheduler'
             },
             rows: {
-                type: 'row[]',
-                multi: true
+                type: 'row[]'
             }
         },
         out: {
@@ -92,9 +91,8 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                         const ctx = Object.assign({}, params.variables);
                         ctx.response = data;
 
-                        const values = (mapResponse(ctx) || data) as { [key: string]: unknown }[];
-                        const rows = values.map((vs): Row => ({ values: vs }));
-                        next('rows', rows);
+                        const rows = (mapResponse(ctx) || data) as { [key: string]: unknown }[];
+                        next('rows', createRows(rows));
                     }
                 });
         }
@@ -106,9 +104,9 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             },
 
             onNext(inputs) {
-                const rows = (inputs.rows as Row[][]).flat();
+                const r = (inputs.rows[0] || EMPTY_ROWS) as Rows;
                 const ctx = Object.assign({}, params.variables);
-                ctx.rows = rows;
+                ctx.rows = r.rows;
                 doFetch(ctx);
             },
 

@@ -23,8 +23,7 @@ export type GraphNodeFieldConfig<Ctx, Params> = {
 }
 
 export type GraphNodePortConfig = {
-    type: string;
-    match?: string[];
+    type: string | string[];
     multi?: boolean;
 }
 

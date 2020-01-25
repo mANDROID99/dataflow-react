@@ -1,7 +1,7 @@
 import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressionUtils } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from '../../chartContext';
 import { pushDistinct } from '../../utils/arrayUtils';
-import { Row } from '../../types/valueTypes';
+import { Row, EMPTY_ROWS, Rows, createRows } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
 
 export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
@@ -9,7 +9,7 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     menuGroup: 'Transform',
     ports: {
         in: {
-            in: {
+            rows: {
                 type: 'row[]'
             }
         },
@@ -42,21 +42,19 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
 
         return {
             onNext(inputs) {
-                const allRows = inputs.in as Row[][];
-                const rows = allRows[0] ?? [];
-    
-                const result: Row[] = rows.map((row, i) => {
-                    const values = Object.assign({}, row.values);
+                const r = (inputs.rows[0] || EMPTY_ROWS) as Rows;
+                const rows: Row[] = r.rows.map((row, i) => {
+                    const newRow: Row = Object.assign({}, row);
                     
                     if (mapValueExpr) {
                         const ctx = rowToEvalContext(row, i, params.variables);
-                        values[alias] = mapValue(ctx);
+                        newRow[alias] = mapValue(ctx);
                     }
     
-                    return { ...row, values };
+                    return newRow;
                 });
     
-                next('out', result);
+                next('out', createRows(rows));
             }
         };
     },
