@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, Entry, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { AxisType, AxisConfig } from "../../types/nodeTypes";
+import { AxisType, AxisConfig } from "../../types/valueTypes";
 
 export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Axis',

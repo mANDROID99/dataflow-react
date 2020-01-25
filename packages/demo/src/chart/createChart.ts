@@ -1,5 +1,5 @@
 import Chart, { ChartOptions } from 'chart.js';
-import { DataPoint, AxisConfig, AxisType, DataSet, ChartConfig } from '../types/nodeTypes';
+import { DataPoint, AxisConfig, AxisType, DataSet, ChartConfig } from '../types/valueTypes';
 import { asString, asNumber } from '../utils/converters';
 import { writeKeyValues } from '../utils/keyPathUtils';
 
@@ -111,6 +111,11 @@ function mapAxes(yAxis: boolean, axes: AxisConfig[]) {
     });
 }
 
+function mapOnClickCallback(chartConfig: ChartConfig): ((event?: MouseEvent, activeElements?: Array<{}>) => void) | undefined {
+    return undefined;
+}
+
+
 export function createChartConfiguration(chartConfig: ChartConfig): Chart.ChartConfiguration {
     let labels: string[] | undefined;
     let datasets: Chart.ChartDataSets[];
@@ -125,8 +130,9 @@ export function createChartConfiguration(chartConfig: ChartConfig): Chart.ChartC
 
     const xAxes = mapAxes(false, chartConfig.xAxes);
     const yAxes = mapAxes(true, chartConfig.yAxes);
+    const onClick = mapOnClickCallback();
 
-    const chartConfiguration = {
+    const chartConfiguration: Chart.ChartConfiguration = {
         type: chartConfig.type,
         data: {
             datasets,
@@ -136,10 +142,11 @@ export function createChartConfiguration(chartConfig: ChartConfig): Chart.ChartC
             scales: {
                 xAxes,
                 yAxes
-            }
+            },
+            onClick
         } as ChartOptions
     };
 
-    writeKeyValues(chartConfig.params, chartConfiguration);
+    writeKeyValues(chartConfig.params, chartConfiguration as any);
     return chartConfiguration;
 }

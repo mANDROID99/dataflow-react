@@ -1,4 +1,4 @@
-import { Row, DataPoint } from "../types/nodeTypes";
+import { Row, DataPoint } from "../types/valueTypes";
 
 const KEY_ROW = 'row';
 const KEY_INDEX = 'index';

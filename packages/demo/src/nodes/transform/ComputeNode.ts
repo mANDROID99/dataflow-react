@@ -1,7 +1,7 @@
 import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressionUtils } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from '../../chartContext';
 import { pushDistinct } from '../../utils/arrayUtils';
-import { Row } from '../../types/nodeTypes';
+import { Row } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
 
 export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {

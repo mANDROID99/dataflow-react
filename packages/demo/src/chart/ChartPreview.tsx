@@ -9,7 +9,7 @@ import {
 } from '@react-ngraph/core';
 
 import { createChartConfiguration } from './createChart';
-import { ChartConfig } from '../types/nodeTypes';
+import { ChartConfig } from '../types/valueTypes';
 
 type Props<Ctx, Params> = {
     graph: Graph;

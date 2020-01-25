@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { Row } from "../../types/nodeTypes";
+import { Row } from "../../types/valueTypes";
 import { asNumber } from "../../utils/converters";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { AggregatorType, createAggregator } from "./aggregators";

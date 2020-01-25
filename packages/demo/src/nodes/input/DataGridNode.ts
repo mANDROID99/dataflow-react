@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue } from "@react-ngraph/core";
 import { ChartContext } from "../../chartContext";
-import { Row } from "../../types/nodeTypes";
+import { Row } from "../../types/valueTypes";
 
 export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Data-Grid',

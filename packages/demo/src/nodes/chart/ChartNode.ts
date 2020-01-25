@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, Entry, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { DataSet, AxisConfig, ChartConfig } from "../../types/nodeTypes";
+import { DataSet, AxisConfig, ChartConfig } from "../../types/valueTypes";
 
 export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Chart',

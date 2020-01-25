@@ -1,7 +1,7 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../chartContext";
-import { Row, DataPoint } from "../../types/nodeTypes";
+import { Row, DataPoint } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 
