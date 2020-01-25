@@ -1,38 +1,37 @@
-import React, { useState } from 'react';
-import { GraphEditor, Graph } from '@react-ngraph/editor';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { GraphEditor } from '@react-ngraph/core';
 
 import { GRAPH_CONFIG } from './config/graphConfig';
 import ChartPreview from './chart/ChartPreview';
-import { ChartParams } from './chartContext';
 import { templates } from './templates/templates';
+import { store } from './store';
 
-const PARAMS: ChartParams = {
-    variables: {}
+const VARIABLES = {
+    test: 1
 };
 
 export default function Main() {
-    const [graph, setGraph] = useState<Graph>({ nodes: {} });
-
     return (
         <div className="App">
-            <GraphEditor
-                graph={graph}
-                templates={templates}
-                graphConfig={GRAPH_CONFIG}
-                onGraphChanged={setGraph}
-                params={PARAMS}
-                renderPreview={({ graph, width, height }) => {
-                    return (
-                        <ChartPreview
-                            graph={graph}
-                            graphConfig={GRAPH_CONFIG}
-                            params={PARAMS}
-                            width={width}
-                            height={height}
-                        />
-                    );
-                }}
-            />
+            <Provider store={store}>
+                <GraphEditor
+                    templates={templates}
+                    graphConfig={GRAPH_CONFIG}
+                    params={{ variables: VARIABLES }}
+                    renderPreview={({ graph, width, height }) => {
+                        return (
+                            <ChartPreview
+                                graph={graph}
+                                graphConfig={GRAPH_CONFIG}
+                                variables={VARIABLES}
+                                width={width}
+                                height={height}
+                            />
+                        );
+                    }}
+                />
+            </Provider>
         </div>
     );
 }

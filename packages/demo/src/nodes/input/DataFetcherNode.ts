@@ -1,7 +1,7 @@
-import { GraphNodeConfig, FieldInputType, Entry, expressionUtils } from "@react-ngraph/editor";
+import { GraphNodeConfig, FieldInputType, Entry, expressionUtils, Processor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
-import { Row } from "../../types/nodeTypes";
+import { Row } from "../../types/valueTypes";
 
 enum HttpMethodType {
     GET = 'GET',
@@ -30,25 +30,25 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: FieldInputType.DATA_ENTRIES,
             initialValue: []
         },
-        mapData: {
-            label: 'Map Data',
+        mapResponse: {
+            label: 'Map Response',
             type: FieldInputType.TEXT,
             initialValue: ''
         },
         columns: {
             label: 'Columns',
             type: FieldInputType.DATA_LIST,
-            initialValue: [],
-            params: {
-                inputType: FieldInputType.TEXT,
-                inputInitialValue: ''
-            }
+            initialValue: []
         }
     },
     ports: {
         in: {
             scheduler: {
                 type: 'scheduler'
+            },
+            rows: {
+                type: 'row[]',
+                multi: true
             }
         },
         out: {
@@ -57,26 +57,30 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             }
         }
     },
-    createProcessor({ node, params }) {
-        const urlMapperExpr = node.fields.url as string;
+    createProcessor({ next, node, params }): Processor {
+        const mapUrlExpr = node.fields.url as string;
+        const mapResponseExpr = node.fields.mapResponse as string;
         const method = node.fields.method as HttpMethodType;
         const headerEntries = node.fields.headers as Entry<string>[];
-        const dataMapperExpr = node.fields.mapData as string;
-        const mapData = expressionUtils.compileExpression(dataMapperExpr);
-        const mapUrl = expressionUtils.compileExpression(urlMapperExpr);
+
+        const mapResponse = expressionUtils.compileExpression(mapResponseExpr);
+        const mapUrl = expressionUtils.compileExpression(mapUrlExpr);
         const mapHeaders = expressionUtils.compileEntryMappers(headerEntries);
 
-        return (inputs, next) => {
-            const url = asString(mapUrl(params.variables));
+        let running = false;
+        let count = 0;
 
+        function doFetch(ctx: { [key: string]: unknown }) {
+            const url = asString(mapUrl(ctx));
             const headers: { [key: string]: string } = {};
-            const headersArr = mapHeaders(params.variables);
+            const headersArr = mapHeaders(ctx);
             
             for (const entry of headersArr) {
                 headers[entry.key] = asString(entry.value);
             }
-
-            let cancelled = false;
+            
+            headers.Accept = 'application/json'
+            const c = ++count;
 
             fetch(url, {
                 method,
@@ -84,18 +88,32 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             })
                 .then(res => res.json())
                 .then(data => {
-                    if (!cancelled) {
+                    if (running && count === c) {
                         const ctx = Object.assign({}, params.variables);
-                        ctx.data = data;
+                        ctx.response = data;
 
-                        const values = (mapData(ctx) || data) as { [key: string]: unknown }[];
+                        const values = (mapResponse(ctx) || data) as { [key: string]: unknown }[];
                         const rows = values.map((vs): Row => ({ values: vs }));
                         next('rows', rows);
                     }
                 });
+        }
 
-            return () => {
-                cancelled = true;
+        return {
+            onStart() {
+                running = true;
+                doFetch(params.variables);
+            },
+
+            onNext(inputs) {
+                const rows = (inputs.rows as Row[][]).flat();
+                const ctx = Object.assign({}, params.variables);
+                ctx.rows = rows;
+                doFetch(ctx);
+            },
+
+            onStop() {
+                running = false;
             }
         }
     },

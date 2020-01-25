@@ -1,7 +1,7 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/editor";
+import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../chartContext";
-import { Row, DataPoint } from "../../types/nodeTypes";
+import { Row, ChartDataPoint } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 
@@ -60,7 +60,7 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             })
         }
     },
-    createProcessor({ node, params }) {
+    createProcessor({ next, node, params }) {
         const mapXExpr = node.fields.x as ColumnMapperInputValue;
         const mapYExpr = node.fields.y as ColumnMapperInputValue;
         const mapRExpr = node.fields.r as ColumnMapperInputValue;
@@ -71,20 +71,22 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const mapR = expressionUtils.compileColumnMapper(mapRExpr, 'row');
         const mapColor = expressionUtils.compileColumnMapper(mapColorExpr, 'row');
 
-        return (input, next) => {
-            const allRows = input.rows as Row[][];
-            const rows: Row[] = allRows[0] ?? [];
-
-            const points: DataPoint[] = rows.map((row, i): DataPoint => {
-                const ctx = rowToEvalContext(row, i, params.variables);
-                const x = asValue(mapX(ctx), 0);
-                const y = asValue(mapY(ctx), 0);
-                const r = asNumber(mapR(ctx));
-                const color = asString(mapColor(ctx));
-                return { x, y, r, color, row }
-            });
-
-            next('points', points);
+        return {
+            onNext(inputs) {
+                const allRows = inputs.rows as Row[][];
+                const rows: Row[] = allRows[0] ?? [];
+    
+                const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
+                    const ctx = rowToEvalContext(row, i, params.variables);
+                    const x = asValue(mapX(ctx), 0);
+                    const y = asValue(mapY(ctx), 0);
+                    const r = asNumber(mapR(ctx));
+                    const color = asString(mapColor(ctx));
+                    return { x, y, r, color, row }
+                });
+    
+                next('points', points);
+            }
         };
     }
 }

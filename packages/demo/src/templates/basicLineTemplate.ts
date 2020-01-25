@@ -1,4 +1,4 @@
-import { GraphTemplate } from '@react-ngraph/editor';
+import { GraphTemplate } from '@react-ngraph/core';
 import graph from './basicLine.json';
 
 export const BASIC_LINE_TEMPLATE: GraphTemplate = {

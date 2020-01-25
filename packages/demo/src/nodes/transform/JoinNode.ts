@@ -1,6 +1,6 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/editor";
+import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
 
-import { Row, JoinType } from "../../types/nodeTypes";
+import { Row, JoinType } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
@@ -139,7 +139,7 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             }
         }
     },
-    createProcessor({ node, params }) {
+    createProcessor({ next, node, params }) {
         const joinType = node.fields.joinType as JoinType;
         const joinKeyLeftExpr = node.fields.joinKeyLeft as ColumnMapperInputValue;
         const joinKeyRightExpr = node.fields.joinKeyRight as ColumnMapperInputValue;
@@ -156,28 +156,30 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             return asString(mapJoinKeyRight(ctx));
         }
 
-        return (inputs, next) => {
-            const allLeft = inputs.left as Row[][];
-            const allRight = inputs.right as Row[][];
-            const left: Row[] = allLeft[0] ?? [];
-            const right: Row[] = allRight[0] ?? [];
+        return {
+            onNext(inputs) {
+                const allLeft = inputs.left as Row[][];
+                const allRight = inputs.right as Row[][];
+                const left: Row[] = allLeft[0] ?? [];
+                const right: Row[] = allRight[0] ?? [];
 
-            let result: Row[];
-            switch (joinType) {
-                case JoinType.INNER:
-                    result = joinInner(left, right, extractKeyLeft, extractKeyRight);
-                    break;
+                let result: Row[];
+                switch (joinType) {
+                    case JoinType.INNER:
+                        result = joinInner(left, right, extractKeyLeft, extractKeyRight);
+                        break;
 
-                case JoinType.LEFT:
-                    result = joinLeft(left, right, extractKeyLeft, extractKeyRight);
-                    break;
-                
-                case JoinType.FULL:
-                    result = joinFull(left, right, extractKeyLeft, extractKeyRight);
-                    break;
+                    case JoinType.LEFT:
+                        result = joinLeft(left, right, extractKeyLeft, extractKeyRight);
+                        break;
+                    
+                    case JoinType.FULL:
+                        result = joinFull(left, right, extractKeyLeft, extractKeyRight);
+                        break;
+                }
+
+                next('rows', result);
             }
-
-            next('rows', result);
-        }
+        };
     }
 };

@@ -1,54 +1,67 @@
 import Chart from 'chart.js';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useReducer } from 'react';
 import {
     Graph,
     GraphConfig,
     createGraphNodeProcessors,
-    findProcessorsByType,
     runProcessors
-} from '@react-ngraph/editor';
+} from '@react-ngraph/core';
 
 import { createChartConfiguration } from './createChart';
-import { ChartConfig } from '../types/nodeTypes';
+import { ChartContext, ChartParams } from '../chartContext';
+import { chartPreviewReducer, setChartConfig, reset } from './chartPreviewReducer';
 
-type Props<Ctx, Params> = {
+type Props = {
     graph: Graph;
-    graphConfig: GraphConfig<Ctx, Params>;
-    params: Params;
+    graphConfig: GraphConfig<ChartContext, ChartParams>;
+    variables: { [key: string]: unknown };
     width: number;
     height: number;
 }
 
-export default function ChartComponent<Ctx, Params>(props: Props<Ctx, Params>) {
-    const { graph, graphConfig, params, width, height } = props;
+export default function ChartPreview(props: Props) {
+    const { graph, graphConfig, variables, width, height } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [data, setData] = useState<ChartConfig[]>();
+    const [state, dispatch] = useReducer(chartPreviewReducer, { charts: {} });
+    const chartConfigs = state.charts;
 
     useEffect(() => {
+        dispatch(reset());
+
+        const params: ChartParams = {
+            variables,
+            renderChart(chartId, config) {
+                dispatch(setChartConfig(chartId, config));
+            }
+        };
+
         const processors = createGraphNodeProcessors(graph, graphConfig, params);
-        const chartProcessors = findProcessorsByType('chart', graph, processors);
-        return runProcessors(chartProcessors, (results) => {
-            setData(results as ChartConfig[]);
-        });
-    }, [graphConfig, graph, params]);
+        return runProcessors(processors);
+    }, [graphConfig, graph, variables]);
 
     const chartRef = useRef<Chart>();
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (canvas && data) {
-            let chart = chartRef.current;
-            const config = createChartConfiguration(data[0]);
+        if (!canvas) return;
 
-            if (chart) {
-                chart.destroy();
-            }
-            
+        let chart = chartRef.current;
+        if (chart) {
+            chart.destroy();
+        }
+        
+        for (const chartId in chartConfigs) {
+            const chartConfig = chartConfigs[chartId];
+            const config = createChartConfiguration(chartConfig);
+
             chart = new Chart(canvas, config);
             chart.width = width;
             chart.height = height;
             chartRef.current = chart;
+
+            // TODO: support multiple charts via a dropdown
+            return;
         }
-    }, [data]);
+    }, [chartConfigs]);
 
     const dimsRef = useRef({ width, height });
     useEffect(() => {

@@ -1,7 +1,7 @@
-import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressionUtils } from '@react-ngraph/editor';
+import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressionUtils } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from '../../chartContext';
 import { pushDistinct } from '../../utils/arrayUtils';
-import { Row } from '../../types/nodeTypes';
+import { Row } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
 
 export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
@@ -35,27 +35,29 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: ''
         }
     },
-    createProcessor({ node, params }) {
+    createProcessor({ next, node, params }) {
         const alias = node.fields.alias as string;
         const mapValueExpr = node.fields.value as ColumnMapperInputValue;
         const mapValue = expressionUtils.compileColumnMapper(mapValueExpr, 'row');
 
-        return (inputs, next) => {
-            const allRows = inputs.in as Row[][];
-            const rows = allRows[0] ?? [];
-
-            const result: Row[] = rows.map((row, i) => {
-                const values = Object.assign({}, row.values);
-                
-                if (mapValueExpr) {
-                    const ctx = rowToEvalContext(row, i, params.variables);
-                    values[alias] = mapValue(ctx);
-                }
-
-                return { ...row, values };
-            });
-
-            next('out', result);
+        return {
+            onNext(inputs) {
+                const allRows = inputs.in as Row[][];
+                const rows = allRows[0] ?? [];
+    
+                const result: Row[] = rows.map((row, i) => {
+                    const values = Object.assign({}, row.values);
+                    
+                    if (mapValueExpr) {
+                        const ctx = rowToEvalContext(row, i, params.variables);
+                        values[alias] = mapValue(ctx);
+                    }
+    
+                    return { ...row, values };
+                });
+    
+                next('out', result);
+            }
         };
     },
     mapContext({ node, context }) {

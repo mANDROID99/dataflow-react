@@ -1,16 +1,18 @@
 {
   "name": "@react-ngraph/demo",
   "version": "0.1.0",
-  "dependencies": {
-    "@react-ngraph/editor": "0.1.0",
-    "chart.js": "^2.9.3",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-split-pane": "^0.1.89"
-  },
   "scripts": {
     "start": "webpack-dev-server",
     "build": "webpack"
+  },
+  "dependencies": {
+    "@react-ngraph/core": "0.1.0",
+    "chart.js": "^2.9.3",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-redux": "^7.1.3",
+    "react-split-pane": "^0.1.89",
+    "redux": "^4.0.5"
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.2",
@@ -25,6 +27,7 @@
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.9.0",
     "node-sass": "^4.13.0",
+    "redux-devtools-extension": "^2.13.8",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.0",
     "ts-jest": "^24.2.0",

@@ -1,0 +1,126 @@
+@import './variables';
+
+.ngraph-node {
+    cursor: auto;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    border-radius: 7px;
+}
+
+.ngraph-node-header {
+    align-items: center;
+    background: $grey-1;
+    border: 1px solid $grey-4;
+    border-bottom: 0;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    cursor: move;
+    display: flex;
+    font-size: 1.1rem;
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+.ngraph-node-title {
+    flex-grow: 1;
+    margin-left: 1.5rem;
+    text-align: center;
+}
+
+.ngraph-node-drag-handle {
+    color: #b1b1b1;
+    cursor: ew-resize;
+}
+
+.ngraph-node.selected .ngraph-node-header {
+    border-color: $primary;
+}
+
+.ngraph-node-body {
+    background-color:  rgba($grey-3, 0.8);
+    border: 1px solid $grey-4;
+    border-top: 0;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    display: flex;
+}
+
+.ngraph-node.selected {
+    box-shadow: 0px 0px 5px rgba($primary, 0.5);
+}
+
+.ngraph-node.selected .ngraph-node-body {
+    border-color: $primary;
+}
+
+.ngraph-node-fields {
+    flex-grow: 1;
+    padding: 0.75rem;
+    padding-bottom: 0;
+}
+
+.ngraph-node-ports {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ngraph-node-port-label {
+    color: $grey-7;
+    margin-right: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.ngraph-node-port-container {
+    height: 25px;
+    position: relative;
+}
+
+.ngraph-node-port {
+    cursor: pointer;
+    color: $grey-7;
+    position: absolute;
+    right: -7px;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+
+    &.out {
+        right: auto;
+        left: -7px;
+
+        .ngraph-node-port-label {
+            margin-left: 0.25rem;
+            margin-right: 0;
+        }
+    }
+
+    &.hidden {
+        visibility: hidden;
+    }
+
+    &.candidate {
+        opacity: 0.75;
+    }
+}
+
+.ngraph-node.selected .ngraph-node-port-handle-outer {
+    stroke: $primary;
+}
+
+.ngraph-node-port-handle-outer {
+    fill: #353535;
+    stroke: #5f5f5f;
+}
+
+.ngraph-node-field {
+    margin-bottom: 0.75rem;
+}
+
+.ngraph-node-field-label {
+    margin-bottom: 2px;
+    font-size: 0.8rem;
+    color: $grey-6;
+}

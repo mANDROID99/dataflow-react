@@ -1,0 +1,58 @@
+{
+  "name": "@react-ngraph/core",
+  "version": "0.1.0",
+  "main": "./dist/bundle.js",
+  "types": "./lib",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
+    "test": "jest",
+    "build": "webpack --mode=development"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.25",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@fortawesome/react-fontawesome": "^0.1.7",
+    "@types/react-redux": "^7.1.6",
+    "classnames": "^2.2.6",
+    "immer": "^5.0.0",
+    "jexl": "^2.2.2",
+    "react-redux": "^7.1.3",
+    "redux": "^4.0.5",
+    "reselect": "^4.0.0",
+    "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/chart.js": "^2.9.2",
+    "@types/classnames": "^2.2.9",
+    "@types/jest": "^24.0.20",
+    "@types/jexl": "^2.2.0",
+    "@types/react": "16.9.11",
+    "@types/react-dom": "16.9.3",
+    "@types/uuid": "^3.4.6",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "css-loader": "^3.2.0",
+    "eslint": "^6.6.0",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^2.2.0",
+    "file-loader": "^5.0.2",
+    "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.9.0",
+    "node-sass": "^4.13.0",
+    "react": "^16.11.0",
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.0.0",
+    "ts-jest": "^24.2.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-node-externals": "^1.7.2"
+  }
+}

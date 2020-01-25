@@ -1,12 +1,12 @@
 import Chart, { ChartOptions } from 'chart.js';
-import { DataPoint, AxisConfig, AxisType, DataSet, ChartConfig } from '../types/nodeTypes';
+import { ChartDataPoint, ChartAxisConfig, AxisType, ChartDataSet, ChartConfig, ChartEventConfig, ChartEventType } from '../types/valueTypes';
 import { asString, asNumber } from '../utils/converters';
 import { writeKeyValues } from '../utils/keyPathUtils';
 
-type DataMapper = (data: DataPoint[]) =>  Array<number | null | undefined> | Chart.ChartPoint[];
+type DataMapper = (data: ChartDataPoint[]) =>  Array<number | null | undefined> | Chart.ChartPoint[];
 
 function createCategoryDataMapper(labels: string[]): DataMapper {
-    return (data: DataPoint[]) => {
+    return (data: ChartDataPoint[]) => {
         const lookup = new Map<string, number>();
 
         for (const datum of data) {
@@ -20,10 +20,10 @@ function createCategoryDataMapper(labels: string[]): DataMapper {
 }
 
 function createPointDataMapper(): DataMapper {
-    return (data: DataPoint[]) => data;
+    return (data: ChartDataPoint[]) => data;
 }
 
-function isCategoryData(xAxes: AxisConfig[]) {
+function isCategoryData(xAxes: ChartAxisConfig[]) {
     if (xAxes.length) {
         return xAxes.some(axis => axis.type === AxisType.CATEGORY);
     } else {
@@ -39,7 +39,7 @@ function resolveAxisId(yAxis: boolean, i: number) {
     }
 }
 
-function mapLabels(dataSets: DataSet[]): string[] {
+function mapLabels(dataSets: ChartDataSet[]): string[] {
     const labels = new Set<string>();
 
     for (const ds of dataSets) {
@@ -52,7 +52,7 @@ function mapLabels(dataSets: DataSet[]): string[] {
     return Array.from(labels);
 }
 
-function mapDataSetBackgroundColor(points: DataPoint[], backgroundColor: string) {
+function mapDataSetBackgroundColor(points: ChartDataPoint[], backgroundColor: string) {
     let bg: string[] | undefined;
     
     for (let i = 0, n = points.length; i < n; i++) {
@@ -71,7 +71,7 @@ function mapDataSetBackgroundColor(points: DataPoint[], backgroundColor: string)
     return bg ?? backgroundColor;
 }
 
-function mapDataSets(dataSets: DataSet[], dataMapper: DataMapper) {
+function mapDataSets(dataSets: ChartDataSet[], dataMapper: DataMapper) {
     return dataSets.map((ds): Chart.ChartDataSets => {
         const data = dataMapper(ds.data);
         const dataSet: Chart.ChartDataSets = {
@@ -91,7 +91,7 @@ function mapDataSets(dataSets: DataSet[], dataMapper: DataMapper) {
     });
 }
 
-function mapAxes(yAxis: boolean, axes: AxisConfig[]) {
+function mapAxes(yAxis: boolean, axes: ChartAxisConfig[]) {
     return axes.map((axisConfig, i): Chart.CommonAxe => {
         const id = resolveAxisId(yAxis, i);
         const axis: Chart.CommonAxe = {
@@ -111,6 +111,19 @@ function mapAxes(yAxis: boolean, axes: AxisConfig[]) {
     });
 }
 
+function mapOnClickCallback(events: ChartEventConfig[]): ((event?: MouseEvent, activeElements?: Array<{}>) => void) | undefined {
+    for (const event of events) {
+        if (event.type === ChartEventType.CLICK) {
+            return (e, activeElements) => {
+                const el = activeElements?.[0] as any;
+                if (el) {
+                    event.action(el._datasetIndex, el._index);
+                }
+            }
+        }
+    }
+}
+
 export function createChartConfiguration(chartConfig: ChartConfig): Chart.ChartConfiguration {
     let labels: string[] | undefined;
     let datasets: Chart.ChartDataSets[];
@@ -125,8 +138,9 @@ export function createChartConfiguration(chartConfig: ChartConfig): Chart.ChartC
 
     const xAxes = mapAxes(false, chartConfig.xAxes);
     const yAxes = mapAxes(true, chartConfig.yAxes);
+    const onClick = mapOnClickCallback(chartConfig.events);
 
-    const chartConfiguration = {
+    const chartConfiguration: Chart.ChartConfiguration = {
         type: chartConfig.type,
         data: {
             datasets,
@@ -136,10 +150,11 @@ export function createChartConfiguration(chartConfig: ChartConfig): Chart.ChartC
             scales: {
                 xAxes,
                 yAxes
-            }
+            },
+            onClick
         } as ChartOptions
     };
 
-    writeKeyValues(chartConfig.params, chartConfiguration);
+    writeKeyValues(chartConfig.params, chartConfiguration as any);
     return chartConfiguration;
 }
