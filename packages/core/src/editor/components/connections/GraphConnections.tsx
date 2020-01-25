@@ -1,10 +1,8 @@
 import React from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { Graph } from '../../../types/graphTypes';
-import { StoreState } from '../../../types/storeTypes';
 
-import { plot } from "./curveHelpers";
 import { selectGraph } from '../../../store/selectors';
 import GraphConnection from './GraphConnection';
 import { PortId } from '../../GraphNodePortRefs';
@@ -51,7 +49,7 @@ function getConnections(graph: Graph): Connection[] {
     return connections;
 }
 
-function GraphNodeConnections() {
+function GraphConnections() {
     const graph = useSelector(selectGraph);
     const connections = getConnections(graph);
     
@@ -64,4 +62,4 @@ function GraphNodeConnections() {
     );
 }
 
-export default React.memo(GraphNodeConnections);
+export default GraphConnections;

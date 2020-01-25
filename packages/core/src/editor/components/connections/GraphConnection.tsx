@@ -14,7 +14,7 @@ function GraphConnection(props: ConnectionProps) {
     const { ports } = useGraphContext();
 
     const [startPos, setStartPos] = useState(() => ports.getPortState(startPort));
-    const [endPos, setEndPos] = useState(() => ports.getPortState(startPort));
+    const [endPos, setEndPos] = useState(() => ports.getPortState(endPort));
 
     useEffect(() => {
         return ports.subscribe(startPort, (startPortState) => {

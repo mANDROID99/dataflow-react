@@ -232,7 +232,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     
         if (form) {
             form.show = false;
-            receiveValue(state, form.value, form.receiver);
+            receiveValue(state, action.value, form.receiver);
         }
     }),
     

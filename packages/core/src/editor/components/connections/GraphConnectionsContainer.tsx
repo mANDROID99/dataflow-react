@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-import GraphNodeConnections from './GraphNodeConnections';
+import GraphNodeConnections from './GraphConnections';
 import GraphDragConnection from './GraphDragConnection';
 
 function GraphConnectionsContainer(): React.ReactElement {
