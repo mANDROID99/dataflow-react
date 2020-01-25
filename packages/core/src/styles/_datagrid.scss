@@ -34,7 +34,7 @@
 }
 
 .ngraph-datagrid-table-header {
-    background-color: $modal-bg;
+    background-color: $grey-1;
     height: 35px;
     padding: 0.5rem 0.75rem;
     position: sticky;
@@ -59,10 +59,10 @@
 }
 
 .ngraph-datagrid-table-row {
-    background-color: $datagrid-row-odd-bg;
+    background-color: $grey-1;
     position: relative;
     &:nth-child(even) {
-        background-color: $datagrid-row-even-bg;
+        background-color: $grey-2;
     }
 }
 

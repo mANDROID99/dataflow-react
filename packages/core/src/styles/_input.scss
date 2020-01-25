@@ -16,16 +16,16 @@
 }
 
 .ngraph-field-input {
-    background: $field-input-bg;
+    background: $grey-2;
     border: none;
     border-radius: 7px;
-    color: $text-light;
+    color: $grey-7;
     padding: 0.5rem;
     transition: background-color 0.25s ease;
 }
 
 .ngraph-field-input:focus {
-    background-color: lighten($field-input-bg, 10%);
+    background-color: lighten($grey-2, 10%);
 }
 
 // button
@@ -34,7 +34,7 @@
     background-color: $primary;
     border: none;
     border-radius: 7px;
-    color: $text-light;
+    color: $grey-7;
     cursor: pointer;
     padding: 0.5rem 1rem;
     text-align: center;
@@ -74,9 +74,9 @@
 
 .ngraph-input,
 .ngraph-input {
-    color: $input-color;
+    color: $grey-7;
     width: 100%;
-    background-color: $input-bg;
+    background-color: $grey-2;
     padding: 0.5rem;
     border: none;
     border-radius: 3px;

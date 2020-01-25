@@ -1,4 +1,5 @@
 import './fa.ts';
+import './styles/main.scss';
 
 // types
 export * from './types/graphConfigTypes';

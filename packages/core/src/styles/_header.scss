@@ -2,7 +2,7 @@
 .ngraph-header {
     align-items: center;
     justify-content: center;
-    background-color: $header-bg;
+    background-color: $grey-1;
     display: flex;
     padding: 0.75rem;
 }
@@ -14,11 +14,15 @@
 }
 
 .ngraph-header-label {
-    color: $text-label;
+    color: $grey-6;
     margin-right: 0.75rem;
 }
 
 .ngraph-templates {
     align-items: center;
     display: flex;
+}
+
+.ngraph-header .ngraph-input {
+    background-color: #414141;
 }

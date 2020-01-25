@@ -10,8 +10,8 @@
 
 .ngraph-node-header {
     align-items: center;
-    background: $graph-node-header-bg;
-    border: 1px solid $graph-node-border;
+    background: $grey-1;
+    border: 1px solid $grey-4;
     border-bottom: 0;
     border-top-left-radius: 7px;
     border-top-right-radius: 7px;
@@ -38,8 +38,8 @@
 }
 
 .ngraph-node-body {
-    background-color: $graph-node-bg;
-    border: 1px solid $graph-node-border;
+    background-color:  rgba($grey-3, 0.8);
+    border: 1px solid $grey-4;
     border-top: 0;
     border-bottom-left-radius: 7px;
     border-bottom-right-radius: 7px;
@@ -67,7 +67,7 @@
 }
 
 .ngraph-node-port-label {
-    color: $text-light;
+    color: $grey-7;
     margin-right: 0.25rem;
     font-size: 0.85rem;
 }
@@ -79,7 +79,7 @@
 
 .ngraph-node-port {
     cursor: pointer;
-    color: $text-light;
+    color: $grey-7;
     position: absolute;
     right: -7px;
     top: 0;
@@ -122,5 +122,5 @@
 .ngraph-node-field-label {
     margin-bottom: 2px;
     font-size: 0.8rem;
-    color: $text-label;
+    color: $grey-6;
 }
