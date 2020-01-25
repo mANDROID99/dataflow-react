@@ -39,6 +39,9 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
 
     [GraphActionType.ADD_NODE]: produce((state: GraphEditorState, action: AddNodeAction) => {
         const node = action.node;
+        node.x -= state.scrollX;
+        node.y -= state.scrollY;
+
         state.graph.nodes[action.nodeId] = node;
         state.contextMenu = undefined;
         state.selectedNode = undefined;

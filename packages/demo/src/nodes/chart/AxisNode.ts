@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, Entry, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { AxisType, AxisConfig } from "../../types/valueTypes";
+import { AxisType, ChartAxisConfig } from "../../types/valueTypes";
 
 export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Axis',
@@ -40,21 +40,23 @@ export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             ]
         }
     },
-    createProcessor({ node, params: { variables } }) {
+    createProcessor({ next, node, params: { variables } }) {
         const type = node.fields.type as AxisType;
         const label = node.fields.label as string;
         const paramInputs = node.fields.params as Entry<string>[];
         const mapParams = expressionUtils.compileEntryMappers(paramInputs);
 
-        return (inputs, next) => {
-            const params = mapParams(variables);
-            const axis: AxisConfig = {
-                type,
-                label,
-                params
-            };
-            
-            next('axis', axis);
+        return {
+            onStart() {
+                const params = mapParams(variables);
+                const axis: ChartAxisConfig = {
+                    type,
+                    label,
+                    params
+                };
+                
+                next('axis', axis);
+            }
         };
     }
 };

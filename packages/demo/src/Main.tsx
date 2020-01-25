@@ -4,12 +4,11 @@ import { GraphEditor } from '@react-ngraph/core';
 
 import { GRAPH_CONFIG } from './config/graphConfig';
 import ChartPreview from './chart/ChartPreview';
-import { ChartParams } from './chartContext';
 import { templates } from './templates/templates';
 import { store } from './store';
 
-const PARAMS: ChartParams = {
-    variables: {}
+const VARIABLES = {
+    test: 1
 };
 
 export default function Main() {
@@ -19,13 +18,13 @@ export default function Main() {
                 <GraphEditor
                     templates={templates}
                     graphConfig={GRAPH_CONFIG}
-                    params={PARAMS}
+                    params={{ variables: VARIABLES }}
                     renderPreview={({ graph, width, height }) => {
                         return (
                             <ChartPreview
                                 graph={graph}
                                 graphConfig={GRAPH_CONFIG}
-                                params={PARAMS}
+                                variables={VARIABLES}
                                 width={width}
                                 height={height}
                             />

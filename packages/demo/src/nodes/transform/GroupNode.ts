@@ -36,28 +36,53 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: FieldInputType.TEXT
         }
     },
-    createProcessor({ node, params }) {
+    createProcessor({ next, node, params }) {
         const mapGroupExpr = node.fields.group as ColumnMapperInputValue;
         const alias = node.fields.alias as string;
         const mapGroup = expressionUtils.compileColumnMapper(mapGroupExpr, 'row');
 
-        return (inputs, next) => {
-            const allRows = inputs.rows as Row[][];
-            const rows = allRows[0] ?? [];
+        return {
+            onNext(inputs) {
+                const allRows = inputs.rows as Row[][];
+                const rows = allRows[0] ?? [];
 
-            const groupsLookup = new Map<string, Row>();
-            const groups: Row[] = [];
+                const groupsLookup = new Map<string, Row>();
+                const groups: Row[] = [];
 
-            for (let i = 0, n = rows.length; i < n; i++) {
-                const row = rows[i];
-                const subRows = row.group;
+                for (let i = 0, n = rows.length; i < n; i++) {
+                    const row = rows[i];
+                    const subRows = row.group;
 
-                if (subRows) {
-                    const groupsLookup = new Map<string, Row>();
-                    
-                    for (let j = 0, n = subRows.length; j < n; j++) {
-                        const subRow = subRows[j];
-                        const ctx = rowToEvalContext(subRow, j, params.variables);
+                    if (subRows) {
+                        const groupsLookup = new Map<string, Row>();
+                        
+                        for (let j = 0, n = subRows.length; j < n; j++) {
+                            const subRow = subRows[j];
+                            const ctx = rowToEvalContext(subRow, j, params.variables);
+                            const groupName = asString(mapGroup(ctx));
+
+                            if (groupName) {
+                                let groupRow: Row | undefined = groupsLookup.get(groupName);
+
+                                if (!groupRow) {
+                                    groupRow = {
+                                        values: {
+                                            ...row.values,
+                                            [alias]: groupName
+                                        },
+                                        group: []
+                                    };
+
+                                    groups.push(groupRow);
+                                    groupsLookup.set(groupName, groupRow);
+                                }
+
+                                groupRow.group!.push(subRow);
+                            }
+                        }
+
+                    } else {
+                        const ctx = rowToEvalContext(row, i, params.variables);
                         const groupName = asString(mapGroup(ctx));
 
                         if (groupName) {
@@ -66,7 +91,6 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                             if (!groupRow) {
                                 groupRow = {
                                     values: {
-                                        ...row.values,
                                         [alias]: groupName
                                     },
                                     group: []
@@ -76,35 +100,13 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                                 groupsLookup.set(groupName, groupRow);
                             }
 
-                            groupRow.group!.push(subRow);
+                            groupRow.group!.push(row);
                         }
-                    }
-
-                } else {
-                    const ctx = rowToEvalContext(row, i, params.variables);
-                    const groupName = asString(mapGroup(ctx));
-
-                    if (groupName) {
-                        let groupRow: Row | undefined = groupsLookup.get(groupName);
-
-                        if (!groupRow) {
-                            groupRow = {
-                                values: {
-                                    [alias]: groupName
-                                },
-                                group: []
-                            };
-
-                            groups.push(groupRow);
-                            groupsLookup.set(groupName, groupRow);
-                        }
-
-                        groupRow.group!.push(row);
                     }
                 }
-            }
 
-            next('groups', groups);
+                next('groups', groups);
+            }
         };
     },
     mapContext({ node, context }): ChartContext {

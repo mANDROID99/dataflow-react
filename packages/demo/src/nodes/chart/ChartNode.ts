@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, Entry, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { DataSet, AxisConfig, ChartConfig } from "../../types/valueTypes";
+import { ChartDataSet, ChartAxisConfig, ChartConfig, ChartEventType } from "../../types/valueTypes";
 
 export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Chart',
@@ -20,7 +20,11 @@ export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 multi: true
             }
         },
-        out: {}
+        out: {
+            selection: {
+                type: 'row[]'
+            }
+        }
     },
     fields: {
         type: {
@@ -46,26 +50,45 @@ export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: []
         }
     },
-    createProcessor({ node, params: { variables } }) {
+    createProcessor({ next, node, params: { variables, renderChart } }) {
         const type = node.fields.type as string;
         const paramInputs = node.fields.params as Entry<string>[];
         const mapParams = expressionUtils.compileEntryMappers(paramInputs);
+        const id = 'chart-id';
 
-        return (inputs, next) => {
-            const dataSets = inputs.datasets as DataSet[][];
-            const xAxes = inputs.xAxes as AxisConfig[];
-            const yAxes = inputs.yAxes as AxisConfig[];
-            const params = mapParams(variables);
+        return {
+            onNext(inputs) {
+                const dataSets = (inputs.datasets as ChartDataSet[][]).flat();
+                const xAxes = inputs.xAxes as ChartAxisConfig[];
+                const yAxes = inputs.yAxes as ChartAxisConfig[];
+                const params = mapParams(variables);
 
-            const chart: ChartConfig = {
-                type,
-                dataSets: dataSets.flat(),
-                xAxes,
-                yAxes,
-                params
-            };
+                const chart: ChartConfig = {
+                    type,
+                    dataSets,
+                    xAxes,
+                    yAxes,
+                    params,
+                    events: [
+                        {
+                            type: ChartEventType.CLICK,
+                            action: (datasetIndex, index) => {
+                                const ds = dataSets[datasetIndex];
+                                if (!ds) return;
 
-            next('out', chart);
-        };
+                                const datum = ds.data[index];
+                                if (!datum) return;
+
+                                next('selection', [datum.row]);
+                            }
+                        }
+                    ]
+                };
+
+                if (renderChart) {
+                    renderChart(id, chart);
+                }
+            }
+        }
     }
 };

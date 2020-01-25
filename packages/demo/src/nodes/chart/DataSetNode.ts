@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, Entry, expressionUtils } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { DataPoint, DataSet } from "../../types/valueTypes";
+import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/converters';
 import { pointToEvalContext } from '../../utils/expressionUtils';
 
@@ -84,7 +84,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: []
         }
     },
-    createProcessor({ node, params }) {
+    createProcessor({ next, node, params }) {
         const type = node.fields.type as string;
         const mapLabelExpr = node.fields.label as ColumnMapperInputValue;
         const mapSeriesExpr = node.fields.series as ColumnMapperInputValue;
@@ -98,44 +98,46 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const mapBackgroundColor = expressionUtils.compileColumnMapper(mapBackgroundColorExpr, 'row');
         const mapParams = expressionUtils.compileEntryMappers(paramInputs);
 
-        return (inputs, next) => {
-            const allPoints = inputs.points as DataPoint[][];
-            const points: DataPoint[] = allPoints[0] ?? [];
+        return {
+            onNext(inputs) {
+                const allPoints = inputs.points as ChartDataPoint[][];
+                const points: ChartDataPoint[] = allPoints[0] ?? [];
 
-            const dataSetsByKey = new Map<string, DataSet>();
-            const dataSets: DataSet[] = [];
+                const dataSetsByKey = new Map<string, ChartDataSet>();
+                const dataSets: ChartDataSet[] = [];
 
-            if (points.length) {
-                for (let i = 0, n = points.length; i < n; i++){
-                    const point = points[i];
-                    const ctx = pointToEvalContext(point, i, params.variables);
-                    const seriesKey = asString(mapSeries(ctx));
-                    let dataSet: DataSet | undefined = dataSetsByKey.get(seriesKey);
-                    
-                    if (!dataSet) {
-                        const params = mapParams(ctx);
-                        const label = asString(mapLabel(ctx));
-                        const borderColor = asString(mapBorderColor(ctx));
-                        const backgroundColor = asString(mapBackgroundColor(ctx));
+                if (points.length) {
+                    for (let i = 0, n = points.length; i < n; i++){
+                        const point = points[i];
+                        const ctx = pointToEvalContext(point, i, params.variables);
+                        const seriesKey = asString(mapSeries(ctx));
+                        let dataSet: ChartDataSet | undefined = dataSetsByKey.get(seriesKey);
+                        
+                        if (!dataSet) {
+                            const params = mapParams(ctx);
+                            const label = asString(mapLabel(ctx));
+                            const borderColor = asString(mapBorderColor(ctx));
+                            const backgroundColor = asString(mapBackgroundColor(ctx));
 
-                        dataSet = {
-                            type,
-                            label,
-                            backgroundColor,
-                            borderColor,
-                            params,
-                            data: [],
+                            dataSet = {
+                                type,
+                                label,
+                                backgroundColor,
+                                borderColor,
+                                params,
+                                data: [],
+                            }
+
+                            dataSetsByKey.set(seriesKey, dataSet);
+                            dataSets.push(dataSet);
                         }
 
-                        dataSetsByKey.set(seriesKey, dataSet);
-                        dataSets.push(dataSet);
+                        dataSet.data.push(point);
                     }
-
-                    dataSet.data.push(point);
                 }
-            }
 
-            next('datasets', dataSets);
+                next('datasets', dataSets);
+            }
         }
     }
 };

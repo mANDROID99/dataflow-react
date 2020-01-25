@@ -1,5 +1,5 @@
 
-export class PortValue {
+export class ValueCache {
     private _value: unknown;
     private _hasValue: boolean;
 
@@ -30,8 +30,8 @@ export class PortValue {
     }
 }
 
-export class PortCachedValues {
-    private _values: PortValue[];
+export class PortValuesCache {
+    private _values: ValueCache[];
     private _results: unknown[];
     private _remaining: number;
 
@@ -50,7 +50,7 @@ export class PortCachedValues {
 
     register(index: number): void {
         if (!(index in this._values)) {
-            this._values[index] = new PortValue();
+            this._values[index] = new ValueCache();
             this._remaining++;
         }
     }
@@ -86,22 +86,26 @@ export class PortCachedValues {
     }
 }
 
-export class ProcessorCachedValues {
-    private readonly _values: { [key: string]: PortCachedValues | undefined };
-    private readonly _results: { [key: string]: unknown[] };
+export class ProcessorValuesCache {
+    private readonly _ports: { [key: string]: PortValuesCache | undefined };
+    private readonly _values: { [key: string]: unknown[] };
     
     private _size: number;
     private _remaining: number;
 
-    constructor(results: { [key: string]: unknown[] }) {
-        this._results = results;
+    constructor(portNames: string[]) {
         this._values = {};
+        this._ports = {};
         this._size = 0;
         this._remaining = 0;
+
+        for (const port of portNames) {
+            this._values[port] = [];
+        }
     }
 
     reset(): void {
-        const values = this._values;
+        const values = this._ports;
 
         for (const key in values) {
             const value = values[key];
@@ -115,11 +119,11 @@ export class ProcessorCachedValues {
     }
 
     register(portName: string, index: number): void {
-        let values = this._values[portName];
+        let values = this._ports[portName];
 
         if (!values) {
-            values = new PortCachedValues();
-            this._values[portName] = values;
+            values = new PortValuesCache();
+            this._ports[portName] = values;
             this._size++;
             this._remaining++;
         }
@@ -128,32 +132,32 @@ export class ProcessorCachedValues {
     }
 
     setValue(portName: string, index: number, value: unknown): void {
-        const values = this._values[portName];
-        if (!values) return;
+        const port = this._ports[portName];
+        if (!port) return;
 
-        if (this._remaining > 0 && !values.hasValue()) {
-            values.setValue(index, value);
+        if (this._remaining > 0 && !port.hasValue()) {
+            port.setValue(index, value);
 
-            if (values.hasValue()) {
+            if (port.hasValue()) {
                 this._remaining--;
-                this._results[portName] = values.getValue();
+                this._values[portName] = port.getValue();
             }
 
         } else {
-            values.setValue(index, value);
-            this._results[portName] = values.getValue();
+            port.setValue(index, value);
+            this._values[portName] = port.getValue();
         }
     }
 
-    getValue(): { [key: string]: unknown[] } {
-        if (!this.hasValue()) {
+    getValues(): { [key: string]: unknown[] } {
+        if (!this.hasValues()) {
             throw new Error('value not set');
         }
 
-        return this._results;
+        return this._values;
     }
 
-    hasValue(): boolean {
+    hasValues(): boolean {
         return this._remaining === 0;
     }
 }

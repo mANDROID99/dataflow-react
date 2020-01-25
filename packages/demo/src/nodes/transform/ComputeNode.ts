@@ -35,27 +35,29 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: ''
         }
     },
-    createProcessor({ node, params }) {
+    createProcessor({ next, node, params }) {
         const alias = node.fields.alias as string;
         const mapValueExpr = node.fields.value as ColumnMapperInputValue;
         const mapValue = expressionUtils.compileColumnMapper(mapValueExpr, 'row');
 
-        return (inputs, next) => {
-            const allRows = inputs.in as Row[][];
-            const rows = allRows[0] ?? [];
-
-            const result: Row[] = rows.map((row, i) => {
-                const values = Object.assign({}, row.values);
-                
-                if (mapValueExpr) {
-                    const ctx = rowToEvalContext(row, i, params.variables);
-                    values[alias] = mapValue(ctx);
-                }
-
-                return { ...row, values };
-            });
-
-            next('out', result);
+        return {
+            onNext(inputs) {
+                const allRows = inputs.in as Row[][];
+                const rows = allRows[0] ?? [];
+    
+                const result: Row[] = rows.map((row, i) => {
+                    const values = Object.assign({}, row.values);
+                    
+                    if (mapValueExpr) {
+                        const ctx = rowToEvalContext(row, i, params.variables);
+                        values[alias] = mapValue(ctx);
+                    }
+    
+                    return { ...row, values };
+                });
+    
+                next('out', result);
+            }
         };
     },
     mapContext({ node, context }) {

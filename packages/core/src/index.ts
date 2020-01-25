@@ -9,8 +9,8 @@ export * from './types/graphFieldInputTypes';
 
 // processor
 export { computeGraphNodeContexts } from './processor/computeGraphNodeContexts';
-export { createGraphNodeProcessors, findProcessorsByType, runProcessors } from './processor/createGraphNodeProcessors';
-export { NodeProcessor } from './processor/NodeProcessor';
+export { createGraphNodeProcessors, runProcessors } from './processor/createGraphNodeProcessors';
+export { GraphNodeProcessor as NodeProcessor } from './processor/GraphNodeProcessor';
 
 // editor
 import GraphEditor from './editor/components/GraphEditor';

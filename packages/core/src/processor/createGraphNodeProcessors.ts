@@ -1,16 +1,18 @@
 import { Graph } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
-import { NodeProcessor } from "./NodeProcessor";
-import { TaskQueue } from "./TaskQueue";
-import { ProcessorResultsCollector } from "./ProcessorResultsCollector";
 
-export function createGraphNodeProcessors<Ctx, Params>(graph: Graph, graphConfig: GraphConfig<any, Params>, params?: Params): Map<string, NodeProcessor<Ctx>> {
-    const processors = new Map<string, NodeProcessor<Params>>();
+import { GraphNodeProcessor } from "./GraphNodeProcessor";
+import { TaskQueue } from "./TaskQueue";
+
+export function createGraphNodeProcessors<Ctx, Params>(graph: Graph, graphConfig: GraphConfig<any, Params>, params?: Params): GraphNodeProcessor<Ctx>[] {
+    const processors: GraphNodeProcessor<Params>[] = [];
+    const processorsLookup = new Map<string, GraphNodeProcessor<Params>>();
     const baseParams: Params = params ?? graphConfig.params!;
+    const taskQueue = new TaskQueue();
 
     // recursively create processors
-    function getOrCreateProcessor(nodeId: string): NodeProcessor<Ctx> | undefined {
-        let processor = processors.get(nodeId);
+    function getOrCreateProcessor(nodeId: string): GraphNodeProcessor<Ctx> | undefined {
+        let processor = processorsLookup.get(nodeId);
         if (processor) {
             return processor;
         }
@@ -18,10 +20,12 @@ export function createGraphNodeProcessors<Ctx, Params>(graph: Graph, graphConfig
         const node = graph.nodes[nodeId];
         const nodeConfig = graphConfig.nodes[node.type];
 
-        processor = new NodeProcessor<Params>(node, nodeConfig, baseParams);
-        processors.set(nodeId, processor);
+        // create the new processor
+        processor = new GraphNodeProcessor<Params>(node, nodeConfig, baseParams, taskQueue);
+        processors.push(processor);
+        processorsLookup.set(nodeId, processor);
 
-        // resolve children of this processor
+        // resolve children
         const ports = node.ports.in;
         for (const portName in ports) {
             const port = ports[portName];
@@ -31,6 +35,7 @@ export function createGraphNodeProcessors<Ctx, Params>(graph: Graph, graphConfig
                     const pt = port[i];
                     const sourceProcessor = getOrCreateProcessor(pt.node);
 
+                    // add the child to the parent
                     if (sourceProcessor) {
                         processor.addSource(portName, pt.port, i, sourceProcessor);
                     }
@@ -48,36 +53,11 @@ export function createGraphNodeProcessors<Ctx, Params>(graph: Graph, graphConfig
     return processors;
 }
 
-export function findProcessorsByType<Ctx>(type: string, graph: Graph, processors: Map<string, NodeProcessor<Ctx>>): NodeProcessor<Ctx>[] {
-    const resultProcessors: NodeProcessor<Ctx>[] = [];
+export function runProcessors<Ctx>(processors: GraphNodeProcessor<Ctx>[]): () => void {
 
-    const nodes = graph.nodes;
-    for (const nodeId in nodes) {
-        const node = nodes[nodeId];
-
-        if (node.type === type) {
-            const processor = processors.get(nodeId);
-
-            if (processor) {
-                resultProcessors.push(processor);
-            }
-        }
-    }
-    
-    return resultProcessors;
-}
-
-export function runProcessors<Ctx>(processors: NodeProcessor<Ctx>[], onResult: (results: unknown[]) => void): () => void {
-    const resultCollector = new ProcessorResultsCollector(processors);
-
-    // set-up subscription
-    resultCollector.subscribe(onResult);
-
-    const taskQueue = new TaskQueue();
-
-    // run all processors
+    // start all processors
     for (const processor of processors) {
-        processor.start(taskQueue);
+        processor.start();
     }
 
     // clean-up

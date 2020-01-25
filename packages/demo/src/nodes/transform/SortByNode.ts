@@ -34,32 +34,34 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: false
         }
     },
-    createProcessor({ node, params }) {
+    createProcessor({ next, node, params }) {
         const mapColumnExpr = node.fields.column as ColumnMapperInputValue;
         const desc = node.fields.desc as boolean;
         const mapColumn = expressionUtils.compileColumnMapper(mapColumnExpr, 'row');
 
-        return (inputs, next) => {
-            const rows = (inputs.rows as Row[][])[0] ?? [];
-            const rowsSorted = rows.slice(0);
-
-            rowsSorted.sort((a, b) => {
-                const sortKeyA = mapColumn(rowToEvalContext(a, null, params.variables)) as any;
-                const sortKeyB = mapColumn(rowToEvalContext(b, null, params.variables)) as any;
-              
-                if (sortKeyB > sortKeyA) {
-                    return desc ? 1 : -1;
-
-                } else if (sortKeyB < sortKeyA) {
-                    return desc ? -1 : 1;
-
-                } else {
-                    return 0;
-                }
-            });
-
-            next('rows', rowsSorted);
-        }
+        return {
+            onNext(inputs) {
+                const rows = (inputs.rows as Row[][])[0] ?? [];
+                const rowsSorted = rows.slice(0);
+    
+                rowsSorted.sort((a, b) => {
+                    const sortKeyA = mapColumn(rowToEvalContext(a, null, params.variables)) as any;
+                    const sortKeyB = mapColumn(rowToEvalContext(b, null, params.variables)) as any;
+                  
+                    if (sortKeyB > sortKeyA) {
+                        return desc ? 1 : -1;
+    
+                    } else if (sortKeyB < sortKeyA) {
+                        return desc ? -1 : 1;
+    
+                    } else {
+                        return 0;
+                    }
+                });
+    
+                next('rows', rowsSorted);
+            }
+        };
     }
 }
 

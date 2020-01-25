@@ -33,17 +33,24 @@ export type WrappedInputValue = {
     value: unknown;
 }
 
-export type CreateProcessorParams<Params> = {
-    node: GraphNode;
-    params: Params;
-}
 
-export type Processor = (inputs: { [key: string]: unknown[] }, next: (portName: string, output: any) => void) => (void | (() => void));
 
-export type MapContextParams<Ctx, Params> = {
+export type ContextMapperParams<Ctx, Params> = {
     node: GraphNode;
     context: Ctx;
     params: Params;
+}
+
+export type ProcessorCreationParams<Params> = {
+    node: GraphNode;
+    params: Params;
+    next: (portName: string, value: unknown) => void;
+}
+
+export interface Processor {
+    onStart?(): void;
+    onStop?(): void;
+    onNext?(inputs: { [key: string]: unknown[] }): void;
 }
 
 export type GraphNodeConfig<Ctx, Params = {}> = {
@@ -63,8 +70,8 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
             [key: string]: GraphNodePortConfig;
         };
     };
-    mapContext?: (params: MapContextParams<Ctx, Params>) => Ctx;
-    createProcessor: (params: CreateProcessorParams<Params>) => Processor;
+    mapContext?: (params: ContextMapperParams<Ctx, Params>) => Ctx;
+    createProcessor: (params: ProcessorCreationParams<Params>) => Processor;
 }
 
 export type PortTypeConfig = {

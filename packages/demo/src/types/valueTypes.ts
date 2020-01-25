@@ -18,7 +18,7 @@ export type Row = {
     group?: Row[];
 }
 
-export type DataPoint = {
+export type ChartDataPoint = {
     x: number | string | Date;
     y: number | string | Date;
     r?: number;
@@ -26,25 +26,35 @@ export type DataPoint = {
     row: Row;
 }
 
-export type DataSet = {
+export type ChartDataSet = {
     type: string;
     label: string;
-    data: DataPoint[];
+    data: ChartDataPoint[];
     params: Entry<unknown>[];
     borderColor: string;
     backgroundColor: string;
 }
 
-export type AxisConfig = {
+export type ChartAxisConfig = {
     type: AxisType;
     params: Entry<unknown>[];
     label?: string;
 }
 
+export enum ChartEventType {
+    CLICK='click'
+}
+
+export type ChartEventConfig = {
+    type: ChartEventType;
+    action: (datasetIndex: number, index: number) => void;
+}
+
 export type ChartConfig = {
     type: string;
-    dataSets: DataSet[];
-    xAxes: AxisConfig[];
-    yAxes: AxisConfig[];
+    dataSets: ChartDataSet[];
+    xAxes: ChartAxisConfig[];
+    yAxes: ChartAxisConfig[];
     params: Entry<unknown>[];
+    events: ChartEventConfig[];
 }

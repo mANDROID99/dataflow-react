@@ -9,7 +9,7 @@
           "url": "http://dummy.restapiexample.com/api/v1/employees",
           "method": "GET",
           "headers": [],
-          "mapData": "= data.data",
+          "mapResponse": "= response.data",
           "columns": [
             "id",
             "employee_name",
