@@ -1,7 +1,7 @@
 import { GraphNodeConfig, FieldInputType, Entry, expressionUtils, Processor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
-import { Row, EMPTY_ROWS, Rows, createRows } from "../../types/valueTypes";
+import { Row, createRows } from "../../types/valueTypes";
 
 enum HttpMethodType {
     GET = 'GET',
@@ -43,11 +43,8 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     },
     ports: {
         in: {
-            scheduler: {
-                type: 'scheduler'
-            },
-            rows: {
-                type: 'row[]'
+            selection: {
+                type: 'row'
             }
         },
         out: {
@@ -71,6 +68,8 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
 
         function doFetch(ctx: { [key: string]: unknown }) {
             const url = asString(mapUrl(ctx));
+            if (!url) return;
+
             const headers: { [key: string]: string } = {};
             const headersArr = mapHeaders(ctx);
             
@@ -104,9 +103,9 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             },
 
             onNext(inputs) {
-                const r = (inputs.rows[0] || EMPTY_ROWS) as Rows;
+                const selection = (inputs.selection[0] || {}) as Row;
                 const ctx = Object.assign({}, params.variables);
-                ctx.rows = r.rows;
+                ctx.selection = selection;
                 doFetch(ctx);
             },
 

@@ -71,7 +71,13 @@ export type ChartEventConfig = {
     action: (datasetIndex: number, index: number) => void;
 }
 
-export type ChartConfig = {
+export enum ViewType {
+    CHART = 'chart',
+    GRID = 'grid'
+}
+
+export type ChartViewConfig = {
+    viewType: ViewType.CHART;
     type: string;
     dataSets: ChartDataSet[];
     xAxes: ChartAxisConfig[];
@@ -79,6 +85,13 @@ export type ChartConfig = {
     params: Entry<unknown>[];
     events: ChartEventConfig[];
 }
+
+export type GridViewConfig = {
+    viewType: ViewType.GRID,
+    rows: Row[];
+}
+
+export type ViewConfig = ChartViewConfig | GridViewConfig;
 
 export const EMPTY_ROWS: Rows = {
     type: ValueType.ROWS,

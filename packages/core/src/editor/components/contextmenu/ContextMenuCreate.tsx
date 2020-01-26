@@ -50,8 +50,8 @@ function ContextMenuContentCreate(props: Props) {
     }, [graphConfig]);
 
     const handleCreateNode = (nodeType: string) => {
-        const node = createGraphNode(x, y, nodeType, graphConfig);
         const nodeId = v4();
+        const node = createGraphNode(nodeId, x, y, nodeType, graphConfig);
         dispatch(addNode(nodeId, node));
     };
 

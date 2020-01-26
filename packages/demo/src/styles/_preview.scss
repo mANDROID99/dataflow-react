@@ -1,0 +1,46 @@
+
+.preview-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0.5rem;
+}
+
+.preview-content {
+    background-color: white;
+    flex-grow: 1;
+    border-radius: 3px;
+}
+
+.active-preview {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+}
+
+.table {
+    color: black;
+    display: inline-block;
+    border-spacing: 0;
+
+    .tr {
+      :last-child {
+        .td {
+          border-bottom: 0;
+        }
+      }
+    }
+
+    .th,
+    .td {
+      margin: 0;
+      padding: 0.5rem;
+      border-bottom: 1px solid black;
+      border-right: 1px solid black;
+
+      :last-child {
+        border-right: 0;
+      }
+    }
+}

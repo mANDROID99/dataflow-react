@@ -1,6 +1,10 @@
-import { GraphNodeConfig, FieldInputType, Entry, expressionUtils } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, Entry, expressionUtils, GraphNode } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { ChartDataSet, ChartAxisConfig, ChartConfig, ChartEventType } from "../../types/valueTypes";
+import { ChartDataSet, ChartAxisConfig, ChartViewConfig, ChartEventType, ViewType } from "../../types/valueTypes";
+
+function getDefaultViewName(node: GraphNode) {
+    return 'chart-' + node.id;
+}
 
 export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Chart',
@@ -27,6 +31,11 @@ export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     fields: {
+        name: {
+            label: 'Name',
+            type: FieldInputType.TEXT,
+            initialValue: ''
+        },
         type: {
             label: 'Type',
             type: FieldInputType.SELECT,
@@ -50,11 +59,15 @@ export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: []
         }
     },
-    createProcessor({ next, node, params: { variables, renderChart } }) {
+    createProcessor({ next, node, params: { variables, renderView } }) {
         const type = node.fields.type as string;
         const paramInputs = node.fields.params as Entry<string>[];
         const mapParams = expressionUtils.compileEntryMappers(paramInputs);
-        const id = 'chart-id';
+
+        let viewName = node.fields.name as string;
+        if (!viewName) {
+            viewName = getDefaultViewName(node);
+        }
 
         return {
             onNext(inputs) {
@@ -63,7 +76,8 @@ export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 const yAxes = inputs.yAxes as ChartAxisConfig[];
                 const params = mapParams(variables);
 
-                const chart: ChartConfig = {
+                const chart: ChartViewConfig = {
+                    viewType: ViewType.CHART,
                     type,
                     dataSets,
                     xAxes,
@@ -79,14 +93,14 @@ export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                                 const datum = ds.data[index];
                                 if (!datum) return;
 
-                                next('onClick', [datum.row]);
+                                next('onClick', datum.row);
                             }
                         }
                     ]
                 };
 
-                if (renderChart) {
-                    renderChart(id, chart);
+                if (renderView) {
+                    renderView(viewName, chart);
                 }
             }
         }

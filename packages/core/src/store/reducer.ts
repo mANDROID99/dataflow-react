@@ -82,7 +82,10 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         const node = graph.nodes[action.nodeId];
     
         if (node) {
+            const id = v4();
+
             const clone: GraphNode = {
+                id,
                 type: node.type,
                 fields: node.fields,
                 ports: {
@@ -93,8 +96,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
                 x: node.x + 20,
                 y: node.y + 20
             };
-    
-            const id = v4();
+
             graph.nodes[id] = clone;
         }
     

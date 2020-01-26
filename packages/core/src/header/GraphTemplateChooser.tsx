@@ -13,7 +13,7 @@ function GraphTemplateChooser() {
         const template = templates.find(t => t.id === e.target.value);
 
         if (template) {
-            dispatch(loadGraph(template.graph));
+            dispatch(loadGraph(template.data));
         }
     };
 

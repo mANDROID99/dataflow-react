@@ -27,13 +27,6 @@ export type GraphNodePortConfig = {
     multi?: boolean;
 }
 
-export type WrappedInputValue = {
-    type: string;
-    value: unknown;
-}
-
-
-
 export type ContextMapperParams<Ctx, Params> = {
     node: GraphNode;
     context: Ctx;

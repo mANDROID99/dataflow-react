@@ -26,7 +26,7 @@ export function selectGraphNodes(state: StoreState) {
 export function createTemplateIdSelector(templates: GraphTemplate[]) {
     return (state: StoreState) => {
         const graph = state.graphEditor.graph;
-        return templates.find(t => t.graph === graph)?.id;
+        return templates.find(t => t.data === graph)?.id;
     };
 }
 

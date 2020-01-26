@@ -11,6 +11,7 @@ import { AXIS_NODE } from '../nodes/chart/AxisNode';
 import { DATA_SET_NODE } from '../nodes/chart/DataSetNode';
 import { DATA_POINT_NODE } from '../nodes/chart/DataPointNode';
 import { DATA_FETCHER_NODE } from '../nodes/input/DataFetcherNode';
+import { GRID_OUTPUT_NODE } from '../nodes/output/GridViewNode';
 
 export const GRAPH_CONFIG: GraphConfig<ChartContext, ChartParams> = {
     context: {
@@ -29,10 +30,12 @@ export const GRAPH_CONFIG: GraphConfig<ChartContext, ChartParams> = {
         chart: CHART_NODE,
         axis: AXIS_NODE,
         dataset: DATA_SET_NODE,
-        datapoint: DATA_POINT_NODE
+        datapoint: DATA_POINT_NODE,
+        gridOutput: GRID_OUTPUT_NODE
     },
     colors: {
         ports: {
+            'row': 'green',
             'row[]': 'red',
             'rowgroup[]': 'blue',
             'datapoint[]': 'orange',

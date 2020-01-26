@@ -1,5 +1,5 @@
 import Chart, { ChartOptions } from 'chart.js';
-import { ChartDataPoint, ChartAxisConfig, AxisType, ChartDataSet, ChartConfig, ChartEventConfig, ChartEventType } from '../types/valueTypes';
+import { ChartDataPoint, ChartAxisConfig, AxisType, ChartDataSet, ChartViewConfig, ChartEventConfig, ChartEventType } from '../types/valueTypes';
 import { asString, asNumber } from '../utils/converters';
 import { writeKeyValues } from '../utils/keyPathUtils';
 
@@ -124,7 +124,7 @@ function mapOnClickCallback(events: ChartEventConfig[]): ((event?: MouseEvent, a
     }
 }
 
-export function createChartConfiguration(chartConfig: ChartConfig): Chart.ChartConfiguration {
+export function createChartConfiguration(chartConfig: ChartViewConfig): Chart.ChartConfiguration {
     let labels: string[] | undefined;
     let datasets: Chart.ChartDataSets[];
     

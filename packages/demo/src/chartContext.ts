@@ -1,5 +1,5 @@
 import { mergeDistinct } from "./utils/arrayUtils";
-import { ChartConfig } from './types/valueTypes';
+import { ViewConfig } from './types/valueTypes';
 
 export type ChartContext = {
     columns: string[];
@@ -7,7 +7,7 @@ export type ChartContext = {
 }
 
 export type ChartParams = {
-    renderChart?(chartId:string, chartConfig: ChartConfig): void;
+    renderView?(viewId: string, viewConfig: ViewConfig): void;
     variables: {
         [key: string]: unknown;
     }

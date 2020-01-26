@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 const path = require('path');
+const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -10,7 +11,6 @@ module.exports = {
         rules: [
             {
                 test: /\.s?css$/,
-                exclude: /\.module.s?css$/,
                 use: [
                     'style-loader',
                     'css-loader',
@@ -21,10 +21,7 @@ module.exports = {
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'ts-loader',
-                    options: {
-                        transpileOnly: true
-                    }
+                    loader: 'ts-loader'
                 }
             },
             {
@@ -35,11 +32,14 @@ module.exports = {
             }
         ]
     },
+    devServer: {
+        contentBase: path.join(__dirname, 'dist')
+    },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
-        alias: {
-            "@react-ngraph/core": path.resolve(__dirname, '../core/src/index.ts')
-        }
+        plugins: [
+            PnpWebpackPlugin
+        ]
     },
     output: {
         filename: 'bundle.js',
@@ -50,5 +50,10 @@ module.exports = {
             title: 'Demo',
             template: './src/index.html'
         })
-    ]
+    ],
+    resolveLoader: {
+        plugins: [
+            PnpWebpackPlugin.moduleLoader(module)
+        ]
+    }
 };

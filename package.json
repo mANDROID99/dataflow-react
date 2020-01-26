@@ -3,5 +3,12 @@
   "workspaces": [
     "packages/core",
     "packages/demo"
-  ]
+  ],
+  "dependencies": {
+    "@yarnpkg/pnpify": "^2.0.0-rc.16",
+    "typescript": "^3.7.5"
+  },
+  "devDependencies": {
+    "pnp-webpack-plugin": "^1.5.0"
+  }
 }

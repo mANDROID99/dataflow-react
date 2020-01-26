@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { GraphEditor } from '@react-ngraph/core';
 
 import { GRAPH_CONFIG } from './config/graphConfig';
-import ChartPreview from './chart/ChartPreview';
+import Preview from './preview/Preview';
 import { templates } from './templates/templates';
 import { store } from './store';
 
@@ -21,7 +21,7 @@ export default function Main() {
                     params={{ variables: VARIABLES }}
                     renderPreview={({ graph, width, height }) => {
                         return (
-                            <ChartPreview
+                            <Preview
                                 graph={graph}
                                 graphConfig={GRAPH_CONFIG}
                                 variables={VARIABLES}

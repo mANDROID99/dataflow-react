@@ -5,6 +5,9 @@ node_modules/
 lib/
 dist/
 
+
+.yarn/
+.vscode/
 /.pnp
 .pnp.js
 
