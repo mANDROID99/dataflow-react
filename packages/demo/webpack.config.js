@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 const path = require('path');
+const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -35,7 +36,15 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist')
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js']
+        extensions: ['.tsx', '.ts', '.js'],
+        plugins: [
+            PnpWebpackPlugin
+        ]
+    },
+    resolveLoader: {
+        plugins: [
+            PnpWebpackPlugin.moduleLoader(module),
+        ]
     },
     output: {
         filename: 'bundle.js',

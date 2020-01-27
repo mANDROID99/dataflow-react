@@ -1,11 +1,55 @@
-import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue, Processor } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
+import { NodeType } from '../nodes';
 import { ChartContext } from "../../chartContext";
-import { Row, createRows } from "../../types/valueTypes";
+import { Row, createRowsValue } from "../../types/valueTypes";
+
+const PORT_ROWS = 'rows';
+
+class DataGridProcessor implements NodeProcessor {
+    private sub?: (value: unknown) => void;
+
+    constructor(
+        private readonly data: DataGridInputValue
+    ) { }
+
+    get type(): string {
+        return NodeType.DATA_GRID
+    }
+    
+    registerProcessor(): void { }
+
+    subscribe(portName: string, sub: (value: unknown) => void): void {
+        if (portName === PORT_ROWS) {
+            this.sub = sub;
+        }
+    }
+
+    onStart(): void {
+        if (!this.sub) return;
+        
+        const columnNames = this.data.columns;
+        const rowValues = this.data.rows;
+
+        const rows: Row[] = rowValues.map((values): Row => {
+            const data: { [key: string]: string } = {};
+            const nRows = Math.min(columnNames.length, values.length);
+            
+            for (let i = 0; i < nRows; i++) {
+                data[columnNames[i]] = values[i];
+            }
+
+            return data;
+        });
+
+        this.sub(createRowsValue(rows));
+    }
+}
+
 
 export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Data-Grid',
     menuGroup: 'Input',
-    description: 'Data-Grid of values.',
+    description: 'Input table of values.',
     fields: {
         data: {
             label: 'Data',
@@ -16,34 +60,16 @@ export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     ports: {
         in: {},
         out: {
-            rows: {
+            [PORT_ROWS]: {
                 type: 'row[]'
             }
         }
     },
-    createProcessor({ node, next }): Processor {
-        return {
-            onStart() {
-                const configData = node.fields.data as DataGridInputValue;  
-                const columnNames = configData.columns;
-                const rowValues = configData.rows;
-
-                const data: Row[] = rowValues.map((values): Row => {
-                    const data: { [key: string]: string } = {};
-                    const nRows = Math.min(columnNames.length, values.length);
-                    
-                    for (let i = 0; i < nRows; i++) {
-                        data[columnNames[i]] = values[i];
-                    }
-
-                    return data;
-                });
-
-                next('rows', createRows(data));
-            }
-        };
+    createProcessor(node) {
+        const data = node.fields.data as DataGridInputValue;  
+        return new DataGridProcessor(data);
     },
-    mapContext({ node }): ChartContext {
+    mapContext(node): ChartContext {
         const data = node.fields.data as DataGridInputValue;
         return {
             columns: data.columns

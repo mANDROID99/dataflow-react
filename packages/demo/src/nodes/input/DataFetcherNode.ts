@@ -1,17 +1,111 @@
-import { GraphNodeConfig, FieldInputType, Entry, expressionUtils, Processor } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
-import { Row, createRows } from "../../types/valueTypes";
+import { Row, createRowsValue } from "../../types/valueTypes";
+import { NodeType } from "../nodes";
 
 enum HttpMethodType {
     GET = 'GET',
     POST = 'POST'
 }
 
+const KEY_DATA = 'data';
+
+const PORT_ROWS = 'rows';
+const PORT_DATA = 'data';
+const PORT_SCHEDULER = 'scheduler';
+
+class DataFetcherProcessor implements NodeProcessor {
+    private sub?: (value: unknown) => void;
+    private data?: Row;
+    private count = 0;
+    private running = false;
+
+    constructor(
+        private readonly ctx: { [key: string]: unknown },
+        private readonly method: string,
+        private readonly urlMapper: expressions.Mapper,
+        private readonly headersMapper: expressions.EntriesMapper,
+        private readonly responseMapper: expressions.Mapper
+    ) { }
+
+    get type(): string {
+        return NodeType.DATA_GRID;
+    }
+
+    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+        if (portIn === PORT_DATA) {
+            processor.subscribe(portOut, this.onNextData.bind(this));
+
+        } else if (portIn === PORT_SCHEDULER) {
+            processor.subscribe(portOut, this.onNextScheduler.bind(this));
+        }
+    }
+
+    subscribe(portName: string, sub: (value: unknown) => void): void {
+        if (portName === PORT_ROWS) {
+            this.sub = sub;
+        }
+    }
+
+    onStart() {
+        this.running = true;
+    }
+
+    onStop() {
+        this.running = false;
+    }
+
+    private onNextData(value: unknown) {
+        this.data = value as Row;
+        this.update();
+    }
+
+    private onNextScheduler() {
+        this.update();
+    }
+    
+    private update() {
+        const sub = this.sub;
+        if (!sub) return;
+
+        const ctx = Object.assign({}, this.ctx);
+        ctx[KEY_DATA] = this.data;
+
+        const url = asString(this.urlMapper(ctx));
+        if (!url) return;
+
+        const headers: { [key: string]: string } = {};
+        const headersArr = this.headersMapper(ctx);
+        
+        for (const entry of headersArr) {
+            headers[entry.key] = asString(entry.value);
+        }
+        
+        headers.Accept = 'application/json';
+        const c = this.count++;
+
+        fetch(url, {
+            method: this.method,
+            headers
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (this.running && this.count === c) {
+                    const ctx = Object.assign({}, this.ctx);
+                    ctx[KEY_DATA] = data;
+
+                    let rows = (this.responseMapper(ctx) || data) as { [key: string]: unknown }[];
+                    sub(createRowsValue(rows));
+                }
+            });
+    }
+}
+
 export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Data Fetcher',
     menuGroup: 'Input',
-    description: 'Fetches data through an HTTP request.',
+    description: 'Fetches data by performing an HTTP request.',
     fields: {
         url: {
             label: 'Map URL',
@@ -40,90 +134,36 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Columns',
             type: FieldInputType.DATA_LIST,
             initialValue: []
-        },
-        fetchOnStartup: {
-            label: 'Fetch on Startup',
-            type: FieldInputType.CHECK,
-            initialValue: true
         }
     },
     ports: {
         in: {
-            selection: {
+            [PORT_SCHEDULER]: {
+                type: 'scheduler'
+            },
+            [PORT_DATA]: {
                 type: 'row'
             }
         },
         out: {
-            rows: {
+            [PORT_ROWS]: {
                 type: 'row[]'
             }
         }
     },
-    createProcessor({ next, node, params }): Processor {
-        const fetchOnStartup = node.fields.fetchOnStartup as boolean;
+    createProcessor(node, params): NodeProcessor {
         const mapUrlExpr = node.fields.url as string;
         const mapResponseExpr = node.fields.mapResponse as string;
         const method = node.fields.method as HttpMethodType;
         const headerEntries = node.fields.headers as Entry<string>[];
 
-        const mapResponse = expressionUtils.compileExpression(mapResponseExpr);
-        const mapUrl = expressionUtils.compileExpression(mapUrlExpr);
-        const mapHeaders = expressionUtils.compileEntryMappers(headerEntries);
+        const reponseMapper = expressions.compileExpression(mapResponseExpr);
+        const urlMapper = expressions.compileExpression(mapUrlExpr);
+        const headersMapper = expressions.compileEntriesMapper(headerEntries);
 
-        let running = false;
-        let count = 0;
-
-        function doFetch(ctx: { [key: string]: unknown }) {
-            const url = asString(mapUrl(ctx));
-            if (!url) return;
-
-            const headers: { [key: string]: string } = {};
-            const headersArr = mapHeaders(ctx);
-            
-            for (const entry of headersArr) {
-                headers[entry.key] = asString(entry.value);
-            }
-            
-            headers.Accept = 'application/json'
-            const c = ++count;
-
-            fetch(url, {
-                method,
-                headers
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (running && count === c) {
-                        const ctx = Object.assign({}, params.variables);
-                        ctx.response = data;
-
-                        let rows = (mapResponse(ctx) || data) as { [key: string]: unknown }[];
-                        next('rows', createRows(rows));
-                    }
-                });
-        }
-
-        return {
-            onStart() {
-                running = true;
-                if (fetchOnStartup) {
-                    doFetch(params.variables);
-                }
-            },
-
-            onNext(inputs) {
-                const selection = (inputs.selection[0] || {}) as Row;
-                const ctx = Object.assign({}, params.variables);
-                ctx.selection = selection;
-                doFetch(ctx);
-            },
-
-            onStop() {
-                running = false;
-            }
-        }
+        return new DataFetcherProcessor(params.variables, method, urlMapper, headersMapper, reponseMapper)
     },
-    mapContext({ node }): ChartContext {
+    mapContext(node): ChartContext {
         const columns = node.fields.columns as string[];
         return {
             columns: columns

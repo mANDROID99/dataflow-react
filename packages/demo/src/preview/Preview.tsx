@@ -21,7 +21,7 @@ type Props = {
 }
 
 function renderView(viewConfig: ViewConfig) {
-    if (viewConfig.viewType === ViewType.CHART) {
+    if (viewConfig.type === ViewType.CHART) {
         return (
             <ChartPreview
                 chartConfig={viewConfig}

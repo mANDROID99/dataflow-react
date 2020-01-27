@@ -1,22 +1,70 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../chartContext";
-import { ChartDataPoint, EMPTY_ROWS, Rows } from "../../types/valueTypes";
+import { ChartDataPoint, RowsValue } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
+import { NodeType } from "../nodes";
+
+const PORT_ROWS = 'rows';
+const PORT_POINTS = 'points';
+
+class DataPointNodeProcessor implements NodeProcessor {
+    private sub?: (value: unknown) => void;
+
+    constructor(
+        private readonly ctx: { [key: string]: unknown },
+        private readonly xMapper: expressions.Mapper,
+        private readonly yMapper: expressions.Mapper,
+        private readonly rMapper: expressions.Mapper,
+        private readonly colorMapper: expressions.Mapper
+    ) { }
+
+    get type(): string {
+        return NodeType.DATA_POINTS;
+    }
+
+    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+        if (portIn === PORT_ROWS) {
+            processor.subscribe(portOut, this.onNext.bind(this));
+        }
+    }
+
+    subscribe(portName: string, sub: (value: unknown) => void): void {
+        if (portName === PORT_POINTS) {
+            this.sub = sub;
+        }
+    }
+
+    private onNext(value: unknown) {
+        if (!this.sub) return;
+
+        const r = value as RowsValue;
+        const points: ChartDataPoint[] = r.rows.map((row, i): ChartDataPoint => {
+            const ctx = rowToEvalContext(row, i, this.ctx);
+            const x = asValue(this.xMapper(ctx), 0);
+            const y = asValue(this.yMapper(ctx), 0);
+            const r = asNumber(this.rMapper(ctx));
+            const color = asString(this.colorMapper(ctx));
+            return { x, y, r, color, row }
+        });
+
+        this.sub(points);
+    }
+}
 
 export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Data-Points',
     menuGroup: 'Chart',
-    description: 'Transforms rows to the points of the dataset.',
+    description: 'Transforms rows to points for the dataset.',
     ports: {
         in: {
-            rows: {
+            [PORT_ROWS]: {
                 type: 'row[]'
             }
         },
         out: {
-            points: {
+            [PORT_POINTS]: {
                 type: 'datapoint[]'
             }
         }
@@ -61,31 +109,17 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             })
         }
     },
-    createProcessor({ next, node, params }) {
+    createProcessor(node, params) {
         const mapXExpr = node.fields.x as ColumnMapperInputValue;
         const mapYExpr = node.fields.y as ColumnMapperInputValue;
         const mapRExpr = node.fields.r as ColumnMapperInputValue;
         const mapColorExpr = node.fields.color as ColumnMapperInputValue;
 
-        const mapX = expressionUtils.compileColumnMapper(mapXExpr, 'row');
-        const mapY = expressionUtils.compileColumnMapper(mapYExpr, 'row');
-        const mapR = expressionUtils.compileColumnMapper(mapRExpr, 'row');
-        const mapColor = expressionUtils.compileColumnMapper(mapColorExpr, 'row');
+        const mapX = expressions.compileColumnMapper(mapXExpr, 'row');
+        const mapY = expressions.compileColumnMapper(mapYExpr, 'row');
+        const mapR = expressions.compileColumnMapper(mapRExpr, 'row');
+        const mapColor = expressions.compileColumnMapper(mapColorExpr, 'row');
 
-        return {
-            onNext(inputs) {
-                const r = (inputs.rows[0] || EMPTY_ROWS) as Rows;
-                const points: ChartDataPoint[] = r.rows.map((row, i): ChartDataPoint => {
-                    const ctx = rowToEvalContext(row, i, params.variables);
-                    const x = asValue(mapX(ctx), 0);
-                    const y = asValue(mapY(ctx), 0);
-                    const r = asNumber(mapR(ctx));
-                    const color = asString(mapColor(ctx));
-                    return { x, y, r, color, row }
-                });
-    
-                next('points', points);
-            }
-        };
+        return new DataPointNodeProcessor(params.variables, mapX, mapY, mapR, mapColor);
     }
-}
+};

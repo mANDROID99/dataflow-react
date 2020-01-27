@@ -6,6 +6,10 @@ const CHAR_SPACE = 32;
 const CHAR_EQ = 61;
 const CHAR_DBL_QUOTE = 34;
 
+export type Mapper = (ctx: { [key: string]: unknown }) => unknown;
+
+export type EntriesMapper = (context: { [key: string]: unknown }) => Entry<unknown>[];
+
 function autoConvert(input: string): string | boolean | number {
     const t = input.trim();
     const charStart = t.charCodeAt(0);
@@ -128,7 +132,7 @@ export function compileColumnMapper(input: ColumnMapperInputValue, target?: stri
  * compile a list of entries to an evaluatable function
  * @param inputs 
  */
-export function compileEntryMappers(inputs: Entry<string>[]) {
+export function compileEntriesMapper(inputs: Entry<string>[]): EntriesMapper {
     const fns = inputs.map(input => compileExpression(input.value));
     
     return (context: { [key: string]: unknown }): Entry<unknown>[] => {

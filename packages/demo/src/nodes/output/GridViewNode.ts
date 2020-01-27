@@ -1,23 +1,63 @@
-import { GraphNodeConfig, FieldInputType, GraphNode } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, GraphNode, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { ViewType, EMPTY_ROWS, Rows } from "../../types/valueTypes";
+import { ViewType, RowsValue, ViewConfig } from "../../types/valueTypes";
+import { NodeType } from "../nodes";
 
 function getDefaultViewName(node: GraphNode) {
     return 'grid-' + node.id;
 }
 
-export const GRID_OUTPUT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
-    title: 'Grid Output',
+const PORT_ROWS = 'rows';
+const PORT_ON_CLICK = 'onClick';
+
+class GridViewProcessor implements NodeProcessor {
+    private onClickSub?: (value: unknown) => void;
+
+    constructor(
+        private readonly viewName: string,
+        private readonly renderView: ((viewName: string, viewConfig: ViewConfig) => void) | undefined
+    ) { }
+
+    get type(): string {
+        return NodeType.GRID_VIEW;
+    }
+
+    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+        if (portIn === PORT_ROWS) {
+            processor.subscribe(portOut, this.onNext.bind(this));
+        }
+    }
+
+    subscribe(portName: string, sub: (value: unknown) => void): void {
+        if (portName === PORT_ON_CLICK) {
+            this.onClickSub = sub;
+        }
+    }
+
+    private onNext(value: unknown) {
+        const rows = value as RowsValue;
+
+        if (this.renderView) {
+            this.renderView(this.viewName, {
+                type: ViewType.GRID,
+                rows: rows.rows
+            });
+        }
+    }
+}
+
+export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
+    title: 'Grid View',
     menuGroup: 'Output',
-    description: 'Displays the data as a grid.',
+    description: 'Displays the data as a grid view.',
     ports: {
         in: {
-            rows: {
+            [PORT_ROWS]: {
                 type: 'row[]'
             }
         },
         out: {
-            onClick: {
+            [PORT_ON_CLICK]: {
                 type: 'row'
             }
         }
@@ -29,24 +69,13 @@ export const GRID_OUTPUT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: FieldInputType.TEXT
         }
     },
-    createProcessor({ node, params }) {
-        let gridName = node.fields.name as string;
+    createProcessor(node, params) {
+        let viewName = node.fields.name as string;
 
-        if (!gridName) {
-            gridName = getDefaultViewName(node);
+        if (!viewName) {
+            viewName = getDefaultViewName(node);
         }
 
-        return {
-            onNext(inputs) {
-                const r = (inputs.rows[0] || EMPTY_ROWS) as Rows;
-
-                if (params.renderView) {
-                    params.renderView(gridName, {
-                        viewType: ViewType.GRID,
-                        rows: r.rows
-                    });
-                }
-            }
-        };
+        return new GridViewProcessor(viewName, params.renderView);
     }
 }

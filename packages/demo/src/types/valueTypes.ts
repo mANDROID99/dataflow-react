@@ -22,7 +22,7 @@ export type Row = {
     [key: string]: unknown;
 }
 
-export type Rows = {
+export type RowsValue = {
     type: ValueType.ROWS;
     rows: Row[];
 }
@@ -34,7 +34,7 @@ export type RowGroup = {
     rows: Row[];
 }
 
-export type RowGroups = {
+export type RowGroupsValue = {
     type: ValueType.ROW_GROUPS,
     groups: RowGroup[];
 }
@@ -77,9 +77,9 @@ export enum ViewType {
 }
 
 export type ChartViewConfig = {
-    viewType: ViewType.CHART;
-    type: string;
-    dataSets: ChartDataSet[];
+    type: ViewType.CHART;
+    chartType: string;
+    datasets: ChartDataSet[];
     xAxes: ChartAxisConfig[];
     yAxes: ChartAxisConfig[];
     params: Entry<unknown>[];
@@ -87,25 +87,25 @@ export type ChartViewConfig = {
 }
 
 export type GridViewConfig = {
-    viewType: ViewType.GRID,
+    type: ViewType.GRID,
     rows: Row[];
 }
 
 export type ViewConfig = ChartViewConfig | GridViewConfig;
 
-export const EMPTY_ROWS: Rows = {
+export const EMPTY_ROWS: RowsValue = {
     type: ValueType.ROWS,
     rows: []
 }
 
-export function createRows(rows: Row[]): Rows {
+export function createRowsValue(rows: Row[]): RowsValue {
     return {
         type: ValueType.ROWS,
         rows
     };
 }
 
-export function createRowGroups(groups: RowGroup[]): RowGroups {
+export function createRowGroupsValue(groups: RowGroup[]): RowGroupsValue {
     return {
         type: ValueType.ROW_GROUPS,
         groups

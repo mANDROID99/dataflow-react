@@ -1,16 +1,15 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressionUtils } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, NodeProcessor, expressions } from "@react-ngraph/core";
 
-import { Row, JoinType, EMPTY_ROWS, Rows, createRows } from "../../types/valueTypes";
+import { Row, JoinType, EMPTY_ROWS, RowsValue, createRowsValue } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
+import { NodeType } from "../nodes";
 
 type KeyExtractor = (row: Row, i: number) => string;
 
 function merge(left: Row, right: Row): Row {
-    const values = Object.assign({}, left.values, right.values);
-    // TODO: groups?
-    return { values };
+    return Object.assign({}, left, right);
 }
 
 function rowsToLookup(rows: Row[], keyFn: KeyExtractor) {
@@ -87,21 +86,103 @@ function joinFull(left: Row[], right: Row[], keyLeftFn: KeyExtractor, keyRightFn
     return result;
 }
 
+const PORT_LEFT = 'left';
+const PORT_RIGHT = 'right';
+const PORT_ROWS = 'rows';
+
+class JoinNodeProcessor implements NodeProcessor {
+    private sub?: (value: unknown) => void;
+    private left?: Row[];
+    private right?: Row[];
+
+    constructor(
+        private readonly joinType: JoinType,
+        private readonly keyLeftMapper: expressions.Mapper,
+        private readonly keyRightMapper: expressions.Mapper,
+        private readonly context: { [key: string]: unknown }
+    ) {
+        this.extractKeyLeft = this.extractKeyLeft.bind(this);
+        this.extractKeyRight = this.extractKeyRight.bind(this);
+    }
+
+    get type(): string {
+        return NodeType.JOIN;
+    }
+    
+    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+        if (portIn === PORT_LEFT) {
+            processor.subscribe(portOut, this.onNextLeft.bind(this));
+
+        } else if (portIn === PORT_RIGHT) {
+            processor.subscribe(portOut, this.onNextRight.bind(this));
+        }
+    }
+
+    subscribe(portName: string, sub: (value: unknown) => void): void {
+        if (portName === PORT_ROWS) {
+            this.sub = sub;
+        }
+    }
+
+    private onNextLeft(value: unknown) {
+        this.left = (value as RowsValue).rows;
+        this.update();
+    }
+
+    private onNextRight(value: unknown) {
+        this.right = (value as RowsValue).rows;
+        this.update();
+    }
+
+    private update() {
+        if (!this.sub || !this.left || !this.right) {
+            return;
+        }
+
+        let rows: Row[];
+        switch (this.joinType) {
+            case JoinType.INNER:
+                rows = joinInner(this.left, this.right, this.extractKeyLeft, this.extractKeyRight);
+                break;
+
+            case JoinType.LEFT:
+                rows = joinLeft(this.left, this.right, this.extractKeyLeft, this.extractKeyRight);
+                break;
+            
+            case JoinType.FULL:
+                rows = joinFull(this.left, this.right, this.extractKeyLeft, this.extractKeyRight);
+                break;
+        }
+
+        this.sub(createRowsValue(rows));
+    }
+
+    private extractKeyLeft(row: Row, index: number): string {
+        const ctx = rowToEvalContext(row, index, this.context);
+        return asString(this.keyLeftMapper(ctx));
+    }
+
+    private extractKeyRight(row: Row, index: number): string {
+        const ctx = rowToEvalContext(row, index, this.context);
+        return asString(this.keyRightMapper(ctx));
+    }
+}
+
 export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Join',
     menuGroup: 'Transform',
-    description: 'Joins two row-sets together based on a key.',
+    description: 'Joins two tables together based on a key.',
     ports: {
         in: {
-            left: {
+            [PORT_LEFT]: {
                 type: 'row[]'
             },
-            right: {
+            [PORT_RIGHT]: {
                 type: 'row[]'
             }
         },
         out: {
-            rows: {
+            [PORT_ROWS]: {
                 type: 'row[]'
             }
         }
@@ -140,48 +221,15 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             }
         }
     },
-    createProcessor({ next, node, params }) {
+    createProcessor(node, params) {
         const joinType = node.fields.joinType as JoinType;
+        
         const joinKeyLeftExpr = node.fields.joinKeyLeft as ColumnMapperInputValue;
+        const leftKeyMapper = expressions.compileColumnMapper(joinKeyLeftExpr, 'row');
+        
         const joinKeyRightExpr = node.fields.joinKeyRight as ColumnMapperInputValue;
-        const mapJoinKeyLeft = expressionUtils.compileColumnMapper(joinKeyLeftExpr, 'row');
-        const mapJoinKeyRight = expressionUtils.compileColumnMapper(joinKeyRightExpr, 'row');
+        const rightKeyMapper = expressions.compileColumnMapper(joinKeyRightExpr, 'row');
 
-        function extractKeyLeft(row: Row, index: number): string {
-            const ctx = rowToEvalContext(row, index, params.variables);
-            return asString(mapJoinKeyLeft(ctx));
-        }
-
-        function extractKeyRight(row: Row, index: number): string {
-            const ctx = rowToEvalContext(row, index, params.variables);
-            return asString(mapJoinKeyRight(ctx));
-        }
-
-        return {
-            onNext(inputs) {
-                const l = (inputs.left[0] || EMPTY_ROWS) as Rows;
-                const r = (inputs.right[0] || EMPTY_ROWS) as Rows;
-
-                const left: Row[] = l.rows;
-                const right: Row[] = r.rows;
-
-                let rows: Row[];
-                switch (joinType) {
-                    case JoinType.INNER:
-                        rows = joinInner(left, right, extractKeyLeft, extractKeyRight);
-                        break;
-
-                    case JoinType.LEFT:
-                        rows = joinLeft(left, right, extractKeyLeft, extractKeyRight);
-                        break;
-                    
-                    case JoinType.FULL:
-                        rows = joinFull(left, right, extractKeyLeft, extractKeyRight);
-                        break;
-                }
-
-                next('rows', createRows(rows));
-            }
-        };
+        return new JoinNodeProcessor(joinType, leftKeyMapper, rightKeyMapper, params.variables);
     }
 };

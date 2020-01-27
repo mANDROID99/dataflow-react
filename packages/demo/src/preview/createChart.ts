@@ -129,11 +129,11 @@ export function createChartConfiguration(chartConfig: ChartViewConfig): Chart.Ch
     let datasets: Chart.ChartDataSets[];
     
     if (isCategoryData(chartConfig.xAxes)) {
-        labels = mapLabels(chartConfig.dataSets);
-        datasets = mapDataSets(chartConfig.dataSets, createCategoryDataMapper(labels));
+        labels = mapLabels(chartConfig.datasets);
+        datasets = mapDataSets(chartConfig.datasets, createCategoryDataMapper(labels));
 
     } else {
-        datasets = mapDataSets(chartConfig.dataSets, createPointDataMapper());
+        datasets = mapDataSets(chartConfig.datasets, createPointDataMapper());
     }
 
     const xAxes = mapAxes(false, chartConfig.xAxes);
@@ -141,7 +141,7 @@ export function createChartConfiguration(chartConfig: ChartViewConfig): Chart.Ch
     const onClick = mapOnClickCallback(chartConfig.events);
 
     const chartConfiguration: Chart.ChartConfiguration = {
-        type: chartConfig.type,
+        type: chartConfig.chartType,
         data: {
             datasets,
             labels

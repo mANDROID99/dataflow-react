@@ -26,7 +26,7 @@ export function computeGraphNodeContexts<Ctx, Params>(
             const ctx = context.context;
             
             if (nodeConfig.mapContext) {
-                return nodeConfig.mapContext({ node, params: baseParams, context: ctx });
+                return nodeConfig.mapContext(node, ctx, baseParams);
 
             } else {
                 return ctx;
@@ -83,7 +83,7 @@ export function computeGraphNodeContexts<Ctx, Params>(
         });
 
         if (nodeConfig.mapContext) {
-            return nodeConfig.mapContext({ node, context, params: baseParams });
+            return nodeConfig.mapContext(node, context, baseParams);
 
         } else {
             return context;

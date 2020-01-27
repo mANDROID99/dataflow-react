@@ -1,15 +1,54 @@
-import { GraphNodeConfig, FieldInputType, Entry, expressionUtils } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { AxisType, ChartAxisConfig } from "../../types/valueTypes";
+import { NodeType } from "../nodes";
+
+const PORT_AXIS = 'axis';
+
+class AxisNodeProcessor implements NodeProcessor {
+    private sub?: (value: unknown) => void;
+
+    constructor(
+        private readonly axisType: AxisType,
+        private readonly label: string,
+        private readonly params: Entry<unknown>[]
+    ) { }
+
+    get type(): string {
+        return NodeType.AXIS;
+    }
+
+    registerProcessor() { }
+
+    subscribe(port: string, sub: (value: unknown) => void): void {
+        if (port === PORT_AXIS) {
+            this.sub = sub;
+        }
+    }
+
+    onStart() {
+        if (!this.sub) {
+            return;
+        }
+
+        const axis: ChartAxisConfig = {
+            type: this.axisType,
+            label: this.label,
+            params: this.params
+        };
+        
+        this.sub(axis);
+    }
+}
 
 export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Axis',
     menuGroup: 'Chart',
-    description: 'Constructs a chart axis.',
+    description: 'Constructs an axis for the chart.',
     ports: {
         in: {},
         out: {
-            axis: {
+            [PORT_AXIS]: {
                 type: 'axis'
             }
         }
@@ -41,23 +80,12 @@ export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             ]
         }
     },
-    createProcessor({ next, node, params: { variables } }) {
-        const type = node.fields.type as AxisType;
+    createProcessor(node, params) {
+        const axisType = node.fields.type as AxisType;
         const label = node.fields.label as string;
-        const paramInputs = node.fields.params as Entry<string>[];
-        const mapParams = expressionUtils.compileEntryMappers(paramInputs);
-
-        return {
-            onStart() {
-                const params = mapParams(variables);
-                const axis: ChartAxisConfig = {
-                    type,
-                    label,
-                    params
-                };
-                
-                next('axis', axis);
-            }
-        };
+        const paramExprs = node.fields.params as Entry<string>[];
+        const paramsMapper = expressions.compileEntriesMapper(paramExprs);
+        const paramsMapped = paramsMapper(params.variables);
+        return new AxisNodeProcessor(axisType, label, paramsMapped);
     }
 };

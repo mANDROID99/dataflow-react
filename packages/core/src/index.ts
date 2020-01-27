@@ -6,11 +6,11 @@ export * from './types/graphConfigTypes';
 export * from './types/graphTemplateTypes';
 export * from './types/graphTypes';
 export * from './types/graphFieldInputTypes';
+export * from './types/processorTypes';
 
 // processor
 export { computeGraphNodeContexts } from './processor/computeGraphNodeContexts';
 export { createGraphNodeProcessors, runProcessors } from './processor/createGraphNodeProcessors';
-export { GraphNodeProcessor as NodeProcessor } from './processor/GraphNodeProcessor';
 
 // editor
 import GraphEditor from './editor/components/GraphEditor';
@@ -21,8 +21,8 @@ export { inputs } from './inputs/inputs';
 export { forms } from './forms/forms';
 
 // expressions
-import * as expressionUtils from './utils/expressionUtils';
-export { expressionUtils };
+import * as expressions from './utils/expressionUtils';
+export { expressions };
 
 // re-export jexl so the user can modify it with additional transforms etc.
 import jexl from 'jexl';

@@ -1,8 +1,56 @@
-import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressionUtils } from '@react-ngraph/core';
+import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from '../../chartContext';
 import { pushDistinct } from '../../utils/arrayUtils';
-import { Row, EMPTY_ROWS, Rows, createRows } from '../../types/valueTypes';
+import { Row, RowsValue, createRowsValue } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
+import { NodeType } from '../nodes';
+
+const PORT_ROWS = 'rows';
+
+class ComputeProcessor implements NodeProcessor {
+    private sub?: (value: unknown) => void;
+
+    constructor(
+        private readonly alias: string,
+        private readonly valueMapper: expressions.Mapper | undefined,
+        private readonly context: { [key: string]: unknown }
+    ) { }
+
+    get type(): string {
+        return NodeType.COMPUTE;
+    }
+    
+    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+        if (portIn === PORT_ROWS) {
+            processor.subscribe(portOut, this.onNext.bind(this))
+        }
+    }
+
+    subscribe(port: string, sub: (value: unknown) => void): void {
+        if (port === PORT_ROWS) {
+            this.sub = sub;
+        }
+    }
+
+    private onNext(value: unknown) {
+        if (!this.sub) return;
+        const rows = value as RowsValue;
+
+        const rowsMapped: Row[] = rows.rows.map((row, i) => {
+            const newRow: Row = Object.assign({}, row);
+            
+            if (this.valueMapper) {
+                const ctx = rowToEvalContext(row, i, this.context);
+                newRow[this.alias] = this.valueMapper(ctx);
+            }
+
+            return newRow;
+        });
+
+        const result = createRowsValue(rowsMapped);
+        this.sub(result);
+    }
+}
 
 export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Compute',
@@ -10,12 +58,12 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     description: 'Computes a value for each row.',
     ports: {
         in: {
-            rows: {
+            [PORT_ROWS]: {
                 type: 'row[]'
             }
         },
         out: {
-            out: {
+            [PORT_ROWS]: {
                 type: 'row[]'
             }
         }
@@ -36,30 +84,13 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: ''
         }
     },
-    createProcessor({ next, node, params }) {
+    createProcessor(node, params) {
         const alias = node.fields.alias as string;
         const mapValueExpr = node.fields.value as ColumnMapperInputValue;
-        const mapValue = expressionUtils.compileColumnMapper(mapValueExpr, 'row');
-
-        return {
-            onNext(inputs) {
-                const r = (inputs.rows[0] || EMPTY_ROWS) as Rows;
-                const rows: Row[] = r.rows.map((row, i) => {
-                    const newRow: Row = Object.assign({}, row);
-                    
-                    if (mapValueExpr) {
-                        const ctx = rowToEvalContext(row, i, params.variables);
-                        newRow[alias] = mapValue(ctx);
-                    }
-    
-                    return newRow;
-                });
-    
-                next('out', createRows(rows));
-            }
-        };
+        const valueMapper = expressions.compileColumnMapper(mapValueExpr, 'row');
+        return new ComputeProcessor(alias, valueMapper, params.variables);
     },
-    mapContext({ node, context }) {
+    mapContext(node, context) {
         const alias = node.fields.alias as string;
         const columns = pushDistinct(context.columns, alias);
         return {

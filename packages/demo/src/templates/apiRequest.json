@@ -2,7 +2,7 @@
     "nodes": {
       "ab908581-a59b-4df6-9a36-c805cbaae191": {
         "id": "ab908581-a59b-4df6-9a36-c805cbaae191",
-        "type": "dataFetcher",
+        "type": "data-fetcher",
         "x": 107,
         "y": 35.79999923706055,
         "width": 170,
@@ -32,7 +32,7 @@
       },
       "d527c4c8-0d88-435c-a4b9-abdb8239f11a": {
         "id": "d527c4c8-0d88-435c-a4b9-abdb8239f11a",
-        "type": "chart",
+        "type": "chart-view",
         "x": 991,
         "y": 345.79999923706055,
         "width": 170,
@@ -66,7 +66,7 @@
       },
       "33ccdc95-f430-4f88-97ac-d19702dd9496": {
         "id": "33ccdc95-f430-4f88-97ac-d19702dd9496",
-        "type": "datapoint",
+        "type": "datapoints",
         "x": 348,
         "y": 91.79999923706055,
         "width": 170,
@@ -106,7 +106,7 @@
       },
       "6cf9e969-0161-41cd-b26a-4c9b0840d133": {
         "id": "6cf9e969-0161-41cd-b26a-4c9b0840d133",
-        "type": "dataset",
+        "type": "datasets",
         "x": 614,
         "y": 128.79999923706055,
         "width": 186,

@@ -1,5 +1,6 @@
 import { FieldInputProps } from "./graphFieldInputTypes";
 import { GraphNode } from "./graphTypes";
+import { NodeProcessor } from "./processorTypes";
 
 export type GraphFieldInputConfig = {
     component: React.ComponentType<FieldInputProps<any>>;
@@ -27,24 +28,6 @@ export type GraphNodePortConfig = {
     multi?: boolean;
 }
 
-export type ContextMapperParams<Ctx, Params> = {
-    node: GraphNode;
-    context: Ctx;
-    params: Params;
-}
-
-export type ProcessorCreationParams<Params> = {
-    node: GraphNode;
-    params: Params;
-    next: (portName: string, value: unknown) => void;
-}
-
-export interface Processor {
-    onStart?(): void;
-    onStop?(): void;
-    onNext?(inputs: { [key: string]: unknown[] }): void;
-}
-
 export type GraphNodeConfig<Ctx, Params = {}> = {
     menuGroup: string;
     title: string;
@@ -63,8 +46,8 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
             [key: string]: GraphNodePortConfig;
         };
     };
-    mapContext?: (params: ContextMapperParams<Ctx, Params>) => Ctx;
-    createProcessor: (params: ProcessorCreationParams<Params>) => Processor;
+    mapContext?: (node: GraphNode, context: Ctx, params: Params) => Ctx;
+    createProcessor: (node: GraphNode, params: Params) => NodeProcessor;
 }
 
 export type PortTypeConfig = {
