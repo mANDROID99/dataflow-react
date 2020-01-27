@@ -90,6 +90,7 @@ function joinFull(left: Row[], right: Row[], keyLeftFn: KeyExtractor, keyRightFn
 export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Join',
     menuGroup: 'Transform',
+    description: 'Joins two row-sets together based on a key.',
     ports: {
         in: {
             left: {

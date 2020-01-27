@@ -7,6 +7,7 @@ import { pointToEvalContext } from '../../utils/expressionUtils';
 export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Data-Sets' ,
     menuGroup: 'Chart',
+    description: 'Constructs the chart dataset.',
     width: 200,
     ports: {
         in: {

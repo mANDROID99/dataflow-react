@@ -9,6 +9,7 @@ function getDefaultViewName(node: GraphNode) {
 export const GRID_OUTPUT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Grid Output',
     menuGroup: 'Output',
+    description: 'Displays the data as a grid.',
     ports: {
         in: {
             rows: {

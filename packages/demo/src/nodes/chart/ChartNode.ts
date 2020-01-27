@@ -9,6 +9,7 @@ function getDefaultViewName(node: GraphNode) {
 export const CHART_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Chart',
     menuGroup: 'Chart',
+    description: 'Displays the data as a chart.',
     ports: {
         in: {
             datasets: {

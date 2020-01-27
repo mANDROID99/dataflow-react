@@ -5,6 +5,7 @@ import { Row, createRows } from "../../types/valueTypes";
 export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Data-Grid',
     menuGroup: 'Input',
+    description: 'Data-Grid of values.',
     fields: {
         data: {
             label: 'Data',

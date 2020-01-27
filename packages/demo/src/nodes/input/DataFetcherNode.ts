@@ -11,6 +11,7 @@ enum HttpMethodType {
 export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Data Fetcher',
     menuGroup: 'Input',
+    description: 'Fetches data through an HTTP request.',
     fields: {
         url: {
             label: 'Map URL',
@@ -96,7 +97,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                         const ctx = Object.assign({}, params.variables);
                         ctx.response = data;
 
-                        const rows = (mapResponse(ctx) || data) as { [key: string]: unknown }[];
+                        let rows = (mapResponse(ctx) || data) as { [key: string]: unknown }[];
                         next('rows', createRows(rows));
                     }
                 });

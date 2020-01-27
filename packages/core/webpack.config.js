@@ -1,7 +1,6 @@
 /* eslint-disable */
 
 const path = require('path');
-const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
@@ -39,20 +38,12 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
-        plugins: [
-            PnpWebpackPlugin
-        ]
+        extensions: ['.tsx', '.ts', '.js']
     },
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
         library: 'ngraph-editor',
         libraryTarget: 'umd'
-    },
-    resolveLoader: {
-        plugins: [
-            PnpWebpackPlugin.moduleLoader(module)
-        ]
     }
 };

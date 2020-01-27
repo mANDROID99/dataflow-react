@@ -69,7 +69,7 @@ function GraphNodeDragHandle(props: Props) {
     };
 
     return (
-        <div className="ngraph-node-drag-handle" onMouseDown={handleMouseDown}>
+        <div className="ngraph-header-icon ngraph-node-drag-handle" onMouseDown={handleMouseDown}>
             <FontAwesomeIcon icon="arrows-alt-h"/>
         </div>
     );

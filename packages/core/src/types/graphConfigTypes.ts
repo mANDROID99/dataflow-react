@@ -48,6 +48,7 @@ export interface Processor {
 export type GraphNodeConfig<Ctx, Params = {}> = {
     menuGroup: string;
     title: string;
+    description: string;
     maxWidth?: number;
     minWidth?: number;
     width?: number;

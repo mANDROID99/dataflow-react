@@ -6,6 +6,7 @@ import { rowToEvalContext } from "../../utils/expressionUtils";
 export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Sort By',
     menuGroup: 'Transform',
+    description: 'Sorts the rows by a key.',
     ports: {
         in: {
             rows: {

@@ -7,6 +7,7 @@ import { rowToEvalContext } from '../../utils/expressionUtils';
 export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Compute',
     menuGroup: 'Transform',
+    description: 'Computes a value for each row.',
     ports: {
         in: {
             rows: {

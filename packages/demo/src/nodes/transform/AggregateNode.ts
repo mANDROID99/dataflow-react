@@ -9,6 +9,7 @@ import { rowToEvalContext } from "../../utils/expressionUtils";
 export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Aggregate',
     menuGroup: 'Transform',
+    description: 'Applies an aggregation function.',
     ports: {
         in: {
             groups: {

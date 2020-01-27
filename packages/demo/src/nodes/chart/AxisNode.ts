@@ -5,6 +5,7 @@ import { AxisType, ChartAxisConfig } from "../../types/valueTypes";
 export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Axis',
     menuGroup: 'Chart',
+    description: 'Constructs a chart axis.',
     ports: {
         in: {},
         out: {

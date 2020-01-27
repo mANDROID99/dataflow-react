@@ -8,6 +8,7 @@ import { rowToEvalContext } from "../../utils/expressionUtils";
 export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Data-Points',
     menuGroup: 'Chart',
+    description: 'Transforms rows to the points of the dataset.',
     ports: {
         in: {
             rows: {

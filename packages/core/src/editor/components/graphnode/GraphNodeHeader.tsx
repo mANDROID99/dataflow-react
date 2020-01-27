@@ -7,6 +7,7 @@ import { GraphNode } from '../../../types/graphTypes';
 import { useDrag } from '../../../utils/hooks/useDrag';
 import GraphNodeDragHandle, { DragWidthState } from './GraphNodeDragHandle';
 import { setNodePos } from '../../../store/actions';
+import Tooltip from './Tooltip';
 
 export type DragPosState = {
     x: number;
@@ -68,9 +69,12 @@ function GraphNodeHeader(props: Props) {
 
     return (
         <div onMouseDown={handleMouseDownHeader} className="ngraph-node-header">
-            <span className="ngraph-node-title">
-                { graphNodeConfig.title }
-            </span>
+            <Tooltip description={graphNodeConfig.description}/>
+            <div className="ngraph-node-title">
+                <div className="ngraph-node-title-text">
+                    {graphNodeConfig.title}
+                </div>
+            </div>
             <GraphNodeDragHandle
                 nodeId={nodeId}
                 graphNodeWidth={graphNode.width}

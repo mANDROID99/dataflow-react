@@ -23,14 +23,40 @@
 }
 
 .ngraph-node-title {
+    display: flex;
     flex-grow: 1;
+    justify-content: center;
     margin-left: 1.5rem;
     text-align: center;
 }
 
+.ngraph-header-icon {
+    color: $grey-5;
+    width: 1.5rem;
+    text-align: center;
+    &:hover {
+        color: $grey-6;
+    }
+}
+
 .ngraph-node-drag-handle {
-    color: #b1b1b1;
     cursor: ew-resize;
+}
+
+.ngraph-tooltip {
+    position: relative;
+}
+
+.ngraph-tooltip-dropdown {
+    color: white;
+    position: absolute;
+    background-color: rgba($grey-0, 0.9);
+    padding: 0.75rem;
+    border-radius: 3px;
+    left: 0.5rem;
+    margin-top: 2px;
+    width: 150px;
+    text-align: left;
 }
 
 .ngraph-node.selected .ngraph-node-header {

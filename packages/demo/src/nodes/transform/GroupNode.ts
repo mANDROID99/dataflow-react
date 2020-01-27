@@ -8,6 +8,7 @@ import { rowToEvalContext } from "../../utils/expressionUtils";
 export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Group-By',
     menuGroup: 'Transform',
+    description: 'Groups the rows by a key.',
     ports: {
         in: {
             rows: {
