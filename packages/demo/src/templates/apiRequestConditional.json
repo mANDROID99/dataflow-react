@@ -15,7 +15,8 @@
           "id",
           "employee_name",
           "employee_salary"
-        ]
+        ],
+        "fetchOnStartup": true
       },
       "ports": {
         "in": {},

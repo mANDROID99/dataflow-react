@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import {
     Graph,
     GraphConfig,
@@ -60,13 +60,22 @@ export default function Preview(props: Props) {
         dispatch(setActivePreview(e.target.value));
     };
 
-    return (
-        <div className="preview-container">
+    function renderActivePreview() {
+        const previewIds = Object.keys(state.previews);
+        if (previewIds.length <= 1) return;
+
+        return (
             <select className="active-preview" value={state.previewId || ''} onChange={handleChangeActivePreview}>
-                {Object.keys(state.previews).map((previewId, index) => (
+                {previewIds.map((previewId, index) => (
                     <option key={index} value={previewId}>{previewId}</option>
                 ))}
             </select>
+        );
+    }
+
+    return (
+        <div className="preview-container">
+            {renderActivePreview()}
             {state.previewId ? renderView(state.previews[state.previewId]) : undefined}
         </div>
     )

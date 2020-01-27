@@ -39,6 +39,11 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Columns',
             type: FieldInputType.DATA_LIST,
             initialValue: []
+        },
+        fetchOnStartup: {
+            label: 'Fetch on Startup',
+            type: FieldInputType.CHECK,
+            initialValue: true
         }
     },
     ports: {
@@ -54,6 +59,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     createProcessor({ next, node, params }): Processor {
+        const fetchOnStartup = node.fields.fetchOnStartup as boolean;
         const mapUrlExpr = node.fields.url as string;
         const mapResponseExpr = node.fields.mapResponse as string;
         const method = node.fields.method as HttpMethodType;
@@ -99,7 +105,9 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         return {
             onStart() {
                 running = true;
-                doFetch(params.variables);
+                if (fetchOnStartup) {
+                    doFetch(params.variables);
+                }
             },
 
             onNext(inputs) {
