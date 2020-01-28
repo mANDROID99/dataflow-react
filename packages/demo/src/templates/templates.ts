@@ -6,7 +6,6 @@ import basicLine from './basicLine.json';
 import basicMultiline from './basicMultiLine.json';
 import basicGroupBy from './groupBy.json';
 import apiRequest from './apiRequest.json';
-import apiRequestConditional from './apiRequestConditional.json';
 import drilldown from './drilldown.json';
 
 const BASIC_GRID: GraphTemplate = {
@@ -39,12 +38,6 @@ const API_REQUEST: GraphTemplate = {
     data: apiRequest
 };
 
-const API_REQUEST_CONDITIONAL: GraphTemplate = {
-    id: 'api-request-conditional',
-    label: 'Api Request (Conditional)',
-    data: apiRequestConditional
-};
-
 const DRILLDOWN: GraphTemplate = {
     id: 'drilldown',
     label: 'Drilldown',
@@ -57,6 +50,5 @@ export const templates = [
     BASIC_MULTILINE,
     BASIC_GROUP_BY,
     API_REQUEST,
-    API_REQUEST_CONDITIONAL,
     DRILLDOWN
 ];

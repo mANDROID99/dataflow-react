@@ -15,6 +15,7 @@ export type FieldInputProps<T> = {
 
 export enum FieldInputType {
     TEXT = 'text',
+    NUMBER = 'number',
     SELECT = 'select',
     CHECK = 'check',
     COLUMN_MAPPER = 'column-mapper',

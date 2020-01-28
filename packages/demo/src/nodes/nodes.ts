@@ -10,6 +10,7 @@ import { AXIS_NODE } from "./chart/AxisNode";
 import { DATA_SET_NODE } from "./chart/DataSetNode";
 import { DATA_POINT_NODE } from "./chart/DataPointNode";
 import { GRID_VIEW_NODE } from "./output/GridViewNode";
+import { SCHEDULER_NODE } from "./input/SchedulerNode";
 
 export enum NodeType {
     DATA_GRID='data-grid',
@@ -23,7 +24,8 @@ export enum NodeType {
     DATA_SETS='datasets',
     JOIN='join',
     SORT_BY='sortBy',
-    AGGREGATE='aggregate'
+    AGGREGATE='aggregate',
+    SCHEDULER='scheduler'
 }
 
 export const NODES = {
@@ -38,5 +40,6 @@ export const NODES = {
     [NodeType.AXIS]: AXIS_NODE,
     [NodeType.DATA_SETS]: DATA_SET_NODE,
     [NodeType.DATA_POINTS]: DATA_POINT_NODE,
-    [NodeType.GRID_VIEW]: GRID_VIEW_NODE
-}
+    [NodeType.GRID_VIEW]: GRID_VIEW_NODE,
+    [NodeType.SCHEDULER]: SCHEDULER_NODE
+};

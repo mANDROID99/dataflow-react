@@ -83,7 +83,7 @@ class DataFetcherProcessor implements NodeProcessor {
         }
         
         headers.Accept = 'application/json';
-        const c = this.count++;
+        const c = ++this.count;
 
         fetch(url, {
             method: this.method,
@@ -139,7 +139,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     ports: {
         in: {
             [PORT_SCHEDULER]: {
-                type: 'scheduler'
+                type: 'event'
             },
             [PORT_DATA]: {
                 type: 'row'

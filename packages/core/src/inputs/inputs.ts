@@ -8,10 +8,14 @@ import ColumnMapperFieldInput from "./ColumnMapperFieldInput";
 import DataEntriesFieldInput from "./DataEntriesFieldInput";
 import DataListFieldInput from "./DataListFieldInput";
 import CheckFieldInput from "./CheckFieldInput";
+import NumberFieldInput from "./NumberFieldInput";
 
 export const inputs: { [type: string]: GraphFieldInputConfig } = {
     [FieldInputType.TEXT]: {
         component: TextFieldInput
+    },
+    [FieldInputType.NUMBER]: {
+        component: NumberFieldInput
     },
     [FieldInputType.SELECT]: {
         component: SelectFieldInput
