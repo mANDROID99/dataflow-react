@@ -1,7 +1,7 @@
 import { GraphNodeConfig, FieldInputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
-import { Row, createRowsValue } from "../../types/valueTypes";
+import { Row, createRowsValue, RowsValue } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
 
 enum HttpMethodType {
@@ -17,7 +17,7 @@ const PORT_SCHEDULER = 'scheduler';
 
 class DataFetcherProcessor implements NodeProcessor {
     private sub?: (value: unknown) => void;
-    private data?: Row;
+    private data?: Row[];
     private count = 0;
     private running = false;
 
@@ -57,7 +57,7 @@ class DataFetcherProcessor implements NodeProcessor {
     }
 
     private onNextData(value: unknown) {
-        this.data = value as Row;
+        this.data = (value as RowsValue).rows;
         this.update();
     }
 
@@ -142,7 +142,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 type: 'event'
             },
             [PORT_DATA]: {
-                type: 'row'
+                type: 'row[]'
             }
         },
         out: {

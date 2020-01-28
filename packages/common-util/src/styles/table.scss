@@ -1,0 +1,90 @@
+.ngraph-table-container {
+    bottom: 0;
+    position: absolute;
+    left: 0;
+    overflow: auto;
+    top: 0;
+    right: 0;
+}
+
+.ngraph-table {
+    display: grid;
+    user-select: none;
+}
+
+.ngraph-table-headers,
+.ngraph-table-row {
+    display: contents;
+}
+
+.ngraph-table-row {
+    background-color: white;
+}
+
+.ngraph-table-row:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+.ngraph-table-header-text,
+.ngraph-table-cell {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ngraph-table-cell {
+    background-color: inherit;
+    padding: 0.5rem;
+}
+
+.ngraph-table-row-handle {
+    border-right: 1px solid #e3e3e3;
+    cursor: pointer;
+    text-align: center;
+}
+
+.ngraph-table-header {
+    background-color: white;
+    display: flex;
+    font-weight: 700;
+    position: relative;
+    padding: 0.5rem;
+    position: sticky;
+    overflow: hidden;
+    top: 0;
+}
+
+.ngraph-table-header.dragging,
+.ngraph-table-row.dragging {
+    background-color: #d3e9ff;
+    z-index: 1;
+}
+
+.ngraph-table-header-handle {
+    cursor: pointer;
+    padding: 0 0.5rem;
+}
+
+.ngraph-table-header-resizer {
+    bottom: 0;
+    cursor: ew-resize;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3px;
+    background-color: grey;
+}
+
+.ngraph-table-header-text {
+    flex-grow: 1;  
+}
+
+.ngraph-table-footer {
+    padding: 0.25rem;
+
+    .ngraph-btn {
+        margin-right: 0.25rem;
+    }
+}

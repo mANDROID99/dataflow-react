@@ -53,6 +53,11 @@
     background-color: lighten($secondary, 10%);
 }
 
+.ngraph-btn:disabled {
+    cursor: not-allowed;
+    background-color: $grey-3 !important;
+}
+
 .ngraph-btn-icon {
     margin-left: 0.25rem;
 }

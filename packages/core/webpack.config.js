@@ -1,8 +1,8 @@
 /* eslint-disable */
 
 const path = require('path');
+const nodeExternals = require('webpack-node-externals');
 const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
-var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
     devtool: 'source-map',
@@ -16,7 +16,6 @@ module.exports = {
         rules: [
             {
                 test: /\.s?css$/,
-                exclude: /\.module.s?css$/,
                 use: [
                     'style-loader',
                     'css-loader',
@@ -52,7 +51,7 @@ module.exports = {
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
-        library: 'ngraph-editor',
+        library: 'ngraph-core',
         libraryTarget: 'umd'
     }
 };

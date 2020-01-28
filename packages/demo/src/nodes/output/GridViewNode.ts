@@ -1,4 +1,6 @@
 import { GraphNodeConfig, FieldInputType, GraphNode, NodeProcessor } from "@react-ngraph/core";
+import { Column } from "@react-ngraph/common-util";
+
 import { ChartContext, ChartParams } from "../../chartContext";
 import { ViewType, RowsValue, ViewConfig } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
@@ -35,12 +37,38 @@ class GridViewProcessor implements NodeProcessor {
     }
 
     private onNext(value: unknown) {
-        const rows = value as RowsValue;
+        const r = value as RowsValue;
+
+        const columns: Column[] = [];
+        const rows: unknown[][] = [];
+        const colIndices = new Map<string, number>();
+
+        for (const row of r.rows) {
+            const rowValues: unknown[] = [];
+
+            for (const key in row) {
+                let i = colIndices.get(key);
+                if (i == null) {
+                    colIndices.set(key, i = columns.length);
+                    columns.push({
+                        name: key,
+                        width: 100,
+                        minWidth: 30,
+                        maxWidth: 400
+                    });
+                }
+
+                rowValues[i] = row[key];
+            }
+            
+            rows.push(rowValues);
+        }
 
         if (this.renderView) {
             this.renderView(this.viewName, {
                 type: ViewType.GRID,
-                rows: rows.rows
+                rows,
+                columns
             });
         }
     }

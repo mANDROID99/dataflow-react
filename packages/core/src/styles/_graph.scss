@@ -9,7 +9,6 @@
     overflow: hidden;
     position: relative;
     width: 100%;
-    user-select: none;
 }
 
 .ngraph-editor * {
@@ -50,4 +49,8 @@
     flex-grow: 1;
     resize: none;
     margin: 1.5rem;
+}
+
+.ngraph-nodes {
+    user-select: none;
 }

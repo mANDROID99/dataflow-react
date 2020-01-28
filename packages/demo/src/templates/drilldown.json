@@ -291,7 +291,7 @@
       "y": 216.79999923706055,
       "width": 170,
       "fields": {
-        "url": "= \"https://jsonplaceholder.typicode.com/posts?userId=\" + data.userId",
+        "url": "= \"https://jsonplaceholder.typicode.com/posts?userId=\" + data[0].userId",
         "method": "GET",
         "headers": [],
         "mapResponse": "",

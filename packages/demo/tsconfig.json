@@ -4,7 +4,8 @@
     "declarationDir": "lib",
     "baseUrl": ".",
     "paths": {
-      "@react-ngraph/core": ["../core/src"]
+      "@react-ngraph/core": ["../core/src"],
+      "@react-ngraph/common-util": ["../common-util/src"]
     }
   },
   "include": [

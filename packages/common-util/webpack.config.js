@@ -1,19 +1,19 @@
 /* eslint-disable */
 
 const path = require('path');
+const nodeExternals = require('webpack-node-externals');
 const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     devtool: 'source-map',
-    entry: './src/index.tsx',
+    entry: './src/index.ts',
+    externals: [
+        nodeExternals({
+            modulesFromFile: true
+        })
+    ],
     module: {
         rules: [
-            {
-                test: /\.js$/,
-                use: ["source-map-loader"],
-                enforce: "pre"
-            },
             {
                 test: /\.s?css$/,
                 use: [
@@ -37,9 +37,6 @@ module.exports = {
             }
         ]
     },
-    devServer: {
-        contentBase: path.join(__dirname, 'dist')
-    },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         plugins: [
@@ -53,12 +50,8 @@ module.exports = {
     },
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
-    },
-    plugins: [
-        new HtmlWebpackPlugin({
-            title: 'Demo',
-            template: './src/index.html'
-        })
-    ]
+        path: path.resolve(__dirname, 'dist'),
+        library: 'ngraph-common',
+        libraryTarget: 'umd'
+    }
 };
