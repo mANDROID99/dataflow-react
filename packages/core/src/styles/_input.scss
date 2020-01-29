@@ -77,7 +77,6 @@
 
 // input
 
-.ngraph-input,
 .ngraph-input {
     color: $grey-7;
     width: 100%;
@@ -86,6 +85,7 @@
     border: none;
     border-radius: 3px;
     font-family: monospace;
+    min-width: 0;
 }
 
 .ngraph-input.code {

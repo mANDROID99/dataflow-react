@@ -2,7 +2,8 @@
   "name": "@react-ngraph/demo",
   "version": "0.1.0",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "webpack"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.26",
