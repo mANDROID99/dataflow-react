@@ -40,11 +40,11 @@ export enum TableActionType {
 
     INSERT_ROW_BEFORE='INSERT_ROW_BEFORE',
     INSERT_ROW_AFTER='INSERT_ROW_AFTER',
-    DELETE_SELECTED_ROWS='DELETE_SELECTED_ROWS',
+    DELETE_ROW='DELETE_SELECTED_ROWS',
 
     INSERT_COLUMN_BEFORE='INSERT_COLUMN_BEFORE',
     INSERT_COLUMN_AFTER='INSERT_COLUMN_AFTER',
-    DELETE_SELECTED_COLUMNS='DELETE_SELECTED_COLUMNS'
+    DELETE_COLUMN='DELETE_SELECTED_COLUMNS'
 }
 
 export type ResetAction = {
@@ -89,26 +89,32 @@ export type ResizeColumnAction = {
 
 export type InsertRowBeforeAction = {
     type: TableActionType.INSERT_ROW_BEFORE;
+    index: number;
 }
 
 export type InsertRowAfterAction = {
     type: TableActionType.INSERT_ROW_AFTER;
+    index: number;
 }
 
-export type DeleteSelectedRowsAction = {
-    type: TableActionType.DELETE_SELECTED_ROWS;
+export type DeleteRowAction = {
+    type: TableActionType.DELETE_ROW;
+    index: number;
 }
 
 export type InsertColumnBeforeAction = {
     type: TableActionType.INSERT_COLUMN_BEFORE;
+    index: number;
 }
 
 export type InsertColumnAfterAction = {
     type: TableActionType.INSERT_COLUMN_AFTER;
+    index: number;
 }
 
-export type DeleteSelectedColumnsAction = {
-    type: TableActionType.DELETE_SELECTED_COLUMNS;
+export type DeleteColumnAction = {
+    type: TableActionType.DELETE_COLUMN;
+    index: number;
 }
 
 export type TableAction =
@@ -121,10 +127,10 @@ export type TableAction =
     | ResizeColumnAction
     | InsertRowBeforeAction
     | InsertRowAfterAction
-    | DeleteSelectedRowsAction
+    | DeleteRowAction
     | InsertColumnBeforeAction
     | InsertColumnAfterAction
-    | DeleteSelectedColumnsAction;
+    | DeleteColumnAction;
 
 
 export function init(params: InitParams): TableState {
@@ -256,88 +262,49 @@ const handlers: { [K in TableActionType]: (state: TableState, action: Extract<Ta
         deselectAllRows(state);
     }),
 
-    [TableActionType.INSERT_ROW_BEFORE]: produce((state: TableState) => {
+    [TableActionType.INSERT_ROW_BEFORE]: produce((state: TableState, action: InsertRowBeforeAction) => {
         const rowTemplate = createRow(state.columns, state.i++);
-        state.rows = state.rows.flatMap(row => {
-            if (row.selected) {
-                row.selected = false;
-                return [rowTemplate, row];
-            } else {
-                return row;
-            }
-        });
+        state.rows.splice(action.index, 0, rowTemplate);
     }),
 
-    [TableActionType.INSERT_ROW_AFTER]: produce((state: TableState) => {
+    [TableActionType.INSERT_ROW_AFTER]: produce((state: TableState, action: InsertRowAfterAction) => {
         const rowTemplate = createRow(state.columns, state.i++);
-        state.rows = state.rows.flatMap(row => {
-            if (row.selected) {
-                row.selected = false;
-                return [row, rowTemplate];
-            } else {
-                return row;
-            }
-        });
+        state.rows.splice(action.index + 1, 0, rowTemplate);
     }),
 
-    [TableActionType.DELETE_SELECTED_ROWS]: produce((state: TableState) => {
-        state.rows = state.rows.filter(row => !row.selected);
+    [TableActionType.DELETE_ROW]: produce((state: TableState, action: DeleteRowAction) => {
+        state.rows.splice(action.index, 1);
     }),
 
-    [TableActionType.INSERT_COLUMN_BEFORE]: produce((state: TableState) => {
+    [TableActionType.INSERT_COLUMN_BEFORE]: produce((state: TableState, action: InsertColumnBeforeAction) => {
         const columnTemplate = state.columnTemplate;
-        const columns = state.columns;
-        const rows = state.rows;
         const columnState = createColumn(columnTemplate, state.j++);
-
-        for (let i = 0; i < columns.length; i++) {
-            if (columns[i].selected) {
-                columns[i].selected = false;
-                columns.splice(i, 0, columnState);
-
-                for (let j = 0, n = rows.length; j < n; j++) {
-                    rows[j].values.splice(i, 0, columnTemplate.initialValue);
-                }
-
-                ++i;
-            }
-        }
-    }),
-
-    [TableActionType.INSERT_COLUMN_AFTER]: produce((state: TableState) => {
-        const columnTemplate = state.columnTemplate;
-        const columns = state.columns;
-        const rows = state.rows;
-        const columnState = createColumn(columnTemplate, state.j++);
+        state.columns.splice(action.index, 0, columnState);
         
-        for (let i = 0; i < columns.length; i++) {
-            if (columns[i].selected) {
-                columns[i].selected = false;
-                columns.splice(i + 1, 0, columnState);
-
-                for (let j = 0, n = rows.length; j < n; j++) {
-                    rows[j].values.splice(i + 1, 0, columnTemplate.initialValue);
-                }
-
-                ++i;
-            }
+        const rows = state.rows;
+        for (let i = 0, n = rows.length; i < n; i++) {
+            rows[i].values.splice(action.index, 0, columnTemplate.initialValue);
         }
     }),
 
-    [TableActionType.DELETE_SELECTED_COLUMNS]: produce((state: TableState) => {
+    [TableActionType.INSERT_COLUMN_AFTER]: produce((state: TableState, action: InsertColumnAfterAction) => {
+        const columnTemplate = state.columnTemplate;
+        const columnState = createColumn(columnTemplate, state.j++);
+        state.columns.splice(action.index + 1, 0, columnState);
+        
+        const rows = state.rows;
+        for (let i = 0, n = rows.length; i < n; i++) {
+            rows[i].values.splice(action.index + 1, 0, columnTemplate.initialValue);
+        }
+    }),
+
+    [TableActionType.DELETE_COLUMN]: produce((state: TableState, action: DeleteColumnAction) => {
         const columns = state.columns;
         const rows = state.rows;
+        columns.splice(action.index, 1);
 
-        for (let i = 0; i < columns.length; i++) {
-            if (columns[i].selected) {
-                columns.splice(i, 1);
-
-                for (let j = 0, n = rows.length; j < n; j++) {
-                    rows[j].values.splice(i, 1);
-                }
-
-                --i;
-            }
+        for (let i = 0, n = rows.length; i < n; i++) {
+            rows[i].values.splice(action.index, 1);
         }
     })
 };
@@ -381,18 +348,26 @@ export function resizeColumn(col: number, width: number): ResizeColumnAction {
     return { type: TableActionType.RESIZE_COLUMN, col, width };
 }
 
-export function insertRowBefore(): InsertRowBeforeAction {
-    return { type: TableActionType.INSERT_ROW_BEFORE };
+export function insertColumnBefore(index: number): InsertColumnBeforeAction {
+    return { type: TableActionType.INSERT_COLUMN_BEFORE, index };
 }
 
-export function insertRowAfter(): InsertRowAfterAction {
-    return { type: TableActionType.INSERT_ROW_AFTER };
+export function insertColumnAfter(index: number): InsertColumnAfterAction {
+    return { type: TableActionType.INSERT_COLUMN_AFTER, index };
 }
 
-export function deleteSelectedRows(): DeleteSelectedRowsAction {
-    return { type: TableActionType.DELETE_SELECTED_ROWS };
+export function deleteColumn(index: number): DeleteColumnAction {
+    return { type: TableActionType.DELETE_COLUMN, index };
 }
 
-export function deleteSelectedColumns(): DeleteSelectedColumnsAction {
-    return { type: TableActionType.DELETE_SELECTED_COLUMNS };
+export function insertRowBefore(index: number): InsertRowBeforeAction {
+    return { type: TableActionType.INSERT_ROW_BEFORE, index };
+}
+
+export function insertRowAfter(index: number): InsertRowAfterAction {
+    return { type: TableActionType.INSERT_ROW_AFTER, index };
+}
+
+export function deleteRow(index: number): DeleteRowAction {
+    return { type: TableActionType.DELETE_ROW, index };
 }

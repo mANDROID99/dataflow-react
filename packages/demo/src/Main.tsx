@@ -16,6 +16,7 @@ export default function Main() {
         <div className="App">
             <Provider store={store}>
                 <GraphEditor
+                    initialGraph={templates[0].data}
                     templates={templates}
                     graphConfig={GRAPH_CONFIG}
                     params={{ variables: VARIABLES }}

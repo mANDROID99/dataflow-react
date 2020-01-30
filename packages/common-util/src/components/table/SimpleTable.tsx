@@ -1,7 +1,5 @@
 import React, { useReducer, useEffect, useRef, useMemo } from 'react';
 
-import '../../styles/table.scss';
-
 import { Column } from './simpleTableTypes';
 import { tableReducer, reset, init } from './simpleTableReducer';
 import SimpleTableHeader from './SimpleTableHeader';

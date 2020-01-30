@@ -1,4 +1,5 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
+import { useStore } from 'react-redux';
 
 import { Graph } from '../../types/graphTypes';
 import { GraphConfig } from '../../types/graphConfigTypes';
@@ -16,9 +17,9 @@ import GraphHeader from '../../header/GraphHeader';
 import { graphContext, GraphContext } from '../graphEditorContext';
 import GraphEditorPreview from './preview/GraphEditorPreview';
 import GraphEditorNodes from './GraphEditorNodes';
-import { useStore } from 'react-redux';
 import { selectGraph } from '../../store/selectors';
 import { GraphNodePortRefs } from '../GraphNodePortRefs';
+import { loadGraph } from '../../store/actions';
 
 type Props<Ctx, P> = {
     modalRoot: HTMLElement;
@@ -32,10 +33,19 @@ type Props<Ctx, P> = {
 }
 
 function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
-    const { graphConfig, templates, modalRoot, renderPreview, onGraphChanged } = props;
+    const { initialGraph, graphConfig, templates, modalRoot, renderPreview, onGraphChanged } = props;
     const formConfigs = props.forms ?? forms;
     const store = useStore<StoreState>();
     
+    // load the graph into the store
+    const prevGraph = useRef<Graph>();
+    useEffect(() => {
+        if (initialGraph && initialGraph !== prevGraph.current) {
+            prevGraph.current = initialGraph;
+            store.dispatch(loadGraph(initialGraph));
+        }
+    });
+
     useEffect(() => {
         if (onGraphChanged) {
             let prevGraph = selectGraph(store.getState());
