@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 type Props = {
     show: boolean;
     onExit?: () => void;
-    render: (show: boolean, onAnimationEnd: () => void) => React.ReactElement;
+    children: (show: boolean, onExit: () => void) => React.ReactElement;
 }
 
-export default function Transition({ show, onExit, render }: Props): React.ReactElement | null {
+export default function Transition({ show, onExit, children }: Props): React.ReactElement | null {
     const [visible, setVisible] = useState(show);
 
     const onAnimationEnd = (): void => {
@@ -23,5 +23,5 @@ export default function Transition({ show, onExit, render }: Props): React.React
         if (show) setVisible(true);
     }, [show]);
 
-    return visible ? render(show, onAnimationEnd) : null;
+    return visible ? children(show, onAnimationEnd) : null;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SimpleTable, Column } from '@react-ngraph/common-util';
+import { SimpleTable, Column } from '@react-ngraph/core';
 import { GridViewConfig } from '../types/valueTypes';
 
 type Props = {
@@ -8,6 +8,8 @@ type Props = {
 
 const columnTemplate: Column = {
     name: '',
+    key: '',
+    editable: true,
     width: 100,
     minWidth: 30
 }
@@ -18,7 +20,7 @@ function GridPreview({ gridConfig }: Props) {
             <SimpleTable
                 columnTemplate={columnTemplate}
                 columns={gridConfig.columns}
-                rows={gridConfig.rows}
+                data={gridConfig.data}
             />
         </div>
     )

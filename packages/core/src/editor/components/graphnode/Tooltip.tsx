@@ -28,11 +28,13 @@ function Tooltip(props: Props) {
             onMouseOut={handleHideTooltip}
         >
             <FontAwesomeIcon icon="info-circle"/>
-            <Transition show={tooltipShowing} render={(show, onExit) => (
-                <div className="ngraph-tooltip-dropdown" style={{ animation: (show ? 'fadeIn' : 'fadeOut') + ' 0.25s' }} onAnimationEnd={onExit}>
-                    {props.description}
-                </div>
-            )}/>
+            <Transition show={tooltipShowing}>
+                {(show, onExit) => (
+                    <div className="ngraph-tooltip-dropdown" style={{ animation: (show ? 'fadeIn' : 'fadeOut') + ' 0.25s' }} onAnimationEnd={onExit}>
+                        {props.description}
+                    </div>
+                )}
+            </Transition>
         </div>
     );
 }

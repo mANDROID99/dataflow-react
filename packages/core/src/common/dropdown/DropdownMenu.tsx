@@ -1,8 +1,9 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { createPopper, Placement } from '@popperjs/core';
+import cn from 'classnames';
 
 import { MenuConfig, MenuOptionConfig } from './dropdownTypes';
-import { useClickOutside } from '../../hooks/useClickOutside';
+import { useClickOutside } from '../../utils/hooks/useClickOutside';
 
 type Props = {
     show: boolean;
@@ -48,7 +49,11 @@ function DropdownMenu(props: Props) {
                 {menu.title}
             </div>
             {menu.options.map((option, index) => (
-                <div key={index} className="ngraph-dropdown-menu-option" onClick={handleSelectOption.bind(null, option)}>
+                <div
+                    key={index}
+                    className={cn("ngraph-dropdown-menu-option", { disabled: !!option.disabled })}
+                    onClick={option.disabled ? undefined : handleSelectOption.bind(null, option)}
+                >
                     {option.label}
                 </div>
             ))}

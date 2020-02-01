@@ -1,7 +1,6 @@
 {
   "private": true,
   "workspaces": [
-    "packages/common-util",
     "packages/core",
     "packages/demo"
   ],

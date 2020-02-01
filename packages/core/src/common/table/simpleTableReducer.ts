@@ -5,14 +5,18 @@ export type ColumnState = {
     id: number;
     column: Column;
     width: number;
-    selected: boolean;
     editing: boolean;
+}
+
+export type CellState = {
+    value: unknown;
+    editing: boolean;
+    selected: boolean;
 }
 
 export type RowState = {
     id: number;
-    values: unknown[];
-    selected: boolean;
+    cells: CellState[];
 }
 
 export type TableState = {
@@ -26,22 +30,25 @@ export type TableState = {
 export type InitParams = {
     columnTemplate: Column;
     columns: Column[];
-    rows: unknown[][];
+    data: { [key: string]: unknown }[];
 }
 
 export enum TableActionType {
     RESET='RESET',
-    SET_ALL_ROWS_SELECTED='SELECT_ALL_ROWS',
-    SET_ROW_SELECTED='SET_ROW_SELECTED',
-    SET_COLUMN_SELECTED='SET_COLUMN_SELECTED',
     RESIZE_COLUMN='RESIZE_COLUMN',
     MOVE_ROW='MOVE_ROW',
     MOVE_COLUMN='MOVE_COLUMN',
+    SET_CELL_SELECTED='SET_CELL_SELECTED',
+    SET_CELL_VALUE='SET_CELL_VALUE',
+    SET_CELL_EDITING='SET_CELL_EDITING',
+    CLICK_OUTSIDE_CELL='CLICK_OUTSIDE_CELL',
 
     INSERT_ROW_BEFORE='INSERT_ROW_BEFORE',
     INSERT_ROW_AFTER='INSERT_ROW_AFTER',
     DELETE_ROW='DELETE_SELECTED_ROWS',
 
+    SET_COLUMN_NAME='SET_COLUMN_NAME',
+    SET_COLUMN_NAME_EDITING='SET_COLUMN_NAME_EDITING',
     INSERT_COLUMN_BEFORE='INSERT_COLUMN_BEFORE',
     INSERT_COLUMN_AFTER='INSERT_COLUMN_AFTER',
     DELETE_COLUMN='DELETE_SELECTED_COLUMNS'
@@ -50,17 +57,6 @@ export enum TableActionType {
 export type ResetAction = {
     type: TableActionType.RESET;
     params: InitParams;
-}
-
-export type SetAllRowsSelectedAction = {
-    type: TableActionType.SET_ALL_ROWS_SELECTED;
-    selected: boolean;
-}
-
-export type SetRowSelectedAction = {
-    type: TableActionType.SET_ROW_SELECTED;
-    row: number;
-    selected: boolean;
 }
 
 export type MoveRowAction = {
@@ -75,16 +71,37 @@ export type MoveColumnAction = {
     to: number;
 }
 
-export type SetColumnSelectedAction = {
-    type: TableActionType.SET_COLUMN_SELECTED;
-    col: number;
-    selected: boolean;
-}
-
 export type ResizeColumnAction = {
     type: TableActionType.RESIZE_COLUMN;
     col: number;
     width: number;
+}
+
+export type SelectCellAction = {
+    type: TableActionType.SET_CELL_SELECTED;
+    i: number;
+    j: number;
+    selected: boolean;
+}
+
+export type SetCellEditingAction = {
+    type: TableActionType.SET_CELL_EDITING;
+    i: number;
+    j: number;
+    editing: boolean;
+}
+
+export type SetCellValueAction = {
+    type: TableActionType.SET_CELL_VALUE;
+    i: number;
+    j: number;
+    value: unknown;
+}
+
+export type ClickOutsideCellAction = {
+    type: TableActionType.CLICK_OUTSIDE_CELL;
+    i: number;
+    j: number;
 }
 
 export type InsertRowBeforeAction = {
@@ -102,6 +119,18 @@ export type DeleteRowAction = {
     index: number;
 }
 
+export type SetColumnNameAction = {
+    type: TableActionType.SET_COLUMN_NAME;
+    index: number;
+    name: string;
+}
+
+export type SetColumnNameEditingAction = {
+    type: TableActionType.SET_COLUMN_NAME_EDITING;
+    index: number;
+    editing: boolean;
+}
+
 export type InsertColumnBeforeAction = {
     type: TableActionType.INSERT_COLUMN_BEFORE;
     index: number;
@@ -117,82 +146,94 @@ export type DeleteColumnAction = {
     index: number;
 }
 
+
 export type TableAction =
     | ResetAction
     | MoveRowAction
     | MoveColumnAction
-    | SetAllRowsSelectedAction
-    | SetRowSelectedAction
-    | SetColumnSelectedAction
     | ResizeColumnAction
+    | SelectCellAction
+    | SetCellValueAction
+    | SetCellEditingAction
+    | ClickOutsideCellAction
     | InsertRowBeforeAction
     | InsertRowAfterAction
     | DeleteRowAction
+    | SetColumnNameAction
+    | SetColumnNameEditingAction
     | InsertColumnBeforeAction
     | InsertColumnAfterAction
     | DeleteColumnAction;
-
-
-export function init(params: InitParams): TableState {
-    const columnStates = params.columns.map<ColumnState>((column, index) => ({
-        id: index,
-        column,
-        editing: false,
-        selected: false,
-        width: column.width
-    }));
-
-    const rowStates = params.rows.map<RowState>((row, index) => ({
-        id: index,
-        values: row,
-        selected: false
-    }));
-
-    return {
-        columnTemplate: params.columnTemplate,
-        columns: columnStates,
-        rows: rowStates,
-        i: rowStates.length,
-        j: columnStates.length
-    };
-}
-
-function createRow(columns: ColumnState[], id: number): RowState {
-    const values = new Array<unknown>(columns.length);
-    for (let i = 0, n = columns.length; i < n; i++) {
-        values[i] = columns[i].column.initialValue;
-    }
-
-    return {
-        id,
-        selected: false,
-        values
-    }
-}
 
 function createColumn(columnTemplate: Column, id: number): ColumnState {
     return {
         id,
         column: columnTemplate,
         width: columnTemplate.width,
+        editing: false
+    };
+}
+
+function createCell(value: unknown): CellState {
+    return {
+        value,
         editing: false,
         selected: false
     };
 }
 
-function deselectAllRows(state: TableState) {
-    const rows = state.rows;
-    for (let i = 0, n = rows.length; i < n; i++) {
-        rows[i].selected = false;
+function createRow(columns: ColumnState[], id: number): RowState {
+    const values = new Array<CellState>(columns.length);
+    for (let i = 0, n = columns.length; i < n; i++) {
+        const value = columns[i].column.initialValue;
+        values[i] = createCell(value);
+    }
+
+    return {
+        id,
+        cells: values
     }
 }
 
-function deselectAllColumns(state: TableState) {
-    const cols = state.columns;
-    for (let i = 0, n = cols.length; i < n; i++) {
-        cols[i].selected = false;
-    }
+function updateCell(state: TableState, i: number, j: number, updater: (cell: CellState, row: RowState) => void) {
+    const row = state.rows[i];
+    if (!row) return;
+
+    const cell = row.cells[j];
+    if (!cell) return;
+
+    updater(cell, row);
 }
+
+function mapColumnsToColumnStates(columns: Column[]): ColumnState[] {
+    return columns.map<ColumnState>((column, i) => ({
+        id: i,
+        column,
+        editing: false,
+        selected: false,
+        width: column.width
+    }));
+}
+
+function mapDataToRowStates(data: { [key: string]: unknown }[], columns: Column[]): RowState[] {
+    return data.map<RowState>((datum, i) => {
+        const cells = columns.map<CellState>((column) => {
+            const value = column.key in datum ? datum[column.key] : column.initialValue;
+
+            return {
+                value,
+                editing: false,
+                selected: false
+            };
+        });
+
+        return {
+            id: i,
+            cells,
+            selected: false
+        };
+    });
+} 
 
 const handlers: { [K in TableActionType]: (state: TableState, action: Extract<TableAction, { type: K }>) => TableState } = {
     [TableActionType.RESET](state, action) {
@@ -226,40 +267,11 @@ const handlers: { [K in TableActionType]: (state: TableState, action: Extract<Ta
         const rows = state.rows;
         for (let i = 0, n = state.rows.length; i < n; i++) {
             const row = rows[i];
-            const value = row.values[from];
+            const value = row.cells[from];
 
-            row.values.splice(from, 1);
-            row.values.splice(to, 0, value);
+            row.cells.splice(from, 1);
+            row.cells.splice(to, 0, value);
         }
-    }),
-
-    [TableActionType.SET_ALL_ROWS_SELECTED]: produce((state: TableState, action: SetAllRowsSelectedAction) => {
-        const rows = state.rows;
-        for (let i = 0, n = rows.length; i < n; i++) {
-            rows[i].selected = action.selected;
-        }
-
-        deselectAllColumns(state);
-    }),
-
-    [TableActionType.SET_ROW_SELECTED]: produce((state: TableState, action: SetRowSelectedAction) => {
-        const row = state.rows[action.row];
-        
-        if (row) {
-            row.selected = action.selected;
-        }
-
-        deselectAllColumns(state);
-    }),
-
-    [TableActionType.SET_COLUMN_SELECTED]: produce((state: TableState, action: SetColumnSelectedAction) => {
-        const column = state.columns[action.col];
-        
-        if (column) {
-            column.selected = action.selected;
-        }
-
-        deselectAllRows(state);
     }),
 
     [TableActionType.INSERT_ROW_BEFORE]: produce((state: TableState, action: InsertRowBeforeAction) => {
@@ -276,6 +288,20 @@ const handlers: { [K in TableActionType]: (state: TableState, action: Extract<Ta
         state.rows.splice(action.index, 1);
     }),
 
+    [TableActionType.SET_COLUMN_NAME_EDITING]: produce((state: TableState, action: SetColumnNameEditingAction) => {
+        const column = state.columns[action.index];
+        if (!column) return;
+        column.editing = action.editing;
+    }),
+
+    [TableActionType.SET_COLUMN_NAME]: produce((state: TableState, action: SetColumnNameAction) => {
+        const column = state.columns[action.index];
+        if (!column) return;
+        
+        column.editing = false;
+        column.column.name = action.name;
+    }),
+
     [TableActionType.INSERT_COLUMN_BEFORE]: produce((state: TableState, action: InsertColumnBeforeAction) => {
         const columnTemplate = state.columnTemplate;
         const columnState = createColumn(columnTemplate, state.j++);
@@ -283,7 +309,8 @@ const handlers: { [K in TableActionType]: (state: TableState, action: Extract<Ta
         
         const rows = state.rows;
         for (let i = 0, n = rows.length; i < n; i++) {
-            rows[i].values.splice(action.index, 0, columnTemplate.initialValue);
+            const cell = createCell(columnTemplate.initialValue);
+            rows[i].cells.splice(action.index, 0, cell);
         }
     }),
 
@@ -294,7 +321,8 @@ const handlers: { [K in TableActionType]: (state: TableState, action: Extract<Ta
         
         const rows = state.rows;
         for (let i = 0, n = rows.length; i < n; i++) {
-            rows[i].values.splice(action.index + 1, 0, columnTemplate.initialValue);
+            const cell = createCell(columnTemplate.initialValue);
+            rows[i].cells.splice(action.index + 1, 0, cell);
         }
     }),
 
@@ -304,10 +332,50 @@ const handlers: { [K in TableActionType]: (state: TableState, action: Extract<Ta
         columns.splice(action.index, 1);
 
         for (let i = 0, n = rows.length; i < n; i++) {
-            rows[i].values.splice(action.index, 1);
+            rows[i].cells.splice(action.index, 1);
         }
+    }),
+
+    [TableActionType.SET_CELL_SELECTED]: produce((state: TableState, action: SelectCellAction) => {
+        updateCell(state, action.i, action.j, (cell) => {
+            cell.selected = action.selected;
+        });
+    }),
+
+    [TableActionType.SET_CELL_EDITING]: produce((state: TableState, action: SetCellEditingAction) => {
+        updateCell(state, action.i, action.j, (cell) => {
+            cell.editing = action.editing;
+        });
+    }),
+
+    [TableActionType.SET_CELL_VALUE]: produce((state: TableState, action: SetCellValueAction) => {
+        updateCell(state, action.i, action.j, (cell) => {
+            cell.selected = false;
+            cell.editing = false;
+            cell.value = action.value;
+        });
+    }),
+
+    [TableActionType.CLICK_OUTSIDE_CELL]: produce((state: TableState, action: ClickOutsideCellAction) => {
+        updateCell(state, action.i, action.j, (cell) => {
+            cell.selected = false;
+            cell.editing = false;
+        });
     })
 };
+
+export function init(params: InitParams): TableState {
+    const columnStates = mapColumnsToColumnStates(params.columns);
+    const rowStates = mapDataToRowStates(params.data, params.columns);
+
+    return {
+        columnTemplate: params.columnTemplate,
+        columns: columnStates,
+        rows: rowStates,
+        i: rowStates.length,
+        j: columnStates.length
+    };
+}
 
 export function tableReducer(state: TableState, action: TableAction) {
     const handler = handlers[action.type];
@@ -324,14 +392,6 @@ export function reset(params: InitParams): ResetAction {
     return { type: TableActionType.RESET, params };
 }
 
-export function setAllRowsSelected(selected: boolean): SetAllRowsSelectedAction {
-    return { type: TableActionType.SET_ALL_ROWS_SELECTED, selected };
-}
-
-export function setRowSelected(row: number, selected: boolean): SetRowSelectedAction {
-    return { type: TableActionType.SET_ROW_SELECTED, row, selected };
-}
-
 export function moveRow(from: number, to: number): MoveRowAction {
     return { type: TableActionType.MOVE_ROW, from, to };
 }
@@ -340,12 +400,16 @@ export function moveColumn(from: number, to: number): MoveColumnAction {
     return { type: TableActionType.MOVE_COLUMN, from, to };
 }
 
-export function setColumnSelected(col: number, selected: boolean): SetColumnSelectedAction {
-    return { type: TableActionType.SET_COLUMN_SELECTED, col, selected };
-}
-
 export function resizeColumn(col: number, width: number): ResizeColumnAction {
     return { type: TableActionType.RESIZE_COLUMN, col, width };
+}
+
+export function setColumnNameEditing(index: number, editing: boolean): SetColumnNameEditingAction {
+    return { type: TableActionType.SET_COLUMN_NAME_EDITING, index, editing };
+}
+
+export function setColumnName(index: number, name: string): SetColumnNameAction {
+    return { type: TableActionType.SET_COLUMN_NAME, index, name };
 }
 
 export function insertColumnBefore(index: number): InsertColumnBeforeAction {
@@ -370,4 +434,20 @@ export function insertRowAfter(index: number): InsertRowAfterAction {
 
 export function deleteRow(index: number): DeleteRowAction {
     return { type: TableActionType.DELETE_ROW, index };
+}
+
+export function setCellSelected(i: number, j: number, selected: boolean): SelectCellAction {
+    return { type: TableActionType.SET_CELL_SELECTED, i, j, selected };
+}
+
+export function setCellValue(i: number, j: number, value: unknown): SetCellValueAction {
+    return { type: TableActionType.SET_CELL_VALUE, i, j, value };
+}
+
+export function setCellEditing(i: number, j: number, editing: boolean): SetCellEditingAction {
+    return { type: TableActionType.SET_CELL_EDITING, i, j, editing };
+}
+
+export function clickOutsideCell(i: number, j: number): ClickOutsideCellAction {
+    return { type: TableActionType.CLICK_OUTSIDE_CELL, i, j };
 }

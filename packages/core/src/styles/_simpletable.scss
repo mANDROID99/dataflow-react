@@ -25,33 +25,42 @@
     background-color: #f8f8f8;
 }
 
-.ngraph-table-header-text,
+.ngraph-table-header,
 .ngraph-table-cell {
+    align-items: center;
+    display: flex;
+    height: 30px;
     min-width: 0;
+    padding: 0 0.5rem;
+}
+
+.ngraph-table-cell {
+    background-color: inherit;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.ngraph-table-cell {
-    background-color: inherit;
-    padding: 0.5rem;
+.ngraph-table-cell.selected {
+    border: 1px solid #2e94fb;
+    background-color: #2e94fb40;
+}
+
+.ngraph-table-cell-value {
+    width: 100%;
 }
 
 .ngraph-table-row-handle {
     border-right: 1px solid #e3e3e3;
     cursor: grab;
+    justify-content: center;
     text-align: center;
 }
 
 .ngraph-table-header {
     background-color: white;
-    display: flex;
     font-weight: 700;
     position: relative;
-    padding: 0.5rem;
-    // position: sticky;
-    top: 0;
 }
 
 .ngraph-table-header.dragging,
@@ -79,6 +88,8 @@
 .ngraph-table-header-text {
     flex-grow: 1;  
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .ngraph-table-footer {
@@ -86,5 +97,20 @@
 
     .ngraph-btn {
         margin-right: 0.25rem;
+    }
+}
+
+.ngraph-table-value-editor {
+    border: none;
+    background-color: $grey-2;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    min-width: 0;
+    transition: background-color 0.5s ease;
+    outline: none;
+
+    &:focus {
+        background-color: lighten($grey-2, 10%);
     }
 }

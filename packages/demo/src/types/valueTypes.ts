@@ -1,5 +1,4 @@
-import { Entry } from "@react-ngraph/core"
-import { Column } from "@react-ngraph/common-util"
+import { Column, Entry } from "@react-ngraph/core"
 
 export enum ValueType {
     ROWS = 'rows',
@@ -90,7 +89,7 @@ export type ChartViewConfig = {
 export type GridViewConfig = {
     type: ViewType.GRID;
     columns: Column[];
-    rows: unknown[][];
+    data: { [key: string]: unknown }[];
 }
 
 export type ViewConfig = ChartViewConfig | GridViewConfig;

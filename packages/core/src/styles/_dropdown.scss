@@ -22,7 +22,12 @@
     padding: 0.5rem 0.75rem;
     white-space: nowrap;
 
-    &:hover {
+    &.disabled {
+        background-color: rgba(black, 0.25);
+        color: $grey-5;
+    }
+
+    &:hover:not(.disabled) {
         background-color: $primary;
     }
 }

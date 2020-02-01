@@ -1,8 +1,12 @@
 import { useEffect } from 'react';
 
-export function useClickOutside(ref: React.RefObject<HTMLElement>, onClickOutside: () => void) {
+export function useClickOutside(ref: React.RefObject<HTMLElement>, onClickOutside?: () => void) {
     useEffect(() => {
-        const handleMouseUp = (e: MouseEvent) => {
+        if (!onClickOutside) {
+            return;
+        }
+
+        const handleMouseDown = (e: MouseEvent) => {
             let target = e.target as HTMLElement | null;
 
             while (target != null) {
@@ -17,9 +21,9 @@ export function useClickOutside(ref: React.RefObject<HTMLElement>, onClickOutsid
             onClickOutside();
         } 
 
-        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('mousedown', handleMouseDown);
         return () => {
-            document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('mousedown', handleMouseDown);
         }
     }, [ref, onClickOutside]);
 }

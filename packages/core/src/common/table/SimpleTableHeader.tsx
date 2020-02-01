@@ -5,10 +5,11 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faBars);
 
-import { TableAction, ColumnState, setColumnSelected, moveColumn, insertRowBefore, insertColumnAfter, insertColumnBefore, deleteColumn } from './simpleTableReducer';
+import { TableAction, ColumnState, moveColumn, insertColumnAfter, insertColumnBefore, deleteColumn, setColumnNameEditing, setColumnName } from './simpleTableReducer';
 import SimpleTableHeaderRezizer from './SimpleTableHeaderResizer';
 import Dropdown from '../dropdown/Dropdown';
 import { MenuConfig } from '../dropdown/dropdownTypes';
+import { useBufferedInput } from './useBufferedInput';
 
 type Props = {
     index: number;
@@ -23,10 +24,16 @@ type DragState = {
 
 const CLICK_GUARD_DIST = 3;
 
-function createMenu(index: number, dispatch: React.Dispatch<TableAction>): MenuConfig {
+function createMenu(index: number, nCols: number, dispatch: React.Dispatch<TableAction>): MenuConfig {
     return {
         title: 'Column',
         options: [
+            {
+                label: 'Edit Name',
+                action: () => {
+                    dispatch(setColumnNameEditing(index, true));
+                }
+            },
             {
                 label: 'Insert Before',
                 action: () => {
@@ -41,6 +48,7 @@ function createMenu(index: number, dispatch: React.Dispatch<TableAction>): MenuC
             },
             {
                 label: 'Delete',
+                disabled: nCols <= 1,
                 action: () => {
                     dispatch(deleteColumn(index));
                 }
@@ -49,7 +57,36 @@ function createMenu(index: number, dispatch: React.Dispatch<TableAction>): MenuC
     }
 }
 
-function SimpleTableHeader(props: Props) {
+type EditorProps = {
+    index: number;
+    value: string;
+    dispatch: React.Dispatch<TableAction>;
+}
+
+function SimpleTableHeaderEditor({ index, value, dispatch }: EditorProps) {
+    const ref = useRef<any>(null);
+
+    const onEditorSubmit = (value: string) => {
+        dispatch(setColumnName(index, value));
+    }
+
+    const onEditorCancel = () => {
+        dispatch(setColumnNameEditing(index, false));
+    }
+
+    const [input, setInput] = useBufferedInput(ref, value, onEditorSubmit, onEditorCancel);
+    return (
+        <input
+            className="ngraph-table-value-editor"
+            ref={ref}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+        />
+    );
+}
+
+
+function SimpleTableHeader({ index, numCols, columnState, dispatch }: Props) {
     const ref = useRef<HTMLDivElement>(null);
     const handleRef = useRef<HTMLDivElement>(null);
     const [drag, setDrag] = useState<DragState>();
@@ -69,10 +106,10 @@ function SimpleTableHeader(props: Props) {
             }
 
             // clamp
-            if (dx < 0 && props.index === 0) {
+            if (dx < 0 && index === 0) {
                 dx = 0;
                 
-            } else if (dx > 0 && props.index === props.numCols - 1) {
+            } else if (dx > 0 && index === numCols - 1) {
                 dx = 0;
             }
 
@@ -81,11 +118,11 @@ function SimpleTableHeader(props: Props) {
 
             if (dx > halfw) {
                 drag.mouseX = event.clientX;
-                props.dispatch(moveColumn(props.index, props.index + 1));
+                dispatch(moveColumn(index, index + 1));
 
             } else if (dx < -halfw) {
                 drag.mouseX = event.clientX;
-                props.dispatch(moveColumn(props.index, props.index - 1));
+                dispatch(moveColumn(index, index - 1));
             }
         }
 
@@ -101,7 +138,7 @@ function SimpleTableHeader(props: Props) {
             window.removeEventListener('mousemove', handleDrag);
             window.removeEventListener('mouseup', handleMouseUp);
         }
-    }, [drag, props.index]);
+    }, [drag, index]);
 
     const handleDragStart = (event: React.MouseEvent) => {
         clickGuard.current = false;
@@ -110,7 +147,6 @@ function SimpleTableHeader(props: Props) {
 
     const handleShowMenu = () => {
         if (!clickGuard.current) {
-            console.log('click');
             setShowMenu(!showMenu);
         }
     };
@@ -119,29 +155,33 @@ function SimpleTableHeader(props: Props) {
         setShowMenu(false);
     };
 
-    const onChangeSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
-        props.dispatch(setColumnSelected(props.index, event.target.checked));
-    }
-
     return (
         <div ref={ref} className={cn("ngraph-table-header", { dragging: drag != null })}>
-            <div className="ngraph-table-header-text">
-                {props.columnState.column.name}
-            </div>
+            {columnState.editing ? (
+                <SimpleTableHeaderEditor
+                    index={index}
+                    value={columnState.column.name}
+                    dispatch={dispatch}
+                />
+            ) : (
+                <div className="ngraph-table-header-text">
+                    {columnState.column.name}
+                </div>
+            )}
             <div  ref={handleRef} className="ngraph-table-header-handle" onMouseDown={handleDragStart} onClick={handleShowMenu}>
                 <FontAwesomeIcon icon="bars"/>
             </div>
             <SimpleTableHeaderRezizer
-                index={props.index}
-                dispatch={props.dispatch}
-                columnState={props.columnState}
+                index={index}
+                dispatch={dispatch}
+                columnState={columnState}
             />
             <Dropdown
                 placement="bottom"
                 show={showMenu}
                 onHide={handleHideMenu}
                 target={handleRef}
-                menu={createMenu.bind(null, props.index, props.dispatch)}
+                menu={createMenu.bind(null, index, numCols, dispatch)}
             />
         </div>
     );

@@ -24,6 +24,11 @@ export { forms } from './forms/forms';
 import * as expressions from './utils/expressionUtils';
 export { expressions };
 
+// simple-table
+import SimpleTable from './common/table/SimpleTable';
+export { SimpleTable };
+export * from './common/table/simpleTableTypes';
+
 // re-export jexl so the user can modify it with additional transforms etc.
 import jexl from 'jexl';
 export { jexl };

@@ -1,5 +1,6 @@
 export type MenuOptionConfig = {
     label: string;
+    disabled?: boolean;
     action: () => void;
 }
 

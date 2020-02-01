@@ -4,15 +4,19 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faBars);
 
-import { TableAction, setRowSelected, RowState, moveRow, insertRowBefore, insertRowAfter, deleteRow } from './simpleTableReducer';
+import { CellRenderer } from './simpleTableTypes';
+import { TableAction, RowState, moveRow, insertRowBefore, insertRowAfter, deleteRow, ColumnState } from './simpleTableReducer';
 import Dropdown from '../dropdown/Dropdown';
 import { MenuConfig } from '../dropdown/dropdownTypes';
+import SimpleTableCell from './SimpleTableCell';
 
 type Props = {
     index: number;
     numRows: number;
     rowState: RowState;
+    columnStates: ColumnState[];
     dispatch: React.Dispatch<TableAction>;
+    renderCell?: CellRenderer;
 }
 
 type DragState = {
@@ -21,11 +25,7 @@ type DragState = {
 
 const CLICK_GUARD_DIST = 3;
 
-function renderCell(value: unknown) {
-    return !value ? '' : '' + value;
-}
-
-function createMenu(index: number, dispatch: React.Dispatch<TableAction>): MenuConfig {
+function createMenu(index: number, nRows: number, dispatch: React.Dispatch<TableAction>): MenuConfig {
     return {
         title: 'Row',
         options: [
@@ -43,6 +43,7 @@ function createMenu(index: number, dispatch: React.Dispatch<TableAction>): MenuC
             },
             {
                 label: 'Delete',
+                disabled: nRows <= 1,
                 action: () => {
                     dispatch(deleteRow(index));
                 }
@@ -51,7 +52,7 @@ function createMenu(index: number, dispatch: React.Dispatch<TableAction>): MenuC
     }
 }
 
-function SimpleTableRow(props: Props) {
+function SimpleTableRow({ index, numRows, rowState, columnStates, dispatch, renderCell }: Props) {
     const ref = useRef<HTMLDivElement>(null);
     const [drag, setDrag] = useState<DragState>();
     const [showMenu, setShowMenu] = useState(false);
@@ -70,10 +71,10 @@ function SimpleTableRow(props: Props) {
             }
 
             // clamp
-            if (dy < 0 && props.index === 0) {
+            if (dy < 0 && index === 0) {
                 dy = 0;
                 
-            } else if (dy > 0 && props.index === props.numRows - 1) {
+            } else if (dy > 0 && index === numRows - 1) {
                 dy = 0;
             }
 
@@ -82,11 +83,11 @@ function SimpleTableRow(props: Props) {
 
             if (dy > halfh) {
                 drag.mouseY = event.clientY;
-                props.dispatch(moveRow(props.index, props.index + 1));
+                dispatch(moveRow(index, index + 1));
 
             } else if (dy < -halfh) {
                 drag.mouseY = event.clientY;
-                props.dispatch(moveRow(props.index, props.index - 1));
+                dispatch(moveRow(index, index - 1));
             }
         }
 
@@ -102,7 +103,7 @@ function SimpleTableRow(props: Props) {
             window.removeEventListener('mousemove', handleDrag);
             window.removeEventListener('mouseup', handleMouseUp);
         }
-    }, [drag, props.index]);
+    }, [drag, index, numRows]);
 
     const handleDragStart = (event: React.MouseEvent) => {
         clickGuard.current = false;
@@ -119,20 +120,22 @@ function SimpleTableRow(props: Props) {
     const handleHideMenu = () => {
         setShowMenu(false);
     };
-
-    const handleSelectedChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-        props.dispatch(setRowSelected(props.index, event.target.checked));
-    };
     
     return (
         <div className="ngraph-table-row">
             <div ref={ref} className="ngraph-table-cell ngraph-table-row-handle" onMouseDown={handleDragStart} onClick={handleShowMenu}>
                 <FontAwesomeIcon icon="bars"/>
             </div>
-            {props.rowState.values.map((value, i) => (
-                <div className="ngraph-table-cell" key={i}>
-                    {renderCell(value)}
-                </div>
+            {rowState.cells.map((cellState, j) => (
+                <SimpleTableCell
+                    key={j}
+                    i={index}
+                    j={j}
+                    renderCell={renderCell}
+                    cellState={cellState}
+                    column={columnStates[j].column}
+                    dispatch={dispatch}
+                />
             ))}
             <div className="ngraph-table-cell"/>
             <Dropdown
@@ -140,7 +143,7 @@ function SimpleTableRow(props: Props) {
                 show={showMenu}
                 onHide={handleHideMenu}
                 target={ref}
-                menu={createMenu.bind(null, props.index, props.dispatch)}
+                menu={createMenu.bind(null, index, numRows, dispatch)}
             />
         </div>
     );

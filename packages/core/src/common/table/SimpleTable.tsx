@@ -8,22 +8,22 @@ import SimpleTableRow from './SimpleTableRow';
 type Props = {
     columnTemplate: Column;
     columns: Column[];
-    rows: unknown[][];
+    data: { [key: string]: unknown }[];
 }
 
 function SimpleTable(props: Props) {
-    const params = { columnTemplate: props.columnTemplate, columns: props.columns, rows: props.rows };
+    const params = { columnTemplate: props.columnTemplate, columns: props.columns, data: props.data };
     const [state, dispatch] = useReducer(tableReducer, params, init);
 
     // reset the state when updated from outside
     const ref = useRef(params)
     useEffect(() => {
-        if (props.columns !== ref.current.columns || props.rows !== ref.current.rows) {
+        if (props.columns !== ref.current.columns || props.data !== ref.current.data) {
             ref.current.columns = props.columns;
-            ref.current.rows = props.rows;
+            ref.current.data = props.data;
             dispatch(reset(params));
         }
-    }, [props.columns, props.rows]);
+    }, [props.columns, props.data]);
 
     // table uses CSS grid layout. Compute here the gridTemplateColumns property. 
     const gridTemplateColumns: string = useMemo(() => {
@@ -33,11 +33,6 @@ function SimpleTable(props: Props) {
 
         return '30px ' +  cols.join(' ') + ' auto';
     }, [state.columns]);
-
-    // compute whether all rows are currently selected
-    const allRowsSelected = useMemo(() => {
-        return !state.rows.some(row => !row.selected);
-    }, [state.rows]);
 
     return (
         <div className="ngraph-table-container">
@@ -61,6 +56,7 @@ function SimpleTable(props: Props) {
                         index={index}
                         numRows={state.rows.length}
                         rowState={rowState}
+                        columnStates={state.columns}
                         dispatch={dispatch}
                     />
                 ))}
