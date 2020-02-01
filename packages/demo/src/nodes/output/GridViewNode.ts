@@ -39,31 +39,36 @@ class GridViewProcessor implements NodeProcessor {
         const r = value as RowsValue;
 
         const columns: Column[] = [];
-        const seen = new Set<string>();
+        const lookup = new Map<string, number>();
+        const data: unknown[][] = [];
 
         for (const row of r.rows) {
-            const rowValues: unknown[] = [];
+            const datum: unknown[] = [];
 
             for (const key in row) {
-                if (!seen.has(key)) {
-                    seen.add(key);
+                let i = lookup.get(key);
+                if (i == null) {
+                    lookup.set(key, i = columns.length);
                     columns.push({
                         name: key,
-                        key,
                         editable: true,
                         width: 100,
                         minWidth: 30,
                         maxWidth: 400
                     });
                 }
+
+                datum[i] = row[key];
             }
+
+            data.push(datum);
         }
 
         if (this.renderView) {
             this.renderView(this.viewName, {
                 type: ViewType.GRID,
                 columns,
-                data: r.rows,
+                rows: data,
             });
         }
     }

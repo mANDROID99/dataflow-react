@@ -4,19 +4,21 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faBars);
 
-import { CellRenderer } from './simpleTableTypes';
-import { TableAction, RowState, moveRow, insertRowBefore, insertRowAfter, deleteRow, ColumnState } from './simpleTableReducer';
-import Dropdown from '../dropdown/Dropdown';
+import { CellRenderer, Column } from './simpleTableTypes';
+import { TableAction, RowState, moveRow, insertRowBefore, insertRowAfter, deleteRow } from './simpleTableReducer';
 import { MenuConfig } from '../dropdown/dropdownTypes';
 import SimpleTableCell from './SimpleTableCell';
+import DropdownMenu from '../dropdown/DropdownMenu';
+import Tooltip from '../Tooltip';
 
 type Props = {
     index: number;
     numRows: number;
+    row: unknown[];
     rowState: RowState;
-    columnStates: ColumnState[];
+    columns: Column[];
     dispatch: React.Dispatch<TableAction>;
-    renderCell?: CellRenderer;
+    renderCell?: CellRenderer<any>;
 }
 
 type DragState = {
@@ -52,7 +54,15 @@ function createMenu(index: number, nRows: number, dispatch: React.Dispatch<Table
     }
 }
 
-function SimpleTableRow({ index, numRows, rowState, columnStates, dispatch, renderCell }: Props) {
+function SimpleTableRow({
+    index,
+    numRows,
+    row,
+    rowState,
+    columns,
+    dispatch,
+    renderCell
+}: Props) {
     const ref = useRef<HTMLDivElement>(null);
     const [drag, setDrag] = useState<DragState>();
     const [showMenu, setShowMenu] = useState(false);
@@ -133,18 +143,25 @@ function SimpleTableRow({ index, numRows, rowState, columnStates, dispatch, rend
                     j={j}
                     renderCell={renderCell}
                     cellState={cellState}
-                    column={columnStates[j].column}
+                    value={row[j]}
+                    column={columns[j]}
                     dispatch={dispatch}
                 />
             ))}
             <div className="ngraph-table-cell"/>
-            <Dropdown
-                placement="right"
-                show={showMenu}
-                onHide={handleHideMenu}
+            <Tooltip
                 target={ref}
-                menu={createMenu.bind(null, index, numRows, dispatch)}
-            />
+                show={showMenu}
+                options={{ placement: 'right' }}
+                onHide={handleHideMenu}
+            >
+                {() => (
+                    <DropdownMenu
+                        onHide={handleHideMenu}
+                        menu={createMenu(index, numRows, dispatch)}
+                    />
+                )}
+            </Tooltip>
         </div>
     );
 }

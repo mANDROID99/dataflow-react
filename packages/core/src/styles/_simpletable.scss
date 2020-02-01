@@ -1,4 +1,5 @@
 .ngraph-table-container {
+    background: white;
     bottom: 0;
     position: absolute;
     left: 0;
@@ -8,6 +9,7 @@
 }
 
 .ngraph-table {
+    color: #1b1b1b;
     display: grid;
     user-select: none;
 }
@@ -42,7 +44,7 @@
 }
 
 .ngraph-table-cell.selected {
-    border: 1px solid #2e94fb;
+    border: 1px solid $primary;
     background-color: #2e94fb40;
 }
 
@@ -82,7 +84,7 @@
     top: 0;
     right: 0;
     width: 3px;
-    background-color: grey;
+    background-color: $grey-1;
 }
 
 .ngraph-table-header-text {

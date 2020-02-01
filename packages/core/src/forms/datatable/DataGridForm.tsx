@@ -27,7 +27,7 @@ function DataGridForm(props: FormProps<DataGridInputValue>) {
         <div className={cn("ngraph-modal", { full: hasData })}>
             <div className="ngraph-modal-header">Data Grid</div>
             { hasData
-                ? <DataGridTable columns={data.columns} rows={data.rows} onHide={onHide} onSubmit={onSubmit}/>
+                ? <DataGridTable columnNames={data.columns} rows={data.rows} onHide={onHide} onSubmit={onSubmit}/>
                 : <DataGridDimensionsForm onChange={handleBuffChange} onHide={onHide}/>
             }
         </div>

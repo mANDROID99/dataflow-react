@@ -1,63 +1,83 @@
 import React, { useReducer, useEffect, useRef, useMemo } from 'react';
 
-import { Column } from './simpleTableTypes';
-import { tableReducer, reset, init } from './simpleTableReducer';
+import { Column, CellRenderer } from './simpleTableTypes';
+import { tableReducer, reset, init, InitParams } from './simpleTableReducer';
 import SimpleTableHeader from './SimpleTableHeader';
 import SimpleTableRow from './SimpleTableRow';
 
-type Props = {
+type Props<T> = {
     columnTemplate: Column;
     columns: Column[];
-    data: { [key: string]: unknown }[];
+    rows: T[][];
+    onChanged?: (columns: Column[], rows: T[][]) => void;
+    renderCell?: CellRenderer<T>;
 }
 
-function SimpleTable(props: Props) {
-    const params = { columnTemplate: props.columnTemplate, columns: props.columns, data: props.data };
-    const [state, dispatch] = useReducer(tableReducer, params, init);
+function SimpleTable<T>(props: Props<T>) {
+    const params: InitParams =  { columnTemplate: props.columnTemplate, columns: props.columns, rows: props.rows };
+    const [state, dispatch] = useReducer(tableReducer(props), params, init);
 
     // reset the state when updated from outside
-    const ref = useRef(params)
+    const prevRef = useRef(params)
     useEffect(() => {
-        if (props.columns !== ref.current.columns || props.data !== ref.current.data) {
-            ref.current.columns = props.columns;
-            ref.current.data = props.data;
+        if (props.columns !== prevRef.current.columns ||
+            props.rows !== prevRef.current.rows
+        ) {
+            prevRef.current.columns = props.columns;
+            prevRef.current.rows = props.rows;
             dispatch(reset(params));
         }
-    }, [props.columns, props.data]);
+    });
+
+    // notify parent when the data changed
+    const rowsRef = useRef(state.rows);
+    const colsRef = useRef(state.columns);
+    useEffect(() => {
+        if (props.onChanged &&
+            (rowsRef.current !== state.rows || colsRef.current !== state.columns)
+        ) {
+            rowsRef.current = state.rows;
+            colsRef.current = state.columns;
+            props.onChanged(state.columns, state.rows as T[][]);
+        }
+    })
 
     // table uses CSS grid layout. Compute here the gridTemplateColumns property. 
     const gridTemplateColumns: string = useMemo(() => {
-        const cols: string[] = state.columns.map((col, i) => {
+        const cols: string[] = state.columnStates.map((col, i) => {
             return col.width + 'px';
         });
 
         return '30px ' +  cols.join(' ') + ' auto';
-    }, [state.columns]);
+    }, [state.columnStates]);
 
     return (
         <div className="ngraph-table-container">
             <div className="ngraph-table" style={{ gridTemplateColumns }}>
                 <div className="ngraph-table-headers">
                     <div className="ngraph-table-header ngraph-table-row-handle"/>
-                    {state.columns.map((columnState, index) => (
+                    {state.columnStates.map((columnState, index) => (
                         <SimpleTableHeader
                             key={columnState.id}
                             index={index}
-                            numCols={state.columns.length}
+                            numCols={state.columnStates.length}
+                            column={state.columns[index]}
                             columnState={columnState}
                             dispatch={dispatch}
                         />
                     ))}
                     <div className="ngraph-table-header"/>
                 </div>
-                {state.rows.map((rowState, index) => (
+                {state.rowStates.map((rowState, index) => (
                     <SimpleTableRow
                         key={rowState.id}
                         index={index}
-                        numRows={state.rows.length}
+                        numRows={state.rowStates.length}
+                        row={state.rows[index]}
                         rowState={rowState}
-                        columnStates={state.columns}
+                        columns={state.columns}
                         dispatch={dispatch}
+                        renderCell={props.renderCell}
                     />
                 ))}
             </div>
@@ -65,4 +85,4 @@ function SimpleTable(props: Props) {
     );
 }
 
-export default React.memo(SimpleTable);
+export default React.memo(SimpleTable) as typeof SimpleTable;

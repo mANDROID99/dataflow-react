@@ -1,15 +1,14 @@
 import { produce } from 'immer';
 import { Column } from './simpleTableTypes';
+import { move } from '../../utils/arrayUtils';
 
 export type ColumnState = {
     id: number;
-    column: Column;
     width: number;
     editing: boolean;
 }
 
 export type CellState = {
-    value: unknown;
     editing: boolean;
     selected: boolean;
 }
@@ -19,18 +18,25 @@ export type RowState = {
     cells: CellState[];
 }
 
-export type TableState = {
+export type ComponentProps = {
     columnTemplate: Column;
-    columns: ColumnState[];
-    rows: RowState[];
-    i: number;
-    j: number;
+}
+
+export type TableState = {
+    columns: Column[];
+    rows: unknown[][];
+
+    columnStates: ColumnState[];
+    rowStates: RowState[];
+
+    ci: number;
+    cj: number;
 }
 
 export type InitParams = {
     columnTemplate: Column;
     columns: Column[];
-    data: { [key: string]: unknown }[];
+    rows: unknown[][];
 }
 
 export enum TableActionType {
@@ -41,7 +47,6 @@ export enum TableActionType {
     SET_CELL_SELECTED='SET_CELL_SELECTED',
     SET_CELL_VALUE='SET_CELL_VALUE',
     SET_CELL_EDITING='SET_CELL_EDITING',
-    CLICK_OUTSIDE_CELL='CLICK_OUTSIDE_CELL',
 
     INSERT_ROW_BEFORE='INSERT_ROW_BEFORE',
     INSERT_ROW_AFTER='INSERT_ROW_AFTER',
@@ -98,12 +103,6 @@ export type SetCellValueAction = {
     value: unknown;
 }
 
-export type ClickOutsideCellAction = {
-    type: TableActionType.CLICK_OUTSIDE_CELL;
-    i: number;
-    j: number;
-}
-
 export type InsertRowBeforeAction = {
     type: TableActionType.INSERT_ROW_BEFORE;
     index: number;
@@ -155,7 +154,6 @@ export type TableAction =
     | SelectCellAction
     | SetCellValueAction
     | SetCellEditingAction
-    | ClickOutsideCellAction
     | InsertRowBeforeAction
     | InsertRowAfterAction
     | DeleteRowAction
@@ -165,38 +163,35 @@ export type TableAction =
     | InsertColumnAfterAction
     | DeleteColumnAction;
 
-function createColumn(columnTemplate: Column, id: number): ColumnState {
+function createColumnState(column: Column, id: number): ColumnState {
     return {
         id,
-        column: columnTemplate,
-        width: columnTemplate.width,
-        editing: false
+        width: column.width,
+        editing: true
     };
 }
 
-function createCell(value: unknown): CellState {
+function createCellState(): CellState {
     return {
-        value,
         editing: false,
         selected: false
     };
 }
 
-function createRow(columns: ColumnState[], id: number): RowState {
-    const values = new Array<CellState>(columns.length);
-    for (let i = 0, n = columns.length; i < n; i++) {
-        const value = columns[i].column.initialValue;
-        values[i] = createCell(value);
-    }
-
+function createRowState(columns: Column[], id: number): RowState {
+    const cells = columns.map(createCellState);
     return {
         id,
-        cells: values
+        cells
     }
 }
 
-function updateCell(state: TableState, i: number, j: number, updater: (cell: CellState, row: RowState) => void) {
-    const row = state.rows[i];
+function createRow(columns: Column[]): unknown[] {
+    return columns.map(col => col.initialValue);
+}
+
+function updateCellState(state: TableState, i: number, j: number, updater: (cell: CellState, row: RowState) => void) {
+    const row = state.rowStates[i];
     if (!row) return;
 
     const cell = row.cells[j];
@@ -215,10 +210,10 @@ function mapColumnsToColumnStates(columns: Column[]): ColumnState[] {
     }));
 }
 
-function mapDataToRowStates(data: { [key: string]: unknown }[], columns: Column[]): RowState[] {
-    return data.map<RowState>((datum, i) => {
-        const cells = columns.map<CellState>((column) => {
-            const value = column.key in datum ? datum[column.key] : column.initialValue;
+function mapRowsToStates(rows: unknown[][], columns: Column[]): RowState[] {
+    return rows.map<RowState>((datum, i) => {
+        const cells = columns.map<CellState>((_, j) => {
+            const value = datum[j];
 
             return {
                 value,
@@ -235,156 +230,185 @@ function mapDataToRowStates(data: { [key: string]: unknown }[], columns: Column[
     });
 } 
 
-const handlers: { [K in TableActionType]: (state: TableState, action: Extract<TableAction, { type: K }>) => TableState } = {
-    [TableActionType.RESET](state, action) {
+
+const handlers: { [K in TableActionType]: (state: TableState, action: Extract<TableAction, { type: K }>, props: ComponentProps) => TableState } = {
+    [TableActionType.RESET](_, action) {
         return init(action.params);
     },
 
     [TableActionType.RESIZE_COLUMN]: produce((state: TableState, action: ResizeColumnAction) => {
-        const columnState = state.columns[action.col];
-        if (!columnState) return;
-
-        columnState.width = action.width;
+        const columnState = state.columnStates[action.col];
+        if (columnState) {
+            columnState.width = action.width;
+        }
     }),
 
     [TableActionType.MOVE_ROW]: produce((state: TableState, action: MoveRowAction) => {
         let to = action.to;
         let from = action.from;
-        const row = state.rows[from];
-
-        state.rows.splice(from, 1);
-        state.rows.splice(to, 0, row);
+        move(state.rowStates, from, to);
+        move(state.rows, from, to);
     }),
 
     [TableActionType.MOVE_COLUMN]: produce((state: TableState, action: MoveColumnAction) => {
         let to = action.to;
         let from = action.from;
-        const column = state.columns[from];
 
-        state.columns.splice(from, 1);
-        state.columns.splice(to, 0, column);
+        move(state.columnStates, from, to);
+        move(state.columns, from, to);
 
-        const rows = state.rows;
-        for (let i = 0, n = state.rows.length; i < n; i++) {
-            const row = rows[i];
-            const value = row.cells[from];
+        for (const rowState of state.rowStates) {
+            move(rowState.cells, from, to);
+        }
 
-            row.cells.splice(from, 1);
-            row.cells.splice(to, 0, value);
+        for (const row of state.rows) {
+            move(row, from, to);
         }
     }),
 
     [TableActionType.INSERT_ROW_BEFORE]: produce((state: TableState, action: InsertRowBeforeAction) => {
-        const rowTemplate = createRow(state.columns, state.i++);
-        state.rows.splice(action.index, 0, rowTemplate);
+        const rowState = createRowState(state.columns, state.ci++);
+        state.rowStates.splice(action.index, 0, rowState);
+
+        const row = createRow(state.columns)
+        state.rows.splice(action.index, 0, row);
     }),
 
     [TableActionType.INSERT_ROW_AFTER]: produce((state: TableState, action: InsertRowAfterAction) => {
-        const rowTemplate = createRow(state.columns, state.i++);
-        state.rows.splice(action.index + 1, 0, rowTemplate);
+        const rowState = createRowState(state.columns, state.ci++);
+        state.rowStates.splice(action.index + 1, 0, rowState);
+
+        const row = createRow(state.columns);
+        state.rows.splice(action.index + 1, 0, row);
     }),
 
     [TableActionType.DELETE_ROW]: produce((state: TableState, action: DeleteRowAction) => {
+        state.rowStates.splice(action.index, 1);
         state.rows.splice(action.index, 1);
     }),
 
     [TableActionType.SET_COLUMN_NAME_EDITING]: produce((state: TableState, action: SetColumnNameEditingAction) => {
-        const column = state.columns[action.index];
-        if (!column) return;
-        column.editing = action.editing;
-    }),
-
-    [TableActionType.SET_COLUMN_NAME]: produce((state: TableState, action: SetColumnNameAction) => {
-        const column = state.columns[action.index];
-        if (!column) return;
-        
-        column.editing = false;
-        column.column.name = action.name;
-    }),
-
-    [TableActionType.INSERT_COLUMN_BEFORE]: produce((state: TableState, action: InsertColumnBeforeAction) => {
-        const columnTemplate = state.columnTemplate;
-        const columnState = createColumn(columnTemplate, state.j++);
-        state.columns.splice(action.index, 0, columnState);
-        
-        const rows = state.rows;
-        for (let i = 0, n = rows.length; i < n; i++) {
-            const cell = createCell(columnTemplate.initialValue);
-            rows[i].cells.splice(action.index, 0, cell);
+        const column = state.columnStates[action.index];
+        if (column) {
+            column.editing = action.editing;
         }
     }),
 
-    [TableActionType.INSERT_COLUMN_AFTER]: produce((state: TableState, action: InsertColumnAfterAction) => {
-        const columnTemplate = state.columnTemplate;
-        const columnState = createColumn(columnTemplate, state.j++);
-        state.columns.splice(action.index + 1, 0, columnState);
+    [TableActionType.SET_COLUMN_NAME]: produce((state: TableState, action: SetColumnNameAction) => {
+        const columnState = state.columnStates[action.index];
+        if (columnState) {
+            columnState.editing = false;
+        }
+
+        const column = state.columns[action.index];
+        if (column) {
+            column.name = action.name;
+        }
+    }),
+
+    [TableActionType.INSERT_COLUMN_BEFORE]: produce((state: TableState, action: InsertColumnBeforeAction, props: ComponentProps) => {
+        const column = props.columnTemplate;
+        const columnState = createColumnState(column, state.cj++);
+
+        state.columnStates.splice(action.index, 0, columnState);
+        state.columns.splice(action.index, 0, column);
         
-        const rows = state.rows;
-        for (let i = 0, n = rows.length; i < n; i++) {
-            const cell = createCell(columnTemplate.initialValue);
-            rows[i].cells.splice(action.index + 1, 0, cell);
+        const cellState = createCellState();
+        for (const rowState of state.rowStates) {
+            rowState.cells.splice(action.index, 0, cellState);
+        }
+
+        const cell = column.initialValue;
+        for (const row of state.rows) {
+            row.splice(action.index, 0, cell);
+        }
+    }),
+
+    [TableActionType.INSERT_COLUMN_AFTER]: produce((state: TableState, action: InsertColumnAfterAction, props: ComponentProps) => {
+        const column = props.columnTemplate;
+        const columnState = createColumnState(column, state.cj++);
+
+        state.columnStates.splice(action.index + 1, 0, columnState);
+        state.columns.splice(action.index + 1, 0, column);
+
+        const cellState = createCellState();
+        for (const rowState of state.rowStates) {
+            rowState.cells.splice(action.index + 1, 0, cellState);
+        }
+
+        const cell = column.initialValue;
+        for (const row of state.rows) {
+            row.splice(action.index + 1, 0, cell);
         }
     }),
 
     [TableActionType.DELETE_COLUMN]: produce((state: TableState, action: DeleteColumnAction) => {
+        const columnStates = state.columnStates;
+        columnStates.splice(action.index, 1);
+
         const columns = state.columns;
-        const rows = state.rows;
         columns.splice(action.index, 1);
 
-        for (let i = 0, n = rows.length; i < n; i++) {
-            rows[i].cells.splice(action.index, 1);
+        for (const rowState of state.rowStates) {
+            rowState.cells.splice(action.index, 1);
+        }
+
+        for (const row of state.rows) {
+            row.splice(action.index, 1);
         }
     }),
 
     [TableActionType.SET_CELL_SELECTED]: produce((state: TableState, action: SelectCellAction) => {
-        updateCell(state, action.i, action.j, (cell) => {
-            cell.selected = action.selected;
+        updateCellState(state, action.i, action.j, (cellState) => {
+            cellState.selected = action.selected;
         });
     }),
 
     [TableActionType.SET_CELL_EDITING]: produce((state: TableState, action: SetCellEditingAction) => {
-        updateCell(state, action.i, action.j, (cell) => {
-            cell.editing = action.editing;
+        updateCellState(state, action.i, action.j, (cellState) => {
+            cellState.editing = action.editing;
         });
     }),
 
     [TableActionType.SET_CELL_VALUE]: produce((state: TableState, action: SetCellValueAction) => {
-        updateCell(state, action.i, action.j, (cell) => {
-            cell.selected = false;
-            cell.editing = false;
-            cell.value = action.value;
+        updateCellState(state, action.i, action.j, (cellState) => {
+            cellState.selected = false;
+            cellState.editing = false;
         });
-    }),
 
-    [TableActionType.CLICK_OUTSIDE_CELL]: produce((state: TableState, action: ClickOutsideCellAction) => {
-        updateCell(state, action.i, action.j, (cell) => {
-            cell.selected = false;
-            cell.editing = false;
-        });
+        const row = state.rows[action.i];
+        if (row) {
+            row[action.j] = action.value;
+        }
     })
 };
 
 export function init(params: InitParams): TableState {
     const columnStates = mapColumnsToColumnStates(params.columns);
-    const rowStates = mapDataToRowStates(params.data, params.columns);
+    const rowStates = mapRowsToStates(params.rows, params.columns);
 
     return {
-        columnTemplate: params.columnTemplate,
-        columns: columnStates,
-        rows: rowStates,
-        i: rowStates.length,
-        j: columnStates.length
+        columns: params.columns,
+        rows: params.rows,
+
+        columnStates: columnStates,
+        rowStates: rowStates,
+
+        ci: rowStates.length,
+        cj: columnStates.length
     };
 }
 
-export function tableReducer(state: TableState, action: TableAction) {
-    const handler = handlers[action.type];
+export function tableReducer(props: ComponentProps) {
+    return (state: TableState, action: TableAction) => {
+        const handler = handlers[action.type];
 
-    if (handler) {
-        return handler(state, action as any);
+        if (handler) {
+            return handler(state, action as any, props);
 
-    } else {
-        return state;
+        } else {
+            return state;
+        }
     }
 }
 
@@ -446,8 +470,4 @@ export function setCellValue(i: number, j: number, value: unknown): SetCellValue
 
 export function setCellEditing(i: number, j: number, editing: boolean): SetCellEditingAction {
     return { type: TableActionType.SET_CELL_EDITING, i, j, editing };
-}
-
-export function clickOutsideCell(i: number, j: number): ClickOutsideCellAction {
-    return { type: TableActionType.CLICK_OUTSIDE_CELL, i, j };
 }

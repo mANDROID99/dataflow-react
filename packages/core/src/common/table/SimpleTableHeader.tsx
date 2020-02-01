@@ -6,14 +6,18 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faBars);
 
 import { TableAction, ColumnState, moveColumn, insertColumnAfter, insertColumnBefore, deleteColumn, setColumnNameEditing, setColumnName } from './simpleTableReducer';
-import SimpleTableHeaderRezizer from './SimpleTableHeaderResizer';
-import Dropdown from '../dropdown/Dropdown';
+import { Column } from './simpleTableTypes';
+
 import { MenuConfig } from '../dropdown/dropdownTypes';
-import { useBufferedInput } from './useBufferedInput';
+import SimpleTableHeaderRezizer from './SimpleTableHeaderResizer';
+import SimpleTableValueEditor from './SimpleTableValueEditor';
+import Tooltip from '../Tooltip';
+import DropdownMenu from '../dropdown/DropdownMenu';
 
 type Props = {
     index: number;
     numCols: number;
+    column: Column;
     columnState: ColumnState;
     dispatch: React.Dispatch<TableAction>;
 }
@@ -57,36 +61,7 @@ function createMenu(index: number, nCols: number, dispatch: React.Dispatch<Table
     }
 }
 
-type EditorProps = {
-    index: number;
-    value: string;
-    dispatch: React.Dispatch<TableAction>;
-}
-
-function SimpleTableHeaderEditor({ index, value, dispatch }: EditorProps) {
-    const ref = useRef<any>(null);
-
-    const onEditorSubmit = (value: string) => {
-        dispatch(setColumnName(index, value));
-    }
-
-    const onEditorCancel = () => {
-        dispatch(setColumnNameEditing(index, false));
-    }
-
-    const [input, setInput] = useBufferedInput(ref, value, onEditorSubmit, onEditorCancel);
-    return (
-        <input
-            className="ngraph-table-value-editor"
-            ref={ref}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-        />
-    );
-}
-
-
-function SimpleTableHeader({ index, numCols, columnState, dispatch }: Props) {
+function SimpleTableHeader({ index, numCols, column, columnState, dispatch }: Props) {
     const ref = useRef<HTMLDivElement>(null);
     const handleRef = useRef<HTMLDivElement>(null);
     const [drag, setDrag] = useState<DragState>();
@@ -154,18 +129,26 @@ function SimpleTableHeader({ index, numCols, columnState, dispatch }: Props) {
     const handleHideMenu = () => {
         setShowMenu(false);
     };
+    
+    const handeColumnNameChanged = (value: string) => {
+        dispatch(setColumnName(index, value));
+    };
+
+    const handleColumnNameEditCancelled = () => {
+        dispatch(setColumnNameEditing(index, false));
+    }
 
     return (
         <div ref={ref} className={cn("ngraph-table-header", { dragging: drag != null })}>
             {columnState.editing ? (
-                <SimpleTableHeaderEditor
-                    index={index}
-                    value={columnState.column.name}
-                    dispatch={dispatch}
+                <SimpleTableValueEditor
+                    value={column.name}
+                    onChange={handeColumnNameChanged}
+                    onCancel={handleColumnNameEditCancelled}
                 />
             ) : (
                 <div className="ngraph-table-header-text">
-                    {columnState.column.name}
+                    {column.name}
                 </div>
             )}
             <div  ref={handleRef} className="ngraph-table-header-handle" onMouseDown={handleDragStart} onClick={handleShowMenu}>
@@ -174,15 +157,20 @@ function SimpleTableHeader({ index, numCols, columnState, dispatch }: Props) {
             <SimpleTableHeaderRezizer
                 index={index}
                 dispatch={dispatch}
+                column={column}
                 columnState={columnState}
             />
-            <Dropdown
-                placement="bottom"
+            <Tooltip
                 show={showMenu}
                 onHide={handleHideMenu}
-                target={handleRef}
-                menu={createMenu.bind(null, index, numCols, dispatch)}
-            />
+                target={handleRef}>
+                {() => (
+                    <DropdownMenu
+                        menu={createMenu(index, numCols, dispatch)}
+                        onHide={handleHideMenu}
+                    />
+                )}
+            </Tooltip>
         </div>
     );
 }

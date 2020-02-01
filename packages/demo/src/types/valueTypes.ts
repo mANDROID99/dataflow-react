@@ -89,7 +89,7 @@ export type ChartViewConfig = {
 export type GridViewConfig = {
     type: ViewType.GRID;
     columns: Column[];
-    data: { [key: string]: unknown }[];
+    rows: unknown[][];
 }
 
 export type ViewConfig = ChartViewConfig | GridViewConfig;

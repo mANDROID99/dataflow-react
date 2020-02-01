@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { TableAction, resizeColumn, ColumnState } from './simpleTableReducer';
+import { Column } from './simpleTableTypes';
 
 type Props = {
     index: number;
+    column: Column;
     columnState: ColumnState;
     dispatch: React.Dispatch<TableAction>;
 }
@@ -12,10 +14,9 @@ type DragState = {
     mouseX: number;
 }
 
-function SimpleTableHeaderResizer(props: Props) {
-    const { index, columnState, dispatch } = props;
-    const minWidth = columnState.column.minWidth;
-    const maxWidth = columnState.column.maxWidth;
+function SimpleTableHeaderResizer({ index, column, columnState, dispatch }: Props) {
+    const minWidth = column.minWidth;
+    const maxWidth = column.maxWidth;
 
     const [dragState, setDragState] = useState<DragState>();
 

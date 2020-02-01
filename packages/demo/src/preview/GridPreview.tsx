@@ -6,9 +6,8 @@ type Props = {
     gridConfig: GridViewConfig
 }
 
-const columnTemplate: Column = {
+const COLUMN_TEMPLATE: Column = {
     name: '',
-    key: '',
     editable: true,
     width: 100,
     minWidth: 30
@@ -18,9 +17,9 @@ function GridPreview({ gridConfig }: Props) {
     return (
         <div className="preview-content">
             <SimpleTable
-                columnTemplate={columnTemplate}
+                columnTemplate={COLUMN_TEMPLATE}
                 columns={gridConfig.columns}
-                data={gridConfig.data}
+                rows={gridConfig.rows}
             />
         </div>
     )

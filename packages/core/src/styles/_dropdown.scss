@@ -1,12 +1,48 @@
 @import './variables';
 
-.ngraph-dropdown-menu {
+.ngraph-tt {
     background-color: $grey-1;
     border-radius: 3px;
     color: $grey-7;
     z-index: 1;
     font-size: 1rem;
     font-weight: initial;
+    text-align: initial;
+}
+
+.ngraph-tt-label {
+    padding: 0.5rem;
+    max-width: 150px;
+}
+
+.ngraph-tt-arrow,
+.ngraph-tt-arrow::before {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  z-index: -1;
+}
+
+.ngraph-tt-arrow::before {
+  content: '';
+  transform: rotate(45deg);
+  background: $grey-1;
+}
+
+.ngraph-tt[data-popper-placement^='top'] > .ngraph-tt-arrow {
+    bottom: -4px;
+}
+
+.ngraph-tt[data-popper-placement^='bottom'] > .ngraph-tt-arrow {
+    top: -4px;
+}
+
+.ngraph-tt[data-popper-placement^='left'] > .ngraph-tt-arrow {
+    right: -4px;
+}
+
+.ngraph-tt[data-popper-placement^='right'] > .ngraph-tt-arrow {
+    left: -4px;
 }
 
 .ngraph-dropdown-menu-title {
@@ -30,34 +66,4 @@
     &:hover:not(.disabled) {
         background-color: $primary;
     }
-}
-
-.ngraph-dropdown-arrow,
-.ngraph-dropdown-arrow::before {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  z-index: -1;
-}
-
-.ngraph-dropdown-arrow::before {
-  content: '';
-  transform: rotate(45deg);
-  background: $grey-1;
-}
-
-.ngraph-dropdown-menu[data-popper-placement^='top'] > .ngraph-dropdown-arrow {
-    bottom: -4px;
-}
-
-.ngraph-dropdown-menu[data-popper-placement^='bottom'] > .ngraph-dropdown-arrow {
-    top: -4px;
-}
-
-.ngraph-dropdown-menu[data-popper-placement^='left'] > .ngraph-dropdown-arrow {
-    right: -4px;
-}
-
-.ngraph-dropdown-menu[data-popper-placement^='right'] > .ngraph-dropdown-arrow {
-    left: -4px;
 }

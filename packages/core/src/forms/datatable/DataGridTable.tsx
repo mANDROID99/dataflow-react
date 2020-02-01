@@ -1,112 +1,61 @@
-import React, { useReducer, useMemo } from "react";
-import { init, reducer, ActionType } from "./dataGridReducer";
-import DataGridHeader from "./DataGridHeader";
-import DataGridRow from "./DataGridRow";
-import DataGridContextMenu from "./DataGridContextMenu";
+import React, { useMemo, useRef } from "react";
 import { DataGridInputValue } from "../../types/graphFieldInputTypes";
 import Button from "../../common/Button";
+import SimpleTable from "../../common/table/SimpleTable";
+import { Column } from "../../common/table/simpleTableTypes";
 
 type Props = {
-    columns: string[];
+    columnNames: string[];
     rows: string[][];
     onHide: () => void;
     onSubmit: (value: DataGridInputValue) => void;
 }
 
-function DataGridTable(props: Props) {
-    const columnNames = props.columns;
-    const rowValues = props.rows;
+const COLUMN_TEMPLATE: Column = {
+    name: '',
+    editable: true,
+    width: 100,
+    minWidth: 30
+}
 
-    const [state, dispatch] = useReducer(reducer, {
-        columns: columnNames,
-        rows: rowValues
-    }, init);
+function DataGridTable({ columnNames, rows, onHide, onSubmit }: Props) {
+    const columns: Column[] = useMemo(() => {
+        return columnNames.map<Column>(columnName => ({
+            ...COLUMN_TEMPLATE,
+            name: columnName
+        }))
+    }, [columnNames]);
+
+    const ref = useRef({ columns, rows });
 
     const handleSave = () => {
-        const columnNames = state.columns.map(col => col.name);
-        const rowValues = state.rows.map(row => row.values);
-        props.onSubmit({
+        const columnNames: string[] = ref.current.columns.map(col => col.name);
+        const rowValues: string[][] = ref.current.rows;
+
+        onSubmit({
             columns: columnNames,
             rows: rowValues
         });
     };
 
-    // datagrid uses CSS grid layout.
-    // Compute here the gridTemplateColumns property. 
-    const gridTemplateColumns: string = useMemo(() => {
-        const nCols = state.columns.length;
-        const cols: string[] = state.columns.map((col, i) => {
-            if (i < nCols - 1) {
-                return col.width + 'px';
-            } else {
-                return 'auto';
-            }
-        });
-
-        return '30px ' +  cols.join(' ');
-    }, [state.columns]);
-
-    const allRowsSelected = useMemo(() => {
-        return !state.rows.some(row => !row.selected);
-    }, [state.rows]);
-
-    const handleToggleAllSelected = () => {
-        dispatch({ type: ActionType.TOGGLE_SELECT_ALL_ROWS, selected: !allRowsSelected });
-    };
-
-    const handleShowContextMenu = (event: React.MouseEvent) => {
-        event.preventDefault();
-        dispatch({
-            type: ActionType.SHOW_CONTEXT_MENU,
-            x: event.clientX,
-            y: event.clientY
-        });
-    };
+    const handleTableChanged = (columns: Column[], rows: string[][]) => {
+        ref.current = { columns, rows };
+    }
 
     return (
         <>
-            <div className="ngraph-datagrid-table-container" onContextMenu={handleShowContextMenu}>
-                <div className="ngraph-datagrid-table" style={{ gridTemplateColumns }}>
-                    <div className="ngraph-datagrid-table-headers">
-                        <div className="ngraph-datagrid-table-header">
-                            <input
-                                type="checkbox"
-                                checked={allRowsSelected}
-                                onChange={handleToggleAllSelected}
-                            />
-                        </div>
-                        {state.columns.map((column, index) => {
-                            const isLast = index === state.columns.length - 1;
-                            return (
-                                <DataGridHeader
-                                    key={index}
-                                    col={index}
-                                    columnState={column}
-                                    dispatch={dispatch}
-                                    last={isLast}
-                                />
-                            );
-                        })}
-                    </div>
-                    <div className="ngraph-datagrid-table-rows">
-                        {state.rows.map((row, index) => {
-                            return (
-                                <DataGridRow
-                                    key={index}
-                                    row={index}
-                                    rowState={row}
-                                    dispatch={dispatch}
-                                />
-                            );
-                        })}
-                    </div>
-                </div>
+            <div className="ngraph-modal-body">
+                <SimpleTable
+                    columnTemplate={COLUMN_TEMPLATE}
+                    columns={columns}
+                    rows={rows}
+                    onChanged={handleTableChanged}
+                />
             </div>
             <div className="ngraph-modal-footer">
-                <Button onClick={props.onHide} variant="secondary">Cancel</Button>
+                <Button onClick={onHide} variant="secondary">Cancel</Button>
                 <Button onClick={handleSave}>Save</Button>
             </div>
-            <DataGridContextMenu {...state.contextMenu} dispatch={dispatch}/>
         </>
     );
 }
