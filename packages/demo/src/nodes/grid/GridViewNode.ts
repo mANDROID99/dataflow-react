@@ -76,7 +76,7 @@ class GridViewProcessor implements NodeProcessor {
 
 export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Grid View',
-    menuGroup: 'Output',
+    menuGroup: 'Grid',
     description: 'Displays the data as a grid view.',
     ports: {
         in: {

@@ -17,6 +17,7 @@ import GraphHeader from '../../header/GraphHeader';
 import { graphContext, GraphContext } from '../graphEditorContext';
 import GraphEditorPreview from './preview/GraphEditorPreview';
 import GraphEditorNodes from './GraphEditorNodes';
+import SideBar from './sidebar/SideBar';
 import { selectGraph } from '../../store/selectors';
 import { GraphNodePortRefs } from '../GraphNodePortRefs';
 import { loadGraph } from '../../store/actions';
@@ -83,24 +84,27 @@ function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
     return (
         <graphContext.Provider value={graphContextValue}>
             <GraphHeader/>
-            <GraphScrollContainer>
-                <>
-                    <GraphConnectionsContainer/>
-                    <GraphEditorNodes
-                        graphConfig={graphConfig}
-                        params={props.params}
-                    />
-                </>
-            </GraphScrollContainer>
-            {renderPreview
-                ? <GraphEditorPreview
-                    renderPreview={renderPreview}/>
-                : undefined
-            }
-            <ContextMenu/>
-            <GraphForms
-                formConfigs={formConfigs}
-            />
+            <div className="ngraph-editor-content">
+                <SideBar/>
+                <GraphScrollContainer>
+                    <>
+                        <GraphConnectionsContainer/>
+                        <GraphEditorNodes
+                            graphConfig={graphConfig}
+                            params={props.params}
+                        />
+                    </>
+                </GraphScrollContainer>
+                {renderPreview
+                    ? <GraphEditorPreview
+                        renderPreview={renderPreview}/>
+                    : undefined
+                }
+                <ContextMenu/>
+                <GraphForms
+                    formConfigs={formConfigs}
+                />
+            </div>
         </graphContext.Provider>
     );
 }

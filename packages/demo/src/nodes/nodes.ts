@@ -9,7 +9,7 @@ import { CHART_VIEW_NODE } from "./chart/ChartViewNode";
 import { AXIS_NODE } from "./chart/AxisNode";
 import { DATA_SET_NODE } from "./chart/DataSetNode";
 import { DATA_POINT_NODE } from "./chart/DataPointNode";
-import { GRID_VIEW_NODE } from "./output/GridViewNode";
+import { GRID_VIEW_NODE } from "./grid/GridViewNode";
 import { SCHEDULER_NODE } from "./input/SchedulerNode";
 
 export enum NodeType {
