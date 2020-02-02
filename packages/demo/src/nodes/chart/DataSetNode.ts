@@ -9,7 +9,7 @@ const PORT_POINTS = 'points';
 const PORT_DATASETS = 'datasets';
 
 class DataSetNodeProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly datasetType: string,
@@ -33,12 +33,12 @@ class DataSetNodeProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_DATASETS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
     private onNext(value: unknown) {
-        if (!this.sub) {
+        if (!this.subs.length) {
             return;
         }
 
@@ -76,7 +76,9 @@ class DataSetNodeProcessor implements NodeProcessor {
             }
         }
 
-        this.sub(dataSets);
+        for (const sub of this.subs) {
+            sub(dataSets);
+        }
     }
 }
 

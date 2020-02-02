@@ -12,7 +12,7 @@ const PORT_ROWS = 'rows';
 const PORT_ON_CLICK = 'onClick';
 
 class GridViewProcessor implements NodeProcessor {
-    private onClickSub?: (value: unknown) => void;
+    private readonly onClickSubs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly viewName: string,
@@ -31,7 +31,7 @@ class GridViewProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_ON_CLICK) {
-            this.onClickSub = sub;
+            this.onClickSubs.push(sub);
         }
     }
 

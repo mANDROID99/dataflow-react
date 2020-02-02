@@ -16,7 +16,7 @@ const PORT_DATA = 'data';
 const PORT_SCHEDULER = 'scheduler';
 
 class DataFetcherProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
     private data?: Row[];
     private count = 0;
     private running = false;
@@ -44,7 +44,7 @@ class DataFetcherProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_ROWS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
@@ -66,8 +66,8 @@ class DataFetcherProcessor implements NodeProcessor {
     }
     
     private update() {
-        const sub = this.sub;
-        if (!sub) return;
+        const subs = this.subs;
+        if (!subs.length) return;
 
         const ctx = Object.assign({}, this.ctx);
         ctx[KEY_DATA] = this.data;
@@ -96,7 +96,10 @@ class DataFetcherProcessor implements NodeProcessor {
                     ctx[KEY_DATA] = data;
 
                     let rows = (this.responseMapper(ctx) || data) as { [key: string]: unknown }[];
-                    sub(createRowsValue(rows));
+
+                    for (const sub of subs) {
+                        sub(createRowsValue(rows));
+                    }
                 }
             });
     }

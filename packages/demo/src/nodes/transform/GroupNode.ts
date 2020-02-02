@@ -10,7 +10,7 @@ const PORT_ROWS = 'rows';
 const PORT_GROUPS = 'groups';
 
 class GroupNodeProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly alias: string,
@@ -30,12 +30,12 @@ class GroupNodeProcessor implements NodeProcessor {
 
     subscribe(port: string, sub: (value: unknown) => void) {
         if (port === PORT_GROUPS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
     private onNext(value: unknown) {
-        if (!this.sub) return;
+        if (!this.subs.length) return;
 
         const input = value as RowsValue | RowGroupsValue;
         const groups: RowGroup[] = [];
@@ -105,7 +105,9 @@ class GroupNodeProcessor implements NodeProcessor {
             }
         }
 
-        this.sub(createRowGroupsValue(groups));
+        for (const sub of this.subs) {
+            sub(createRowGroupsValue(groups));
+        }
     }
 }
 

@@ -6,7 +6,7 @@ import { NodeType } from "../nodes";
 const PORT_AXIS = 'axis';
 
 class AxisNodeProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly axisType: AxisType,
@@ -22,12 +22,12 @@ class AxisNodeProcessor implements NodeProcessor {
 
     subscribe(port: string, sub: (value: unknown) => void): void {
         if (port === PORT_AXIS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
     onStart() {
-        if (!this.sub) {
+        if (!this.subs.length) {
             return;
         }
 
@@ -37,7 +37,9 @@ class AxisNodeProcessor implements NodeProcessor {
             params: this.params
         };
         
-        this.sub(axis);
+        for (const sub of this.subs) {
+            sub(axis);
+        }
     }
 }
 

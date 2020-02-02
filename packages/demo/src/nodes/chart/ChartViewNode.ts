@@ -13,7 +13,8 @@ const PORT_Y_AXES = 'yAxes';
 const PORT_ON_CLICK = 'onClick';
 
 class ChartViewProcessor implements NodeProcessor {
-    private onClickSub?: (value: unknown) => void;
+    private readonly onClickSubs: ((value: unknown) => void)[] = [];
+
     private datasets: ChartDataSet[][];
     private xAxes: ChartAxisConfig[];
     private yAxes: ChartAxisConfig[];
@@ -51,7 +52,7 @@ class ChartViewProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_ON_CLICK) {
-            this.onClickSub = sub;
+            this.onClickSubs.push(sub);
         }
     }
 
@@ -98,8 +99,8 @@ class ChartViewProcessor implements NodeProcessor {
         const datasets = this.datasets.flat();
         const events: ChartEventConfig[] = [];
 
-        const onClickSub = this.onClickSub;
-        if (onClickSub) {
+        const onClickSubs = this.onClickSubs;
+        if (onClickSubs.length) {
             events.push({
                 type: ChartEventType.CLICK,
                 action: (datasetIndex, index) => {
@@ -109,7 +110,9 @@ class ChartViewProcessor implements NodeProcessor {
                     const datum = ds.data[index];
                     if (!datum) return;
 
-                    onClickSub(createRowsValue([datum.row]));
+                    for (const sub of onClickSubs) {
+                        sub(createRowsValue([datum.row]));
+                    }
                 }
             })
         }

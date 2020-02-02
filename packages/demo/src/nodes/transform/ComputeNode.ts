@@ -8,7 +8,7 @@ import { NodeType } from '../nodes';
 const PORT_ROWS = 'rows';
 
 class ComputeProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly alias: string,
@@ -28,12 +28,12 @@ class ComputeProcessor implements NodeProcessor {
 
     subscribe(port: string, sub: (value: unknown) => void): void {
         if (port === PORT_ROWS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
     private onNext(value: unknown) {
-        if (!this.sub) return;
+        if (!this.subs.length) return;
         const rows = value as RowsValue;
 
         const rowsMapped: Row[] = rows.rows.map((row, i) => {
@@ -48,7 +48,9 @@ class ComputeProcessor implements NodeProcessor {
         });
 
         const result = createRowsValue(rowsMapped);
-        this.sub(result);
+        for (const sub of this.subs) {
+            sub(result);
+        }
     }
 }
 

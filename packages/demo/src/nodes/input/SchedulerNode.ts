@@ -5,7 +5,7 @@ import { NodeType } from "../nodes";
 const PORT_EVENT = 'event';
 
 class SchedulerProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
     private handle?: number;
 
     constructor(
@@ -23,7 +23,7 @@ class SchedulerProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_EVENT) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
@@ -38,8 +38,8 @@ class SchedulerProcessor implements NodeProcessor {
     }
 
     private onTick() {
-        if (this.sub) {
-            this.sub(null);
+        for (const sub of this.subs) {
+            sub(null);
         }
 
         if (this.interval > 0) {

@@ -6,7 +6,7 @@ import { Row, createRowsValue } from "../../types/valueTypes";
 const PORT_ROWS = 'rows';
 
 class DataGridProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly data: DataGridInputValue
@@ -20,12 +20,12 @@ class DataGridProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_ROWS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
     onStart(): void {
-        if (!this.sub) return;
+        if (!this.subs.length) return;
         
         const columnNames = this.data.columns;
         const rowValues = this.data.rows;
@@ -41,7 +41,9 @@ class DataGridProcessor implements NodeProcessor {
             return data;
         });
 
-        this.sub(createRowsValue(rows));
+        for (const sub of this.subs) {
+            sub(createRowsValue(rows));
+        }
     }
 }
 

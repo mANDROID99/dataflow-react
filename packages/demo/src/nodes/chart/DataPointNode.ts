@@ -10,7 +10,7 @@ const PORT_ROWS = 'rows';
 const PORT_POINTS = 'points';
 
 class DataPointNodeProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly ctx: { [key: string]: unknown },
@@ -32,12 +32,12 @@ class DataPointNodeProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_POINTS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
     private onNext(value: unknown) {
-        if (!this.sub) return;
+        if (!this.subs.length) return;
 
         const r = value as RowsValue;
         const points: ChartDataPoint[] = r.rows.map((row, i): ChartDataPoint => {
@@ -49,7 +49,9 @@ class DataPointNodeProcessor implements NodeProcessor {
             return { x, y, r, color, row }
         });
 
-        this.sub(points);
+        for (const sub of this.subs) {
+            sub(points);
+        }
     }
 }
 

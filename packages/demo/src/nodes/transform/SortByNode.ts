@@ -1,13 +1,13 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { Row, RowsValue, EMPTY_ROWS, createRowsValue } from "../../types/valueTypes";
+import { RowsValue, createRowsValue } from "../../types/valueTypes";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 import { NodeType } from "../nodes";
 
 const PORT_ROWS = 'rows';
 
 class SortByNodeProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly desc: boolean,
@@ -27,12 +27,12 @@ class SortByNodeProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_ROWS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
     private onNext(value: unknown) {
-        if (!this.sub) return;
+        if (!this.subs.length) return;
 
         const r = value as RowsValue;
         const rowsSorted = r.rows.slice(0);
@@ -52,7 +52,9 @@ class SortByNodeProcessor implements NodeProcessor {
             }
         });
 
-        this.sub(createRowsValue(rowsSorted));  
+        for (const sub of this.subs) {
+            sub(createRowsValue(rowsSorted));
+        };  
     }
 }
 

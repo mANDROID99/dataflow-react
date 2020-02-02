@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, NodeProcessor, expressions } from "@react-ngraph/core";
 
-import { Row, JoinType, EMPTY_ROWS, RowsValue, createRowsValue } from "../../types/valueTypes";
+import { Row, JoinType, RowsValue, createRowsValue } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
@@ -91,7 +91,7 @@ const PORT_RIGHT = 'right';
 const PORT_ROWS = 'rows';
 
 class JoinNodeProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
     private left?: Row[];
     private right?: Row[];
 
@@ -120,7 +120,7 @@ class JoinNodeProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_ROWS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
@@ -135,7 +135,7 @@ class JoinNodeProcessor implements NodeProcessor {
     }
 
     private update() {
-        if (!this.sub || !this.left || !this.right) {
+        if (!this.subs.length || !this.left || !this.right) {
             return;
         }
 
@@ -154,7 +154,9 @@ class JoinNodeProcessor implements NodeProcessor {
                 break;
         }
 
-        this.sub(createRowsValue(rows));
+        for (const sub of this.subs) {
+            sub(createRowsValue(rows));
+        }
     }
 
     private extractKeyLeft(row: Row, index: number): string {

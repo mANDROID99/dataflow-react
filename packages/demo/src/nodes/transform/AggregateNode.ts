@@ -11,7 +11,7 @@ const PORT_GROUPS = 'groups';
 const PORT_ROWS = 'rows';
 
 class AggregateNodeProcessor implements NodeProcessor {
-    private sub?: (value: unknown) => void;
+    private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly alias: string,
@@ -32,12 +32,12 @@ class AggregateNodeProcessor implements NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_ROWS) {
-            this.sub = sub;
+            this.subs.push(sub);
         }
     }
 
     onNext(value: unknown) {
-        if (!this.sub) return;
+        if (!this.subs.length) return;
 
         const rg = value as RowGroupsValue;
         const rows: Row[] = [];
@@ -62,7 +62,9 @@ class AggregateNodeProcessor implements NodeProcessor {
             });
         }
         
-        this.sub(createRowsValue(rows));
+        for (const sub of this.subs) {
+            sub(createRowsValue(rows));
+        }
     }
 }
 
