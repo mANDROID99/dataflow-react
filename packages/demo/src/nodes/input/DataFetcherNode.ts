@@ -1,7 +1,7 @@
 import { GraphNodeConfig, FieldInputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
-import { Row, createRowsValue, RowsValue } from "../../types/valueTypes";
+import { Row } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
 
 enum HttpMethodType {
@@ -57,7 +57,7 @@ class DataFetcherProcessor implements NodeProcessor {
     }
 
     private onNextData(value: unknown) {
-        this.data = (value as RowsValue).rows;
+        this.data = value as Row[];
         this.update();
     }
 
@@ -98,7 +98,7 @@ class DataFetcherProcessor implements NodeProcessor {
                     let rows = (this.responseMapper(ctx) || data) as { [key: string]: unknown }[];
 
                     for (const sub of subs) {
-                        sub(createRowsValue(rows));
+                        sub(rows);
                     }
                 }
             });

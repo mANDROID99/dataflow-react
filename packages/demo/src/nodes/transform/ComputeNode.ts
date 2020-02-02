@@ -1,7 +1,7 @@
 import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from '../../chartContext';
 import { pushDistinct } from '../../utils/arrayUtils';
-import { Row, RowsValue, createRowsValue } from '../../types/valueTypes';
+import { Row } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
 import { NodeType } from '../nodes';
 
@@ -34,9 +34,9 @@ class ComputeProcessor implements NodeProcessor {
 
     private onNext(value: unknown) {
         if (!this.subs.length) return;
-        const rows = value as RowsValue;
+        const rows = value as Row[];
 
-        const rowsMapped: Row[] = rows.rows.map((row, i) => {
+        const rowsMapped: Row[] = rows.map((row, i) => {
             const newRow: Row = Object.assign({}, row);
             
             if (this.valueMapper) {
@@ -47,9 +47,8 @@ class ComputeProcessor implements NodeProcessor {
             return newRow;
         });
 
-        const result = createRowsValue(rowsMapped);
         for (const sub of this.subs) {
-            sub(result);
+            sub(rowsMapped);
         }
     }
 }

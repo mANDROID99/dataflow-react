@@ -1,7 +1,7 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../chartContext";
-import { ChartDataPoint, RowsValue } from "../../types/valueTypes";
+import { ChartDataPoint, Row } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 import { NodeType } from "../nodes";
@@ -39,8 +39,8 @@ class DataPointNodeProcessor implements NodeProcessor {
     private onNext(value: unknown) {
         if (!this.subs.length) return;
 
-        const r = value as RowsValue;
-        const points: ChartDataPoint[] = r.rows.map((row, i): ChartDataPoint => {
+        const rows = value as Row[];
+        const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
             const ctx = rowToEvalContext(row, i, this.ctx);
             const x = asValue(this.xMapper(ctx), 0);
             const y = asValue(this.yMapper(ctx), 0);

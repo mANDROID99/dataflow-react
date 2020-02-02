@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { Row, createRowsValue, RowGroupsValue } from "../../types/valueTypes";
+import { Row, KEY_GROUP } from "../../types/valueTypes";
 import { asNumber } from "../../utils/converters";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { AggregatorType, createAggregator } from "./aggregators";
@@ -39,31 +39,47 @@ class AggregateNodeProcessor implements NodeProcessor {
     onNext(value: unknown) {
         if (!this.subs.length) return;
 
-        const rg = value as RowGroupsValue;
-        const rows: Row[] = [];
+        const rows = value as Row[];
+        const result: Row[] = [];
         const aggregator = createAggregator(this.aggType);
+        let amt: number | undefined;
 
-        const rowGroups = rg.groups;
-        for (let i = 0, n = rowGroups.length; i < n; i++) {
-            const rowGroup = rowGroups[i];
-            const subRows = rowGroup.rows;
-            let subAmt: number | undefined = undefined;
+        for (let i = 0, n = rows.length; i < n; i++) {
+            const row = rows[i];
+            
+            const subRows = row[KEY_GROUP];
+            if (subRows) {
+                let subAmt: number | undefined = undefined;
+                
+                for (let j = 0, m = subRows.length; j < m; j++) {
+                    const subRow = subRows[j];
+                    const ctx = rowToEvalContext(subRow, j, this.context);
+                    const value = asNumber(this.columnMapper(ctx));
+                    subAmt = aggregator(subAmt, value, j);
+                }
 
-            for (let j = 0, m = subRows.length; j < m; j++) {
-                const subRow = subRows[j];
-                const ctx = rowToEvalContext(subRow, j, this.context);
+                result.push({
+                    ...row,
+                    [this.alias]: subAmt,
+                    [KEY_GROUP]: subRows
+                });
+                
+            } else {
+                const ctx = rowToEvalContext(row, i, this.context);
                 const value = asNumber(this.columnMapper(ctx));
-                subAmt = aggregator(subAmt, value, j);
+                amt = aggregator(amt, value, i);
             }
+        }
 
-            rows.push({
-                ...rowGroup.selection,
-                [this.alias]: subAmt
+        if (amt != null) {
+            result.push({
+                [this.alias]: amt,
+                [KEY_GROUP]: rows
             });
         }
         
         for (const sub of this.subs) {
-            sub(createRowsValue(rows));
+            sub(result);
         }
     }
 }
@@ -75,7 +91,7 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     ports: {
         in: {
             [PORT_GROUPS]: {
-                type: 'rowgroup[]'
+                type: 'row[]'
             }
         },
         out: {

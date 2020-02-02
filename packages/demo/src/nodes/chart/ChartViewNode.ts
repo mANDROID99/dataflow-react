@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, Entry, expressions, GraphNode, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { ChartDataSet, ChartAxisConfig, ChartViewConfig, ChartEventType, ViewType, ViewConfig, ChartEventConfig, createRowsValue } from "../../types/valueTypes";
+import { ChartDataSet, ChartAxisConfig, ChartViewConfig, ChartEventType, ViewType, ViewConfig, ChartEventConfig } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
 
 function getDefaultViewName(node: GraphNode) {
@@ -111,7 +111,7 @@ class ChartViewProcessor implements NodeProcessor {
                     if (!datum) return;
 
                     for (const sub of onClickSubs) {
-                        sub(createRowsValue([datum.row]));
+                        sub([datum.row]);
                     }
                 }
             })

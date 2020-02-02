@@ -1,7 +1,7 @@
 import { Column, GraphNodeConfig, FieldInputType, GraphNode, NodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../chartContext";
-import { ViewType, RowsValue, ViewConfig } from "../../types/valueTypes";
+import { ViewType, ViewConfig, Row } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
 
 function getDefaultViewName(node: GraphNode) {
@@ -36,13 +36,12 @@ class GridViewProcessor implements NodeProcessor {
     }
 
     private onNext(value: unknown) {
-        const r = value as RowsValue;
-
+        const rows = value as Row[];
         const columns: Column[] = [];
         const lookup = new Map<string, number>();
         const data: unknown[][] = [];
 
-        for (const row of r.rows) {
+        for (const row of rows) {
             const datum: unknown[] = [];
 
             for (const key in row) {

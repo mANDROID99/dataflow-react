@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, NodeProcessor, expressions } from "@react-ngraph/core";
 
-import { Row, JoinType, RowsValue, createRowsValue } from "../../types/valueTypes";
+import { Row, JoinType } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
@@ -125,12 +125,12 @@ class JoinNodeProcessor implements NodeProcessor {
     }
 
     private onNextLeft(value: unknown) {
-        this.left = (value as RowsValue).rows;
+        this.left = value as Row[];
         this.update();
     }
 
     private onNextRight(value: unknown) {
-        this.right = (value as RowsValue).rows;
+        this.right = value as Row[];
         this.update();
     }
 
@@ -155,7 +155,7 @@ class JoinNodeProcessor implements NodeProcessor {
         }
 
         for (const sub of this.subs) {
-            sub(createRowsValue(rows));
+            sub(rows);
         }
     }
 

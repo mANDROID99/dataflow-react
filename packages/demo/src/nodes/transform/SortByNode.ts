@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { RowsValue, createRowsValue } from "../../types/valueTypes";
+import { Row } from "../../types/valueTypes";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 import { NodeType } from "../nodes";
 
@@ -34,8 +34,8 @@ class SortByNodeProcessor implements NodeProcessor {
     private onNext(value: unknown) {
         if (!this.subs.length) return;
 
-        const r = value as RowsValue;
-        const rowsSorted = r.rows.slice(0);
+        const rows = value as Row[];
+        const rowsSorted = rows.slice(0);
 
         rowsSorted.sort((a, b) => {
             const sortKeyA = this.columnKeyMapper(rowToEvalContext(a, null, this.context)) as any;
@@ -53,7 +53,7 @@ class SortByNodeProcessor implements NodeProcessor {
         });
 
         for (const sub of this.subs) {
-            sub(createRowsValue(rowsSorted));
+            sub(rowsSorted);
         };  
     }
 }

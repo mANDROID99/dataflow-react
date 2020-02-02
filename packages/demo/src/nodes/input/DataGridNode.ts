@@ -1,7 +1,7 @@
 import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
 import { NodeType } from '../nodes';
 import { ChartContext } from "../../chartContext";
-import { Row, createRowsValue } from "../../types/valueTypes";
+import { Row } from "../../types/valueTypes";
 
 const PORT_ROWS = 'rows';
 
@@ -42,7 +42,7 @@ class DataGridProcessor implements NodeProcessor {
         });
 
         for (const sub of this.subs) {
-            sub(createRowsValue(rows));
+            sub(rows);
         }
     }
 }

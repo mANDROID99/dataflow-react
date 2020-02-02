@@ -18,25 +18,11 @@ export enum AxisType {
     TIME = 'time'
 }
 
+export const KEY_GROUP = Symbol();
+
 export type Row = {
     [key: string]: unknown;
-}
-
-export type RowsValue = {
-    type: ValueType.ROWS;
-    rows: Row[];
-}
-
-export type RowGroup = {
-    selection: {
-        [key: string]: unknown;
-    };
-    rows: Row[];
-}
-
-export type RowGroupsValue = {
-    type: ValueType.ROW_GROUPS,
-    groups: RowGroup[];
+    [KEY_GROUP]?: Row[];
 }
 
 export type ChartDataPoint = {
@@ -93,22 +79,3 @@ export type GridViewConfig = {
 }
 
 export type ViewConfig = ChartViewConfig | GridViewConfig;
-
-export const EMPTY_ROWS: RowsValue = {
-    type: ValueType.ROWS,
-    rows: []
-}
-
-export function createRowsValue(rows: Row[]): RowsValue {
-    return {
-        type: ValueType.ROWS,
-        rows
-    };
-}
-
-export function createRowGroupsValue(groups: RowGroup[]): RowGroupsValue {
-    return {
-        type: ValueType.ROW_GROUPS,
-        groups
-    };
-}

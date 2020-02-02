@@ -1,6 +1,6 @@
 import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
-import { RowGroup, RowsValue, RowGroupsValue, ValueType, createRowGroupsValue } from "../../types/valueTypes";
+import { KEY_GROUP, ValueType, Row } from "../../types/valueTypes";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { asString } from "../../utils/converters";
 import { rowToEvalContext } from "../../utils/expressionUtils";
@@ -37,76 +37,64 @@ class GroupNodeProcessor implements NodeProcessor {
     private onNext(value: unknown) {
         if (!this.subs.length) return;
 
-        const input = value as RowsValue | RowGroupsValue;
-        const groups: RowGroup[] = [];
-        
-        // rows
-        if (input.type === ValueType.ROWS) {
-            const groupsLookup = new Map<string, RowGroup>();
-            const rows = input.rows;
+        const rows = value as Row[];
+        const result: Row[] = [];
 
-            for (let i = 0, n = rows.length; i < n; i++) {
-                const row = rows[i];
-                const ctx = rowToEvalContext(row, i, this.context);
-                const groupName = asString(this.groupMapper(ctx));
+        const groupsLookup = new Map<string, Row>();
+        for (let i = 0, n = rows.length; i < n; i++) {
+            const row = rows[i];
+            const subRows = row[KEY_GROUP];
 
-                if (groupName) {
-                    let groupRow: RowGroup | undefined = groupsLookup.get(groupName);
+            if (subRows) {
+                const subGroupsLookup = new Map<string, Row>();
 
-                    if (!groupRow) {
-                        groupRow = {
-                            selection: {
-                                [this.alias]: groupName
-                            },
-                            rows: []
-                        };
-
-                        groups.push(groupRow);
-                        groupsLookup.set(groupName, groupRow);
-                    }
-
-                    groupRow.rows.push(row);
-                }
-            }
-
-        // row-groups
-        } else {
-            const groups = input.groups;
-
-            for (let i = 0, n = groups.length; i < n; i++) {
-                const group = groups[i];
-                const subRows = group.rows;
-                const groupsLookup = new Map<string, RowGroup>();
-                
-                for (let j = 0, n = subRows.length; j < n; j++) {
+                for (let j = 0, m = subRows.length; j < m; j++) {
                     const subRow = subRows[j];
                     const ctx = rowToEvalContext(subRow, j, this.context);
                     const groupName = asString(this.groupMapper(ctx));
 
                     if (groupName) {
-                        let groupRow: RowGroup | undefined = groupsLookup.get(groupName);
+                        let groupRow: Row | undefined = subGroupsLookup.get(groupName);
 
                         if (!groupRow) {
                             groupRow = {
-                                selection: {
-                                    ...group.selection,
-                                    [this.alias]: groupName
-                                },
-                                rows: []
+                                ...row,
+                                [this.alias]: groupName,
+                                [KEY_GROUP]: []
                             };
 
-                            groups.push(groupRow);
-                            groupsLookup.set(groupName, groupRow);
+                            result.push(groupRow);
+                            subGroupsLookup.set(groupName, groupRow);
                         }
 
-                        groupRow.rows!.push(subRow);
+                        groupRow[KEY_GROUP]!.push(subRow);
                     }
+                }
+
+            } else {
+                const ctx = rowToEvalContext(row, i, this.context);
+                const groupName = asString(this.groupMapper(ctx));
+
+                if (groupName) {
+                    let groupRow: Row | undefined = groupsLookup.get(groupName);
+
+                    if (!groupRow) {
+                        groupRow = {
+                            [this.alias]: groupName,
+                            [KEY_GROUP]: []
+                        };
+
+                        result.push(groupRow);
+                        groupsLookup.set(groupName, groupRow);
+                    }
+
+                    groupRow[KEY_GROUP]!.push(row);
                 }
             }
         }
-
+        
         for (const sub of this.subs) {
-            sub(createRowGroupsValue(groups));
+            sub(result);
         }
     }
 }
@@ -118,15 +106,12 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     ports: {
         in: {
             [PORT_ROWS]: {
-                type: [
-                    'row[]',
-                    'rowgroup[]'
-                ]
+                type: 'row[]'
             }
         },
         out: {
             [PORT_GROUPS]: {
-                type: 'rowgroup[]'
+                type: 'row[]'
             }
         }
     },
