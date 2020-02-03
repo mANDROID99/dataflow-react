@@ -19,7 +19,17 @@ function GridPreview({ gridConfig }: Props) {
             <SimpleTable
                 columnTemplate={COLUMN_TEMPLATE}
                 columns={gridConfig.columns}
-                rows={gridConfig.rows}
+                rows={gridConfig.data}
+                renderCell={(value) => {
+                    return (
+                        <div className="ngraph-table-cell-value" style={{
+                            color: value.fontColor,
+                            backgroundColor: value.bgColor
+                        }}>
+                            {value.value}
+                        </div>
+                    );
+                }}
             />
         </div>
     )

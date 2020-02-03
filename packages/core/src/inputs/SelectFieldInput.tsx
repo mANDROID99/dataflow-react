@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldInputProps } from '../types/graphFieldInputTypes';
+import { FieldInputProps } from '../types/graphInputTypes';
 import CommonSelectInput, { Option } from '../common/CommonSelectInput';
 
 export default function SelectFieldInput(props: FieldInputProps<string>): React.ReactElement {

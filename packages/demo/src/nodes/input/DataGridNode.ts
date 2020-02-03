@@ -1,15 +1,19 @@
-import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
 import { NodeType } from '../nodes';
 import { ChartContext } from "../../chartContext";
 import { Row } from "../../types/valueTypes";
 
 const PORT_ROWS = 'rows';
 
+type Fields = {
+    data: DataGridInputValue;
+};
+
 class DataGridProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly data: DataGridInputValue
+        private readonly fields: Fields
     ) { }
 
     get type(): string {
@@ -27,15 +31,16 @@ class DataGridProcessor implements NodeProcessor {
     onStart(): void {
         if (!this.subs.length) return;
         
-        const columnNames = this.data.columns;
-        const rowValues = this.data.rows;
+        const data = this.fields.data;
+        const gridColumns = data.columns;
+        const gridRows = data.rows;
 
-        const rows: Row[] = rowValues.map((values): Row => {
+        const rows: Row[] = gridRows.map((values): Row => {
             const data: { [key: string]: string } = {};
-            const nRows = Math.min(columnNames.length, values.length);
+            const nRows = Math.min(gridColumns.length, values.length);
             
             for (let i = 0; i < nRows; i++) {
-                data[columnNames[i]] = values[i];
+                data[gridColumns[i]] = values[i];
             }
 
             return data;
@@ -55,8 +60,7 @@ export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     fields: {
         data: {
             label: 'Data',
-            type: FieldInputType.DATA_GRID,
-            initialValue: emptyDataGrid()
+            type: FieldInputType.DATA_GRID
         }
     },
     ports: {
@@ -67,12 +71,11 @@ export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
             }
         }
     },
-    createProcessor(node) {
-        const data = node.fields.data as DataGridInputValue;  
-        return new DataGridProcessor(data);
+    createProcessor(fields) {
+        return new DataGridProcessor(fields as Fields);
     },
-    mapContext(node): ChartContext {
-        const data = node.fields.data as DataGridInputValue;
+    mapContext(fields): ChartContext {
+        const data = fields.data as DataGridInputValue;
         return {
             columns: data.columns
         };

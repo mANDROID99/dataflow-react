@@ -1,22 +1,20 @@
-import React, { useCallback, useMemo } from 'react';
-
-import { GraphNodeFieldConfig, GraphFieldInputConfig } from '../../../types/graphConfigTypes';
-import { FieldInputProps, GraphNodeContext } from '../../../types/graphFieldInputTypes';
-import { useGraphContext } from '../../graphEditorContext';
-import { resolve } from '../../../utils/graph/inputUtils';
-import { setNodeFieldValue } from '../../../store/actions';
+import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+
+import { GraphNodeFieldConfig } from '../../../types/graphConfigTypes';
+import { FieldInputProps, GraphFieldInputConfig, ComputedField } from '../../../types/graphInputTypes';
+import { useGraphContext } from '../../graphEditorContext';
+import { setNodeFieldValue } from '../../../store/actions';
 
 type Props<Ctx, Params> = {
     nodeId: string;
-    nodeContext: GraphNodeContext<Ctx, Params>;
     fieldName: string;
     fieldConfig: GraphNodeFieldConfig<Ctx, Params>;
-    fieldValue: unknown;
+    fieldComputed: ComputedField;
 }
 
 function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
-    const { nodeId, fieldName, nodeContext, fieldConfig, fieldValue } = props;
+    const { nodeId, fieldName, fieldConfig, fieldComputed } = props;
     const fieldEditor = fieldConfig.type;
     
     const dispatch = useDispatch();
@@ -27,16 +25,11 @@ function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
         dispatch(setNodeFieldValue(nodeId, fieldName, value));
     }, [dispatch, nodeId, fieldName]);
 
-    const fieldParams = fieldConfig.params;
-    const params = useMemo(() => {
-        return fieldParams ? resolve(fieldParams, nodeContext) : {};
-    }, [fieldParams, nodeContext]);
-
     const inputProps: FieldInputProps<any> = {
-        value: fieldValue,
+        value: fieldComputed.value,
+        params: fieldComputed.params,
         fieldName,
         nodeId,
-        params,
         onChanged
     };
 
@@ -50,4 +43,4 @@ function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
     );
 }
 
-export default GraphNodeField;
+export default React.memo(GraphNodeField) as typeof GraphNodeField;

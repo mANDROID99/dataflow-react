@@ -2,8 +2,8 @@ import React, { useEffect, useReducer } from 'react';
 import {
     Graph,
     GraphConfig,
-    createGraphNodeProcessors,
-    runProcessors
+    computeGraphNodes,
+    runAllGraphNodeProcessors
 } from '@react-ngraph/core';
 
 import { ChartContext, ChartParams } from '../chartContext';
@@ -52,8 +52,8 @@ export default function Preview(props: Props) {
             }
         };
 
-        const processors = createGraphNodeProcessors(graph, graphConfig, params);
-        return runProcessors(processors);
+        const nodes = computeGraphNodes(graph, graphConfig, params);
+        return runAllGraphNodeProcessors(nodes);
     }, [graphConfig, graph, variables]);
 
     const handleChangeActivePreview = (e: React.ChangeEvent<HTMLSelectElement>) => {

@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 
 import { GraphConfig } from "../../types/graphConfigTypes";
 
-import { selectGraphNodes } from "../../store/selectors";
-import { computeGraphNodeContexts } from "../../processor/computeGraphNodeContexts";
+import { selectGraph } from "../../store/selectors";
+import { computeGraphNodes } from "../../processor/computeGraphNodes";
 import GraphNodeComponent from './graphnode/GraphNode';
 
 type Props<Ctx, P> = {
@@ -14,17 +14,17 @@ type Props<Ctx, P> = {
 
 function GraphEditorNodes<Ctx, P>(props: Props<Ctx, P>) {
      // select graph-nodes from the store
-     const graphNodes = useSelector(selectGraphNodes);
+     const graph = useSelector(selectGraph);
 
     // compute the context for all nodes in the graph
-    const nodeContexts = computeGraphNodeContexts(props.params, graphNodes, props.graphConfig);
+    const computedNodes = computeGraphNodes(graph, props.graphConfig, props.params);
 
     return (
         <div className="ngraph-nodes">
-            {(graphNodes ? Object.keys(graphNodes) : []).map(nodeId => {
-                const nodeContext = nodeContexts.get(nodeId);
+            {Object.keys(graph.nodes).map(nodeId => {
+                const nodeComputed = computedNodes.get(nodeId);
 
-                if (!nodeContext) {
+                if (!nodeComputed) {
                     throw new Error('No node-context computed for node - ' + nodeId);
                 }
                 
@@ -32,8 +32,8 @@ function GraphEditorNodes<Ctx, P>(props: Props<Ctx, P>) {
                     <GraphNodeComponent
                         key={nodeId}
                         nodeId={nodeId}
-                        nodeContext={nodeContext}
-                        graphNode={graphNodes![nodeId]}
+                        nodeComputed={nodeComputed}
+                        graphNode={graph.nodes[nodeId]}
                     />
                 );
             })}

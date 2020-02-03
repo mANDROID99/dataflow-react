@@ -4,7 +4,7 @@ import cn from 'classnames';
 import DataGridDimensionsForm from './DataGridDimensionsForm';
 import DataGridTable from './DataGridTable';
 import { FormConfig, FormProps } from '../../types/formConfigTypes';
-import { DataGridInputValue } from '../../types/graphFieldInputTypes';
+import { DataGridInputValue } from '../../types/graphInputTypes';
 
 function DataGridForm(props: FormProps<DataGridInputValue>) {
     const { value, onHide, onSubmit } = props;

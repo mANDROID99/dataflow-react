@@ -5,12 +5,12 @@ import './styles/main.scss';
 export * from './types/graphConfigTypes';
 export * from './types/graphTemplateTypes';
 export * from './types/graphTypes';
-export * from './types/graphFieldInputTypes';
+export * from './types/graphInputTypes';
 export * from './types/processorTypes';
 
 // processor
-export { computeGraphNodeContexts } from './processor/computeGraphNodeContexts';
-export { createGraphNodeProcessors, runProcessors } from './processor/createGraphNodeProcessors';
+export { computeGraphNodes } from './processor/computeGraphNodes';
+export { runAllGraphNodeProcessors, runProcessors } from './processor/runProcessors';
 
 // editor
 import GraphEditor from './editor/components/GraphEditor';

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { reducer, ActionType } from './dataEntriesFormReducer';
 import DataEntriesItem from './DataEntriesItem';
-import { Entry } from '../../types/graphFieldInputTypes';
+import { Entry } from '../../types/graphInputTypes';
 import { FormProps, FormConfig } from '../../types/formConfigTypes';
 import Button from '../../common/Button';
 

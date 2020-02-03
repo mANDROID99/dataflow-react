@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, Entry, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, FieldInputType, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/converters';
@@ -8,16 +8,20 @@ import { NodeType } from "../nodes";
 const PORT_POINTS = 'points';
 const PORT_DATASETS = 'datasets';
 
+type Fields = {
+    type: string;
+    series: expressions.Mapper,
+    label: expressions.Mapper,
+    borderColor: expressions.Mapper,
+    backgroundColor: expressions.Mapper,
+    params: expressions.EntriesMapper
+}
+
 class DataSetNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly datasetType: string,
-        private readonly seriesKeyMapper: expressions.Mapper,
-        private readonly paramsMapper: expressions.EntriesMapper,
-        private readonly labelMapper: expressions.Mapper,
-        private readonly borderColorMapper: expressions.Mapper,
-        private readonly backgroundColorMapper: expressions.Mapper,
+        private readonly fields: Fields,
         private readonly context: { [key: string]: unknown }
     ) { }
 
@@ -50,17 +54,17 @@ class DataSetNodeProcessor implements NodeProcessor {
             for (let i = 0, n = points.length; i < n; i++){
                 const point = points[i];
                 const ctx = pointToEvalContext(point, i, this.context);
-                const seriesKey = asString(this.seriesKeyMapper(ctx));
+                const seriesKey = asString(this.fields.series(ctx));
                 let dataSet: ChartDataSet | undefined = dataSetsByKey.get(seriesKey);
                 
                 if (!dataSet) {
-                    const params = this.paramsMapper(ctx);
-                    const label = asString(this.labelMapper(ctx));
-                    const borderColor = asString(this.borderColorMapper(ctx));
-                    const backgroundColor = asString(this.backgroundColorMapper(ctx));
+                    const params = this.fields.params(ctx);
+                    const label = asString(this.fields.label(ctx));
+                    const borderColor = asString(this.fields.borderColor(ctx));
+                    const backgroundColor = asString(this.fields.backgroundColor(ctx));
 
                     dataSet = {
-                        type: this.datasetType,
+                        type: this.fields.type,
                         label,
                         backgroundColor,
                         borderColor,
@@ -121,7 +125,6 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         series: {
             label: 'Map Series Key',
             type: FieldInputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
                 columns: context.columns,
@@ -131,7 +134,6 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         label: {
             label: 'Map Label',
             type: FieldInputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
                 columns: context.columns,
@@ -141,7 +143,6 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         borderColor: {
             label: 'Map Border Color',
             type: FieldInputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
                 columns: context.columns,
@@ -151,7 +152,6 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         backgroundColor: {
             label: 'Map Background Color',
             type: FieldInputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
                 columns: context.columns,
@@ -160,31 +160,12 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         params: {
             label: 'Params',
-            type: FieldInputType.DATA_ENTRIES,
-            initialValue: []
+            type: FieldInputType.DATA_ENTRIES
         }
     },
-    createProcessor(node, params) {
-        const datasetType = node.fields.type as string;
-        const mapLabelExpr = node.fields.label as ColumnMapperInputValue;
-        const mapSeriesExpr = node.fields.series as ColumnMapperInputValue;
-        const mapBorderColorExpr = node.fields.borderColor as ColumnMapperInputValue;
-        const mapBackgroundColorExpr = node.fields.backgroundColor as ColumnMapperInputValue;
-        const paramInputs = node.fields.params as Entry<string>[];
-
-        const labelMapper = expressions.compileColumnMapper(mapLabelExpr, 'row');
-        const seriesKeyMapper = expressions.compileColumnMapper(mapSeriesExpr, 'row');
-        const borderColorMapper = expressions.compileColumnMapper(mapBorderColorExpr, 'row');
-        const backgroundColorMapper = expressions.compileColumnMapper(mapBackgroundColorExpr, 'row');
-        const paramsMapper = expressions.compileEntriesMapper(paramInputs);
-
+    createProcessor({ fields, params }) {
         return new DataSetNodeProcessor(
-            datasetType,
-            seriesKeyMapper,
-            paramsMapper,
-            labelMapper,
-            borderColorMapper,
-            backgroundColorMapper,
+            fields as Fields,
             params.variables
         );
     }

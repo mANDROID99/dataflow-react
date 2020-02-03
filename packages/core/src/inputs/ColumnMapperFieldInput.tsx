@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 import cn from 'classnames';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { FieldInputProps } from "../types/graphFieldInputTypes";
-import { ColumnMapperType, ColumnMapperInputValue } from "../types/graphFieldInputTypes";
+import { FieldInputProps } from "../types/graphInputTypes";
+import { ColumnMapperType, ColumnMapperInputValue } from "../types/graphInputTypes";
 import CommonTextInput from "../common/CommonTextInput";
 import CommonSelectInput, { Option } from "../common/CommonSelectInput";
 import { columnMapperToExpression } from "../utils/expressionUtils";

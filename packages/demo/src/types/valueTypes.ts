@@ -72,10 +72,22 @@ export type ChartViewConfig = {
     events: ChartEventConfig[];
 }
 
+export type GridValueConfig = {
+    value: string;
+    fontColor: string | undefined;
+    bgColor: string | undefined;
+}
+
+export type GridColumnConfig = {
+    name: string;
+    width: number;
+    values: GridValueConfig[];
+}
+
 export type GridViewConfig = {
     type: ViewType.GRID;
     columns: Column[];
-    rows: unknown[][];
+    data: GridValueConfig[][];
 }
 
 export type ViewConfig = ChartViewConfig | GridViewConfig;

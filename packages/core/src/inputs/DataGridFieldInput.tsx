@@ -2,7 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 
-import { FieldInputProps, DataGridInputValue } from '../types/graphFieldInputTypes';
+import { FieldInputProps, DataGridInputValue } from '../types/graphInputTypes';
 import { nodeFieldReceiver } from '../types/storeTypes';
 
 import { DATA_GRID_FORM_ID } from '../forms/datatable/DataGridForm';

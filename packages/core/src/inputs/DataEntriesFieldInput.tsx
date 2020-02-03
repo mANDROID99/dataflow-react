@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { FieldInputProps, Entry } from '../types/graphFieldInputTypes';
+import { FieldInputProps, Entry } from '../types/graphInputTypes';
 
 import { DATA_ENTRIES_FORM_ID } from '../forms/dataentries/DataEntriesForm';
 import Button from '../common/Button';

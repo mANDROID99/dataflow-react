@@ -18,7 +18,7 @@ function SimpleTable<T>(props: Props<T>) {
     const [state, dispatch] = useReducer(tableReducer(props), params, init);
 
     // reset the state when updated from outside
-    const prevRef = useRef(params)
+    const prevRef = useRef(params);
     useEffect(() => {
         if (props.columns !== prevRef.current.columns ||
             props.rows !== prevRef.current.rows
@@ -40,11 +40,11 @@ function SimpleTable<T>(props: Props<T>) {
             colsRef.current = state.columns;
             props.onChanged(state.columns, state.rows as T[][]);
         }
-    })
+    });
 
     // table uses CSS grid layout. Compute here the gridTemplateColumns property. 
     const gridTemplateColumns: string = useMemo(() => {
-        const cols: string[] = state.columnStates.map((col, i) => {
+        const cols: string[] = state.columnStates.map((col) => {
             return col.width + 'px';
         });
 

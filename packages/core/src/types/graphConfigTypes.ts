@@ -1,26 +1,19 @@
-import { FieldInputProps } from "./graphFieldInputTypes";
 import { GraphNode } from "./graphTypes";
 import { NodeProcessor } from "./processorTypes";
-
-export type GraphFieldInputConfig = {
-    component: React.ComponentType<FieldInputProps<any>>;
-}
+import { GraphFieldInputConfig, ComputedNode } from "./graphInputTypes";
 
 export type ResolverParams<Ctx, Params> = {
+    node: GraphNode;
     context: Ctx;
-    parents: { [key: string]: Ctx[] };
     params: Params;
+    parents: { [key: string]: ComputedNode<Ctx>[] };
 }
-
-export type ResolvableCallback<Ctx, Params, T> = (params: ResolverParams<Ctx, Params>) => T;
-
-export type Resolvable<Ctx, Params, T> = T | ResolvableCallback<Ctx, Params, T>;
 
 export type GraphNodeFieldConfig<Ctx, Params> = {
     label: string;
     type: string;
-    initialValue: unknown;
-    params?: Resolvable<Ctx, Params, { [key: string]: unknown }>;
+    initialValue?: unknown;
+    params?: { [key: string]: unknown } | ((params: ResolverParams<Ctx, Params>) => { [key: string]: unknown });
 }
 
 export type GraphNodePortConfig = {
@@ -46,8 +39,8 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
             [key: string]: GraphNodePortConfig;
         };
     };
-    mapContext?: (node: GraphNode, context: Ctx, params: Params) => Ctx;
-    createProcessor: (node: GraphNode, params: Params) => NodeProcessor;
+    createProcessor: (fields: { [key: string]: unknown }, params: ResolverParams<Ctx, Params>) => NodeProcessor;
+    mapContext?: (fields: { [key: string]: unknown }, params: ResolverParams<Ctx, Params>) => Ctx;
 }
 
 export type PortTypeConfig = {

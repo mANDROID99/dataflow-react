@@ -72,7 +72,7 @@ class ChartViewProcessor implements NodeProcessor {
     }
 
     private allReceived(x: unknown[]) {
-        for(let i = 0; i < x.length; i++) {
+        for(let i = 0, n = x.length; i < n; i++) {
             if (!(i in x)) return false;
         }
         return true;

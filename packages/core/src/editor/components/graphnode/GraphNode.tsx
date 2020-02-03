@@ -3,7 +3,6 @@ import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { GraphNode } from '../../../types/graphTypes';
-import { GraphNodeContext } from '../../../types/graphFieldInputTypes';
 import { ContextMenuTarget, ContextMenuTargetType } from '../../../types/storeTypes';
 
 import GraphNodeField from './GraphNodeField';
@@ -13,15 +12,16 @@ import { DragWidthState } from './GraphNodeDragHandle';
 import GraphNodeHeader, { DragPosState } from './GraphNodeHeader';
 import { selectNode, showContextMenu } from '../../../store/actions';
 import { selectNodeSelected } from '../../../store/selectors';
+import { ComputedNode } from '../../../types/graphInputTypes';
 
-type Props<Ctx, Params> = {
+type Props<Ctx> = {
     nodeId: string;
-    nodeContext: GraphNodeContext<Ctx, Params>;
     graphNode: GraphNode;
+    nodeComputed: ComputedNode<Ctx>;
 }
 
-function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.ReactElement {
-    const { nodeId, graphNode, nodeContext } = props;
+function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement {
+    const { nodeId, graphNode, nodeComputed } = props;
     const { graphConfig } = useGraphContext<Ctx, Params>();
     const dispatch = useDispatch();
 
@@ -101,15 +101,13 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
                 </div>
                 <div className="ngraph-node-fields">
                     {Object.entries(graphNodeConfig.fields).map(([fieldName, fieldConfig]) => {
-                        const fieldValue = graphNode.fields[fieldName];
                         return (
                             <GraphNodeField
                                 key={fieldName}
                                 nodeId={nodeId}
-                                nodeContext={nodeContext}
                                 fieldName={fieldName}
                                 fieldConfig={fieldConfig}
-                                fieldValue={fieldValue}
+                                fieldComputed={nodeComputed.fields[fieldName]}
                             />
                         );
                     })}
