@@ -1,4 +1,4 @@
-import { Entry } from "../../types/graphFieldInputTypes";
+import { Entry } from "../../types/graphInputTypes";
 
 export enum ActionType {
     SET_KEY,

@@ -1,18 +1,19 @@
-import { Column, GraphNodeConfig, FieldInputType, GraphNode, NodeProcessor } from "@react-ngraph/core";
+import { Column, GraphNodeConfig, InputType, GraphNode, NodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../chartContext";
-import { ViewType, ViewConfig, Row } from "../../types/valueTypes";
+import { ViewType, ViewConfig, Row, GridColumnConfig, GridValueConfig } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
 
 function getDefaultViewName(node: GraphNode) {
     return 'grid-' + node.id;
 }
 
-const PORT_ROWS = 'rows';
+const PORT_COLUMNS = 'columns';
 const PORT_ON_CLICK = 'onClick';
 
 class GridViewProcessor implements NodeProcessor {
     private readonly onClickSubs: ((value: unknown) => void)[] = [];
+    private readonly columns: GridColumnConfig[] = [];
 
     constructor(
         private readonly viewName: string,
@@ -24,8 +25,9 @@ class GridViewProcessor implements NodeProcessor {
     }
 
     registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_ROWS) {
-            processor.subscribe(portOut, this.onNext.bind(this));
+        if (portIn === PORT_COLUMNS) {
+            const i = this.columns.length++;
+            processor.subscribe(portOut, this.onNext.bind(this, i));
         }
     }
 
@@ -35,39 +37,38 @@ class GridViewProcessor implements NodeProcessor {
         }
     }
 
-    private onNext(value: unknown) {
-        const rows = value as Row[];
-        const columns: Column[] = [];
-        const lookup = new Map<string, number>();
-        const data: unknown[][] = [];
+    private isReady(): boolean {
+        for (let i = 0, n = this.columns.length; i < n; i++) {
+            if (!(i in this.columns)) return false;
+        }
+        return true;
+    }
 
-        for (const row of rows) {
-            const datum: unknown[] = [];
+    private onNext(index: number, value: unknown) {
+        const column = value as GridColumnConfig;
+        this.columns[index] = column;
+        if (!this.isReady() || !this.columns.length) return;
 
-            for (const key in row) {
-                let i = lookup.get(key);
-                if (i == null) {
-                    lookup.set(key, i = columns.length);
-                    columns.push({
-                        name: key,
-                        editable: true,
-                        width: 100,
-                        minWidth: 30,
-                        maxWidth: 400
-                    });
-                }
+        const columns: Column[] = this.columns.map<Column>(column => ({
+            name: column.name,
+            editable: true,
+            width: column.width,
+            maxWidth: 400
+        }));
 
-                datum[i] = row[key];
-            }
+        const n = this.columns[0].values.length;
+        const data: GridValueConfig[][] = new Array(n);
 
-            data.push(datum);
+        for (let i = 0; i < n; i++) {
+            const datum = this.columns.map(column => column.values[i]);
+            data[i] = datum;
         }
 
         if (this.renderView) {
             this.renderView(this.viewName, {
                 type: ViewType.GRID,
                 columns,
-                rows: data,
+                data,
             });
         }
     }
@@ -79,8 +80,9 @@ export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     description: 'Displays the data as a grid view.',
     ports: {
         in: {
-            [PORT_ROWS]: {
-                type: 'row[]'
+            [PORT_COLUMNS]: {
+                type: 'column',
+                multi: true
             }
         },
         out: {
@@ -93,7 +95,7 @@ export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         name: {
             label: 'Name',
             initialValue: '',
-            type: FieldInputType.TEXT
+            type: InputType.TEXT
         }
     },
     createProcessor(node, params) {

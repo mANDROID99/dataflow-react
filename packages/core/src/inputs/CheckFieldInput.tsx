@@ -1,7 +1,7 @@
 import React from 'react';
-import { FieldInputProps } from "../types/graphFieldInputTypes";
+import { InputProps } from "../types/graphInputTypes";
 
-export default function CheckFieldInput(props: FieldInputProps<boolean>) {
+export default function CheckFieldInput(props: InputProps<boolean>) {
     return (
         <input
             type="checkbox"

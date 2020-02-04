@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { GraphNode } from '../../../types/graphTypes';
-import { GraphNodeContext } from '../../../types/graphFieldInputTypes';
+import { GraphNodeContext } from '../../../types/graphInputTypes';
 import { ContextMenuTarget, ContextMenuTargetType } from '../../../types/storeTypes';
 
 import GraphNodeField from './GraphNodeField';

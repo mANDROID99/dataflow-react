@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { Row, KEY_GROUP } from "../../types/valueTypes";
 import { asNumber } from "../../utils/converters";
@@ -104,7 +104,7 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         type: {
             label: 'Agg Type',
             initialValue: 'sum',
-            type: FieldInputType.SELECT,
+            type: InputType.SELECT,
             params: {
                 options: Object.values(AggregatorType)
             }
@@ -112,7 +112,7 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         column: {
             label: 'Map Column',
             initialValue: columnExpression(''),
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             params: ({ context }) => ({
                 columns: context.groupColumns ?? context.columns,
                 target: 'row'
@@ -121,7 +121,7 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         alias: {
             label: 'Alias',
             initialValue: '',
-            type: FieldInputType.TEXT
+            type: InputType.TEXT
         },
     },
     createProcessor(node, params) {

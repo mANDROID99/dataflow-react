@@ -1,6 +1,6 @@
 import jexl from 'jexl';
 import Expression from 'jexl/Expression';
-import { ColumnMapperInputValue, Entry, ColumnMapperType } from '../types/graphFieldInputTypes';
+import { ColumnMapperInputValue, Entry, ColumnMapperType } from '../types/graphInputTypes';
 
 const CHAR_SPACE = 32;
 const CHAR_EQ = 61;

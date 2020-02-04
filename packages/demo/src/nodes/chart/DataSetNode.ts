@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, Entry, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, Entry, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/converters';
@@ -103,7 +103,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         type: {
             label: 'Type',
-            type: FieldInputType.SELECT,
+            type: InputType.SELECT,
             initialValue: 'line',
             params: {
                 options: [
@@ -120,7 +120,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         series: {
             label: 'Map Series Key',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
@@ -130,7 +130,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         label: {
             label: 'Map Label',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
@@ -140,7 +140,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         borderColor: {
             label: 'Map Border Color',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
@@ -150,7 +150,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         backgroundColor: {
             label: 'Map Background Color',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
@@ -160,7 +160,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         params: {
             label: 'Params',
-            type: FieldInputType.DATA_ENTRIES,
+            type: InputType.DATA_ENTRIES,
             initialValue: []
         }
     },

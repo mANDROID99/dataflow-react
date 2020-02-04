@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "src/chartContext";
 import { NodeType } from "../nodes";
 
@@ -63,7 +63,7 @@ export const SCHEDULER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         interval: {
             label: 'Interval',   
-            type: FieldInputType.NUMBER,
+            type: InputType.NUMBER,
             initialValue: 0,
             params: {
                 min: 0
@@ -71,7 +71,7 @@ export const SCHEDULER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         delay: {
             label: 'Delay',
-            type: FieldInputType.NUMBER,
+            type: InputType.NUMBER,
             initialValue: 0,
             params: {
                 min: 0

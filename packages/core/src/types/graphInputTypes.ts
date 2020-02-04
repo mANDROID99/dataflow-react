@@ -5,7 +5,7 @@ export type GraphNodeContext<Ctx, Params> = {
     parents: { [key: string]: Ctx[] };
 }
 
-export type FieldInputProps<T> = {
+export type InputProps<T> = {
     nodeId: string;
     fieldName: string;
     value: T | undefined;
@@ -13,7 +13,7 @@ export type FieldInputProps<T> = {
     onChanged: (value: T) => void;
 }
 
-export enum FieldInputType {
+export enum InputType {
     TEXT = 'text',
     NUMBER = 'number',
     SELECT = 'select',

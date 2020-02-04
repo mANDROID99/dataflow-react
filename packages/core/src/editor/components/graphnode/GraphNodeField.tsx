@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { GraphNodeFieldConfig, GraphFieldInputConfig } from '../../../types/graphConfigTypes';
-import { FieldInputProps, GraphNodeContext } from '../../../types/graphFieldInputTypes';
+import { InputProps, GraphNodeContext } from '../../../types/graphInputTypes';
 import { useGraphContext } from '../../graphEditorContext';
 import { resolve } from '../../../utils/graph/inputUtils';
 import { setNodeFieldValue } from '../../../store/actions';
@@ -32,7 +32,7 @@ function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
         return fieldParams ? resolve(fieldParams, nodeContext) : {};
     }, [fieldParams, nodeContext]);
 
-    const inputProps: FieldInputProps<any> = {
+    const inputProps: InputProps<any> = {
         value: fieldValue,
         fieldName,
         nodeId,

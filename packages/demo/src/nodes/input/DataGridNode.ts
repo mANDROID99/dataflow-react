@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, emptyDataGrid, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, emptyDataGrid, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
 import { NodeType } from '../nodes';
 import { ChartContext } from "../../chartContext";
 import { Row } from "../../types/valueTypes";
@@ -27,15 +27,15 @@ class DataGridProcessor implements NodeProcessor {
     onStart(): void {
         if (!this.subs.length) return;
         
-        const columnNames = this.data.columns;
-        const rowValues = this.data.rows;
+        const gridColumns = this.data.columns;
+        const gridRows = this.data.rows;
 
-        const rows: Row[] = rowValues.map((values): Row => {
+        const rows: Row[] = gridRows.map((values): Row => {
             const data: { [key: string]: string } = {};
-            const nRows = Math.min(columnNames.length, values.length);
+            const nRows = Math.min(gridColumns.length, values.length);
             
             for (let i = 0; i < nRows; i++) {
-                data[columnNames[i]] = values[i];
+                data[gridColumns[i]] = values[i];
             }
 
             return data;
@@ -55,7 +55,7 @@ export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     fields: {
         data: {
             label: 'Data',
-            type: FieldInputType.DATA_GRID,
+            type: InputType.DATA_GRID,
             initialValue: emptyDataGrid()
         }
     },

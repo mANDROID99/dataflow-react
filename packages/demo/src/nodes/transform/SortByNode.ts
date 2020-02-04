@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { Row } from "../../types/valueTypes";
 import { rowToEvalContext } from "../../utils/expressionUtils";
@@ -77,7 +77,7 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         column: {
             label: 'Map Column Key',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 columns: context.columns,
@@ -86,7 +86,7 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         desc: {
             label: 'Descending',
-            type: FieldInputType.CHECK,
+            type: InputType.CHECK,
             initialValue: false
         }
     },

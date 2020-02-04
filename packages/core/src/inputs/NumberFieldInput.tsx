@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldInputProps } from "../types/graphFieldInputTypes";
+import { InputProps } from "../types/graphInputTypes";
 import CommonTextInput from '../common/CommonTextInput';
 import { useCallback } from 'react';
 
@@ -7,7 +7,7 @@ function toNumber(input: string) {
     return isNaN(input as any) ? undefined : +input;
 }
 
-export default function NumberFieldInput(props: FieldInputProps<number>): React.ReactElement {
+export default function NumberFieldInput(props: InputProps<number>): React.ReactElement {
     const onChanged = props.onChanged;
     const min = props.params.min as number | undefined;
     const max = props.params.max as number | undefined;

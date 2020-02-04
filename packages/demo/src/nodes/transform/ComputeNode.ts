@@ -1,4 +1,4 @@
-import { FieldInputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from '@react-ngraph/core';
+import { InputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from '../../chartContext';
 import { pushDistinct } from '../../utils/arrayUtils';
 import { Row } from '../../types/valueTypes';
@@ -72,7 +72,7 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         value: {
             label: 'Map Value',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 columns: context.columns,
@@ -81,7 +81,7 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         alias: {
             label: 'Alias',
-            type: FieldInputType.TEXT,
+            type: InputType.TEXT,
             initialValue: ''
         }
     },

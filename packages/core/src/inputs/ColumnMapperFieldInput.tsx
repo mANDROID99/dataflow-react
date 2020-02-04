@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 import cn from 'classnames';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { FieldInputProps } from "../types/graphFieldInputTypes";
-import { ColumnMapperType, ColumnMapperInputValue } from "../types/graphFieldInputTypes";
+import { InputProps } from "../types/graphInputTypes";
+import { ColumnMapperType, ColumnMapperInputValue } from "../types/graphInputTypes";
 import CommonTextInput from "../common/CommonTextInput";
 import CommonSelectInput, { Option } from "../common/CommonSelectInput";
 import { columnMapperToExpression } from "../utils/expressionUtils";
@@ -12,7 +12,7 @@ function isExpressionType(input: ColumnMapperInputValue) {
     return typeof input === 'string';
 }
 
-export default function ColumnMapperFieldInput(props: FieldInputProps<ColumnMapperInputValue>) {
+export default function ColumnMapperFieldInput(props: InputProps<ColumnMapperInputValue>) {
     const { value, onChanged, params } = props;
     const target = params.target as string | undefined;
     

@@ -5,7 +5,7 @@ import './styles/main.scss';
 export * from './types/graphConfigTypes';
 export * from './types/graphTemplateTypes';
 export * from './types/graphTypes';
-export * from './types/graphFieldInputTypes';
+export * from './types/graphInputTypes';
 export * from './types/processorTypes';
 
 // processor

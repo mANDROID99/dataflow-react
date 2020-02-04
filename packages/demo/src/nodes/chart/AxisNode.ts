@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { AxisType, ChartAxisConfig } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
@@ -58,7 +58,7 @@ export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         type: {
             label: 'Type',
-            type: FieldInputType.SELECT,
+            type: InputType.SELECT,
             initialValue: 'linear',
             params: {
                 options: [
@@ -71,12 +71,12 @@ export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         label: {
             label: 'Label',
-            type: FieldInputType.TEXT,
+            type: InputType.TEXT,
             initialValue: ''
         },
         params: {
             label: 'Params',
-            type: FieldInputType.DATA_ENTRIES,
+            type: InputType.DATA_ENTRIES,
             initialValue: [
                 { key: 'ticks.beginAtZero', value: 'true' }
             ]

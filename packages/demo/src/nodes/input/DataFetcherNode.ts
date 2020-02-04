@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { asString } from "../../utils/converters";
 import { Row } from "../../types/valueTypes";
@@ -112,12 +112,12 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         url: {
             label: 'Map URL',
-            type: FieldInputType.TEXT,
+            type: InputType.TEXT,
             initialValue: ''
         },
         method: {
             label: 'Http Method',
-            type: FieldInputType.SELECT,
+            type: InputType.SELECT,
             initialValue: HttpMethodType.GET,
             params: {
                 options: Object.values(HttpMethodType)
@@ -125,17 +125,17 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         headers: {
             label: 'Headers',
-            type: FieldInputType.DATA_ENTRIES,
+            type: InputType.DATA_ENTRIES,
             initialValue: []
         },
         mapResponse: {
             label: 'Map Response',
-            type: FieldInputType.TEXT,
+            type: InputType.TEXT,
             initialValue: ''
         },
         columns: {
             label: 'Columns',
-            type: FieldInputType.DATA_LIST,
+            type: InputType.DATA_LIST,
             initialValue: []
         }
     },

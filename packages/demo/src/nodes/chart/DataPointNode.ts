@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../chartContext";
 import { ChartDataPoint, Row } from "../../types/valueTypes";
@@ -74,7 +74,7 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         x: {
             label: 'Map X',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 columns: context.columns,
@@ -83,7 +83,7 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         y: {
             label: 'Map Y',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 columns: context.columns,
@@ -92,7 +92,7 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         r: {
             label: 'Map R',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,
@@ -102,7 +102,7 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         color: {
             label: 'Map Color',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
                 optional: true,

@@ -1,8 +1,8 @@
 import React from 'react';
-import { FieldInputProps } from '../types/graphFieldInputTypes';
+import { InputProps } from '../types/graphInputTypes';
 import CommonSelectInput, { Option } from '../common/CommonSelectInput';
 
-export default function SelectFieldInput(props: FieldInputProps<string>): React.ReactElement {
+export default function SelectFieldInput(props: InputProps<string>): React.ReactElement {
     const { value, onChanged, params } = props;
     const options = (params.options ?? []) as Option[];
     return (

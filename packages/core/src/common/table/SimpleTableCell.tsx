@@ -43,7 +43,7 @@ function SimpleTableCell({
         document.addEventListener('mousedown', handleMouseDown);
         return () => {
             document.removeEventListener('mousedown', handleMouseDown);
-        }
+        };
     }, [cellState.selected, dispatch, i, j]);
 
     const handleClick = () => {
@@ -57,15 +57,15 @@ function SimpleTableCell({
                 dispatch(setCellSelected(i, j, true));
             }
         }
-    }
+    };
 
     const handleValueChanged = (value: unknown) => {
         dispatch(setCellValue(i, j, value));
-    }
+    };
 
     const handleEditorCancelled = () => {
         dispatch(setCellEditing(i, j, false));
-    }
+    };
 
     function renderEditor() {
         return column.editor ? column.editor(value, handleValueChanged) : (
@@ -78,7 +78,9 @@ function SimpleTableCell({
     }
 
     function renderContent() {
-        return renderCell ? renderCell(value, column) : toString(value);
+        return renderCell ? renderCell(value, column) : (
+            <div className="ngraph-table-cell-value">{toString(value)}</div>
+        );
     }
 
     return (

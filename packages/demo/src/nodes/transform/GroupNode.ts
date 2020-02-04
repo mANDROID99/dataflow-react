@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { KEY_GROUP, ValueType, Row } from "../../types/valueTypes";
 import { pushDistinct } from "../../utils/arrayUtils";
@@ -119,7 +119,7 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         group: {
             label: 'Map Group',
             initialValue: columnExpression(''),
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             params: ({ context }) => ({
                 columns: context.groupColumns ?? context.columns,
                 target: 'row'
@@ -128,7 +128,7 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         alias: {
             label: 'Alias',
             initialValue: '',
-            type: FieldInputType.TEXT
+            type: InputType.TEXT
         }
     },
     createProcessor(node, params) {

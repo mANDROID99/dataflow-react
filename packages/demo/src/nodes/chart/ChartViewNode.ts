@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, Entry, expressions, GraphNode, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, expressions, GraphNode, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../chartContext";
 import { ChartDataSet, ChartAxisConfig, ChartViewConfig, ChartEventType, ViewType, ViewConfig, ChartEventConfig } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
@@ -72,7 +72,7 @@ class ChartViewProcessor implements NodeProcessor {
     }
 
     private allReceived(x: unknown[]) {
-        for(let i = 0; i < x.length; i++) {
+        for(let i = 0, n = x.length; i < n; i++) {
             if (!(i in x)) return false;
         }
         return true;
@@ -161,12 +161,12 @@ export const CHART_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         name: {
             label: 'Name',
-            type: FieldInputType.TEXT,
+            type: InputType.TEXT,
             initialValue: ''
         },
         type: {
             label: 'Type',
-            type: FieldInputType.SELECT,
+            type: InputType.SELECT,
             initialValue: 'line',
             params: {
                 options: [
@@ -183,7 +183,7 @@ export const CHART_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         params: {
             label: 'Params',
-            type: FieldInputType.DATA_ENTRIES,
+            type: InputType.DATA_ENTRIES,
             initialValue: []
         }
     },

@@ -1,26 +1,22 @@
-import { FieldInputProps } from "./graphFieldInputTypes";
+import { InputProps } from "./graphInputTypes";
 import { GraphNode } from "./graphTypes";
 import { NodeProcessor } from "./processorTypes";
 
 export type GraphFieldInputConfig = {
-    component: React.ComponentType<FieldInputProps<any>>;
+    component: React.ComponentType<InputProps<any>>;
 }
 
-export type ResolverParams<Ctx, Params> = {
+export type FieldParams<Ctx, Params> = {
     context: Ctx;
     parents: { [key: string]: Ctx[] };
     params: Params;
 }
 
-export type ResolvableCallback<Ctx, Params, T> = (params: ResolverParams<Ctx, Params>) => T;
-
-export type Resolvable<Ctx, Params, T> = T | ResolvableCallback<Ctx, Params, T>;
-
 export type GraphNodeFieldConfig<Ctx, Params> = {
     label: string;
     type: string;
     initialValue: unknown;
-    params?: Resolvable<Ctx, Params, { [key: string]: unknown }>;
+    params?: { [key: string]: unknown } | ((params: FieldParams<Ctx, Params>) => { [key: string]: unknown });
 }
 
 export type GraphNodePortConfig = {

@@ -1,5 +1,5 @@
 import { GraphFieldInputConfig } from "../types/graphConfigTypes";
-import { FieldInputType } from "../types/graphFieldInputTypes";
+import { InputType } from "../types/graphInputTypes";
 
 import TextFieldInput from "./TextFieldInput";
 import DataGridFieldInput from "./DataGridFieldInput";
@@ -11,28 +11,28 @@ import CheckFieldInput from "./CheckFieldInput";
 import NumberFieldInput from "./NumberFieldInput";
 
 export const inputs: { [type: string]: GraphFieldInputConfig } = {
-    [FieldInputType.TEXT]: {
+    [InputType.TEXT]: {
         component: TextFieldInput
     },
-    [FieldInputType.NUMBER]: {
+    [InputType.NUMBER]: {
         component: NumberFieldInput
     },
-    [FieldInputType.SELECT]: {
+    [InputType.SELECT]: {
         component: SelectFieldInput
     },
-    [FieldInputType.CHECK]: {
+    [InputType.CHECK]: {
         component: CheckFieldInput
     },
-    [FieldInputType.COLUMN_MAPPER]: {
+    [InputType.COLUMN_MAPPER]: {
         component: ColumnMapperFieldInput
     },
-    [FieldInputType.DATA_ENTRIES]: {
+    [InputType.DATA_ENTRIES]: {
         component: DataEntriesFieldInput
     },
-    [FieldInputType.DATA_GRID]: {
+    [InputType.DATA_GRID]: {
         component: DataGridFieldInput
     },
-    [FieldInputType.DATA_LIST]: {
+    [InputType.DATA_LIST]: {
         component: DataListFieldInput
     }
 };

@@ -1,4 +1,4 @@
-import { GraphNodeConfig, FieldInputType, columnExpression, ColumnMapperInputValue, NodeProcessor, expressions } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, NodeProcessor, expressions } from "@react-ngraph/core";
 
 import { Row, JoinType } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../chartContext";
@@ -192,7 +192,7 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         joinType: {
             label: 'Join Type',
-            type: FieldInputType.SELECT,
+            type: InputType.SELECT,
             initialValue: JoinType.LEFT,
             params: {
                 options: Object.values(JoinType)
@@ -200,7 +200,7 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         joinKeyLeft: {
             label: 'Map Key Left',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ parents }) => {
                 const columns: string[] = parents.left[0]?.columns ?? [];
@@ -212,7 +212,7 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         joinKeyRight: {
             label: 'Map Key Right',
-            type: FieldInputType.COLUMN_MAPPER,
+            type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ parents }) => {
                 const columns: string[] = parents.right[0]?.columns ?? [];

@@ -1,6 +1,6 @@
 import { GraphNode } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
-import { GraphNodeContext } from "../types/graphFieldInputTypes";
+import { GraphNodeContext } from "../types/graphInputTypes";
 
 export function computeGraphNodeContexts<Ctx, Params>(
     params: Params | undefined,
