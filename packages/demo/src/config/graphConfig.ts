@@ -17,7 +17,7 @@ export const GRAPH_CONFIG: GraphConfig<ChartContext, ChartParams> = {
             'datapoint[]': 'orange',
             'dataset[]': 'yellow',
             'axis': 'pink',
-            'event': 'purple'
+            'column': 'purple'
         }
     }
 };
