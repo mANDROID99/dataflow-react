@@ -398,6 +398,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-dnd/asap@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@react-dnd/asap@npm:4.0.0"
+  checksum: 0a28a03425d470273c01dfb700d45267aa097ca8d59ae40940683bad2e8e9df433370e109da9bda1d61d1da503a97d80434cdfea3a55f8cf79350b3a4caa8d87
+  languageName: node
+  linkType: hard
+
+"@react-dnd/invariant@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@react-dnd/invariant@npm:2.0.0"
+  checksum: 169f2a6290db7fa8c4b0c42c20d70ff847976d07c4210f176ae2297277693b6d37317930ffd2b9f91af9c234ffdb907555cb709e626c2c4e41928321b5422f47
+  languageName: node
+  linkType: hard
+
+"@react-dnd/shallowequal@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@react-dnd/shallowequal@npm:2.0.0"
+  checksum: 19fd22eda9ccbadb5415d885bc620103e5a0f3f8ba469af81244b6fb2eb76b022aaa0131c92ae33bbe908529f6ba24eb9bb4d665347260e379edac3b050a6dd3
+  languageName: node
+  linkType: hard
+
 "@react-ngraph/core@0.1.0, @react-ngraph/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@react-ngraph/core@workspace:packages/core"
@@ -406,6 +427,7 @@ __metadata:
     "@fortawesome/free-solid-svg-icons": ^5.12.0
     "@fortawesome/react-fontawesome": ^0.1.7
     "@popperjs/core": ^2.0.4
+    "@react-dnd/invariant": ^2.0.0
     "@types/chart.js": ^2.9.2
     "@types/classnames": ^2.2.9
     "@types/jest": ^24.0.20
@@ -429,6 +451,8 @@ __metadata:
     node-sass: ^4.13.0
     pnp-webpack-plugin: ^1.5.0
     react: ^16.11.0
+    react-dnd: ^10.0.2
+    react-dnd-html5-backend: ^10.0.2
     react-redux: ^7.1.3
     redux: ^4.0.5
     reselect: ^4.0.0
@@ -575,7 +599,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hoist-non-react-statics@npm:^3.3.0":
+"@types/hoist-non-react-statics@npm:^3.3.0, @types/hoist-non-react-statics@npm:^3.3.1":
   version: 3.3.1
   resolution: "@types/hoist-non-react-statics@npm:3.3.1"
   dependencies:
@@ -2818,6 +2842,17 @@ __metadata:
     miller-rabin: ^4.0.0
     randombytes: ^2.0.0
   checksum: 5ebb42a4a8055ef61664278cb6757af703d54ad70dbd730bb5f1c40527ed0544cab2262b01010521a949103eed7bcd4dc72e814f3bb364304fa89dadeb50a2e2
+  languageName: node
+  linkType: hard
+
+"dnd-core@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "dnd-core@npm:10.0.2"
+  dependencies:
+    "@react-dnd/asap": ^4.0.0
+    "@react-dnd/invariant": ^2.0.0
+    redux: ^4.0.4
+  checksum: e37f6d035d757e115140310101c09bbc96b5caf55f8d960162faa3e10acb465133193a64634493f2e90073681df9253f822be749efa91d8210a257b11eda5cb6
   languageName: node
   linkType: hard
 
@@ -7615,6 +7650,30 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-dnd-html5-backend@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "react-dnd-html5-backend@npm:10.0.2"
+  dependencies:
+    dnd-core: ^10.0.2
+  checksum: 22b82efb4e56498d8f4f4b94c29e31f593cd219e84032ed53ffcef2254bae26fa901c953915d277f54f7f562aa7210b41ab5f3004bb6bc9e72021a26a5500d64
+  languageName: node
+  linkType: hard
+
+"react-dnd@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "react-dnd@npm:10.0.2"
+  dependencies:
+    "@react-dnd/shallowequal": ^2.0.0
+    "@types/hoist-non-react-statics": ^3.3.1
+    dnd-core: ^10.0.2
+    hoist-non-react-statics: ^3.3.0
+  peerDependencies:
+    react: ">= 16.8"
+    react-dom: ">= 16.8"
+  checksum: 02d225efd99b639dbbc5e8d2a8553a5e2e273161c19f995320f434984841065bdb13bf8babdb9613dacaf74a2a263e4d386368291522f3f09e744626cec8c1a0
+  languageName: node
+  linkType: hard
+
 "react-dom@npm:^16.12.0":
   version: 16.12.0
   resolution: "react-dom@npm:16.12.0"
@@ -7818,7 +7877,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"redux@npm:^4.0.0, redux@npm:^4.0.5":
+"redux@npm:^4.0.0, redux@npm:^4.0.4, redux@npm:^4.0.5":
   version: 4.0.5
   resolution: "redux@npm:4.0.5"
   dependencies:
