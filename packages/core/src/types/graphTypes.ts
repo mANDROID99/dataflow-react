@@ -20,6 +20,7 @@ export type GraphNode = {
     y: number;
     width: number;
     ports: GraphNodePorts;
+    collapsed?: boolean;
     fields: {
         [name: string]: unknown;
     };

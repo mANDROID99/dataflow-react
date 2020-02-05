@@ -9,6 +9,7 @@ export enum GraphActionType {
     SET_FIELD_VALUE = 'SET_FIELD_VALUE',
     SET_NODE_POS = 'SET_NODE_POS',
     SET_NODE_WIDTH = 'SET_NODE_WIDTH',
+    SET_NODE_COLLAPSED = 'SET_NODE_COLLAPSED',
     SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU',
     HIDE_CONTEXT_MENU = 'HIDE_CONTEXT_MENU',
     UPDATE_SCROLL = 'UPDATE_SCROLL',
@@ -177,6 +178,20 @@ export function setNodeWidth(nodeId: string, width: number): SetNodeWidthAction 
         type: GraphActionType.SET_NODE_WIDTH,
         nodeId,
         width
+    };
+}
+
+export type SetNodeCollapsedAction = {
+    type: GraphActionType.SET_NODE_COLLAPSED;
+    nodeId: string;
+    collapsed: boolean;
+}
+
+export function setNodeCollapsed(nodeId: string, collapsed: boolean): SetNodeCollapsedAction {
+    return {
+        type: GraphActionType.SET_NODE_COLLAPSED,
+        nodeId,
+        collapsed
     };
 }
 

@@ -20,7 +20,7 @@ function TooltipIcon(props: Props) {
 
     return (
         <div
-            className="ngraph-header-icon"
+            className="ngraph-node-header-icon"
             onMouseOver={handleShowTooltip}
             onMouseOut={handleHideTooltip}
         >

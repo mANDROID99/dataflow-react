@@ -102,7 +102,7 @@ function GraphScrollContainer(props: Props) {
             onMouseDown={handleBeginDrag}
             className={classNames("ngraph-wrap-scroller")}
         >
-            <div ref={scrollRef} className="ngraph-scroller" style={{
+            <div ref={scrollRef} id="ngraph-scroller" style={{
                 left: scrollX,
                 top: scrollY
             }}>

@@ -23,7 +23,8 @@ import {
     ShowFormAction,
     HideFormAction,
     SubmitFormAction,
-    ClearFormAction
+    ClearFormAction,
+    SetNodeCollapsedAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
@@ -157,6 +158,12 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         if (!node) return;
     
         node.width = action.width;
+    }),
+
+    [GraphActionType.SET_NODE_COLLAPSED]: produce((state: GraphEditorState, action: SetNodeCollapsedAction) => {
+        const node = state.graph.nodes[action.nodeId];
+        if (!node) return;
+        node.collapsed = action.collapsed;
     }),
 
     [GraphActionType.BEGIN_PORT_DRAG]: produce((state: GraphEditorState, action: BeginPortDragAction) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { createSelector } from 'reselect';
 import classNames from 'classnames';
@@ -17,19 +17,6 @@ type Props = {
     nodeType: string;
     portName: string;
     portOut: boolean;
-    nodeX: number;
-    nodeY: number;
-    nodeWidth: number;
-}
-
-function getPortXOffset(elRef: React.RefObject<HTMLDivElement>): number {
-    const el = elRef.current;
-    return el ? el.offsetLeft : 0;
-}
-
-function getPortYOffset(elRef: React.RefObject<HTMLDivElement>): number {
-    const el = elRef.current;
-    return el ? el.offsetTop + el.clientHeight / 2 : 0;
 }
 
 /**
@@ -85,7 +72,7 @@ function createPortTarget(nodeType: string, nodeId: string, portName: string, po
 }
 
 function GraphNodePort(props: Props): React.ReactElement {
-    const { nodeId, nodeType, portName, portOut, nodeX, nodeY, nodeWidth } = props;
+    const { nodeId, nodeType, portName, portOut } = props;
     const dispatch = useDispatch();
     const elRef = useRef<HTMLDivElement>(null);
     
@@ -107,19 +94,23 @@ function GraphNodePort(props: Props): React.ReactElement {
 
     // update the port position
     useEffect(() => {
-        const portX = nodeX + getPortXOffset(elRef);
-        const portY = nodeY + getPortYOffset(elRef);
-        const portId = { nodeId, portName, portOut };
-        ports.setPortState(portId, { x: portX, y: portY });
-    }, [nodeId, portName, portOut, ports, nodeX, nodeY, nodeWidth]);
+        const el = elRef.current;
+        if (!el) return;
 
-    // select the current node "state" from the store
+        const rootContainer = document.getElementById('ngraph-scroller');
+        if (!rootContainer) return;
+
+        const portId = { nodeId, portName, portOut };
+        const parentBounds = rootContainer.getBoundingClientRect();
+        const bounds = el.getBoundingClientRect();
+        const x = bounds.left - parentBounds.left + bounds.width / 2;
+        const y = bounds.top - parentBounds.top + bounds.height / 2;
+        ports.setPortState(portId, { x, y });
+    });
+
+    // select the current node state from the store
     const selector = useMemo(() => createPortStateSelector(graphConfig, portTarget), [graphConfig, portTarget]);
-    const {
-        isConnectable,
-        isHidden,
-        isDragCandidate
-    } = useSelector(selector, shallowEqual);
+    const { isConnectable, isHidden, isDragCandidate } = useSelector(selector, shallowEqual);
 
     // resolve the port colour
     const portColors: string[] = useMemo(() => resolvePortColors(graphConfig, portTarget), [graphConfig, portTarget]);
@@ -170,5 +161,5 @@ function GraphNodePort(props: Props): React.ReactElement {
     );
 }
 
-export default React.memo(GraphNodePort);
+export default GraphNodePort;
 

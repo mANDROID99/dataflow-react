@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,6 +24,7 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
     const { nodeId, graphNode, nodeContext } = props;
     const { graphConfig } = useGraphContext<Ctx, Params>();
     const dispatch = useDispatch();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // drag-state. Track it in internal state so we only update the graph
     // when the mouse is released.
@@ -74,60 +75,57 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
         <div
             className={cn('ngraph-node', { selected })}
             style={{ left: x, top: y, width }}
+            ref={containerRef}
             onContextMenu={handleContextMenu}
             onMouseDown={handleMouseDownContainer}
         >
-            <GraphNodeHeader
-                 nodeId={nodeId}
-                 graphNode={graphNode}
-                 graphNodeConfig={graphNodeConfig}
-                 onDrag={setDragPos}
-                 onDragWidth={setDragWidth}
-            />
+            <div className="ngraph-node-ports">
+                {portNamesIn.map((portName, index) => (
+                    <GraphNodePort
+                        key={index}
+                        nodeId={nodeId}
+                        nodeType={nodeType}
+                        portName={portName}
+                        portOut={false}
+                    />
+                ))}
+            </div>
             <div className="ngraph-node-body">
-                <div className="ngraph-node-ports">
-                    {portNamesIn.map((portName, index) => (
-                        <GraphNodePort
-                            key={index}
-                            nodeId={nodeId}
-                            nodeType={nodeType}
-                            portName={portName}
-                            portOut={false}
-                            nodeX={x}
-                            nodeY={y}
-                            nodeWidth={0}
-                        />
-                    ))}
-                </div>
-                <div className="ngraph-node-fields">
-                    {Object.entries(graphNodeConfig.fields).map(([fieldName, fieldConfig]) => {
-                        const fieldValue = graphNode.fields[fieldName];
-                        return (
-                            <GraphNodeField
-                                key={fieldName}
-                                nodeId={nodeId}
-                                nodeContext={nodeContext}
-                                fieldName={fieldName}
-                                fieldConfig={fieldConfig}
-                                fieldValue={fieldValue}
-                            />
-                        );
-                    })}
-                </div>
-                <div className="ngraph-node-ports">
-                    {portNamesOut.map((portName, index) => (
-                        <GraphNodePort
-                            key={index}
-                            nodeId={nodeId}
-                            nodeType={nodeType}
-                            portName={portName}
-                            portOut={true}
-                            nodeX={x}
-                            nodeY={y}
-                            nodeWidth={width}
-                        />
-                    ))}
-                </div>
+                <GraphNodeHeader
+                    nodeId={nodeId}
+                    graphNode={graphNode}
+                    graphNodeConfig={graphNodeConfig}
+                    onDrag={setDragPos}
+                    onDragWidth={setDragWidth}
+                />
+                {!graphNode.collapsed && (
+                    <div className="ngraph-node-fields">
+                        {Object.entries(graphNodeConfig.fields).map(([fieldName, fieldConfig]) => {
+                            const fieldValue = graphNode.fields[fieldName];
+                            return (
+                                <GraphNodeField
+                                    key={fieldName}
+                                    nodeId={nodeId}
+                                    nodeContext={nodeContext}
+                                    fieldName={fieldName}
+                                    fieldConfig={fieldConfig}
+                                    fieldValue={fieldValue}
+                                />
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+            <div className="ngraph-node-ports out">
+                {portNamesOut.map((portName, index) => (
+                    <GraphNodePort
+                        key={index}
+                        nodeId={nodeId}
+                        nodeType={nodeType}
+                        portName={portName}
+                        portOut={true}
+                    />
+                ))}
             </div>
         </div>
     );

@@ -3,18 +3,20 @@
 .ngraph-node {
     cursor: auto;
     display: flex;
-    flex-direction: column;
     position: absolute;
-    border-radius: 7px;
+}
+
+.ngraph-node-body {
+    background: $grey-2;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    flex-grow: 1;
+    overflow: hidden;
 }
 
 .ngraph-node-header {
     align-items: center;
-    background: $grey-1;
-    border: 1px solid $grey-4;
-    border-bottom: 0;
-    border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
+    color: $grey-6;
     cursor: move;
     display: flex;
     font-size: 1.1rem;
@@ -31,12 +33,12 @@
     text-align: center;
 }
 
-.ngraph-header-icon {
-    color: $grey-5;
+.ngraph-node-header-icon {
+    cursor: pointer;
     width: 1.5rem;
     text-align: center;
     &:hover {
-        color: $grey-6;
+        color: $grey-7;
     }
 }
 
@@ -48,34 +50,28 @@
     border-color: $primary;
 }
 
-.ngraph-node-body {
-    background-color:  rgba($grey-3, 0.8);
-    border: 1px solid $grey-4;
-    border-top: 0;
-    border-bottom-left-radius: 7px;
-    border-bottom-right-radius: 7px;
-    display: flex;
-}
-
-.ngraph-node.selected {
-    box-shadow: 0px 0px 5px rgba($primary, 0.5);
+.ngraph-node-fields {
+    background-color: rgba($grey-3, 0.8);
+    min-width: 0;
+    padding: 0.75rem;
+    padding-bottom: 0.5rem;
 }
 
 .ngraph-node.selected .ngraph-node-body {
+    box-shadow: 0px 0px 5px rgba($primary, 0.5);
     border-color: $primary;
-}
-
-.ngraph-node-fields {
-    flex-grow: 1;
-    min-width: 0;
-    padding: 0.75rem;
-    padding-bottom: 0.25rem;
 }
 
 .ngraph-node-ports {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-evenly;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.ngraph-node-ports.out {
+    right: 0;
 }
 
 .ngraph-node-port-label {
@@ -85,7 +81,7 @@
 }
 
 .ngraph-node-port-container {
-    height: 25px;
+    height: 1.5rem;
     position: relative;
 }
 

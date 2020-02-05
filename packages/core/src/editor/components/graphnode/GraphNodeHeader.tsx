@@ -1,12 +1,13 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { GraphNodeConfig } from '../../../types/graphConfigTypes';
 import { GraphNode } from '../../../types/graphTypes';
 
 import { useDrag } from '../../../utils/hooks/useDrag';
 import GraphNodeDragHandle, { DragWidthState } from './GraphNodeDragHandle';
-import { setNodePos } from '../../../store/actions';
+import { setNodePos, setNodeCollapsed } from '../../../store/actions';
 import TooltipIcon from './TooltipIcon';
 
 export type DragPosState = {
@@ -67,9 +68,16 @@ function GraphNodeHeader(props: Props) {
         }
     };
 
+    const handleMinimize = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        dispatch(setNodeCollapsed(nodeId, !graphNode.collapsed));
+    };
+
     return (
         <div onMouseDown={handleMouseDownHeader} className="ngraph-node-header">
-            <TooltipIcon description={graphNodeConfig.description}/>
+            <div className="ngraph-node-header-icon" onMouseDown={handleMinimize}>
+                <FontAwesomeIcon icon={graphNode.collapsed ? "plus" : "minus"}/>
+            </div>
             <div className="ngraph-node-title">
                 <div className="ngraph-text-ellipsis">
                     {graphNodeConfig.title}

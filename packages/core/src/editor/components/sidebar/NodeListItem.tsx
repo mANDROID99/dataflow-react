@@ -2,6 +2,8 @@ import React from 'react';
 import { useDrag } from 'react-dnd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import Tooltip from '../../../common/Tooltip';
+import TooltipIcon from '../graphnode/TooltipIcon';
 
 type Props = {
     id: string;
