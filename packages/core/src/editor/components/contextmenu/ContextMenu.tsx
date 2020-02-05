@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ContextMenuTargetType } from '../../../types/storeTypes';
 
 import Overlay from '../../../common/Overlay';
-import ContextMenuCreate from './ContextMenuCreate';
 import ContextMenuEdit from './ContextMenuEdit';
 import { hideContextMenu } from '../../../store/actions';
 import { selectContextMenu } from '../../../store/selectors';
@@ -31,7 +30,6 @@ function ContextMenu() {
                 return <ContextMenuEdit nodeId={target.nodeId}/>;
             }
         }
-        return <ContextMenuCreate x={x} y={y}/>;
     }
 
     return (

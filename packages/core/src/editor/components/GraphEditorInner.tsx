@@ -1,5 +1,7 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { useStore } from 'react-redux';
+import Backend from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 
 import { Graph } from '../../types/graphTypes';
 import { GraphConfig } from '../../types/graphConfigTypes';
@@ -83,28 +85,30 @@ function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
 
     return (
         <graphContext.Provider value={graphContextValue}>
-            <GraphHeader/>
-            <div className="ngraph-editor-content">
-                <SideBar/>
-                <GraphScrollContainer>
-                    <>
-                        <GraphConnectionsContainer/>
-                        <GraphEditorNodes
-                            graphConfig={graphConfig}
-                            params={props.params}
-                        />
-                    </>
-                </GraphScrollContainer>
-                {renderPreview
-                    ? <GraphEditorPreview
-                        renderPreview={renderPreview}/>
-                    : undefined
-                }
-                <ContextMenu/>
-                <GraphForms
-                    formConfigs={formConfigs}
-                />
+            <DndProvider backend={Backend}>
+                <GraphHeader/>
+                <div className="ngraph-editor-content">
+                    <SideBar/>
+                    <GraphScrollContainer>
+                        <>
+                            <GraphConnectionsContainer/>
+                            <GraphEditorNodes
+                                graphConfig={graphConfig}
+                                params={props.params}
+                            />
+                        </>
+                    </GraphScrollContainer>
+                    {renderPreview
+                        ? <GraphEditorPreview
+                            renderPreview={renderPreview}/>
+                        : undefined
+                    }
+                    <ContextMenu/>
+                    <GraphForms
+                        formConfigs={formConfigs}
+                    />
             </div>
+            </DndProvider>
         </graphContext.Provider>
     );
 }

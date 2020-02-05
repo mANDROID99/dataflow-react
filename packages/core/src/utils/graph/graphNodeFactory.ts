@@ -1,5 +1,6 @@
 import { GraphConfig, GraphNodeConfig } from "../../types/graphConfigTypes";
 import { GraphNode } from "../../types/graphTypes";
+import { v4 } from "uuid";
 
 const MAX_WIDTH = 500;
 const WIDTH = 170;
@@ -17,7 +18,7 @@ export function getNodeWidth(nodeConfig: GraphNodeConfig<any>) {
     return nodeConfig.width ?? WIDTH;
 }
 
-export function createGraphNode(id: string, x: number, y: number, type: string, config: GraphConfig<any, any>): GraphNode {
+export function createGraphNode(x: number, y: number, type: string, config: GraphConfig<any, any>): GraphNode {
     const nodeConfig = config.nodes[type];
     if (!nodeConfig) throw new Error('No node exists with type - ' + type);
     
@@ -26,6 +27,7 @@ export function createGraphNode(id: string, x: number, y: number, type: string, 
         fields[fieldName] = field.initialValue;
     }
 
+    const id = v4();
     const width = getNodeWidth(nodeConfig);
 
     return {

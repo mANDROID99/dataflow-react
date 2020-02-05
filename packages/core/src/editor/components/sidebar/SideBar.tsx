@@ -1,11 +1,7 @@
 import React, { useMemo } from 'react';
 import { useGraphContext } from '../../graphEditorContext';
 import { GraphNodeConfig } from '../../../types/graphConfigTypes';
-import SideBarGroup, { Group } from './SideBarGroup';
-
-type Props = {
-
-}
+import NodeListItemGroup, { Group } from './NodeListItemGroup';
 
 function groupGraphNodes(nodes: { [type: string]: GraphNodeConfig<unknown, unknown> }) {
     const lookup = new Map<string, Group>();
@@ -17,18 +13,21 @@ function groupGraphNodes(nodes: { [type: string]: GraphNodeConfig<unknown, unkno
 
         let group = lookup.get(menuGroup);
         if (!group) {
-            group = { name: menuGroup, nodes: [] }
+            group = { name: menuGroup, entries: [] };
             lookup.set(menuGroup, group);
             groups.push(group);
         }
 
-        group.nodes.push(node);
+        group.entries.push({
+            id: nodeType,
+            label: node.title
+        });
     }
 
     return groups;
 }
 
-export default function SideBar(props: Props) {
+export default function SideBar() {
     const { graphConfig } = useGraphContext();
     const nodeGroups = useMemo(() => groupGraphNodes(graphConfig.nodes), [graphConfig.nodes]);
 
@@ -36,7 +35,7 @@ export default function SideBar(props: Props) {
         <div className="ngraph-sidebar">
             <div className="ngraph-nodelist">
                 {nodeGroups.map((group, index) => (
-                    <SideBarGroup key={index} group={group}/>
+                    <NodeListItemGroup key={index} group={group}/>
                 ))}
             </div>
         </div>

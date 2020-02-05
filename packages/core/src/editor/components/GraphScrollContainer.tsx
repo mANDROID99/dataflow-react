@@ -1,10 +1,14 @@
 import React, { useRef } from 'react';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+import { useDrop } from 'react-dnd';
 import classNames from 'classnames';
+
 import { useDrag } from '../../utils/hooks/useDrag';
 import { StoreState } from '../../types/storeTypes';
 import { selectScrollX, selectScrollY } from '../../store/selectors';
-import { updateScroll, clearSelectedNode, showContextMenu } from '../../store/actions';
+import { updateScroll, clearSelectedNode, addNode } from '../../store/actions';
+import { createGraphNode } from '../../utils/graph/graphNodeFactory';
+import { useGraphContext } from '../graphEditorContext';
 
 type Props = {
     children: React.ReactChild;
@@ -21,6 +25,7 @@ type DragState = {
 
 function GraphScrollContainer(props: Props) {
     const dispatch = useDispatch();
+    const { graphConfig } = useGraphContext();
 
     // select the current scroll state from the store
     const { scrollX, scrollY } = useSelector((state: StoreState) => ({
@@ -28,7 +33,7 @@ function GraphScrollContainer(props: Props) {
         scrollY: selectScrollY(state)
     }), shallowEqual);
 
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLDivElement | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const drag = useDrag<DragState>({
@@ -73,18 +78,28 @@ function GraphScrollContainer(props: Props) {
         }
     };
 
-    const handleContextMenu = (event: React.MouseEvent) => {
-        event.preventDefault();
-        const bounds = ref.current!.getBoundingClientRect();
-        const x = event.clientX - bounds.left;
-        const y = event.clientY - bounds.top;
-        dispatch(showContextMenu(undefined, x, y));
-    };
-    
+    const [, dropRef] = useDrop({
+        accept: 'node',
+        drop(item: { id: string; type: string }, monitor) {
+            const container = scrollRef.current!;
+            const offset = monitor.getClientOffset();
+            if (!offset || !container) return;
+
+            const bounds = container.getBoundingClientRect();
+            const x = offset.x - bounds.left;
+            const y = offset.y - bounds.top;
+
+            const graphNode = createGraphNode(x, y, item.id, graphConfig);
+            dispatch(addNode(graphNode));
+        }
+    });
+
     return (
-        <div ref={ref}
+        <div ref={(el) => {
+            ref.current = el;
+            dropRef(el);
+        }}
             onMouseDown={handleBeginDrag}
-            onContextMenu={handleContextMenu}
             className={classNames("ngraph-wrap-scroller")}
         >
             <div ref={scrollRef} className="ngraph-scroller" style={{

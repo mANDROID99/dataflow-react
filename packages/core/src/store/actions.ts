@@ -38,14 +38,12 @@ export function loadGraph(graph: Graph): LoadGraphAction {
 
 export type AddNodeAction = {
     type: GraphActionType.ADD_NODE;
-    nodeId: string;
     node: GraphNode;
 }
 
-export function addNode(nodeId: string, node: GraphNode): AddNodeAction {
+export function addNode(node: GraphNode): AddNodeAction {
     return {
         type: GraphActionType.ADD_NODE,
-        nodeId,
         node
     };
 }

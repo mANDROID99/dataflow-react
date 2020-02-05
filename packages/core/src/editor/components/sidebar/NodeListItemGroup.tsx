@@ -1,11 +1,16 @@
 import React, { useRef, useLayoutEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import { GraphNodeConfig } from '../../../types/graphConfigTypes';
+import NodeListItem from './NodeListItem';
+
+export type GroupEntry = {
+    label: string;
+    id: string;
+}
 
 export type Group = {
     name: string;
-    nodes: GraphNodeConfig<unknown, unknown>[];
+    entries: GroupEntry[];
 }
 
 type Props = {
@@ -52,7 +57,7 @@ function expand(el: HTMLElement) {
     });
 }
 
-export default function SideBarGroup({ group }: Props) {
+export default function NodeListItemGroup({ group }: Props) {
     const [expanded, setExpanded] = useState(true);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -74,7 +79,7 @@ export default function SideBarGroup({ group }: Props) {
 
     const handleToggleExpanded = () => {
         setExpanded(!expanded);
-    }
+    };
 
     return (
         <div className="ngraph-nodelist-group">
@@ -87,13 +92,15 @@ export default function SideBarGroup({ group }: Props) {
                 </div>
             </div>
             <div ref={ref} className={cn("ngraph-nodelist-group-items")}>
-                {group.nodes.map((nodeConfig, index) => (
-                    <div key={index} className="ngraph-nodelist-item">
-                        {nodeConfig.title}
-                    </div>
+                {group.entries.map((entry, index) => (
+                    <NodeListItem
+                        key={index}
+                        label={entry.label}
+                        id={entry.id}
+                    />
                 ))}
             </div>
         </div>
-    )
+    );
 }
 
