@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import Button from '../common/Button';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectGraph } from '../store/selectors';
-import { loadGraph } from '../store/actions';
+import Button from '../../../common/Button';
+import { selectGraph } from '../../../store/selectors';
+import { loadGraph } from '../../../store/actions';
 
 type Props = {
     onHide: () => void;

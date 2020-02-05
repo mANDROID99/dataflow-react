@@ -71,7 +71,7 @@ function GraphNodeHeader(props: Props) {
         <div onMouseDown={handleMouseDownHeader} className="ngraph-node-header">
             <TooltipIcon description={graphNodeConfig.description}/>
             <div className="ngraph-node-title">
-                <div className="ngraph-node-title-text">
+                <div className="ngraph-text-ellipsis">
                     {graphNodeConfig.title}
                 </div>
             </div>

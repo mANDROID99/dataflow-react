@@ -21,7 +21,7 @@ export default function NodeListItem({ id, label }: Props) {
 
     return (
         <div ref={dragRef} className={cn("ngraph-nodelist-item", { dragging: isDragging })}>
-            <div className="ngraph-nodelist-item-text">
+            <div className="ngraph-flex-grow ngraph-text-ellipsis ngraph-mr-2">
                 {label}
             </div>
             <div className="ngraph-nodelist-item-dragsource">

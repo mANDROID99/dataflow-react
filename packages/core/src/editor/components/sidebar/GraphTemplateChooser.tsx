@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGraphContext } from '../editor/graphEditorContext';
-import { loadGraph } from '../store/actions';
-import { createTemplateIdSelector } from '../store/selectors';
+import { useGraphContext } from '../../graphEditorContext';
+import { loadGraph } from '../../../store/actions';
+import { createTemplateIdSelector } from '../../../store/selectors';
 
 function GraphTemplateChooser() {
     const dispatch = useDispatch();
@@ -18,8 +18,8 @@ function GraphTemplateChooser() {
     };
 
     return (
-        <div className="ngraph-templates">
-            <span className="ngraph-header-label">Template</span>
+        <div className="ngraph-p-2">
+            <div className="ngraph-mb-1 ngraph-text-label">Template</div>
             <select className="ngraph-input" value={templateId ?? ''} onChange={handleChange}>
                 <option disabled value=""></option>
                 {templates.map((template) => (

@@ -15,7 +15,6 @@ import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
 import { forms } from '../../forms/forms';
 import GraphForms from './GraphForms';
 import GraphScrollContainer from './GraphScrollContainer';
-import GraphHeader from '../../header/GraphHeader';
 import { graphContext, GraphContext } from '../graphEditorContext';
 import GraphEditorPreview from './preview/GraphEditorPreview';
 import GraphEditorNodes from './GraphEditorNodes';
@@ -86,7 +85,6 @@ function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
     return (
         <graphContext.Provider value={graphContextValue}>
             <DndProvider backend={Backend}>
-                <GraphHeader/>
                 <div className="ngraph-editor-content">
                     <SideBar/>
                     <GraphScrollContainer>

@@ -42,7 +42,7 @@ function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
 
     return (
         <div className="ngraph-node-field">
-            <div className="ngraph-node-field-label">{ fieldConfig.label }</div>
+            <div className="ngraph-text-label ngraph-text-ellipsis">{ fieldConfig.label }</div>
             <div className="ngraph-node-field-input">
                 { input ? React.createElement(input.component, inputProps) : 'Unknown Input Type' }
             </div>

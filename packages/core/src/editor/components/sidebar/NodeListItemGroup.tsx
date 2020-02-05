@@ -82,7 +82,7 @@ export default function NodeListItemGroup({ group }: Props) {
     };
 
     return (
-        <div className="ngraph-nodelist-group">
+        <div className="ngraph-mb-2">
             <div className="ngraph-nodelist-group-header" onClick={handleToggleExpanded}>
                 <div className="ngraph-nodelist-header-expander">
                     <FontAwesomeIcon icon={expanded ? "chevron-down" : "chevron-up"}/>

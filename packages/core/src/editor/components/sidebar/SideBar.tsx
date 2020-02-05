@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 import { useGraphContext } from '../../graphEditorContext';
 import { GraphNodeConfig } from '../../../types/graphConfigTypes';
 import NodeListItemGroup, { Group } from './NodeListItemGroup';
+import GraphTemplateChooser from './GraphTemplateChooser';
+import GraphDataEditor from './GraphDataEditor';
 
 function groupGraphNodes(nodes: { [type: string]: GraphNodeConfig<unknown, unknown> }) {
     const lookup = new Map<string, Group>();
@@ -33,10 +35,17 @@ export default function SideBar() {
 
     return (
         <div className="ngraph-sidebar">
-            <div className="ngraph-nodelist">
+            <div className="ngraph-text-h1 ngraph-my-5 ngraph-text-center">
+                Nodes
+            </div>
+            <div className="ngraph-flex-grow ngraph-overflow-auto">
                 {nodeGroups.map((group, index) => (
                     <NodeListItemGroup key={index} group={group}/>
                 ))}
+            </div>
+            <div className="ngraph-sidebar-footer">
+                <GraphTemplateChooser/>
+                <GraphDataEditor/>
             </div>
         </div>
     );

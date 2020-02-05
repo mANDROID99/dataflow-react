@@ -127,8 +127,8 @@
     "6cf9e969-0161-41cd-b26a-4c9b0840d133": {
       "id": "6cf9e969-0161-41cd-b26a-4c9b0840d133",
       "type": "datasets",
-      "x": 645,
-      "y": 333.79999923706055,
+      "x": 664,
+      "y": 342.79999923706055,
       "width": 186,
       "fields": {
         "type": "bar",
@@ -287,8 +287,8 @@
     "7d8e8dad-792c-4704-ad9f-ff0f94eeefac": {
       "id": "7d8e8dad-792c-4704-ad9f-ff0f94eeefac",
       "type": "data-fetcher",
-      "x": 1310,
-      "y": 216.79999923706055,
+      "x": 1257,
+      "y": 217.79999923706055,
       "width": 170,
       "fields": {
         "url": "= \"https://jsonplaceholder.typicode.com/posts?userId=\" + data[0].userId",
@@ -322,6 +322,14 @@
             {
               "node": "13e122bf-6b06-46c3-85ab-adcfbff81b68",
               "port": "rows"
+            },
+            {
+              "node": "dd86833e-5bc3-4f6b-b69b-22f59eb04653",
+              "port": "rows"
+            },
+            {
+              "node": "031541cf-b4fa-47cf-8704-287f8ad9d459",
+              "port": "rows"
             }
           ]
         }
@@ -330,8 +338,8 @@
     "13e122bf-6b06-46c3-85ab-adcfbff81b68": {
       "id": "13e122bf-6b06-46c3-85ab-adcfbff81b68",
       "type": "grid-view",
-      "x": 1532,
-      "y": 349.79999923706055,
+      "x": 1774,
+      "y": 347.79999923706055,
       "width": 170,
       "fields": {
         "name": "grid"
@@ -342,6 +350,16 @@
             {
               "node": "7d8e8dad-792c-4704-ad9f-ff0f94eeefac",
               "port": "rows"
+            }
+          ],
+          "columns": [
+            {
+              "node": "031541cf-b4fa-47cf-8704-287f8ad9d459",
+              "port": "column"
+            },
+            {
+              "node": "dd86833e-5bc3-4f6b-b69b-22f59eb04653",
+              "port": "column"
             }
           ]
         },
@@ -369,6 +387,88 @@
           ]
         }
       }
+    },
+    "dd86833e-5bc3-4f6b-b69b-22f59eb04653": {
+      "id": "dd86833e-5bc3-4f6b-b69b-22f59eb04653",
+      "type": "grid-column",
+      "x": 1528,
+      "y": 74,
+      "width": 170,
+      "fields": {
+        "name": "Title",
+        "width": 100,
+        "value": {
+          "type": "column",
+          "value": "title"
+        },
+        "fontColor": {
+          "type": "column",
+          "value": ""
+        },
+        "bgColor": {
+          "type": "column",
+          "value": ""
+        }
+      },
+      "ports": {
+        "in": {
+          "rows": [
+            {
+              "node": "7d8e8dad-792c-4704-ad9f-ff0f94eeefac",
+              "port": "rows"
+            }
+          ]
+        },
+        "out": {
+          "column": [
+            {
+              "node": "13e122bf-6b06-46c3-85ab-adcfbff81b68",
+              "port": "columns"
+            }
+          ]
+        }
+      }
+    },
+    "031541cf-b4fa-47cf-8704-287f8ad9d459": {
+      "id": "031541cf-b4fa-47cf-8704-287f8ad9d459",
+      "type": "grid-column",
+      "fields": {
+        "name": "Body",
+        "width": 100,
+        "value": {
+          "type": "column",
+          "value": "body"
+        },
+        "fontColor": {
+          "type": "column",
+          "value": ""
+        },
+        "bgColor": {
+          "type": "column",
+          "value": ""
+        }
+      },
+      "ports": {
+        "in": {
+          "rows": [
+            {
+              "node": "7d8e8dad-792c-4704-ad9f-ff0f94eeefac",
+              "port": "rows"
+            }
+          ]
+        },
+        "out": {
+          "column": [
+            {
+              "node": "13e122bf-6b06-46c3-85ab-adcfbff81b68",
+              "port": "columns"
+            }
+          ]
+        }
+      },
+      "width": 170,
+      "x": 1521,
+      "y": 441
     }
   }
 }
