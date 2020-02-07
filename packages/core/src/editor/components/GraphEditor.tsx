@@ -1,11 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { Provider } from 'react-redux';
 
 import { Graph } from '../../types/graphTypes';
 import { GraphConfig } from '../../types/graphConfigTypes';
 import { FormConfigs } from '../../types/formConfigTypes';
 import { GraphTemplate } from '../../types/graphTemplateTypes';
 import { GraphPreviewParams } from '../../types/graphEditorTypes';
+import { initStore } from '../../store/store';
 import GraphEditorInner from './GraphEditorInner';
+import { loadGraph } from '../../store/actions';
 
 type Props<Ctx, Params> = {
     initialGraph?: Graph;
@@ -20,6 +23,7 @@ type Props<Ctx, Params> = {
 export default function GraphEditor<Ctx, Params>(props: Props<Ctx, Params>) {
     const [modalRoot, setModalRoot] = useState<HTMLElement>();
     const modalRootRef = useRef<HTMLDivElement>(null);
+    const [storeInstance] = useState(initStore);
 
     useEffect(() => {
         const el = modalRootRef.current;
@@ -28,10 +32,21 @@ export default function GraphEditor<Ctx, Params>(props: Props<Ctx, Params>) {
         }
     }, []);
 
+    // load the initial graph into the store
+    const prevGraph = useRef<Graph>();
+    useEffect(() => {
+        if (props.initialGraph && props.initialGraph !== prevGraph.current) {
+            prevGraph.current = props.initialGraph;
+            storeInstance.dispatch(loadGraph(props.initialGraph));
+        }
+    });
+
     return (
-        <div className="ngraph-editor">
-            {modalRoot ? <GraphEditorInner modalRoot={modalRoot} { ...props }/> : undefined}
-            <div ref={modalRootRef} className="ngraph-modals"/>
-        </div>
+        <Provider store={storeInstance}>
+            <div className="ngraph-editor">
+                {modalRoot ? <GraphEditorInner modalRoot={modalRoot} { ...props }/> : undefined}
+                <div ref={modalRootRef} className="ngraph-modals"/>
+            </div>
+        </Provider>
     );
 }

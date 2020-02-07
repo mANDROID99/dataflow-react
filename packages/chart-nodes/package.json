@@ -1,46 +1,27 @@
 {
-  "name": "@react-ngraph/core",
+  "name": "@react-ngraph/chart-nodes",
   "version": "0.1.0",
+  "license": "MIT",
   "main": "./dist/bundle.js",
   "types": "./lib",
-  "license": "MIT",
   "scripts": {
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "test": "jest",
     "build": "webpack --mode=development",
     "build:watch": "webpack --watch --mode=development"
   },
   "peerDependencies": {
-    "@fortawesome/fontawesome-svg-core": "*",
-    "@fortawesome/free-solid-svg-icons": "*",
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
   },
   "dependencies": {
-    "@fortawesome/react-fontawesome": "^0.1.7",
-    "@popperjs/core": "^2.0.4",
-    "@react-dnd/invariant": "^2.0.0",
-    "classnames": "^2.2.6",
-    "immer": "^5.0.0",
-    "jexl": "^2.2.2",
-    "react-dnd": "^10.0.2",
-    "react-dnd-html5-backend": "^10.0.2",
-    "react-redux": "^7.1.3",
-    "redux": "^4.0.5",
-    "redux-devtools-extension": "^2.13.8",
-    "reselect": "^4.0.0",
-    "uuid": "^3.3.3"
+    "@react-ngraph/core": "0.1.0",
+    "chart.js": "^2.9.3"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.26",
-    "@fortawesome/free-solid-svg-icons": "^5.12.0",
     "@types/chart.js": "^2.9.2",
-    "@types/classnames": "^2.2.9",
-    "@types/jest": "^24.0.20",
-    "@types/jexl": "^2.2.0",
-    "@types/react": "16.9.11",
-    "@types/react-dom": "16.9.3",
-    "@types/react-redux": "^7.1.6",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
+    "@types/react-redux": "^7.1.7",
     "@types/uuid": "^3.4.6",
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "@typescript-eslint/parser": "^2.6.1",
@@ -53,14 +34,18 @@
     "jest": "^24.9.0",
     "node-sass": "^4.13.0",
     "pnp-webpack-plugin": "^1.5.0",
-    "react": "^16.11.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "redux-devtools-extension": "^2.13.8",
     "sass-loader": "^8.0.0",
+    "source-map-loader": "^0.2.4",
     "style-loader": "^1.0.0",
     "ts-jest": "^24.2.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-dev-server": "^3.9.0"
   }
 }
+  

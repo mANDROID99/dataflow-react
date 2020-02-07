@@ -9,8 +9,8 @@ export * from './types/graphInputTypes';
 export * from './types/processorTypes';
 
 // processor
-export { computeGraphNodeContexts } from './processor/computeGraphNodeContexts';
-export { createGraphNodeProcessors, runProcessors } from './processor/createGraphNodeProcessors';
+export { computeContexts } from './processor/computeContexts';
+export { createProcessorsFromGraph, runProcessors } from './processor/createProcessors';
 
 // editor
 import GraphEditor from './editor/components/GraphEditor';
@@ -32,6 +32,3 @@ export * from './common/table/simpleTableTypes';
 // re-export jexl so the user can modify it with additional transforms etc.
 import jexl from 'jexl';
 export { jexl };
-
-// redux
-export { reducer } from './store/reducer';

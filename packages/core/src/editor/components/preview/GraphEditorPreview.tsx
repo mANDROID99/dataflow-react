@@ -12,7 +12,7 @@ type Props = {
 
 function GraphEditorPreview(props: Props) {
     const [expanded, toggleMaximized] = useToggle(true);
-    const [dims, setDims] = useState({ width: 300, height: 300 });
+    const [dims] = useState({ width: 300, height: 300 });
     const graph = useSelector(selectGraph);
 
     return (

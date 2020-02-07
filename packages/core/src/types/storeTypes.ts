@@ -56,7 +56,7 @@ export type GraphEditorState = {
 }
 
 export type StoreState = {
-    graphEditor: GraphEditorState;
+    editor: GraphEditorState;
 }
 
 export function nodeFieldReceiver(nodeId: string, fieldId: string): Receiver {

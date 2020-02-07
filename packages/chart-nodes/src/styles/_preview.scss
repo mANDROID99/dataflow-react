@@ -1,0 +1,22 @@
+
+.ngraph-preview-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.5rem;
+}
+
+.ngraph-preview-selector {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+}
+
+.ngraph-preview-content {
+  background-color: white;
+  flex-grow: 1;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}

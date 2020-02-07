@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { GraphConfig } from "../../types/graphConfigTypes";
 
 import { selectGraphNodes } from "../../store/selectors";
-import { computeGraphNodeContexts } from "../../processor/computeGraphNodeContexts";
+import { computeContexts } from "../../processor/computeContexts";
 import GraphNodeComponent from './graphnode/GraphNode';
 
 type Props<Ctx, P> = {
@@ -17,7 +17,7 @@ function GraphEditorNodes<Ctx, P>(props: Props<Ctx, P>) {
      const graphNodes = useSelector(selectGraphNodes);
 
     // compute the context for all nodes in the graph
-    const nodeContexts = computeGraphNodeContexts(props.params, graphNodes, props.graphConfig);
+    const nodeContexts = computeContexts(props.params, graphNodes, props.graphConfig);
 
     return (
         <div className="ngraph-nodes">

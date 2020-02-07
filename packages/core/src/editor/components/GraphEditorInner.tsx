@@ -21,7 +21,6 @@ import GraphEditorNodes from './GraphEditorNodes';
 import SideBar from './sidebar/SideBar';
 import { selectGraph } from '../../store/selectors';
 import { GraphNodePortRefs } from '../GraphNodePortRefs';
-import { loadGraph } from '../../store/actions';
 
 type Props<Ctx, P> = {
     modalRoot: HTMLElement;
@@ -35,19 +34,10 @@ type Props<Ctx, P> = {
 }
 
 function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
-    const { initialGraph, graphConfig, templates, modalRoot, renderPreview, onGraphChanged } = props;
+    const { graphConfig, templates, modalRoot, renderPreview, onGraphChanged } = props;
     const formConfigs = props.forms ?? forms;
     const store = useStore<StoreState>();
     
-    // load the graph into the store
-    const prevGraph = useRef<Graph>();
-    useEffect(() => {
-        if (initialGraph && initialGraph !== prevGraph.current) {
-            prevGraph.current = initialGraph;
-            store.dispatch(loadGraph(initialGraph));
-        }
-    });
-
     useEffect(() => {
         if (onGraphChanged) {
             let prevGraph = selectGraph(store.getState());
@@ -85,27 +75,25 @@ function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
     return (
         <graphContext.Provider value={graphContextValue}>
             <DndProvider backend={Backend}>
-                <div className="ngraph-editor-content">
-                    <SideBar/>
-                    <GraphScrollContainer>
-                        <>
-                            <GraphConnectionsContainer/>
-                            <GraphEditorNodes
-                                graphConfig={graphConfig}
-                                params={props.params}
-                            />
-                        </>
-                    </GraphScrollContainer>
-                    {renderPreview
-                        ? <GraphEditorPreview
-                            renderPreview={renderPreview}/>
-                        : undefined
-                    }
-                    <ContextMenu/>
-                    <GraphForms
-                        formConfigs={formConfigs}
-                    />
-            </div>
+                <SideBar/>
+                <GraphScrollContainer>
+                    <>
+                        <GraphConnectionsContainer/>
+                        <GraphEditorNodes
+                            graphConfig={graphConfig}
+                            params={props.params}
+                        />
+                    </>
+                </GraphScrollContainer>
+                {renderPreview
+                    ? <GraphEditorPreview
+                        renderPreview={renderPreview}/>
+                    : undefined
+                }
+                <ContextMenu/>
+                <GraphForms
+                    formConfigs={formConfigs}
+                />
             </DndProvider>
         </graphContext.Provider>
     );
