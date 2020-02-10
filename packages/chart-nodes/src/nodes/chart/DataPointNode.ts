@@ -9,15 +9,19 @@ import { NodeType } from "../nodes";
 const PORT_ROWS = 'rows';
 const PORT_POINTS = 'points';
 
+type Config = {
+    mapX: expressions.Mapper;
+    mapY: expressions.Mapper;
+    mapR: expressions.Mapper;
+    mapColor: expressions.Mapper;
+}
+
 class DataPointNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly ctx: { [key: string]: unknown },
-        private readonly xMapper: expressions.Mapper,
-        private readonly yMapper: expressions.Mapper,
-        private readonly rMapper: expressions.Mapper,
-        private readonly colorMapper: expressions.Mapper
+        private readonly params: ChartParams,
+        private readonly config: Config
     ) { }
 
     get type(): string {
@@ -41,11 +45,12 @@ class DataPointNodeProcessor implements NodeProcessor {
 
         const rows = value as Row[];
         const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
-            const ctx = rowToEvalContext(row, i, this.ctx);
-            const x = asValue(this.xMapper(ctx), 0);
-            const y = asValue(this.yMapper(ctx), 0);
-            const r = asNumber(this.rMapper(ctx));
-            const color = asString(this.colorMapper(ctx));
+            const ctx = rowToEvalContext(row, i, this.params.variables);
+
+            const x = asValue(this.config.mapX(ctx), 0);
+            const y = asValue(this.config.mapY(ctx), 0);
+            const r = asNumber(this.config.mapR(ctx));
+            const color = asString(this.config.mapColor(ctx));
             return { x, y, r, color, row }
         });
 
@@ -130,6 +135,6 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const mapR = expressions.compileColumnMapper(mapRExpr, 'row');
         const mapColor = expressions.compileColumnMapper(mapColorExpr, 'row');
 
-        return new DataPointNodeProcessor(params.variables, mapX, mapY, mapR, mapColor);
+        return new DataPointNodeProcessor(params, { mapX, mapY, mapR, mapColor });
     }
 };

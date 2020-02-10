@@ -13,7 +13,7 @@ const FIELD_VALUE = 'value';
 const FIELD_FONT_COLOR = 'fontColor';
 const FIELD_BG_COLOR = 'bgColor';
 
-type Fields = {
+type Config = {
     name: string;
     width: number;
     mapValue: expressions.Mapper,
@@ -25,7 +25,7 @@ class GridColumnNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly fields: Fields,
+        private readonly config: Config,
         private readonly context: { [key: string]: unknown }
     ) { }
     
@@ -50,9 +50,9 @@ class GridColumnNodeProcessor implements NodeProcessor {
         const values = rows.map<GridValueConfig>((row) => {
             const ctx = { ...this.context, row };
 
-            const value = asString(this.fields.mapValue(ctx));
-            const fontColor = asString(this.fields.mapFontColor(ctx), undefined);
-            const bgColor = asString(this.fields.mapBgColor(ctx), undefined);
+            const value = asString(this.config.mapValue(ctx));
+            const fontColor = asString(this.config.mapFontColor(ctx), undefined);
+            const bgColor = asString(this.config.mapBgColor(ctx), undefined);
 
             return {
                 value,
@@ -62,8 +62,8 @@ class GridColumnNodeProcessor implements NodeProcessor {
         });
 
         const column: GridColumnConfig = {
-            name: this.fields.name,
-            width: this.fields.width,
+            name: this.config.name,
+            width: this.config.width,
             values
         }
         

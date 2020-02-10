@@ -24,7 +24,7 @@ class DataGridProcessor implements NodeProcessor {
         }
     }
 
-    onStart(): void {
+    start(): void {
         if (!this.subs.length) return;
         
         const gridColumns = this.data.columns;

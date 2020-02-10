@@ -8,17 +8,21 @@ import { NodeType } from "../nodes";
 const PORT_POINTS = 'points';
 const PORT_DATASETS = 'datasets';
 
+type Config = {
+    datasetType: string,
+    mapSeriesKey: expressions.Mapper,
+    mapParams: expressions.EntriesMapper,
+    mapLabel: expressions.Mapper,
+    mapBorderColor: expressions.Mapper,
+    mapBackgroundColor: expressions.Mapper,
+}
+
 class DataSetNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly datasetType: string,
-        private readonly seriesKeyMapper: expressions.Mapper,
-        private readonly paramsMapper: expressions.EntriesMapper,
-        private readonly labelMapper: expressions.Mapper,
-        private readonly borderColorMapper: expressions.Mapper,
-        private readonly backgroundColorMapper: expressions.Mapper,
-        private readonly context: { [key: string]: unknown }
+        private readonly params: ChartParams,
+        private readonly config: Config
     ) { }
 
     get type(): string {
@@ -49,18 +53,19 @@ class DataSetNodeProcessor implements NodeProcessor {
         if (points.length) {
             for (let i = 0, n = points.length; i < n; i++){
                 const point = points[i];
-                const ctx = pointToEvalContext(point, i, this.context);
-                const seriesKey = asString(this.seriesKeyMapper(ctx));
+                const ctx = pointToEvalContext(point, i, this.params.variables);
+
+                const seriesKey = asString(this.config.mapSeriesKey(ctx));
                 let dataSet: ChartDataSet | undefined = dataSetsByKey.get(seriesKey);
                 
                 if (!dataSet) {
-                    const params = this.paramsMapper(ctx);
-                    const label = asString(this.labelMapper(ctx));
-                    const borderColor = asString(this.borderColorMapper(ctx));
-                    const backgroundColor = asString(this.backgroundColorMapper(ctx));
+                    const params = this.config.mapParams(ctx);
+                    const label = asString(this.config.mapLabel(ctx));
+                    const borderColor = asString(this.config.mapBorderColor(ctx));
+                    const backgroundColor = asString(this.config.mapBackgroundColor(ctx));
 
                     dataSet = {
-                        type: this.datasetType,
+                        type: this.config.datasetType,
                         label,
                         backgroundColor,
                         borderColor,
@@ -180,20 +185,19 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const mapBackgroundColorExpr = node.fields.backgroundColor as ColumnMapperInputValue;
         const paramInputs = node.fields.params as Entry<string>[];
 
-        const labelMapper = expressions.compileColumnMapper(mapLabelExpr, 'row');
-        const seriesKeyMapper = expressions.compileColumnMapper(mapSeriesExpr, 'row');
-        const borderColorMapper = expressions.compileColumnMapper(mapBorderColorExpr, 'row');
-        const backgroundColorMapper = expressions.compileColumnMapper(mapBackgroundColorExpr, 'row');
-        const paramsMapper = expressions.compileEntriesMapper(paramInputs);
+        const mapLabel = expressions.compileColumnMapper(mapLabelExpr, 'row');
+        const mapSeriesKey = expressions.compileColumnMapper(mapSeriesExpr, 'row');
+        const mapBorderColor = expressions.compileColumnMapper(mapBorderColorExpr, 'row');
+        const mapBackgroundColor = expressions.compileColumnMapper(mapBackgroundColorExpr, 'row');
+        const mapParams = expressions.compileEntriesMapper(paramInputs);
 
-        return new DataSetNodeProcessor(
+        return new DataSetNodeProcessor(params, {
             datasetType,
-            seriesKeyMapper,
-            paramsMapper,
-            labelMapper,
-            borderColorMapper,
-            backgroundColorMapper,
-            params.variables
-        );
+            mapLabel,
+            mapSeriesKey,
+            mapBorderColor,
+            mapBackgroundColor,
+            mapParams
+        });
     }
 };

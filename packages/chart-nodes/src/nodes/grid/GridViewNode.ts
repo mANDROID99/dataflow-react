@@ -17,7 +17,7 @@ class GridViewProcessor implements NodeProcessor {
 
     constructor(
         private readonly viewName: string,
-        private readonly renderView: ((viewName: string, viewConfig: ViewConfig) => void) | undefined
+        private readonly params: ChartParams
     ) { }
 
     get type(): string {
@@ -64,8 +64,8 @@ class GridViewProcessor implements NodeProcessor {
             data[i] = datum;
         }
 
-        if (this.renderView) {
-            this.renderView(this.viewName, {
+        if (this.params.renderView) {
+            this.params.renderView(this.viewName, {
                 type: ViewType.GRID,
                 columns,
                 data,
@@ -105,6 +105,6 @@ export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             viewName = getDefaultViewName(node);
         }
 
-        return new GridViewProcessor(viewName, params.renderView);
+        return new GridViewProcessor(viewName, params);
     }
 }

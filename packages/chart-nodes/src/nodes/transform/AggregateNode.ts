@@ -10,14 +10,18 @@ import { NodeType } from "../nodes";
 const PORT_GROUPS = 'groups';
 const PORT_ROWS = 'rows';
 
+type Config = {
+    alias: string;
+    aggType: AggregatorType;
+    mapColumn: expressions.Mapper
+}
+
 class AggregateNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly alias: string,
-        private readonly aggType: AggregatorType,
-        private readonly columnMapper: expressions.Mapper,
-        private readonly context: { [key: string]: unknown }
+        private readonly params: ChartParams,
+        private readonly config: Config
     ) { }
 
     get type(): string {
@@ -41,7 +45,7 @@ class AggregateNodeProcessor implements NodeProcessor {
 
         const rows = value as Row[];
         const result: Row[] = [];
-        const aggregator = createAggregator(this.aggType);
+        const aggregator = createAggregator(this.config.aggType);
         let amt: number | undefined;
 
         for (let i = 0, n = rows.length; i < n; i++) {
@@ -53,27 +57,27 @@ class AggregateNodeProcessor implements NodeProcessor {
                 
                 for (let j = 0, m = subRows.length; j < m; j++) {
                     const subRow = subRows[j];
-                    const ctx = rowToEvalContext(subRow, j, this.context);
-                    const value = asNumber(this.columnMapper(ctx));
+                    const ctx = rowToEvalContext(subRow, j, this.params.variables);
+                    const value = asNumber(this.config.mapColumn(ctx));
                     subAmt = aggregator(subAmt, value, j);
                 }
 
                 result.push({
                     ...row,
-                    [this.alias]: subAmt,
+                    [this.config.alias]: subAmt,
                     [KEY_GROUP]: subRows
                 });
                 
             } else {
-                const ctx = rowToEvalContext(row, i, this.context);
-                const value = asNumber(this.columnMapper(ctx));
+                const ctx = rowToEvalContext(row, i, this.params.variables);
+                const value = asNumber(this.config.mapColumn(ctx));
                 amt = aggregator(amt, value, i);
             }
         }
 
         if (amt != null) {
             result.push({
-                [this.alias]: amt,
+                [this.config.alias]: amt,
                 [KEY_GROUP]: rows
             });
         }
@@ -131,9 +135,9 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     createProcessor(node, params) {
         const columnExpr = node.fields.column as ColumnMapperInputValue;
         const alias = node.fields.alias as string;
-        const type = node.fields.type as AggregatorType;
-        const columnMapper = expressions.compileColumnMapper(columnExpr, 'row');
-        return new AggregateNodeProcessor(alias, type, columnMapper, params.variables);
+        const aggType = node.fields.type as AggregatorType;
+        const mapColumn = expressions.compileColumnMapper(columnExpr, 'row');
+        return new AggregateNodeProcessor(params, { alias, aggType, mapColumn });
     },
     mapContext(node, context): ChartContext {
         const alias = node.fields.alias as string;

@@ -56,16 +56,16 @@ export function runProcessors(processors: NodeProcessor[]): () => void {
 
     // start all processors
     for (const processor of processors) {
-        if (processor.onStart) {
-            processor.onStart();
+        if (processor.start) {
+            processor.start();
         }
     }
 
     return () => {
         // clean-up
         for (const processor of processors) {
-            if (processor.onStop) {
-                processor.onStop();
+            if (processor.stop) {
+                processor.stop();
             }
         }
     };

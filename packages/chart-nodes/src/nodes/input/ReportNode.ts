@@ -1,6 +1,6 @@
 import { GraphNodeConfig, NodeProcessor, InputType, Entry, expressions } from "@react-ngraph/core";
 
-import { ChartContext, ChartParams, RequestHandler } from "../../types/contextTypes";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { NodeType } from "../nodes";
 import { Row } from "../../types/valueTypes";
 import { asString } from "../../utils/conversions";
@@ -25,8 +25,7 @@ class ReportNodeProcessor implements NodeProcessor {
     private running = false;
 
     constructor(
-        private readonly ctx: { [key: string]: unknown },
-        private readonly requestHandler: RequestHandler,
+        private readonly params: ChartParams,
         private readonly config: Config
     ) { }
 
@@ -49,11 +48,11 @@ class ReportNodeProcessor implements NodeProcessor {
         }
     }
 
-    onStart() {
+    start() {
         this.running = true;
     }
 
-    onStop() {
+    stop() {
         this.running = false;
     }
 
@@ -70,7 +69,7 @@ class ReportNodeProcessor implements NodeProcessor {
         const subs = this.subs;
         if (!subs.length) return;
 
-        const ctx = Object.assign({}, this.ctx);
+        const ctx = Object.assign({}, this.params.variables);
         ctx[KEY_DATA] = this.data;
 
         const reportUuid = this.config.reportUuid;
@@ -93,7 +92,7 @@ class ReportNodeProcessor implements NodeProcessor {
             params: reportParams
         };
 
-        this.requestHandler({
+        this.params.requestHandler({
             url: URL_RUN_REPORT,
             method: 'POST',
             headers: {
@@ -176,7 +175,10 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     createProcessor(node, params): NodeProcessor {
         const reportUuid = node.fields[FIELD_REPORT_UUID] as string;
         const mapReportParams = expressions.compileEntriesMapper(node.fields[FIELD_REPORT_PARAMS] as Entry<string>[]);
-        return new ReportNodeProcessor(params.variables, params.requestHandler, { reportUuid, mapReportParams });
+        return new ReportNodeProcessor(params, {
+            reportUuid,
+            mapReportParams
+        });
     }
 };
 

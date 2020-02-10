@@ -5,14 +5,16 @@ import { NodeType } from "../nodes";
 
 const PORT_AXIS = 'axis';
 
+type Config = {
+    label: string;
+    axisType: AxisType;
+    params: Entry<unknown>[];
+}
+
 class AxisNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
-    constructor(
-        private readonly axisType: AxisType,
-        private readonly label: string,
-        private readonly params: Entry<unknown>[]
-    ) { }
+    constructor(private readonly config: Config) { }
 
     get type(): string {
         return NodeType.AXIS;
@@ -26,15 +28,15 @@ class AxisNodeProcessor implements NodeProcessor {
         }
     }
 
-    onStart() {
+    start() {
         if (!this.subs.length) {
             return;
         }
 
         const axis: ChartAxisConfig = {
-            type: this.axisType,
-            label: this.label,
-            params: this.params
+            type: this.config.axisType,
+            label: this.config.label,
+            params: this.config.params
         };
         
         for (const sub of this.subs) {
@@ -88,6 +90,11 @@ export const AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const paramExprs = node.fields.params as Entry<string>[];
         const paramsMapper = expressions.compileEntriesMapper(paramExprs);
         const paramsMapped = paramsMapper(params.variables);
-        return new AxisNodeProcessor(axisType, label, paramsMapped);
+        
+        return new AxisNodeProcessor({
+            axisType,
+            label,
+            params: paramsMapped
+        });
     }
 };

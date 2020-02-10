@@ -6,13 +6,17 @@ import { NodeType } from "../nodes";
 
 const PORT_ROWS = 'rows';
 
+type Config = {
+    descending: boolean;
+    mapColumnKey: expressions.Mapper;
+}
+
 class SortByNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly desc: boolean,
-        private readonly columnKeyMapper: expressions.Mapper,
-        private readonly context: { [key: string]: unknown }
+        private readonly params: ChartParams,
+        private readonly config: Config
     ) { }
 
     get type(): string {
@@ -38,14 +42,14 @@ class SortByNodeProcessor implements NodeProcessor {
         const rowsSorted = rows.slice(0);
 
         rowsSorted.sort((a, b) => {
-            const sortKeyA = this.columnKeyMapper(rowToEvalContext(a, null, this.context)) as any;
-            const sortKeyB = this.columnKeyMapper(rowToEvalContext(b, null, this.context)) as any;
+            const sortKeyA = this.config.mapColumnKey(rowToEvalContext(a, null, this.params.variables)) as any;
+            const sortKeyB = this.config.mapColumnKey(rowToEvalContext(b, null, this.params.variables)) as any;
           
             if (sortKeyB > sortKeyA) {
-                return this.desc ? 1 : -1;
+                return this.config.descending ? 1 : -1;
 
             } else if (sortKeyB < sortKeyA) {
-                return this.desc ? -1 : 1;
+                return this.config.descending ? -1 : 1;
 
             } else {
                 return 0;
@@ -93,10 +97,10 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     createProcessor(node, params) {
-        const desc = node.fields.desc as boolean;
+        const descending = node.fields.desc as boolean;
         const mapColumnKeyExpr = node.fields.column as ColumnMapperInputValue;
-        const columnKeyMapper = expressions.compileColumnMapper(mapColumnKeyExpr, 'row');
-        return new SortByNodeProcessor(desc, columnKeyMapper, params.variables);
+        const mapColumnKey = expressions.compileColumnMapper(mapColumnKeyExpr, 'row');
+        return new SortByNodeProcessor(params, { descending, mapColumnKey });
     }
 }
 

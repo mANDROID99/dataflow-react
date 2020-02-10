@@ -90,16 +90,20 @@ const PORT_LEFT = 'left';
 const PORT_RIGHT = 'right';
 const PORT_ROWS = 'rows';
 
+type Config = {
+    joinType: JoinType;
+    mapKeyLeft: expressions.Mapper;
+    mapKeyRight: expressions.Mapper;
+}
+
 class JoinNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
     private left?: Row[];
     private right?: Row[];
 
     constructor(
-        private readonly joinType: JoinType,
-        private readonly keyLeftMapper: expressions.Mapper,
-        private readonly keyRightMapper: expressions.Mapper,
-        private readonly context: { [key: string]: unknown }
+        private readonly params: ChartParams,
+        private readonly config: Config
     ) {
         this.extractKeyLeft = this.extractKeyLeft.bind(this);
         this.extractKeyRight = this.extractKeyRight.bind(this);
@@ -140,7 +144,7 @@ class JoinNodeProcessor implements NodeProcessor {
         }
 
         let rows: Row[];
-        switch (this.joinType) {
+        switch (this.config.joinType) {
             case JoinType.INNER:
                 rows = joinInner(this.left, this.right, this.extractKeyLeft, this.extractKeyRight);
                 break;
@@ -160,13 +164,13 @@ class JoinNodeProcessor implements NodeProcessor {
     }
 
     private extractKeyLeft(row: Row, index: number): string {
-        const ctx = rowToEvalContext(row, index, this.context);
-        return asString(this.keyLeftMapper(ctx));
+        const ctx = rowToEvalContext(row, index, this.params.variables);
+        return asString(this.config.mapKeyLeft(ctx));
     }
 
     private extractKeyRight(row: Row, index: number): string {
-        const ctx = rowToEvalContext(row, index, this.context);
-        return asString(this.keyRightMapper(ctx));
+        const ctx = rowToEvalContext(row, index, this.params.variables);
+        return asString(this.config.mapKeyRight(ctx));
     }
 }
 
@@ -227,11 +231,11 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const joinType = node.fields.joinType as JoinType;
         
         const joinKeyLeftExpr = node.fields.joinKeyLeft as ColumnMapperInputValue;
-        const leftKeyMapper = expressions.compileColumnMapper(joinKeyLeftExpr, 'row');
+        const mapKeyLeft = expressions.compileColumnMapper(joinKeyLeftExpr, 'row');
         
         const joinKeyRightExpr = node.fields.joinKeyRight as ColumnMapperInputValue;
-        const rightKeyMapper = expressions.compileColumnMapper(joinKeyRightExpr, 'row');
+        const mapKeyRight = expressions.compileColumnMapper(joinKeyRightExpr, 'row');
 
-        return new JoinNodeProcessor(joinType, leftKeyMapper, rightKeyMapper, params.variables);
+        return new JoinNodeProcessor(params, { joinType, mapKeyLeft, mapKeyRight });
     }
 };

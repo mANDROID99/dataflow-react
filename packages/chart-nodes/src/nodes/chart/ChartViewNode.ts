@@ -12,6 +12,11 @@ const PORT_X_AXES = 'xAxes';
 const PORT_Y_AXES = 'yAxes';
 const PORT_ON_CLICK = 'onClick';
 
+type Config = {
+    chartType: string;
+    chartParams: Entry<unknown>[];
+}
+
 class ChartViewProcessor implements NodeProcessor {
     private readonly onClickSubs: ((value: unknown) => void)[] = [];
 
@@ -21,10 +26,9 @@ class ChartViewProcessor implements NodeProcessor {
     private isReady = false;
 
     constructor(
-        private readonly chartType: string,
-        private readonly chartParams: Entry<unknown>[],
+        private readonly params: ChartParams,
         private readonly viewName: string,
-        private readonly renderView: ((viewName: string, viewConfig: ViewConfig) => void) | undefined
+        private readonly config: Config
     ) {
         this.datasets = [];
         this.xAxes = [];
@@ -119,16 +123,16 @@ class ChartViewProcessor implements NodeProcessor {
 
         const chart: ChartViewConfig = {
             type: ViewType.CHART,
-            chartType: this.chartType,
+            chartType: this.config.chartType,
             datasets: datasets,
             xAxes: this.xAxes,
             yAxes: this.yAxes,
-            params: this.chartParams,
+            params: this.config.chartParams,
             events
         };
 
-        if (this.renderView) {
-            this.renderView(this.viewName, chart);
+        if (this.params.renderView) {
+            this.params.renderView(this.viewName, chart);
         }
     }
 }
@@ -188,8 +192,9 @@ export const CHART_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     createProcessor(node, params) {
-        const type = node.fields.type as string;
+        const chartType = node.fields.type as string;
         const paramInputs = node.fields.params as Entry<string>[];
+        
         const paramsMapper = expressions.compileEntriesMapper(paramInputs);
         const chartParams = paramsMapper(params.variables);
 
@@ -198,6 +203,6 @@ export const CHART_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             viewName = getDefaultViewName(node);
         }
 
-        return new ChartViewProcessor(type, chartParams, viewName, params.renderView);
+        return new ChartViewProcessor(params, viewName, { chartType, chartParams });
     }
 };

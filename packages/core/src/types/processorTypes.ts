@@ -6,7 +6,7 @@ export interface NodeProcessor {
 
     subscribe(portName: string, sub: (value: unknown) => void): void;
     
-    onStart?(): void;
+    start?(): void;
 
-    onStop?(): void;
+    stop?(): void;
 }

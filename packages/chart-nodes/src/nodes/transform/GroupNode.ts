@@ -9,13 +9,17 @@ import { NodeType } from "../nodes";
 const PORT_ROWS = 'rows';
 const PORT_GROUPS = 'groups';
 
+type Config = {
+    alias: string;
+    mapGroup: expressions.Mapper
+}
+
 class GroupNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly alias: string,
-        private readonly groupMapper: expressions.Mapper,
-        private readonly context: { [key: string]: unknown }
+        private readonly params: ChartParams,
+        private readonly config: Config
     ) { }
 
     get type(): string {
@@ -50,8 +54,8 @@ class GroupNodeProcessor implements NodeProcessor {
 
                 for (let j = 0, m = subRows.length; j < m; j++) {
                     const subRow = subRows[j];
-                    const ctx = rowToEvalContext(subRow, j, this.context);
-                    const groupName = asString(this.groupMapper(ctx));
+                    const ctx = rowToEvalContext(subRow, j, this.params.variables);
+                    const groupName = asString(this.config.mapGroup(ctx));
 
                     if (groupName) {
                         let groupRow: Row | undefined = subGroupsLookup.get(groupName);
@@ -59,7 +63,7 @@ class GroupNodeProcessor implements NodeProcessor {
                         if (!groupRow) {
                             groupRow = {
                                 ...row,
-                                [this.alias]: groupName,
+                                [this.config.alias]: groupName,
                                 [KEY_GROUP]: []
                             };
 
@@ -72,15 +76,15 @@ class GroupNodeProcessor implements NodeProcessor {
                 }
 
             } else {
-                const ctx = rowToEvalContext(row, i, this.context);
-                const groupName = asString(this.groupMapper(ctx));
+                const ctx = rowToEvalContext(row, i, this.params.variables);
+                const groupName = asString(this.config.mapGroup(ctx));
 
                 if (groupName) {
                     let groupRow: Row | undefined = groupsLookup.get(groupName);
 
                     if (!groupRow) {
                         groupRow = {
-                            [this.alias]: groupName,
+                            [this.config.alias]: groupName,
                             [KEY_GROUP]: []
                         };
 
@@ -136,8 +140,8 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     createProcessor(node, params) {
         const alias = node.fields.alias as string;
         const mapGroupExpr = node.fields.group as ColumnMapperInputValue;
-        const groupMapper = expressions.compileColumnMapper(mapGroupExpr, 'row');
-        return new GroupNodeProcessor(alias, groupMapper, params.variables);
+        const mapGroup = expressions.compileColumnMapper(mapGroupExpr, 'row');
+        return new GroupNodeProcessor(params, { alias, mapGroup });
     },
     mapContext(node, context): ChartContext {
         const alias = node.fields.alias as string;

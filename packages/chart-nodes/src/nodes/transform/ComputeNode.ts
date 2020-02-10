@@ -7,13 +7,17 @@ import { NodeType } from '../nodes';
 
 const PORT_ROWS = 'rows';
 
+type Config = {
+    alias: string;
+    mapValue: expressions.Mapper | undefined;
+}
+
 class ComputeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
-        private readonly alias: string,
-        private readonly valueMapper: expressions.Mapper | undefined,
-        private readonly context: { [key: string]: unknown }
+        private readonly params: ChartParams,
+        private readonly config: Config
     ) { }
 
     get type(): string {
@@ -39,9 +43,9 @@ class ComputeProcessor implements NodeProcessor {
         const rowsMapped: Row[] = rows.map((row, i) => {
             const newRow: Row = Object.assign({}, row);
             
-            if (this.valueMapper) {
-                const ctx = rowToEvalContext(row, i, this.context);
-                newRow[this.alias] = this.valueMapper(ctx);
+            if (this.config.mapValue) {
+                const ctx = rowToEvalContext(row, i, this.params.variables);
+                newRow[this.config.alias] = this.config.mapValue(ctx);
             }
 
             return newRow;
@@ -90,8 +94,8 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     createProcessor(node, params) {
         const alias = node.fields.alias as string;
         const mapValueExpr = node.fields.value as ColumnMapperInputValue;
-        const valueMapper = expressions.compileColumnMapper(mapValueExpr, 'row');
-        return new ComputeProcessor(alias, valueMapper, params.variables);
+        const mapValue = expressions.compileColumnMapper(mapValueExpr, 'row');
+        return new ComputeProcessor(params, { alias, mapValue });
     },
     mapContext(node, context) {
         const alias = node.fields.alias as string;

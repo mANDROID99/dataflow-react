@@ -4,14 +4,16 @@ import { NodeType } from "../nodes";
 
 const PORT_SIGNAL = 'signal';
 
+type Config = {
+    interval: number;
+    delay: number;
+}
+
 class SchedulerProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
     private handle?: number;
 
-    constructor(
-        private readonly interval: number,
-        private readonly delay: number
-    ) {
+    constructor(private readonly config: Config) {
         this.onTick = this.onTick.bind(this);
     }
 
@@ -27,11 +29,11 @@ class SchedulerProcessor implements NodeProcessor {
         }
     }
 
-    onStart() {
-        this.handle = window.setTimeout(this.onTick, this.delay);
+    start() {
+        this.handle = window.setTimeout(this.onTick, this.config.delay);
     }
 
-    onStop() {
+    stop() {
         if (this.handle != null) {
             window.clearTimeout(this.handle);
         }
@@ -42,8 +44,8 @@ class SchedulerProcessor implements NodeProcessor {
             sub(null);
         }
 
-        if (this.interval > 0) {
-            this.handle = window.setTimeout(this.onTick, this.interval);
+        if (this.config.interval > 0) {
+            this.handle = window.setTimeout(this.onTick, this.config.interval);
         }
     }
 }
@@ -81,6 +83,9 @@ export const SCHEDULER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     createProcessor(node): NodeProcessor {
         const interval = node.fields.interval as number;
         const delay = node.fields.delay as number;
-        return new SchedulerProcessor(interval, delay);
+        return new SchedulerProcessor({
+            interval,
+            delay
+        });
     }
 }

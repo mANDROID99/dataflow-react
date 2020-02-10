@@ -1,5 +1,5 @@
 import { GraphNodeConfig, InputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
-import { ChartContext, ChartParams, RequestHandler } from "../../types/contextTypes";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { asString } from "../../utils/conversions";
 import { Row } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
@@ -22,8 +22,7 @@ class DataFetcherProcessor implements NodeProcessor {
     private running = false;
 
     constructor(
-        private readonly ctx: { [key: string]: unknown },
-        private readonly requestHandler: RequestHandler,
+        private readonly params: ChartParams,
         private readonly config: Config
     ) { }
 
@@ -46,11 +45,11 @@ class DataFetcherProcessor implements NodeProcessor {
         }
     }
 
-    onStart() {
+    start() {
         this.running = true;
     }
 
-    onStop() {
+    stop() {
         this.running = false;
     }
 
@@ -67,7 +66,7 @@ class DataFetcherProcessor implements NodeProcessor {
         const subs = this.subs;
         if (!subs.length) return;
 
-        const ctx = Object.assign({}, this.ctx);
+        const ctx = Object.assign({}, this.params.variables);
         ctx[KEY_DATA] = this.data;
 
         const config = this.config;
@@ -84,7 +83,7 @@ class DataFetcherProcessor implements NodeProcessor {
         headers.Accept = 'application/json';
         const c = ++this.count;
 
-        this.requestHandler({
+        this.params.requestHandler({
             url,
             method: 'GET',
             headers
@@ -92,7 +91,7 @@ class DataFetcherProcessor implements NodeProcessor {
             .then(res => res.json())
             .then(data => {
                 if (this.running && this.count === c) {
-                    const ctx = Object.assign({}, this.ctx);
+                    const ctx = Object.assign({}, this.params.variables);
                     ctx[KEY_DATA] = data;
 
                     let rows = (config.mapResponse(ctx) || data) as { [key: string]: unknown }[];
@@ -155,7 +154,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const mapHeaders = expressions.compileEntriesMapper(headerEntries);
         const mapResponse = expressions.compileExpression(mapResponseExpr);
 
-        return new DataFetcherProcessor(params.variables, params.requestHandler, {
+        return new DataFetcherProcessor(params, {
             mapUrl,
             mapHeaders,
             mapResponse
