@@ -1,57 +1,46 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { GraphNodeFieldConfig, GraphFieldInputConfig } from '../../../types/graphConfigTypes';
-import { InputProps, GraphNodeContext } from '../../../types/graphInputTypes';
+import { GraphNodeFieldConfig, GraphFieldInputConfig, FieldResolverParams } from '../../../types/graphConfigTypes';
+import { InputProps, GraphNodeCallbacks } from '../../../types/graphInputTypes';
 import { useGraphContext } from '../../graphEditorContext';
-import { setFieldValue } from '../../../store/actions';
 import { useFieldParams } from '../../../utils/useFieldParams';
+import { setFieldValue } from '../../../store/actions';
 
 type Props<Ctx, Params> = {
     nodeId: string;
-    nodeContext: GraphNodeContext<Ctx, Params>;
+    context: Ctx;
     fieldName: string;
     fieldConfig: GraphNodeFieldConfig<Ctx, Params>;
-    fields: {
-        [key: string]: unknown;
-    };
+    fieldValue: unknown;
+    callbacks: GraphNodeCallbacks;
 }
 
-function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
-    const { nodeId, fieldName, fieldConfig, fields, nodeContext } = props;
+function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, fieldValue, callbacks }: Props<Ctx, Params>) {
     const inputType = fieldConfig.type;
     
     const dispatch = useDispatch();
-    const { graphConfig } = useGraphContext<Ctx, Params>();
+    const { graphConfig, params } = useGraphContext<Ctx, Params>();
     const input: GraphFieldInputConfig | undefined = graphConfig.inputs[inputType];
     
-    // resolve next field params using the field config
-    const resolverParams = useMemo(() => ({ fields, ...nodeContext }), [fields, nodeContext]);
-    const params = useFieldParams(fieldConfig, resolverParams);
-    const value = params.value;
+    // resolve next field params
+    const resolverParams = useMemo<FieldResolverParams<Ctx, Params>>(() => ({ context, params }), [context, params]);
+    const fieldParams = useFieldParams(fieldConfig, resolverParams);
 
-    // update the field value in the store when the initial value changed.
-    // Only monitor changes.
-    const prevValue = useRef(value);
-    useEffect(() => {
-        if (prevValue.current !== value) {
-            prevValue.current = value;
-            dispatch(setFieldValue(nodeId, fieldName, value));
-        }
-    });
-
-    const onChanged = useCallback((value: unknown) => {
+    // handle the input value changed
+    const handleChanged = useCallback((value: unknown) => {
         dispatch(setFieldValue(nodeId, fieldName, value));
-    }, [dispatch, nodeId, fieldName]);
-    
+    }, [nodeId, fieldName, dispatch]);
+
     // properties to pass to the input component
     const inputComponent = input?.component;
     const inputProps: InputProps<unknown> = {
-        value: fields[fieldName],
+        value: fieldValue,
         fieldName,
         nodeId,
-        params,
-        onChanged
+        params: fieldParams,
+        callbacks,
+        onChanged: handleChanged
     };
 
     return (
@@ -64,4 +53,4 @@ function GraphNodeField<Ctx, Params>(props: Props<Ctx, Params>) {
     );
 }
 
-export default GraphNodeField;
+export default React.memo(GraphNodeField) as typeof GraphNodeField;

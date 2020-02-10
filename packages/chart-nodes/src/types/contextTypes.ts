@@ -17,7 +17,8 @@ export type RequestHandler = (params: RequestParams) => Promise<Response>;
 
 export type ChartParams = {
     renderView?(viewId: string, viewConfig: ViewConfig): void;
-    requestHandler: RequestHandler;
+    runReport: (reportUuid: string, params: { [key: string]: string }) => Promise<{ [key: string]: unknown }[]>;
+    fetch: (params: RequestParams) => Promise<Response>;
     variables: {
         [key: string]: unknown;
     };

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useStore } from 'react-redux';
 import Backend from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
@@ -12,7 +12,7 @@ import { StoreState } from '../../types/storeTypes';
 
 import ContextMenu from './contextmenu/ContextMenu';
 import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
-import { forms } from '../../forms/forms';
+import { forms as DEFAULT_FORMS } from '../../forms/forms';
 import GraphForms from './GraphForms';
 import GraphScrollContainer from './GraphScrollContainer';
 import { graphContext, GraphContext } from '../graphEditorContext';
@@ -24,7 +24,6 @@ import { GraphNodePortRefs } from '../GraphNodePortRefs';
 
 type Props<Ctx, P> = {
     modalRoot: HTMLElement;
-    initialGraph?: Graph;
     graphConfig: GraphConfig<Ctx, P>;
     params?: P;
     forms?: FormConfigs;
@@ -33,9 +32,8 @@ type Props<Ctx, P> = {
     renderPreview?: (params: GraphPreviewParams) => React.ReactNode | null;
 }
 
-function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
-    const { graphConfig, templates, modalRoot, renderPreview, onGraphChanged } = props;
-    const formConfigs = props.forms ?? forms;
+function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, forms, templates, onGraphChanged, renderPreview }: Props<Ctx, P>) {
+    const formConfigs = forms ?? DEFAULT_FORMS;
     const store = useStore<StoreState>();
     
     useEffect(() => {
@@ -65,12 +63,13 @@ function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
     // a large performance impact.
     const graphContextValue = useMemo((): GraphContext<Ctx, P> => {
         return {
-            graphConfig: props.graphConfig,
-            templates: templates ?? [],
+            graphConfig,
             modalRoot,
-            ports: portRefs
+            ports: portRefs,
+            params: params || graphConfig.params!,
+            templates: templates || [],
         };
-    }, [props.graphConfig, templates, modalRoot, portRefs]);
+    }, [graphConfig, templates, modalRoot, portRefs, params]);
 
     return (
         <graphContext.Provider value={graphContextValue}>
@@ -81,7 +80,6 @@ function GraphEditorInner<Ctx, P>(props: Props<Ctx, P>) {
                         <GraphConnectionsContainer/>
                         <GraphEditorNodes
                             graphConfig={graphConfig}
-                            params={props.params}
                         />
                     </>
                 </GraphScrollContainer>

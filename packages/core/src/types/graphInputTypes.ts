@@ -1,8 +1,8 @@
+import { GraphNode } from "./graphTypes";
 
-export type GraphNodeContext<Ctx, Params> = {
-    context: Ctx;
-    params: Params;
-    parents: { [key: string]: Ctx[] };
+export type GraphNodeCallbacks = {
+    onChanged(prev: GraphNode | undefined, next: GraphNode): void;
+    onEvent(eventName: string, payload: unknown): void;
 }
 
 export type InputProps<T> = {
@@ -10,7 +10,8 @@ export type InputProps<T> = {
     fieldName: string;
     value: T | undefined;
     params: { [key: string]: unknown };
-    onChanged: (value: T) => void;
+    callbacks: GraphNodeCallbacks;
+    onChanged: (value: unknown) => void;
 }
 
 export enum InputType {

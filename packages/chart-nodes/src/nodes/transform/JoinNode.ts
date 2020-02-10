@@ -209,10 +209,9 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params: {
                 target: 'row'
             },
-            resolve: ({ parents }) => {
-                const columns: string[] = parents.left[0]?.columns ?? [];
-                return { columns };
-            }
+            resolve: ({ context }) => ({
+                columns: context.columns
+            })
         },
         joinKeyRight: {
             label: 'Map Key Right',
@@ -221,10 +220,9 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params: {
                 target: 'row'
             },
-            resolve: ({ parents }) => {
-                const columns: string[] = parents.right[0]?.columns ?? [];
-                return { columns };
-            }
+            resolve: ({ context }) => ({
+                columns: context.columns  
+            })
         }
     },
     createProcessor(node, params) {

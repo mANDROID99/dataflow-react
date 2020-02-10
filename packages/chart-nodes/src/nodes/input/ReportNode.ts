@@ -9,9 +9,9 @@ const PORT_SIGNAL = 'signal';
 const PORT_ROWS = 'rows';
 const FIELD_REPORT_UUID = 'uuid';
 const FIELD_REPORT_PARAMS = 'params';
+const FIELD_COLUMNS = 'columns';
 const KEY_DATA = 'data';
-
-const URL_RUN_REPORT = 'sec/api/report-transform/run';
+const EVENT_KEY_AUTO_COLUMNS = 'configure-auto-columns';
 
 type Config = {
     reportUuid: string;
@@ -69,48 +69,36 @@ class ReportNodeProcessor implements NodeProcessor {
         const subs = this.subs;
         if (!subs.length) return;
 
-        const ctx = Object.assign({}, this.params.variables);
-        ctx[KEY_DATA] = this.data;
-
         const reportUuid = this.config.reportUuid;
         if (!reportUuid) return;
 
+
+        const ctx = Object.assign({}, this.params.variables);
+        ctx[KEY_DATA] = this.data;
+    
+        const reportParams = this.resolveReportParams(ctx)
+
+        const c = ++this.count;
+        this.params.runReport(this.config.reportUuid, reportParams).then(data => {
+            if (!this.running || this.count !== c) {
+                return;
+            }
+
+            for (const sub of subs) {
+                sub(data);
+            }
+        });
+    }
+
+    private resolveReportParams(ctx: { [key: string]: unknown }) {
         const reportParams: { [key: string]: string } = {};
         const paramsArr = this.config.mapReportParams(ctx);
-
+    
         for (const entry of paramsArr) {
             reportParams[entry.key] = asString(entry.value);
         }
-        
-        const c = ++this.count;
 
-        const body = {
-            transforms: [],
-            'report-uuid': reportUuid,
-            offset: 0,
-            count: -1,
-            params: reportParams
-        };
-
-        this.params.requestHandler({
-            url: URL_RUN_REPORT,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (!this.running || this.count !== c) {
-                    return;
-                }
-
-                for (const sub of subs) {
-                    sub(data.data);
-                }
-            });
+        return reportParams;
     }
 }
 
@@ -151,25 +139,12 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         [FIELD_REPORT_PARAMS]: {
             label: 'Report Params',
             initialValue: [],
-            type: InputType.DATA_ENTRIES,
-            resolve: {
-                compute: ({ fields, params }) => {
-                    const report = params.reports.find(report => report.uuid === fields[FIELD_REPORT_UUID]);
-                    let reportParams: Entry<string>[] = [];
-
-                    if (report) {
-                        reportParams = report.parameters.map<Entry<string>>(param => ({
-                            key: param.name,
-                            value: '' + param.defaultValue
-                        }));
-                    }
-
-                    return {
-                        value: reportParams
-                    }
-                },
-                eq: (prev, next) => prev.fields[FIELD_REPORT_UUID] === next.fields[FIELD_REPORT_UUID]
-            }
+            type: InputType.DATA_ENTRIES
+        },
+        [FIELD_COLUMNS]: {
+            label: 'Columns',
+            type: InputType.DATA_LIST,
+            initialValue: []
         }
     },
     createProcessor(node, params): NodeProcessor {
@@ -179,7 +154,32 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             reportUuid,
             mapReportParams
         });
+    },
+    onChanged(prev, next, { params, setFieldValue }) {
+        if (!prev || (prev.fields[FIELD_REPORT_UUID] !== next.fields[FIELD_REPORT_UUID])) {
+            const reportUuid = next.fields[FIELD_REPORT_UUID] as string;
+            const report = params.reports.find(report => report.uuid === reportUuid);
+            let reportParams: Entry<string>[] = [];
+
+            if (report) {
+                reportParams = report.parameters.map<Entry<string>>(param => ({
+                    key: param.name,
+                    value: '' + param.defaultValue
+                }));
+            }
+
+            setFieldValue(FIELD_REPORT_PARAMS, reportParams);
+        }
+    },
+    onEvent(key, payload, { node, params, setFieldValue }) {
+        if (key === EVENT_KEY_AUTO_COLUMNS) {
+            const reportUuid = node.fields[FIELD_REPORT_UUID] as string;
+            const mapReportParams = expressions
+                .compileEntriesMapper(node.fields[FIELD_REPORT_PARAMS] as Entry<string>[]);
+
+            // doFetch(reportUuid, mapReportParams, undefined, params).then(result => {
+            //     setFieldValue(FIELD_COLUMNS, Object.keys(result));
+            // });
+        }
     }
 };
-
-

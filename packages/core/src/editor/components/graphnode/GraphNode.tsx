@@ -3,7 +3,6 @@ import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { GraphNode } from '../../../types/graphTypes';
-import { GraphNodeContext } from '../../../types/graphInputTypes';
 import { ContextMenuTarget, ContextMenuTargetType } from '../../../types/storeTypes';
 
 import GraphNodeField from './GraphNodeField';
@@ -13,16 +12,18 @@ import { DragWidthState } from './GraphNodeDragHandle';
 import GraphNodeHeader, { DragPosState } from './GraphNodeHeader';
 import { selectNode, showContextMenu } from '../../../store/actions';
 import { selectNodeSelected } from '../../../store/selectors';
+import { useGraphNodeCallbacks } from './useGraphNodeCallbacks';
+import { useEffect } from 'react';
 
-type Props<Ctx, Params> = {
+type Props<Ctx> = {
     nodeId: string;
-    nodeContext: GraphNodeContext<Ctx, Params>;
-    graphNode: GraphNode;
+    node: GraphNode;
+    context: Ctx;
 }
 
-function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.ReactElement {
-    const { nodeId, graphNode, nodeContext } = props;
-    const { graphConfig } = useGraphContext<Ctx, Params>();
+function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement {
+    const { nodeId, node, context } = props;
+    const { graphConfig, params } = useGraphContext<Ctx, Params>();
     const dispatch = useDispatch();
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -32,8 +33,8 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
     const [dragWidth, setDragWidth] = useState<DragWidthState>();
     const selected = useSelector(selectNodeSelected(nodeId));
 
-    const nodeType = graphNode.type;
-    const graphNodeConfig = graphConfig.nodes[nodeType];
+    const nodeType = node.type;
+    const nodeConfig = graphConfig.nodes[nodeType];
 
     const handleMouseDownContainer = (event: React.MouseEvent) => {
         // stop the canvas from dragging when the node is selected
@@ -55,9 +56,22 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
         dispatch(showContextMenu(target, x, y));
     };
 
-    let x = graphNode.x;
-    let y = graphNode.y;
-    let width = graphNode.width;
+    // callback functions to call from inner components
+    const nodeCallbacks = useGraphNodeCallbacks(nodeId, node, nodeConfig, context, params, dispatch);
+
+    // notify when the graph-node changed
+    const prev = useRef<GraphNode>();
+    useEffect(() => {
+        if (prev.current !== node) {
+            nodeCallbacks.onChanged(prev.current, node);
+            prev.current = node;
+        }
+    });
+
+
+    let x = node.x;
+    let y = node.y;
+    let width = node.width;
 
     if (dragPos) {
         x = dragPos.x;
@@ -68,8 +82,8 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
         width = dragWidth.width;
     }
 
-    const portNamesIn = Object.keys(graphNodeConfig.ports.in);
-    const portNamesOut = Object.keys(graphNodeConfig.ports.out);
+    const portNamesIn = Object.keys(nodeConfig.ports.in);
+    const portNamesOut = Object.keys(nodeConfig.ports.out);
 
     return (
         <div
@@ -93,22 +107,23 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
             <div className="ngraph-node-body">
                 <GraphNodeHeader
                     nodeId={nodeId}
-                    graphNode={graphNode}
-                    graphNodeConfig={graphNodeConfig}
+                    graphNode={node}
+                    graphNodeConfig={nodeConfig}
                     onDrag={setDragPos}
                     onDragWidth={setDragWidth}
                 />
-                {!graphNode.collapsed && (
+                {!node.collapsed && (
                     <div className="ngraph-node-fields">
-                        {Object.entries(graphNodeConfig.fields).map(([fieldName, fieldConfig]) => {
+                        {Object.entries(nodeConfig.fields).map(([fieldName, fieldConfig]) => {
                             return (
-                                <GraphNodeField
+                                <GraphNodeField<Ctx, Params>
                                     key={fieldName}
                                     nodeId={nodeId}
-                                    nodeContext={nodeContext}
+                                    context={context}
                                     fieldName={fieldName}
+                                    fieldValue={node.fields[fieldName]}
                                     fieldConfig={fieldConfig}
-                                    fields={graphNode.fields}
+                                    callbacks={nodeCallbacks}
                                 />
                             );
                         })}

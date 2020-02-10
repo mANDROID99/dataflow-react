@@ -7,9 +7,7 @@ export type GraphFieldInputConfig = {
 }
 
 export type FieldResolverParams<Ctx, Params> = {
-    fields: { [key: string]: unknown };
     context: Ctx;
-    parents: { [key: string]: Ctx[] };
     params: Params;
 }
 
@@ -33,6 +31,13 @@ export type GraphNodePortConfig = {
     multi?: boolean;
 }
 
+export type CallbackParams<Ctx, Params> = {
+    node: GraphNode;
+    context: Ctx;
+    params: Params;
+    setFieldValue(name: string, value: unknown): void;
+}
+
 export type GraphNodeConfig<Ctx, Params = {}> = {
     menuGroup: string;
     title: string;
@@ -53,6 +58,8 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
     };
     mapContext?: (node: GraphNode, context: Ctx, params: Params) => Ctx;
     createProcessor: (node: GraphNode, params: Params) => NodeProcessor;
+    onChanged?: (prev: GraphNode | undefined, next: GraphNode, params: CallbackParams<Ctx, Params>) => void;
+    onEvent?: (key: string, payload: unknown, params: CallbackParams<Ctx, Params>) => void;
 }
 
 export type PortTypeConfig = {

@@ -8,6 +8,7 @@ export type GraphContext<Ctx, Params> = {
     graphConfig: GraphConfig<Ctx, Params>;
     templates: GraphTemplate[];
     ports: GraphNodePortRefs;
+    params: Params;
 }
 
 export const graphContext = React.createContext<GraphContext<any, any>>(null as any);

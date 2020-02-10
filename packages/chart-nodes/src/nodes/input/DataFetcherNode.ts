@@ -15,6 +15,21 @@ type Config = {
     mapResponse: expressions.Mapper
 };
 
+function doFetch(url: string, headers: { [key: string]: string}, mapResponse: expressions.Mapper, params: ChartParams) {
+    return params.fetch({
+        url,
+        method: 'GET',
+        headers
+    })
+        .then(res => res.json())
+        .then(data => {
+            const ctx = Object.assign({}, params.variables);
+            ctx[KEY_DATA] = data;
+
+            return (mapResponse(ctx) || data) as { [key: string]: unknown }[];
+        });
+}
+
 class DataFetcherProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
     private data?: Row[];
@@ -73,34 +88,28 @@ class DataFetcherProcessor implements NodeProcessor {
         const url = asString(config.mapUrl(ctx));
         if (!url) return;
 
+        const headers = this.resolveHeaders(ctx);
+        const c = ++this.count;
+
+        doFetch(url, headers, config.mapResponse, this.params)
+            .then(data => {
+                if (this.running && this.count === c) {
+                    for (const sub of subs) {
+                        sub(data);
+                    }
+                }
+            });
+    }
+
+    private resolveHeaders(ctx: { [key: string]: unknown }) {
         const headers: { [key: string]: string } = {};
-        const headersArr = config.mapHeaders(ctx);
-        
+        const headersArr = this.config.mapHeaders(ctx);
         for (const entry of headersArr) {
             headers[entry.key] = asString(entry.value);
         }
         
         headers.Accept = 'application/json';
-        const c = ++this.count;
-
-        this.params.requestHandler({
-            url,
-            method: 'GET',
-            headers
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (this.running && this.count === c) {
-                    const ctx = Object.assign({}, this.params.variables);
-                    ctx[KEY_DATA] = data;
-
-                    let rows = (config.mapResponse(ctx) || data) as { [key: string]: unknown }[];
-
-                    for (const sub of subs) {
-                        sub(rows);
-                    }
-                }
-            });
+        return headers;
     }
 }
 

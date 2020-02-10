@@ -1,17 +1,16 @@
 import { GraphNode } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
-import { GraphNodeContext } from "../types/graphInputTypes";
 
 export function computeContexts<Ctx, Params>(
     params: Params | undefined,
     graphNodes: { [id: string]: GraphNode },
     graphConfig: GraphConfig<Ctx, Params>
-): Map<string, GraphNodeContext<Ctx, Params>> {
+): Map<string, Ctx> {
 
     const baseContext = graphConfig.context;
     const baseParams: Params = params ?? graphConfig.params!;
 
-    const contexts = new Map<string, GraphNodeContext<Ctx, Params>>();
+    const contexts = new Map<string, Ctx>();
     const seen = new Set<string>();
 
     function resolve(nodeId: string): Ctx {
@@ -22,8 +21,7 @@ export function computeContexts<Ctx, Params>(
 
         const nodeConfig = graphConfig.nodes[node.type];
         if (contexts.has(nodeId)) {
-            const context = contexts.get(nodeId)!;
-            const ctx = context.context;
+            const ctx = contexts.get(nodeId)!;
             
             if (nodeConfig.mapContext) {
                 return nodeConfig.mapContext(node, ctx, baseParams);
@@ -40,8 +38,6 @@ export function computeContexts<Ctx, Params>(
         seen.add(nodeId);
 
         let context: Ctx | undefined;
-        const parents: { [key: string]: Ctx[] } = {};
-
         const portConfigs = nodeConfig.ports.in;
         const ports = node.ports.in;
 
@@ -64,11 +60,6 @@ export function computeContexts<Ctx, Params>(
                         context = graphConfig.mergeContexts(context, parentCtx);
                     }
                 }
-
-                parents[portId] = p;
-
-            } else {
-                parents[portId] = [];
             }
         }
 
@@ -76,11 +67,7 @@ export function computeContexts<Ctx, Params>(
             context = baseContext;
         }
 
-        contexts.set(nodeId, {
-            context,
-            params: baseParams,
-            parents
-        });
+        contexts.set(nodeId, context);
 
         if (nodeConfig.mapContext) {
             return nodeConfig.mapContext(node, context, baseParams);
