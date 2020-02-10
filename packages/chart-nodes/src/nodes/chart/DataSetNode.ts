@@ -1,5 +1,5 @@
 import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, Entry, expressions, NodeProcessor } from "@react-ngraph/core";
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/conversions';
 import { pointToEvalContext } from '../../utils/expressionUtils';
@@ -122,40 +122,48 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Series Key',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
+            params: {
                 optional: true,
-                columns: context.columns,
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         label: {
             label: 'Map Label',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
+            params: {
                 optional: true,
-                columns: context.columns,
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         borderColor: {
             label: 'Map Border Color',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
+            params: {
                 optional: true,
-                columns: context.columns,
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         backgroundColor: {
             label: 'Map Background Color',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
+            params: {
                 optional: true,
-                columns: context.columns,
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         params: {

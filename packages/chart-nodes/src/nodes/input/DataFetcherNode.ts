@@ -1,19 +1,19 @@
 import { GraphNodeConfig, InputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams, RequestHandler } from "../../types/contextTypes";
 import { asString } from "../../utils/conversions";
 import { Row } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
 
-enum HttpMethodType {
-    GET = 'GET',
-    POST = 'POST'
-}
-
 const KEY_DATA = 'data';
-
 const PORT_ROWS = 'rows';
 const PORT_DATA = 'data';
-const PORT_SCHEDULER = 'scheduler';
+const PORT_SIGNAL = 'signal';
+
+type Config = {
+    mapUrl: expressions.Mapper,
+    mapHeaders: expressions.EntriesMapper,
+    mapResponse: expressions.Mapper
+};
 
 class DataFetcherProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
@@ -23,10 +23,8 @@ class DataFetcherProcessor implements NodeProcessor {
 
     constructor(
         private readonly ctx: { [key: string]: unknown },
-        private readonly method: string,
-        private readonly urlMapper: expressions.Mapper,
-        private readonly headersMapper: expressions.EntriesMapper,
-        private readonly responseMapper: expressions.Mapper
+        private readonly requestHandler: RequestHandler,
+        private readonly config: Config
     ) { }
 
     get type(): string {
@@ -37,7 +35,7 @@ class DataFetcherProcessor implements NodeProcessor {
         if (portIn === PORT_DATA) {
             processor.subscribe(portOut, this.onNextData.bind(this));
 
-        } else if (portIn === PORT_SCHEDULER) {
+        } else if (portIn === PORT_SIGNAL) {
             processor.subscribe(portOut, this.onNextScheduler.bind(this));
         }
     }
@@ -72,11 +70,12 @@ class DataFetcherProcessor implements NodeProcessor {
         const ctx = Object.assign({}, this.ctx);
         ctx[KEY_DATA] = this.data;
 
-        const url = asString(this.urlMapper(ctx));
+        const config = this.config;
+        const url = asString(config.mapUrl(ctx));
         if (!url) return;
 
         const headers: { [key: string]: string } = {};
-        const headersArr = this.headersMapper(ctx);
+        const headersArr = config.mapHeaders(ctx);
         
         for (const entry of headersArr) {
             headers[entry.key] = asString(entry.value);
@@ -85,8 +84,9 @@ class DataFetcherProcessor implements NodeProcessor {
         headers.Accept = 'application/json';
         const c = ++this.count;
 
-        fetch(url, {
-            method: this.method,
+        this.requestHandler({
+            url,
+            method: 'GET',
             headers
         })
             .then(res => res.json())
@@ -95,7 +95,7 @@ class DataFetcherProcessor implements NodeProcessor {
                     const ctx = Object.assign({}, this.ctx);
                     ctx[KEY_DATA] = data;
 
-                    let rows = (this.responseMapper(ctx) || data) as { [key: string]: unknown }[];
+                    let rows = (config.mapResponse(ctx) || data) as { [key: string]: unknown }[];
 
                     for (const sub of subs) {
                         sub(rows);
@@ -115,14 +115,6 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.TEXT,
             initialValue: ''
         },
-        method: {
-            label: 'Http Method',
-            type: InputType.SELECT,
-            initialValue: HttpMethodType.GET,
-            params: {
-                options: Object.values(HttpMethodType)
-            }
-        },
         headers: {
             label: 'Headers',
             type: InputType.DATA_ENTRIES,
@@ -141,8 +133,8 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     },
     ports: {
         in: {
-            [PORT_SCHEDULER]: {
-                type: 'event'
+            [PORT_SIGNAL]: {
+                type: 'signal'
             },
             [PORT_DATA]: {
                 type: 'row[]'
@@ -157,14 +149,17 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     createProcessor(node, params): NodeProcessor {
         const mapUrlExpr = node.fields.url as string;
         const mapResponseExpr = node.fields.mapResponse as string;
-        const method = node.fields.method as HttpMethodType;
         const headerEntries = node.fields.headers as Entry<string>[];
 
-        const reponseMapper = expressions.compileExpression(mapResponseExpr);
-        const urlMapper = expressions.compileExpression(mapUrlExpr);
-        const headersMapper = expressions.compileEntriesMapper(headerEntries);
+        const mapUrl = expressions.compileExpression(mapUrlExpr);
+        const mapHeaders = expressions.compileEntriesMapper(headerEntries);
+        const mapResponse = expressions.compileExpression(mapResponseExpr);
 
-        return new DataFetcherProcessor(params.variables, method, urlMapper, headersMapper, reponseMapper)
+        return new DataFetcherProcessor(params.variables, params.requestHandler, {
+            mapUrl,
+            mapHeaders,
+            mapResponse
+        });
     },
     mapContext(node): ChartContext {
         const columns = node.fields.columns as string[];

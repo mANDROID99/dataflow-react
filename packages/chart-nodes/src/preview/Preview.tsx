@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
 import { Graph, GraphConfig, createProcessorsFromGraph, runProcessors } from '@react-ngraph/core';
 
-import { ChartContext, ChartParams } from '../chartContext';
+import { ChartContext, ChartParams } from "../types/contextTypes";
 import { previewsReducer, reset, updatePreview, setActivePreview, init } from './previewsReducer';
 import { ViewConfig, ViewType } from '../types/valueTypes';
 import ChartPreview from './ChartPreview';
@@ -10,7 +10,7 @@ import GridPreview from './GridPreview';
 type Props = {
     graph: Graph;
     graphConfig: GraphConfig<ChartContext, ChartParams>;
-    variables: { [key: string]: unknown };
+    params: ChartParams;
 }
 
 function renderView(viewConfig: ViewConfig) {
@@ -31,23 +31,22 @@ function renderView(viewConfig: ViewConfig) {
 }
 
 export default function Preview(props: Props) {
-    const { graph, graphConfig, variables } = props;
-    
+    const { graph, graphConfig, params } = props;
     const [state, dispatch] = useReducer(previewsReducer, null, init);
 
     useEffect(() => {
         dispatch(reset());
 
-        const params: ChartParams = {
-            variables,
+        const paramsCopy: ChartParams = {
+            ...params,
             renderView(viewId, config) {
                 dispatch(updatePreview(viewId, config));
             }
         };
 
-        const processors = createProcessorsFromGraph(graph, graphConfig, params);
+        const processors = createProcessorsFromGraph(graph, graphConfig, paramsCopy);
         return runProcessors(processors);
-    }, [graphConfig, graph, variables]);
+    }, [graphConfig, graph, params]);
 
     const handleChangeActivePreview = (e: React.ChangeEvent<HTMLSelectElement>) => {
         dispatch(setActivePreview(e.target.value));

@@ -101,7 +101,6 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
                 {!graphNode.collapsed && (
                     <div className="ngraph-node-fields">
                         {Object.entries(graphNodeConfig.fields).map(([fieldName, fieldConfig]) => {
-                            const fieldValue = graphNode.fields[fieldName];
                             return (
                                 <GraphNodeField
                                     key={fieldName}
@@ -109,7 +108,7 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx, Params>): React.React
                                     nodeContext={nodeContext}
                                     fieldName={fieldName}
                                     fieldConfig={fieldConfig}
-                                    fieldValue={fieldValue}
+                                    fields={graphNode.fields}
                                 />
                             );
                         })}

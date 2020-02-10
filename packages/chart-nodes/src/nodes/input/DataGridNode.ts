@@ -1,6 +1,6 @@
 import { GraphNodeConfig, InputType, emptyDataGrid, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
 import { NodeType } from '../nodes';
-import { ChartContext } from "../../chartContext";
+import { ChartContext } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
 
 const PORT_ROWS = 'rows';

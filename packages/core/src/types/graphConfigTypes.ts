@@ -6,17 +6,26 @@ export type GraphFieldInputConfig = {
     component: React.ComponentType<InputProps<any>>;
 }
 
-export type FieldParams<Ctx, Params> = {
+export type FieldResolverParams<Ctx, Params> = {
+    fields: { [key: string]: unknown };
     context: Ctx;
     parents: { [key: string]: Ctx[] };
     params: Params;
 }
 
+export type FieldResolverCallback<Ctx, Params> = (params: FieldResolverParams<Ctx, Params>) => { [key: string]: unknown }
+
+export type FieldResolverConfig<Ctx, Params> = {
+    compute: FieldResolverCallback<Ctx, Params>;
+    eq?: (prev: FieldResolverParams<Ctx, Params>, next: FieldResolverParams<Ctx, Params>) => boolean;
+} | FieldResolverCallback<Ctx, Params>;
+
 export type GraphNodeFieldConfig<Ctx, Params> = {
     label: string;
     type: string;
     initialValue: unknown;
-    params?: { [key: string]: unknown } | ((params: FieldParams<Ctx, Params>) => { [key: string]: unknown });
+    params?: { [key: string]: unknown };
+    resolve?: FieldResolverConfig<Ctx, Params>;
 }
 
 export type GraphNodePortConfig = {

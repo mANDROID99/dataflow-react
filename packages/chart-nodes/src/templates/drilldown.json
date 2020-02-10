@@ -21,10 +21,10 @@
       },
       "ports": {
         "in": {
-          "scheduler": [
+          "signal": [
             {
               "node": "66837db5-7f9f-46e7-a5a6-50b5c684a5ae",
-              "port": "event"
+              "port": "signal"
             }
           ]
         },
@@ -379,10 +379,10 @@
       "ports": {
         "in": {},
         "out": {
-          "event": [
+          "signal": [
             {
               "node": "ab908581-a59b-4df6-9a36-c805cbaae191",
-              "port": "scheduler"
+              "port": "signal"
             }
           ]
         }

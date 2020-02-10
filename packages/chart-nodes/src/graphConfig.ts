@@ -1,5 +1,6 @@
 import { GraphConfig, inputs } from '@react-ngraph/core';
-import { ChartContext, mergeContexts, ChartParams } from './chartContext';
+import { mergeContexts } from './chartContext';
+import { ChartContext, ChartParams } from "./types/contextTypes";
 import { nodes } from './nodes/nodes';
 
 export const graphConfig: GraphConfig<ChartContext, ChartParams> = {
@@ -11,7 +12,7 @@ export const graphConfig: GraphConfig<ChartContext, ChartParams> = {
     nodes,
     colors: {
         ports: {
-            'row': 'green',
+            'signal': 'green',
             'row[]': 'red',
             'rowgroup[]': 'blue',
             'datapoint[]': 'orange',

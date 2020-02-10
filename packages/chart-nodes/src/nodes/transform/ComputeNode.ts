@@ -1,5 +1,5 @@
 import { InputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from '@react-ngraph/core';
-import { ChartContext, ChartParams } from '../../chartContext';
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { pushDistinct } from '../../utils/arrayUtils';
 import { Row } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
@@ -74,9 +74,11 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Value',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
-                columns: context.columns,
+            params: {
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         alias: {

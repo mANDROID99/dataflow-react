@@ -80,7 +80,7 @@ export type SetFieldValueAction = {
     value: unknown;
 }
 
-export function setNodeFieldValue(nodeId: string, fieldName: string, value: unknown): SetFieldValueAction {
+export function setFieldValue(nodeId: string, fieldName: string, value: unknown): SetFieldValueAction {
     return {
         type: GraphActionType.SET_FIELD_VALUE,
         nodeId,

@@ -1,5 +1,5 @@
 import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 import { NodeType } from "../nodes";
@@ -79,9 +79,11 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Column Key',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
-                columns: context.columns,
+            params: {
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         desc: {

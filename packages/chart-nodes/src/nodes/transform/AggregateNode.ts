@@ -1,5 +1,5 @@
 import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row, KEY_GROUP } from "../../types/valueTypes";
 import { asNumber } from "../../utils/conversions";
 import { pushDistinct } from "../../utils/arrayUtils";
@@ -113,10 +113,14 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Column',
             initialValue: columnExpression(''),
             type: InputType.COLUMN_MAPPER,
-            params: ({ context }) => ({
-                columns: context.groupColumns ?? context.columns,
+            params: {
                 target: 'row'
-            })
+            },
+            resolve: {
+                compute: ({ context }) => ({
+                    columns: context.groupColumns || context.columns
+                })
+            }
         },
         alias: {
             label: 'Alias',

@@ -1,5 +1,5 @@
 import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { KEY_GROUP, ValueType, Row } from "../../types/valueTypes";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { asString } from "../../utils/conversions";
@@ -120,9 +120,11 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Group',
             initialValue: columnExpression(''),
             type: InputType.COLUMN_MAPPER,
-            params: ({ context }) => ({
-                columns: context.groupColumns ?? context.columns,
+            params: {
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.groupColumns ?? context.columns
             })
         },
         alias: {

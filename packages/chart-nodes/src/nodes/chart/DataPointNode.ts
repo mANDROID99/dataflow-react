@@ -1,6 +1,6 @@
 import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
 
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataPoint, Row } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
@@ -76,38 +76,46 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map X',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
-                columns: context.columns,
+            params: {
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         y: {
             label: 'Map Y',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
-                columns: context.columns,
+            params: {
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         r: {
             label: 'Map R',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
+            params: {
                 optional: true,
-                columns: context.columns,
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         },
         color: {
             label: 'Map Color',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: ({ context }) => ({
+            params: {
                 optional: true,
-                columns: context.columns,
                 target: 'row'
+            },
+            resolve: ({ context }) => ({
+                columns: context.columns
             })
         }
     },

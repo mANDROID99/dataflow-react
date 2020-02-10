@@ -1,8 +1,8 @@
 import { GraphNodeConfig, InputType, NodeProcessor } from "@react-ngraph/core";
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { NodeType } from "../nodes";
 
-const PORT_EVENT = 'event';
+const PORT_SIGNAL = 'signal';
 
 class SchedulerProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
@@ -22,7 +22,7 @@ class SchedulerProcessor implements NodeProcessor {
     registerProcessor(): void { }
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_EVENT) {
+        if (portName === PORT_SIGNAL) {
             this.subs.push(sub);
         }
     }
@@ -55,8 +55,8 @@ export const SCHEDULER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     ports: {
         in: {},
         out: {
-            [PORT_EVENT]: {
-                type: 'event'
+            [PORT_SIGNAL]: {
+                type: 'signal'
             }
         }
     },

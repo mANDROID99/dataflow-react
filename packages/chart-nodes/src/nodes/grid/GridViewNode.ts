@@ -1,6 +1,6 @@
 import { Column, GraphNodeConfig, InputType, GraphNode, NodeProcessor } from "@react-ngraph/core";
 
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ViewType, ViewConfig, Row, GridColumnConfig, GridValueConfig } from "../../types/valueTypes";
 import { NodeType } from "../nodes";
 

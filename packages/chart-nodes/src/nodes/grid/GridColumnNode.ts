@@ -1,5 +1,5 @@
 import { GraphNodeConfig, InputType, NodeProcessor, columnExpression, expressions, ColumnMapperInputValue } from "@react-ngraph/core";
-import { ChartContext, ChartParams } from "../../chartContext";
+import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row, GridValueConfig, GridColumnConfig } from "../../types/valueTypes";
 import { asString } from "../../utils/conversions";
 import { NodeType } from "../nodes";
@@ -104,8 +104,10 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             label: 'Map Value',
-            params: ({ context }) => ({
-                target: 'row',
+            params: {
+                target: 'row'
+            },
+            resolve: ({ context }) => ({
                 columns: context.columns
             })
         },
@@ -113,9 +115,11 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             label: 'Map Font Color',
-            params: ({ context }) => ({
+            params: {
                 optional: true,
-                target: 'row',
+                target: 'row'
+            },
+            resolve: ({ context }) => ({
                 columns: context.columns
             })
         },
@@ -123,9 +127,11 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             label: 'Map Background Color',
-            params: ({ context }) => ({
+            params: {
                 optional: true,
-                target: 'row',
+                target: 'row'
+            },
+            resolve: ({ context }) => ({
                 columns: context.columns
             })
         }
