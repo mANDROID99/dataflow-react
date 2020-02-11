@@ -22,7 +22,8 @@ export enum InputType {
     COLUMN_MAPPER = 'column-mapper',
     DATA_ENTRIES = 'data-entries',
     DATA_GRID = 'data-grid',
-    DATA_LIST = 'data-list'
+    DATA_LIST = 'data-list',
+    ACTIONS = 'actions'
 }
 
 export type Entry<T> = {

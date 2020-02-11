@@ -18,9 +18,11 @@ export default function DataGridFieldInput(props: InputProps<DataGridInputValue>
         dispatch(showForm(DATA_GRID_FORM_ID, value, params, receiver));
     };
 
+    const label = `Edit ${value && value.rows.length ? `(${value.rows.length})` : ''}`;
+
     return (
         <Button onClick={handleShowForm}>
-            <span>Edit</span>
+            <span>{label}</span>
             <FontAwesomeIcon className="ngraph-btn-icon" icon="edit"/>
         </Button>
     );

@@ -8,6 +8,7 @@ const KEY_DATA = 'data';
 const PORT_ROWS = 'rows';
 const PORT_DATA = 'data';
 const PORT_SIGNAL = 'signal';
+const BTN_RESOLVE_COLUMNS = 'btn-resolve-columns';
 
 type Config = {
     mapUrl: expressions.Mapper,
@@ -28,6 +29,17 @@ function doFetch(url: string, headers: { [key: string]: string}, mapResponse: ex
 
             return (mapResponse(ctx) || data) as { [key: string]: unknown }[];
         });
+}
+
+function resolveHeaders(mapHeaders: expressions.EntriesMapper, ctx: { [key: string]: unknown }) {
+    const headers: { [key: string]: string } = {};
+    const headersArr = mapHeaders(ctx);
+    for (const entry of headersArr) {
+        headers[entry.key] = asString(entry.value);
+    }
+    
+    headers.Accept = 'application/json';
+    return headers;
 }
 
 class DataFetcherProcessor implements NodeProcessor {
@@ -88,7 +100,7 @@ class DataFetcherProcessor implements NodeProcessor {
         const url = asString(config.mapUrl(ctx));
         if (!url) return;
 
-        const headers = this.resolveHeaders(ctx);
+        const headers = resolveHeaders(config.mapHeaders, ctx);
         const c = ++this.count;
 
         doFetch(url, headers, config.mapResponse, this.params)
@@ -99,17 +111,6 @@ class DataFetcherProcessor implements NodeProcessor {
                     }
                 }
             });
-    }
-
-    private resolveHeaders(ctx: { [key: string]: unknown }) {
-        const headers: { [key: string]: string } = {};
-        const headersArr = this.config.mapHeaders(ctx);
-        for (const entry of headersArr) {
-            headers[entry.key] = asString(entry.value);
-        }
-        
-        headers.Accept = 'application/json';
-        return headers;
     }
 }
 
@@ -137,6 +138,20 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Columns',
             type: InputType.DATA_LIST,
             initialValue: []
+        },
+        actions: {
+            label: 'Actions',
+            type: InputType.ACTIONS,
+            initialValue: null,
+            params: {
+                actions: [
+                    {
+                        label: 'Resolve Columns',
+                        key: BTN_RESOLVE_COLUMNS,
+                        variant: 'secondary'
+                    }
+                ]
+            }
         }
     },
     ports: {
@@ -171,8 +186,24 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     },
     mapContext(node): ChartContext {
         const columns = node.fields.columns as string[];
-        return {
-            columns: columns
-        };
+        return { columns };
+    },
+    onEvent(key, payload, { node, params, setFieldValue }) {
+        if (key === BTN_RESOLVE_COLUMNS) {
+            const ctx = params.variables;
+            const mapUrl = expressions.compileExpression(node.fields.url as string);
+            const mapResponse = expressions.compileExpression(node.fields.mapResponse as string);
+            const mapHeaders = expressions.compileEntriesMapper(node.fields.headers as Entry<string>[]);
+
+            const url = asString(mapUrl(ctx));
+            const headers = resolveHeaders(mapHeaders, ctx);
+
+            doFetch(url, headers, mapResponse, params).then((result) => {
+                if (result && result.length) {
+                    const first = result[0];
+                    setFieldValue('columns', Object.keys(first));
+                }
+            })
+        }
     }
 }

@@ -9,6 +9,7 @@ import DataEntriesFieldInput from "./DataEntriesFieldInput";
 import DataListFieldInput from "./DataListFieldInput";
 import CheckFieldInput from "./CheckFieldInput";
 import NumberFieldInput from "./NumberFieldInput";
+import ActionsFieldInput from "./ActionsFieldInput";
 
 export const inputs: { [type: string]: GraphFieldInputConfig } = {
     [InputType.TEXT]: {
@@ -34,5 +35,8 @@ export const inputs: { [type: string]: GraphFieldInputConfig } = {
     },
     [InputType.DATA_LIST]: {
         component: DataListFieldInput
+    },
+    [InputType.ACTIONS]: {
+        component: ActionsFieldInput
     }
 };

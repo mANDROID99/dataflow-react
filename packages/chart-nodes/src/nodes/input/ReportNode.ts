@@ -11,11 +11,22 @@ const FIELD_REPORT_UUID = 'uuid';
 const FIELD_REPORT_PARAMS = 'params';
 const FIELD_COLUMNS = 'columns';
 const KEY_DATA = 'data';
-const EVENT_KEY_AUTO_COLUMNS = 'configure-auto-columns';
+const BTN_RESOLVE_COLUMNS = 'btn-resolve-columns';
 
 type Config = {
     reportUuid: string;
     mapReportParams: expressions.EntriesMapper
+}
+
+function resolveReportParams(mapReportParams: expressions.EntriesMapper, ctx: { [key: string]: unknown }) {
+    const reportParams: { [key: string]: string } = {};
+    const paramsArr = mapReportParams(ctx);
+
+    for (const entry of paramsArr) {
+        reportParams[entry.key] = asString(entry.value);
+    }
+
+    return reportParams;
 }
 
 class ReportNodeProcessor implements NodeProcessor {
@@ -76,8 +87,7 @@ class ReportNodeProcessor implements NodeProcessor {
         const ctx = Object.assign({}, this.params.variables);
         ctx[KEY_DATA] = this.data;
     
-        const reportParams = this.resolveReportParams(ctx)
-
+        const reportParams = resolveReportParams(this.config.mapReportParams, ctx)
         const c = ++this.count;
         this.params.runReport(this.config.reportUuid, reportParams).then(data => {
             if (!this.running || this.count !== c) {
@@ -88,17 +98,6 @@ class ReportNodeProcessor implements NodeProcessor {
                 sub(data);
             }
         });
-    }
-
-    private resolveReportParams(ctx: { [key: string]: unknown }) {
-        const reportParams: { [key: string]: string } = {};
-        const paramsArr = this.config.mapReportParams(ctx);
-    
-        for (const entry of paramsArr) {
-            reportParams[entry.key] = asString(entry.value);
-        }
-
-        return reportParams;
     }
 }
 
@@ -145,6 +144,20 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Columns',
             type: InputType.DATA_LIST,
             initialValue: []
+        },
+        actions: {
+            label: 'Actions',
+            type: InputType.ACTIONS,
+            initialValue: null,
+            params: {
+                actions: [
+                    {
+                        label: 'Resolve Columns',
+                        key: BTN_RESOLVE_COLUMNS,
+                        variant: 'secondary'
+                    }
+                ]
+            }
         }
     },
     createProcessor(node, params): NodeProcessor {
@@ -154,6 +167,10 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             reportUuid,
             mapReportParams
         });
+    },
+    mapContext(node): ChartContext {
+        const columns = node.fields[FIELD_COLUMNS] as string[];
+        return { columns };
     },
     onChanged(prev, next, { params, setFieldValue }) {
         if (!prev || (prev.fields[FIELD_REPORT_UUID] !== next.fields[FIELD_REPORT_UUID])) {
@@ -172,14 +189,17 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     onEvent(key, payload, { node, params, setFieldValue }) {
-        if (key === EVENT_KEY_AUTO_COLUMNS) {
+        if (key === BTN_RESOLVE_COLUMNS) {
             const reportUuid = node.fields[FIELD_REPORT_UUID] as string;
-            const mapReportParams = expressions
-                .compileEntriesMapper(node.fields[FIELD_REPORT_PARAMS] as Entry<string>[]);
+            const mapReportParams = expressions.compileEntriesMapper(node.fields[FIELD_REPORT_PARAMS] as Entry<string>[]);
+            const reportParams = resolveReportParams(mapReportParams, params.variables);
 
-            // doFetch(reportUuid, mapReportParams, undefined, params).then(result => {
-            //     setFieldValue(FIELD_COLUMNS, Object.keys(result));
-            // });
+            params.runReport(reportUuid, reportParams).then(data => {
+                if (data && data.length) {
+                    const first = data[0];
+                    setFieldValue(FIELD_COLUMNS, Object.keys(first));
+                }
+            });
         }
     }
 };

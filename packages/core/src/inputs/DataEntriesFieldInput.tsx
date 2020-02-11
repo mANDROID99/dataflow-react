@@ -18,9 +18,11 @@ export default function DataEntriesFieldInput(props: InputProps<Entry<string>[]>
         dispatch(showForm(DATA_ENTRIES_FORM_ID, value, params, receiver));
     };
 
+    const label = `Edit ${value && value.length ? `(${value.length})` : ''}`;
+
     return (
         <Button onClick={handleShowForm}>
-            <span>Edit</span>
+            <span>{label}</span>
             <FontAwesomeIcon className="ngraph-btn-icon" icon="edit"/>
         </Button>
     );

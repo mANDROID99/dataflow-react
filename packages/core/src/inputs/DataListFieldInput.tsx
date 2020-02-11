@@ -18,9 +18,11 @@ export default function DataListFieldInput(props: InputProps<unknown[]>): React.
         dispatch(showForm(DATA_LIST_FORM_ID, value, params, receiver));
     };
 
+    const label = `Edit ${value ? `(${value.length})` : ''}`;
+
     return (
         <Button onClick={handleShowForm}>
-            <span>Edit</span>
+            <span>{label}</span>
             <FontAwesomeIcon className="ngraph-btn-icon" icon="edit"/>
         </Button>
     );
