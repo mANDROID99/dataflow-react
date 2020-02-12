@@ -6,10 +6,13 @@ import { rowToEvalContext } from '../../utils/expressionUtils';
 import { NodeType } from '../nodes';
 
 const PORT_ROWS = 'rows';
+const KEY_ACC = 'acc';
 
 type Config = {
     alias: string;
-    mapValue: expressions.Mapper | undefined;
+    reduce: boolean;
+    seed: unknown;
+    mapValue: expressions.Mapper;
 }
 
 class ComputeProcessor implements NodeProcessor {
@@ -37,23 +40,45 @@ class ComputeProcessor implements NodeProcessor {
     }
 
     private onNext(value: unknown) {
-        if (!this.subs.length) return;
+        if (!this.subs.length) {
+            return;
+        }
+
         const rows = value as Row[];
-
-        const rowsMapped: Row[] = rows.map((row, i) => {
-            const newRow: Row = Object.assign({}, row);
-            
-            if (this.config.mapValue) {
-                const ctx = rowToEvalContext(row, i, this.params.variables);
-                newRow[this.config.alias] = this.config.mapValue(ctx);
-            }
-
-            return newRow;
-        });
+        const nextRows: Row[] = this.config.reduce
+            ? this.reduceRows(rows)
+            : this.mapRows(rows);
 
         for (const sub of this.subs) {
-            sub(rowsMapped);
+            sub(nextRows);
         }
+    }
+
+    private reduceRows(rows: Row[]) {
+        const config = this.config;
+        const alias = config.alias;
+        const mapValue = config.mapValue;
+
+        let value = config.seed;
+        for (let i = 0, n = rows.length; i < n; i++) {
+            const ctx = rowToEvalContext(rows[i], i, this.params.variables);
+            ctx[KEY_ACC] = value;
+            value = mapValue(ctx);
+        }
+
+        return rows.map((row) => ({ ...row, [alias]: value }));
+    }
+
+    private mapRows(rows: Row[]) {
+        const config = this.config;
+        const alias = config.alias;
+        const mapValue = config.mapValue;
+
+        return rows.map((row, i) => {
+            const ctx = rowToEvalContext(row, i, this.params.variables);
+            const value = mapValue(ctx);
+            return { ...row, [alias]: value };
+        })
     }
 }
 
@@ -74,6 +99,11 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     fields: {
+        alias: {
+            label: 'Alias',
+            type: InputType.TEXT,
+            initialValue: ''
+        },
         value: {
             label: 'Map Value',
             type: InputType.COLUMN_MAPPER,
@@ -85,17 +115,30 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 columns: context.columns
             })
         },
-        alias: {
-            label: 'Alias',
+        reduce: {
+            label: 'Reduce',
+            type: InputType.CHECK,
+            initialValue: false
+        },
+        seed: {
+            label: 'Seed',
             type: InputType.TEXT,
-            initialValue: ''
+            initialValue: '',
+            resolve: ({ fields }) => ({
+                hidden: !fields.reduce
+            })
         }
     },
     createProcessor(node, params) {
         const alias = node.fields.alias as string;
+        const reduce = node.fields.reduce as boolean;
+        const seedExpr = node.fields.seed as string;
         const mapValueExpr = node.fields.value as ColumnMapperInputValue;
+
         const mapValue = expressions.compileColumnMapper(mapValueExpr, 'row');
-        return new ComputeProcessor(params, { alias, mapValue });
+        const seed = expressions.compileExpression(seedExpr)(params.variables);
+
+        return new ComputeProcessor(params, { alias, reduce, seed, mapValue });
     },
     mapContext(node, context) {
         const alias = node.fields.alias as string;

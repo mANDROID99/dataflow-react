@@ -17,13 +17,18 @@ export function useDrag<T>(opts: DragOptions<T>): (event: MouseEvent) => void {
             return;
         }
 
+        let isDragged = false;
+
         function onDrag(event: MouseEvent): void {
+            isDragged = true;
             optsRef.current.onDrag?.(event, drag!);
         }
 
         function onDragEnd(event: MouseEvent): void {
             if (event.button === 0) {
-                optsRef.current.onEnd?.(event, drag!);
+                if (isDragged) {
+                    optsRef.current.onEnd?.(event, drag!);
+                }
                 setDrag(null);
             }
         }

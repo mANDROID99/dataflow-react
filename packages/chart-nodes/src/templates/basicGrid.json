@@ -3,8 +3,8 @@
     "d3a2f84f-7021-4e05-871c-27c39919544c": {
       "id": "d3a2f84f-7021-4e05-871c-27c39919544c",
       "type": "data-grid",
-      "x": 73,
-      "y": 375.88888931274414,
+      "x": 61,
+      "y": 275.88888931274414,
       "width": 170,
       "fields": {
         "data": {
@@ -45,11 +45,7 @@
               "port": "rows"
             },
             {
-              "node": "58b2122c-bc4c-4bbe-b450-830afa6227bd",
-              "port": "rows"
-            },
-            {
-              "node": "6890947d-00d8-463f-8fb3-882f4e14063b",
+              "node": "9a2b23db-a448-490a-a650-f257df118844",
               "port": "rows"
             }
           ]
@@ -59,8 +55,8 @@
     "287269be-a487-438a-a1e5-e310a6c059ee": {
       "id": "287269be-a487-438a-a1e5-e310a6c059ee",
       "type": "grid-view",
-      "x": 636,
-      "y": 373.79999923706055,
+      "x": 816,
+      "y": 498.79999923706055,
       "width": 170,
       "fields": {
         "name": "grid-1"
@@ -75,11 +71,15 @@
           ],
           "columns": [
             {
+              "node": "6890947d-00d8-463f-8fb3-882f4e14063b",
+              "port": "column"
+            },
+            {
               "node": "58b2122c-bc4c-4bbe-b450-830afa6227bd",
               "port": "column"
             },
             {
-              "node": "6890947d-00d8-463f-8fb3-882f4e14063b",
+              "node": "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd",
               "port": "column"
             }
           ]
@@ -90,8 +90,8 @@
     "58b2122c-bc4c-4bbe-b450-830afa6227bd": {
       "id": "58b2122c-bc4c-4bbe-b450-830afa6227bd",
       "type": "grid-column",
-      "x": 349,
-      "y": 113.79999923706055,
+      "x": 515,
+      "y": 72.79999923706055,
       "width": 170,
       "fields": {
         "name": "X",
@@ -107,7 +107,7 @@
         "in": {
           "rows": [
             {
-              "node": "d3a2f84f-7021-4e05-871c-27c39919544c",
+              "node": "9a2b23db-a448-490a-a650-f257df118844",
               "port": "rows"
             }
           ]
@@ -142,7 +142,7 @@
         "in": {
           "rows": [
             {
-              "node": "d3a2f84f-7021-4e05-871c-27c39919544c",
+              "node": "9a2b23db-a448-490a-a650-f257df118844",
               "port": "rows"
             }
           ]
@@ -157,8 +157,88 @@
         }
       },
       "width": 170,
-      "x": 347,
-      "y": 458.79999923706055
+      "x": 512,
+      "y": 396.79999923706055
+    },
+    "9a2b23db-a448-490a-a650-f257df118844": {
+      "id": "9a2b23db-a448-490a-a650-f257df118844",
+      "type": "compute",
+      "x": 235,
+      "y": 429,
+      "width": 154,
+      "fields": {
+        "alias": "total",
+        "value": "= acc + row.Y",
+        "reduce": true,
+        "seed": "0"
+      },
+      "ports": {
+        "in": {
+          "rows": [
+            {
+              "node": "d3a2f84f-7021-4e05-871c-27c39919544c",
+              "port": "rows"
+            }
+          ]
+        },
+        "out": {
+          "rows": [
+            {
+              "node": "6890947d-00d8-463f-8fb3-882f4e14063b",
+              "port": "rows"
+            },
+            {
+              "node": "58b2122c-bc4c-4bbe-b450-830afa6227bd",
+              "port": "rows"
+            },
+            {
+              "node": "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd",
+              "port": "rows"
+            }
+          ]
+        }
+      }
+    },
+    "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd": {
+      "id": "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd",
+      "type": "grid-column",
+      "fields": {
+        "name": "Total",
+        "width": 100,
+        "value": {
+          "type": "column",
+          "value": "total"
+        },
+        "fontColor": {
+          "type": "column",
+          "value": ""
+        },
+        "bgColor": {
+          "type": "column",
+          "value": ""
+        }
+      },
+      "ports": {
+        "in": {
+          "rows": [
+            {
+              "node": "9a2b23db-a448-490a-a650-f257df118844",
+              "port": "rows"
+            }
+          ]
+        },
+        "out": {
+          "column": [
+            {
+              "node": "287269be-a487-438a-a1e5-e310a6c059ee",
+              "port": "columns"
+            }
+          ]
+        }
+      },
+      "width": 166,
+      "x": 515,
+      "y": 724.7999992370605
     }
   }
 }

@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import cn from 'classnames';
 
 import { GraphNodeFieldConfig, GraphFieldInputConfig, FieldResolverParams } from '../../../types/graphConfigTypes';
 import { InputProps, GraphNodeCallbacks } from '../../../types/graphInputTypes';
@@ -12,19 +13,20 @@ type Props<Ctx, Params> = {
     context: Ctx;
     fieldName: string;
     fieldConfig: GraphNodeFieldConfig<Ctx, Params>;
-    fieldValue: unknown;
     callbacks: GraphNodeCallbacks;
+    fields: { [key: string]: unknown };
 }
 
-function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, fieldValue, callbacks }: Props<Ctx, Params>) {
+function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, fields, callbacks }: Props<Ctx, Params>) {
     const inputType = fieldConfig.type;
+    const fieldValue = fields[fieldName];
     
     const dispatch = useDispatch();
     const { graphConfig, params } = useGraphContext<Ctx, Params>();
     const input: GraphFieldInputConfig | undefined = graphConfig.inputs[inputType];
     
     // resolve next field params
-    const resolverParams = useMemo<FieldResolverParams<Ctx, Params>>(() => ({ context, params }), [context, params]);
+    const resolverParams = useMemo<FieldResolverParams<Ctx, Params>>(() => ({ context, params, fields }), [context, params, fields]);
     const fieldParams = useFieldParams(fieldConfig, resolverParams);
 
     // handle the input value changed
@@ -32,22 +34,31 @@ function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, 
         dispatch(setFieldValue(nodeId, fieldName, value));
     }, [nodeId, fieldName, dispatch]);
 
-    // properties to pass to the input component
+    // create the React input element
     const inputComponent = input?.component;
-    const inputProps: InputProps<unknown> = {
-        value: fieldValue,
-        fieldName,
-        nodeId,
-        params: fieldParams,
-        callbacks,
-        onChanged: handleChanged
-    };
+    const inputNode = useMemo(() => {
+        if (!inputComponent) {
+            return 'Unknown Input Type';
+        }
+
+        // properties to pass to the input component
+        const inputProps: InputProps<unknown> = {
+            value: fieldValue,
+            fieldName,
+            nodeId,
+            params: fieldParams,
+            callbacks,
+            onChanged: handleChanged
+        };
+
+        return React.createElement(inputComponent, inputProps);
+    }, [fieldValue, fieldName, nodeId, fieldParams, callbacks, handleChanged]);
 
     return (
-        <div className="ngraph-node-field">
+        <div className={cn("ngraph-node-field", { hidden: fieldParams.hidden })}>
             <div className="ngraph-text-label ngraph-text-ellipsis">{ fieldConfig.label }</div>
             <div className="ngraph-node-field-input">
-                {inputComponent ? React.createElement(inputComponent, inputProps) : 'Unknown Input Type'}
+                {inputNode}
             </div>
         </div>
     );

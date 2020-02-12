@@ -39,7 +39,9 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
     const handleMouseDownContainer = (event: React.MouseEvent) => {
         // stop the canvas from dragging when the node is selected
         event.stopPropagation();
-        dispatch(selectNode(nodeId));
+        if (!selected) {
+            dispatch(selectNode(nodeId));
+        }
     };
 
     const handleContextMenu = (event: React.MouseEvent) => {
@@ -121,9 +123,9 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
                                     nodeId={nodeId}
                                     context={context}
                                     fieldName={fieldName}
-                                    fieldValue={node.fields[fieldName]}
                                     fieldConfig={fieldConfig}
                                     callbacks={nodeCallbacks}
+                                    fields={node.fields}
                                 />
                             );
                         })}

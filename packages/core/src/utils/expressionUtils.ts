@@ -10,7 +10,7 @@ export type Mapper = (ctx: { [key: string]: unknown }) => unknown;
 
 export type EntriesMapper = (context: { [key: string]: unknown }) => Entry<unknown>[];
 
-function autoConvert(input: string): string | boolean | number {
+export function autoConvert(input: string): string | boolean | number {
     const t = input.trim();
     const charStart = t.charCodeAt(0);
     const charEnd = t.charCodeAt(t.length - 1);

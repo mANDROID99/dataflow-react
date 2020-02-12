@@ -1,4 +1,4 @@
-import { GraphNodeConfig, InputType, emptyDataGrid, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, emptyDataGrid, expressions, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
 import { NodeType } from '../nodes';
 import { ChartContext } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
@@ -35,7 +35,7 @@ class DataGridProcessor implements NodeProcessor {
             const nRows = Math.min(gridColumns.length, values.length);
             
             for (let i = 0; i < nRows; i++) {
-                data[gridColumns[i]] = values[i];
+                data[gridColumns[i]] = expressions.autoConvert(values[i]);
             }
 
             return data;

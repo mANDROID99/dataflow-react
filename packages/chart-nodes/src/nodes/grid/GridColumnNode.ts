@@ -3,6 +3,7 @@ import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row, GridValueConfig, GridColumnConfig } from "../../types/valueTypes";
 import { asString } from "../../utils/conversions";
 import { NodeType } from "../nodes";
+import { rowToEvalContext } from "../../utils/expressionUtils";
 
 const PORT_ROWS = 'rows';
 const PORT_COLUMN = 'column';
@@ -47,9 +48,8 @@ class GridColumnNodeProcessor implements NodeProcessor {
 
     private onNext(value: unknown) {
         const rows = value as Row[];
-        const values = rows.map<GridValueConfig>((row) => {
-            const ctx = { ...this.context, row };
-
+        const values = rows.map<GridValueConfig>((row, i) => {
+            const ctx = rowToEvalContext(row, i, this.context);
             const value = asString(this.config.mapValue(ctx));
             const fontColor = asString(this.config.mapFontColor(ctx), undefined);
             const bgColor = asString(this.config.mapBgColor(ctx), undefined);
