@@ -29,7 +29,7 @@ class StartNodeProcessor implements NodeProcessor {
 export const START_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     title: 'Start',
     description: 'Start node',
-    menuGroup: 'Hidden',
+    menuGroup: 'Internal',
     ports: {
         in: {},
         out: {

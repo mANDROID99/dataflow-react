@@ -23,10 +23,11 @@ export class GraphNodePortRefs {
 
     setPortState(portId: PortId, portState: PortState) {
         const portkey = this.getPortKey(portId);
-
-        // check if the states are equal
         const prevState = this.ports.get(portkey);
-        if (prevState && prevState.x === portState.x && prevState.y === portState.y) {
+
+        if (prevState && (
+            prevState.x === portState.x && prevState.y === portState.y
+        )) {
             return;
         }
 

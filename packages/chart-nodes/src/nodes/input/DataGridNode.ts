@@ -31,7 +31,7 @@ class DataGridProcessor implements NodeProcessor {
         const gridRows = this.data.rows;
 
         const rows: Row[] = gridRows.map((values): Row => {
-            const data: { [key: string]: string } = {};
+            const data: { [key: string]: unknown } = {};
             const nRows = Math.min(gridColumns.length, values.length);
             
             for (let i = 0; i < nRows; i++) {

@@ -21,6 +21,22 @@ type Props<Ctx> = {
     context: Ctx;
 }
 
+function useCountChanges(deps: any[]): number {
+    const ref = useRef(deps);
+    const count = useRef(0);
+    let changed = false;
+
+    for (let i = 0, n = deps.length; i < n; i++) {
+        if (ref.current[i] !== deps[i]) {
+            ref.current[i] = deps[i];
+            changed = true;
+        }
+    }
+
+    if (changed) count.current++;
+    return count.current;
+}
+
 function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement {
     const { nodeId, node, context } = props;
     const { graphConfig, params } = useGraphContext<Ctx, Params>();
@@ -86,6 +102,7 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
 
     const portNamesIn = Object.keys(nodeConfig.ports.in);
     const portNamesOut = Object.keys(nodeConfig.ports.out);
+    const dimsChangedCount = useCountChanges([x, y, width, node.collapsed]);
 
     return (
         <div
@@ -103,6 +120,7 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
                         nodeType={nodeType}
                         portName={portName}
                         portOut={false}
+                        dimsChangedCount={dimsChangedCount}
                     />
                 ))}
             </div>
@@ -140,6 +158,7 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
                         nodeType={nodeType}
                         portName={portName}
                         portOut={true}
+                        dimsChangedCount={dimsChangedCount}
                     />
                 ))}
             </div>
