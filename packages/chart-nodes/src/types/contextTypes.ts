@@ -15,10 +15,14 @@ export type RequestParams = {
 
 export type RequestHandler = (params: RequestParams) => Promise<Response>;
 
-export type ChartParams = {
+export type ChartActions = {
     renderView?(viewId: string, viewConfig: ViewConfig): void;
     runReport: (reportUuid: string, params: { [key: string]: string }) => Promise<{ [key: string]: unknown }[]>;
     fetch: (params: RequestParams) => Promise<Response>;
+}
+
+export type ChartParams = {
+    actions: ChartActions;
     variables: {
         [key: string]: unknown;
     };

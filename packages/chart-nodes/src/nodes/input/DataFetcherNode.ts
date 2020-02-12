@@ -17,7 +17,7 @@ type Config = {
 };
 
 function doFetch(url: string, headers: { [key: string]: string}, mapResponse: expressions.Mapper, params: ChartParams) {
-    return params.fetch({
+    return params.actions.fetch({
         url,
         method: 'GET',
         headers

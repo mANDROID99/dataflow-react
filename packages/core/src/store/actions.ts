@@ -12,6 +12,7 @@ export enum GraphActionType {
     SET_NODE_COLLAPSED = 'SET_NODE_COLLAPSED',
     SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU',
     HIDE_CONTEXT_MENU = 'HIDE_CONTEXT_MENU',
+    END_SCROLL = 'END_SCROLL',
     UPDATE_SCROLL = 'UPDATE_SCROLL',
     SELECT_NODE = 'SELECT_NODE',
     CLEAR_SELECTED_NODE = 'CLEAR_SELECTED_NODE',
@@ -127,6 +128,14 @@ export function updateScroll(scrollX: number, scrollY: number): UpdateScrollActi
         scrollX,
         scrollY
     };
+}
+
+export type EndScrollAction = {
+    type: GraphActionType.END_SCROLL;
+}
+
+export function endScroll(): EndScrollAction {
+    return { type: GraphActionType.END_SCROLL };
 }
 
 export type SelectNodeAction = {

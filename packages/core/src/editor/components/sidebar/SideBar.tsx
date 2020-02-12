@@ -12,6 +12,7 @@ function groupGraphNodes(nodes: { [type: string]: GraphNodeConfig<unknown, unkno
     for (const nodeType in nodes) {
         const node = nodes[nodeType];
         const menuGroup = node.menuGroup;
+        if (!menuGroup) continue;
 
         let group = lookup.get(menuGroup);
         if (!group) {

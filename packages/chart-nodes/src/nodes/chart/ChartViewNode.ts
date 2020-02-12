@@ -131,9 +131,7 @@ class ChartViewProcessor implements NodeProcessor {
             events
         };
 
-        if (this.params.renderView) {
-            this.params.renderView(this.viewName, chart);
-        }
+        this.params.actions.renderView?.(this.viewName, chart);
     }
 }
 

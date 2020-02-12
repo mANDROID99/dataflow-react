@@ -15,8 +15,9 @@ export function createInitialState(): GraphEditorState {
         contextMenu: undefined,
         scrollX: 0,
         scrollY: 0,
+        scrolling: false,
         selectedNode: undefined,
         portDrag: undefined,
-        forms: {}
+        forms: {},
     };
 }

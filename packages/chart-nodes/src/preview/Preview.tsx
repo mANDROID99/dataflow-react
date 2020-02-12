@@ -1,5 +1,5 @@
-import React, { useEffect, useReducer } from 'react';
-import { Graph, GraphConfig, createProcessorsFromGraph, runProcessors } from '@react-ngraph/core';
+import React, { useEffect, useReducer, useRef } from 'react';
+import { Graph, GraphConfig, createProcessorsFromGraph, runProcessors, invokeProcessors, NodeProcessor } from '@react-ngraph/core';
 
 import { ChartContext, ChartParams } from "../types/contextTypes";
 import { previewsReducer, reset, updatePreview, setActivePreview, init } from './previewsReducer';
@@ -11,6 +11,7 @@ type Props = {
     graph: Graph;
     graphConfig: GraphConfig<ChartContext, ChartParams>;
     params: ChartParams;
+    refreshCount?: number;
 }
 
 function renderView(viewConfig: ViewConfig) {
@@ -33,20 +34,28 @@ function renderView(viewConfig: ViewConfig) {
 export default function Preview(props: Props) {
     const { graph, graphConfig, params } = props;
     const [state, dispatch] = useReducer(previewsReducer, null, init);
+    const processorsRef = useRef<NodeProcessor[]>();
 
     useEffect(() => {
         dispatch(reset());
 
-        const paramsCopy: ChartParams = {
-            ...params,
-            renderView(viewId, config) {
-                dispatch(updatePreview(viewId, config));
-            }
+        const actions = { ...params.actions };
+        actions.renderView = (viewId, config) => {
+            dispatch(updatePreview(viewId, config));
         };
 
-        const processors = createProcessorsFromGraph(graph, graphConfig, paramsCopy);
-        return runProcessors(processors);
+        const paramsCopy: ChartParams = { ...params, actions };
+        const procs = createProcessorsFromGraph(graph, graphConfig, paramsCopy);
+        processorsRef.current = procs;
+        return runProcessors(procs);
     }, [graphConfig, graph, params]);
+
+    useEffect(() => {
+        const procs = processorsRef.current;
+        if (!procs) return;
+        
+        invokeProcessors(procs);
+    }, [graph, props.refreshCount]);
 
     const handleChangeActivePreview = (e: React.ChangeEvent<HTMLSelectElement>) => {
         dispatch(setActivePreview(e.target.value));

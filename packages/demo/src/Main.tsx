@@ -14,9 +14,11 @@ const params: ChartParams = {
     variables: {
         test: 1
     },
-    fetch: requestHandler,
-    runReport: () => {
-        throw new Error('Not implemented');
+    actions: {
+        fetch: requestHandler,
+        runReport() {
+            throw new Error('Not implemented!');
+        }
     },
     reports: [
         {

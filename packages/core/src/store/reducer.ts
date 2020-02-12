@@ -135,6 +135,11 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     [GraphActionType.UPDATE_SCROLL]: produce((state: GraphEditorState, action: UpdateScrollAction) => {
         state.scrollX = action.scrollX;
         state.scrollY = action.scrollY;
+        state.scrolling = true;
+    }),
+
+    [GraphActionType.END_SCROLL]: produce((state: GraphEditorState) => {
+        state.scrolling = false;
     }),
 
     [GraphActionType.SELECT_NODE]: produce((state: GraphEditorState, action: SelectNodeAction) => {

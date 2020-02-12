@@ -10,7 +10,7 @@ export * from './types/processorTypes';
 
 // processor
 export { computeContexts } from './processor/computeContexts';
-export { createProcessorsFromGraph, runProcessors } from './processor/createProcessors';
+export { createProcessorsFromGraph, runProcessors, invokeProcessors } from './processor/createProcessors';
 
 // editor
 import GraphEditor from './editor/components/GraphEditor';

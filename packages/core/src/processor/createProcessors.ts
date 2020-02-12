@@ -34,8 +34,8 @@ export function createProcessorsFromGraph<Params>(graph: Graph, graphConfig: Gra
                 for (const pt of port) {
                     const sourceProcessor = getOrCreateProcessor(pt.node);
 
-                    // add the child to the parent
-                    if (sourceProcessor) {
+                    // regsiter the child with the parent
+                    if (sourceProcessor && processor.registerProcessor) {
                         processor.registerProcessor(portName, pt.port, sourceProcessor);
                     }
                 }
@@ -69,4 +69,14 @@ export function runProcessors(processors: NodeProcessor[]): () => void {
             }
         }
     };
+}
+
+export function invokeProcessors(processors: NodeProcessor[]) {
+    if (processors.length) {
+        for (const processor of processors) {
+            if (processor.invoke) {
+                processor.invoke();
+            }
+        }
+    }
 }

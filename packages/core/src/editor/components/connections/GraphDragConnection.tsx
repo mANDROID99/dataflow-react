@@ -20,13 +20,13 @@ function GraphDragConnection(props: DragConnectionProps) {
 
     useEffect(() => {
         const handleMouseMove = (event: MouseEvent) => {
-            const bounds = containerRef.current!.getBoundingClientRect();
-            const offX = bounds.left;
-            const offY = bounds.top;
+            const container = document.getElementById('nodes-container');
+            if (!container) return;
 
+            const containerBounds = container.getBoundingClientRect();
             setDrag({
-                x: event.clientX - offX,
-                y: event.clientY - offY
+                x: event.clientX - containerBounds.left,
+                y: event.clientY - containerBounds.top
             });
         };
 

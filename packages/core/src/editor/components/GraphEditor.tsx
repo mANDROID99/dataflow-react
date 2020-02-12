@@ -25,6 +25,7 @@ export default function GraphEditor<Ctx, Params>(props: Props<Ctx, Params>) {
     const modalRootRef = useRef<HTMLDivElement>(null);
     const [storeInstance] = useState(initStore);
 
+    // track reference to the DOM node to use as the modal root
     useEffect(() => {
         const el = modalRootRef.current;
         if (el) {

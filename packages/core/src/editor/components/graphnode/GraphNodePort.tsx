@@ -97,14 +97,15 @@ function GraphNodePort(props: Props): React.ReactElement {
         const el = elRef.current;
         if (!el) return;
 
-        const rootContainer = document.getElementById('ngraph-scroller');
-        if (!rootContainer) return;
+        const container = document.getElementById('nodes-container');
+        if (!container) return;
 
         const portId = { nodeId, portName, portOut };
-        const parentBounds = rootContainer.getBoundingClientRect();
+        const containerBounds = container.getBoundingClientRect();
         const bounds = el.getBoundingClientRect();
-        const x = bounds.left - parentBounds.left + bounds.width / 2;
-        const y = bounds.top - parentBounds.top + bounds.height / 2;
+
+        const x = bounds.left - containerBounds.left + bounds.width / 2;
+        const y = bounds.top - containerBounds.top + bounds.height / 2;
         ports.setPortState(portId, { x, y });
     });
 

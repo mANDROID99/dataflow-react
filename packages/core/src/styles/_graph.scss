@@ -16,20 +16,14 @@
     line-height: 1.5;
 }
 
-.ngraph-wrap-scroller {
+.ngraph-editor-content {
     cursor: grab;
     flex-grow: 1;
     position: relative;
     overflow: hidden;
-    &.dragging {
+    &.scrolling {
         cursor: grabbing;
     }
-}
-
-#ngraph-scroller {
-    position: absolute;
-    right: 0;
-    bottom: 0;
 }
 
 .ngraph-graph-connections {
@@ -52,6 +46,7 @@
 }
 
 .ngraph-nodes {
+    position: absolute;
     user-select: none;
 }
 

@@ -64,13 +64,11 @@ class GridViewProcessor implements NodeProcessor {
             data[i] = datum;
         }
 
-        if (this.params.renderView) {
-            this.params.renderView(this.viewName, {
-                type: ViewType.GRID,
-                columns,
-                data,
-            });
-        }
+        this.params.actions.renderView?.(this.viewName, {
+            type: ViewType.GRID,
+            columns,
+            data,
+        });
     }
 }
 

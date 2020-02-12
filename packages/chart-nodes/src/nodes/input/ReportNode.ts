@@ -89,7 +89,7 @@ class ReportNodeProcessor implements NodeProcessor {
     
         const reportParams = resolveReportParams(this.config.mapReportParams, ctx)
         const c = ++this.count;
-        this.params.runReport(this.config.reportUuid, reportParams).then(data => {
+        this.params.actions.runReport(this.config.reportUuid, reportParams).then(data => {
             if (!this.running || this.count !== c) {
                 return;
             }
@@ -194,7 +194,7 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             const mapReportParams = expressions.compileEntriesMapper(node.fields[FIELD_REPORT_PARAMS] as Entry<string>[]);
             const reportParams = resolveReportParams(mapReportParams, params.variables);
 
-            params.runReport(reportUuid, reportParams).then(data => {
+            params.actions.runReport(reportUuid, reportParams).then(data => {
                 if (data && data.length) {
                     const first = data[0];
                     setFieldValue(FIELD_COLUMNS, Object.keys(first));

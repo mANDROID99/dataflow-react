@@ -39,9 +39,9 @@ export type CallbackParams<Ctx, Params> = {
 }
 
 export type GraphNodeConfig<Ctx, Params = {}> = {
-    menuGroup: string;
     title: string;
     description: string;
+    menuGroup?: string;
     maxWidth?: number;
     minWidth?: number;
     width?: number;

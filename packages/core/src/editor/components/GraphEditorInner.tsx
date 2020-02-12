@@ -14,7 +14,7 @@ import ContextMenu from './contextmenu/ContextMenu';
 import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
 import { forms as DEFAULT_FORMS } from '../../forms/forms';
 import GraphForms from './GraphForms';
-import GraphScrollContainer from './GraphScrollContainer';
+import GraphEditorContent from './GraphEditorContent';
 import { graphContext, GraphContext } from '../graphEditorContext';
 import GraphEditorPreview from './preview/GraphEditorPreview';
 import GraphEditorNodes from './GraphEditorNodes';
@@ -75,14 +75,14 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, forms, templ
         <graphContext.Provider value={graphContextValue}>
             <DndProvider backend={Backend}>
                 <SideBar/>
-                <GraphScrollContainer>
+                <GraphEditorContent>
                     <>
                         <GraphConnectionsContainer/>
                         <GraphEditorNodes
                             graphConfig={graphConfig}
                         />
                     </>
-                </GraphScrollContainer>
+                </GraphEditorContent>
                 {renderPreview
                     ? <GraphEditorPreview
                         renderPreview={renderPreview}/>
