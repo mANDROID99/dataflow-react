@@ -1,8 +1,8 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { Action, ActionType } from './dataListFormReducer';
-import CommonTextInput from '../../common/CommonTextInput';
+import { Action, ActionType } from './dataListDialogReducer';
+import CommonTextInput from '../../../../common/CommonTextInput';
 
 type Props = {
     value: string;

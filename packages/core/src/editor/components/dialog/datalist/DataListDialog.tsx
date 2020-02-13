@@ -1,19 +1,20 @@
 import React, { useReducer } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { FormConfig, FormProps } from "../../types/formConfigTypes";
-
-import Button from '../../common/Button';
+import Button from '../../../../common/Button';
 import DataListItem from './DataListItem';
-import { reducer, ActionType } from './dataListFormReducer';
+import { reducer, ActionType } from './dataListDialogReducer';
+import { DialogComponentProps, DataListDialogParams } from '../../../../types/dialogTypes';
 
-export const DATA_LIST_FORM_ID = 'data-list';
+export default function DataListDialog({ show, params, onResult }: DialogComponentProps<DataListDialogParams, string[] | undefined>) {
+    const [values, dispatch] = useReducer(reducer, params.value || []);
 
-function DataListForm(props: FormProps<string[]>) {
-    const [values, dispatch] = useReducer(reducer, props.value);
+    const handleCancel = () => {
+        onResult(undefined);
+    };
 
-    const handleSubmit = () => {
-        props.onSubmit(values);
+    const handleAccept = () => {
+        onResult(values);
     };
 
     const handleAddNew = () => {
@@ -45,13 +46,9 @@ function DataListForm(props: FormProps<string[]>) {
                 </div>
             </div>
             <div className="ngraph-modal-footer">
-                <Button variant="secondary" onClick={props.onHide}>Cancel</Button>
-                <Button onClick={handleSubmit}>Save</Button>
+                <Button disabled={!show} variant="secondary" onClick={handleCancel}>Cancel</Button>
+                <Button disabled={!show} onClick={handleAccept}>Accept</Button>
             </div>
         </div>
     );
 }
-
-export const DATA_LIST_FORM: FormConfig<string[]> = {
-    component: DataListForm
-};

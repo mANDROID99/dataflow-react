@@ -1,16 +1,10 @@
 import React from 'react';
-import { TextDialogParams } from "./dialogTypes";
+import { TextDialogParams, DialogComponentProps } from "../../../types/dialogTypes";
 import Button from '../../../common/Button';
 import CommonTextInput from '../../../common/CommonTextInput';
 import { useState } from 'react';
 
-type Props = {
-    show: boolean;
-    params: TextDialogParams;
-    onResult: (value: string | undefined) => void;
-}
-
-export default function TextDialog({ show, params, onResult }: Props) {
+export default function TextDialog({ show, params, onResult }: DialogComponentProps<TextDialogParams, string | undefined>) {
     const [text, setText] = useState(params.text);
 
     const handleSave = () => {

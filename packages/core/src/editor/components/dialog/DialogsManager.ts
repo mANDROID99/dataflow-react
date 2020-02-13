@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 import { v4 } from 'uuid';
 
-import { DialogType, DialogParams, DialogResult } from './dialogTypes';
+import { DialogType, DialogParams, DialogResult } from '../../../types/dialogTypes';
 import { Subscribeable } from '../../../utils/Subscribeable';
 
 export type DialogOpts = {
@@ -49,6 +49,6 @@ export class DialogsManager extends Subscribeable<DialogOpts[]> {
 
 export const dialogsContext = createContext<DialogsManager>(new DialogsManager());
 
-export function useDialogs() {
+export function useDialogsManager() {
     return useContext(dialogsContext);
 }

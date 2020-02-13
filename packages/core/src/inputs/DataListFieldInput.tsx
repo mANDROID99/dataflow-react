@@ -1,21 +1,21 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch } from 'react-redux';
 
 import { InputProps } from '../types/graphInputTypes';
-import { nodeFieldReceiver } from '../types/storeTypes';
-
-import { DATA_LIST_FORM_ID } from '../forms/datalist/DataListForm';
-import { showForm } from '../store/actions';
+import { DialogType } from '../types/dialogTypes';
 import Button from '../common/Button';
+import { useDialogsManager } from '../editor/components/dialog/DialogsManager';
 
-export default function DataListFieldInput(props: InputProps<unknown[]>): React.ReactElement {
-    const { nodeId, fieldName: fieldId, value, params } = props;
-    const dispatch = useDispatch();
+export default function DataListFieldInput({ value, onChanged }: InputProps<string[]>): React.ReactElement {
+    const dialogManager = useDialogsManager();
 
     const handleShowForm = () => {
-        const receiver = nodeFieldReceiver(nodeId, fieldId);
-        dispatch(showForm(DATA_LIST_FORM_ID, value, params, receiver));
+        dialogManager.showDialog(DialogType.DATA_LIST, {
+            header: 'Edit',
+            value
+        }).then(result => {
+            if (result) onChanged(result);
+        });
     };
 
     const label = `Edit ${value ? `(${value.length})` : ''}`;

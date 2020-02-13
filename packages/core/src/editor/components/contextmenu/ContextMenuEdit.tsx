@@ -2,8 +2,8 @@ import React from 'react';
 import { useDispatch, useStore } from 'react-redux';
 import { deleteNode, cloneNode, setNodeName, hideContextMenu } from '../../../store/actions';
 import ContextMenuItem from './ContextMenuItem';
-import { useDialogs } from '../dialog/DialogsManager';
-import { DialogType } from '../dialog/dialogTypes';
+import { useDialogsManager } from '../dialog/DialogsManager';
+import { DialogType } from '../../../types/dialogTypes';
 import { selectGraphNodeName } from '../../../store/selectors';
 
 type Props = {
@@ -14,7 +14,7 @@ function ContextMenuEdit(props: Props) {
     const { nodeId } = props;
     const dispatch = useDispatch();
     const store = useStore();
-    const dialogsManager = useDialogs();
+    const dialogsManager = useDialogsManager();
 
     const handleDeleteNode = () => {
         dispatch(deleteNode(nodeId));

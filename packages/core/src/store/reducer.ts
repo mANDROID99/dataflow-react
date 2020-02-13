@@ -20,23 +20,17 @@ import {
     BeginPortDragAction,
     SetPortDragTargetAction,
     ClearPortDragTargetAction,
-    ShowFormAction,
-    HideFormAction,
-    SubmitFormAction,
-    ClearFormAction,
     SetNodeCollapsedAction,
     SetNodeNameAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
-import { receiveValue } from "../utils/store/receiverUtils";
 
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
     [GraphActionType.LOAD_GRAPH]: produce((state: GraphEditorState, action: LoadGraphAction) => {
         state.graph = action.graph;
         state.portDrag = undefined;
         state.contextMenu = undefined;
-        state.forms = {}; 
     }),
 
     [GraphActionType.ADD_NODE]: produce((state: GraphEditorState, action: AddNodeAction) => {
@@ -229,36 +223,6 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         if (portDrag && portDrag.target && comparePortTargets(portDrag.target, action.port)) {
             portDrag.target = undefined;
         }
-    }),
-
-    [GraphActionType.SHOW_FORM]: produce((state: GraphEditorState, action: ShowFormAction) => {
-        state.forms[action.formId] = {
-            show: true,
-            value: action.value,
-            params: action.params,
-            receiver: action.receiver
-        };
-    }),
-
-    [GraphActionType.HIDE_FORM]: produce((state: GraphEditorState, action: HideFormAction) => {
-        const form = state.forms[action.formId];
-    
-        if (form) {
-            form.show = false;
-        }
-    }),
-
-    [GraphActionType.SUBMIT_FORM]: produce((state: GraphEditorState, action: SubmitFormAction) => {
-        const form = state.forms[action.formId];
-    
-        if (form) {
-            form.show = false;
-            receiveValue(state, action.value, form.receiver);
-        }
-    }),
-    
-    [GraphActionType.CLEAR_FORM]: produce((state: GraphEditorState, action: ClearFormAction) => {
-        state.forms[action.formId] = undefined;
     })
 };
 

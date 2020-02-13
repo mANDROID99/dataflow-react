@@ -17,7 +17,6 @@ export function createInitialState(): GraphEditorState {
         scrollY: 0,
         scrolling: false,
         selectedNode: undefined,
-        portDrag: undefined,
-        forms: {},
+        portDrag: undefined
     };
 }

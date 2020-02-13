@@ -43,12 +43,6 @@ export function selectContextMenu(state: StoreState) {
     return state.editor.contextMenu;
 }
 
-export function selectFormState(formId: string) {
-    return (state: StoreState) => {
-        return state.editor.forms[formId];
-    };
-}
-
 export function selectNodeSelected(nodeId: string) {
     return (state: StoreState) => {
         return state.editor.selectedNode === nodeId;

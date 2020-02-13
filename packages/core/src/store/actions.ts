@@ -1,5 +1,5 @@
 import { Graph, GraphNode } from "../types/graphTypes";
-import { ContextMenuTarget, Receiver, PortTarget } from "../types/storeTypes";
+import { ContextMenuTarget, PortTarget } from "../types/storeTypes";
 
 export enum GraphActionType {
     LOAD_GRAPH = 'LOAD_GRAPH',
@@ -20,11 +20,7 @@ export enum GraphActionType {
     BEGIN_PORT_DRAG = 'BEGIN_PORT_DRAG',
     END_PORT_DRAG = 'END_PORT_DRAG',
     SET_PORT_DRAG_TARGET = 'SET_PORT_DRAG_TARGET',
-    CLEAR_PORT_DRAG_TARGET = 'CLEAR_PORT_DRAG_TARGET',
-    SHOW_FORM = 'SHOW_FORM',
-    HIDE_FORM = 'HIDE_FORM',
-    CLEAR_FORM = 'CLEAR_FORM',
-    SUBMIT_FORM = 'SUBMIT_FORM'
+    CLEAR_PORT_DRAG_TARGET = 'CLEAR_PORT_DRAG_TARGET'
 }
 
 export type LoadGraphAction = {
@@ -265,62 +261,6 @@ export function clearPortDragTarget(port: PortTarget) {
     };
 }
 
-export type ShowFormAction = {
-    type: GraphActionType.SHOW_FORM;
-    formId: string;
-    value: unknown;
-    params: unknown;
-    receiver: Receiver;
-}
-
-export function showForm(formId: string, value: unknown, params: unknown, receiver: Receiver): ShowFormAction {
-    return {
-        type: GraphActionType.SHOW_FORM,
-        formId,
-        value,
-        params,
-        receiver
-    };
-}
-
-export type HideFormAction = {
-    type: GraphActionType.HIDE_FORM;
-    formId: string;
-}
-
-export function hideForm(formId: string): HideFormAction {
-    return {
-        type: GraphActionType.HIDE_FORM,
-        formId
-    };
-}
-
-export type ClearFormAction = {
-    type: GraphActionType.CLEAR_FORM;
-    formId: string;
-}
-
-export function clearForm(formId: string): ClearFormAction {
-    return {
-        type: GraphActionType.CLEAR_FORM,
-        formId
-    };
-}
-
-export type SubmitFormAction = {
-    type: GraphActionType.SUBMIT_FORM;
-    formId: string;
-    value: unknown;
-}
-
-export function submitForm(formId: string, value: unknown): SubmitFormAction {
-    return {
-        type: GraphActionType.SUBMIT_FORM,
-        formId,
-        value
-    };
-}
-
 export type GraphAction = 
     | LoadGraphAction
     | AddNodeAction
@@ -338,9 +278,5 @@ export type GraphAction =
     | EndPortDragAction
     | SetPortDragTargetAction
     | ClearPortDragTargetAction
-    | ShowFormAction
-    | HideFormAction
-    | ClearFormAction
-    | SubmitFormAction
     ;
 

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { DialogOpts } from './DialogsManager';
 import Modal from '../../../common/Modal';
-import { DialogType } from './dialogTypes';
-import TextDialog from './TextDialog';
 import { invokeAll } from '../../../utils/functionUtils';
+import { getDialogDefinitionByType } from './dialogs';
 
 type Props = {
     dialog: DialogOpts;
@@ -18,17 +17,15 @@ export default function Dialog({ dialog, onClear }: Props) {
     };
 
     const renderContent = () => {
-        if (dialog.type === DialogType.TEXT) {
-            return (
-                <TextDialog
-                    show={show}
-                    params={dialog.params as any}
-                    onResult={invokeAll(dialog.onResult, handleHide)}
-                />
-            );
-        } else {
-            return null;
-        }
+        const d = getDialogDefinitionByType(dialog.type);
+        if (!d) return null;
+
+        
+        return React.createElement(d.component, {
+            show,
+            params: dialog.params,
+            onResult: invokeAll(dialog.onResult, handleHide)
+        });
     };
 
     return (
@@ -36,7 +33,4 @@ export default function Dialog({ dialog, onClear }: Props) {
             {renderContent()}
         </Modal>
     );
-
-    return null;
 }
-

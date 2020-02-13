@@ -1,21 +1,21 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { InputProps, Entry } from '../types/graphInputTypes';
-
-import { DATA_ENTRIES_FORM_ID } from '../forms/dataentries/DataEntriesForm';
+import { DialogType } from '../types/dialogTypes';
 import Button from '../common/Button';
-import { showForm } from '../store/actions';
-import { nodeFieldReceiver } from '../types/storeTypes';
+import { useDialogsManager } from '../editor/components/dialog/DialogsManager';
 
-export default function DataEntriesFieldInput(props: InputProps<Entry<string>[]>) {
-    const { value, params } = props;
-    const dispatch = useDispatch();
+export default function DataEntriesFieldInput({ value, onChanged }: InputProps<Entry<string>[]>) {
+    const dialogManager = useDialogsManager();
 
     const handleShowForm = () => {
-        const receiver = nodeFieldReceiver(props.nodeId, props.fieldName);
-        dispatch(showForm(DATA_ENTRIES_FORM_ID, value, params, receiver));
+        dialogManager.showDialog(DialogType.DATA_ENTRIES, {
+            header: 'Edit',
+            value: value
+        }).then(values => {
+            if (values) onChanged(values);
+        });
     };
 
     const label = `Edit ${value && value.length ? `(${value.length})` : ''}`;

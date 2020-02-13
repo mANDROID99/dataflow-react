@@ -3,24 +3,8 @@
     border-radius: 7px;
     background-color: $grey-7;
     color: $grey-0;
-    min-width: 120px;
+    min-width: 100px;
     padding-bottom: 0.5rem;
-}
-
-.ngraph-contextmenu-group-header {
-    align-items: center;
-    color: #5a5a5a;
-    cursor: pointer;
-    display: flex;
-    font-weight: 700;
-    padding: 0.5rem 0.75rem;
-    padding-bottom: 0.25rem;
-    border-bottom: 1px solid #dfdfdf;
-
-    span {
-        flex-grow: 1;
-        margin-left: 0.5rem;
-    }
 }
 
 .ngraph-contextmenu-header {
@@ -36,21 +20,15 @@
     display: flex;
     align-items: center;
     padding: 0.25rem;
+    text-align: center;
 
     &:hover {
         background-color: #0d6dcc;
         color: white;
-        .ngraph-contextmenu-item-icon {
-            color: white;
-        }
     }
 }
 
 .ngraph-contextmenu-item-label {
     flex-grow: 1;
     padding: 0.25rem 0.5rem;
-}
-
-.ngraph-contextmenu-item-icon {
-    color: #898989;
 }

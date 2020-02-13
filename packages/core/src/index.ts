@@ -18,7 +18,6 @@ export { GraphEditor };
 
 // inputs
 export { inputs } from './inputs/inputs';
-export { forms } from './forms/forms';
 
 // expressions
 import * as expressions from './utils/expressionUtils';

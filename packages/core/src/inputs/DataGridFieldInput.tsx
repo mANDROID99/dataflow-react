@@ -1,21 +1,21 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch } from 'react-redux';
-
 import { InputProps, DataGridInputValue } from '../types/graphInputTypes';
-import { nodeFieldReceiver } from '../types/storeTypes';
 
-import { DATA_GRID_FORM_ID } from '../forms/datatable/DataGridForm';
 import Button from '../common/Button';
-import { showForm } from '../store/actions';
+import { useDialogsManager } from '../editor/components/dialog/DialogsManager';
+import { DialogType } from '../types/dialogTypes';
 
-export default function DataGridFieldInput(props: InputProps<DataGridInputValue>): React.ReactElement {
-    const { nodeId, fieldName: fieldId, value, params } = props;
-    const dispatch = useDispatch();
+export default function DataGridFieldInput({ value, onChanged }: InputProps<DataGridInputValue>): React.ReactElement {
+    const dialogManager = useDialogsManager();
 
     const handleShowForm = () => {
-        const receiver = nodeFieldReceiver(nodeId, fieldId);
-        dispatch(showForm(DATA_GRID_FORM_ID, value, params, receiver));
+        dialogManager.showDialog(DialogType.DATA_GRID, {
+            header: 'Edit',
+            value
+        }).then(result => {
+            if (result) onChanged(result);
+        });
     };
 
     const label = `Edit ${value && value.rows.length ? `(${value.rows.length})` : ''}`;

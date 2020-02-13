@@ -7,13 +7,10 @@ import { Graph } from '../../types/graphTypes';
 import { GraphConfig } from '../../types/graphConfigTypes';
 import { GraphPreviewParams } from '../../types/graphEditorTypes';
 import { GraphTemplate } from '../../types/graphTemplateTypes';
-import { FormConfigs } from '../../types/formConfigTypes';
 import { StoreState } from '../../types/storeTypes';
 
 import ContextMenu from './contextmenu/ContextMenu';
 import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
-import { forms as DEFAULT_FORMS } from '../../forms/forms';
-import GraphForms from './GraphForms';
 import GraphEditorContent from './GraphEditorContent';
 import { graphContext, GraphContext } from '../graphEditorContext';
 import GraphEditorPreview from './preview/GraphEditorPreview';
@@ -29,7 +26,6 @@ type Props<Ctx, P> = {
     modalRoot: HTMLElement;
     graphConfig: GraphConfig<Ctx, P>;
     params?: P;
-    forms?: FormConfigs;
     templates?: GraphTemplate[];
     onGraphChanged?: (graph: Graph) => void;
     renderPreview?: (params: GraphPreviewParams) => React.ReactNode | null;
@@ -43,8 +39,7 @@ function useDialogsManager() {
     return ref.current;
 }
 
-function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, forms, templates, onGraphChanged, renderPreview }: Props<Ctx, P>) {
-    const formConfigs = forms ?? DEFAULT_FORMS;
+function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, onGraphChanged, renderPreview }: Props<Ctx, P>) {
     const store = useStore<StoreState>();
     
     useEffect(() => {
@@ -104,9 +99,6 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, forms, templ
                         : undefined
                     }
                     <ContextMenu/>
-                    <GraphForms
-                        formConfigs={formConfigs}
-                    />
                     <DialogsContainer dialogsManager={dialogsManager}/>
                 </DndProvider>
             </dialogsContext.Provider>

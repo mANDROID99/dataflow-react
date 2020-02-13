@@ -1,8 +1,8 @@
 import React, { useMemo, useRef } from "react";
-import { DataGridInputValue } from "../../types/graphInputTypes";
-import Button from "../../common/Button";
-import SimpleTable from "../../common/table/SimpleTable";
-import { Column } from "../../common/table/simpleTableTypes";
+import { DataGridInputValue } from "../../../../types/graphInputTypes";
+import Button from "../../../../common/Button";
+import SimpleTable from "../../../../common/table/SimpleTable";
+import { Column } from "../../../../common/table/simpleTableTypes";
 
 type Props = {
     columnNames: string[];
@@ -16,14 +16,14 @@ const COLUMN_TEMPLATE: Column = {
     editable: true,
     width: 100,
     minWidth: 30
-}
+};
 
 function DataGridTable({ columnNames, rows, onHide, onSubmit }: Props) {
     const columns: Column[] = useMemo(() => {
         return columnNames.map<Column>(columnName => ({
             ...COLUMN_TEMPLATE,
             name: columnName
-        }))
+        }));
     }, [columnNames]);
 
     const ref = useRef({ columns, rows });
@@ -40,7 +40,7 @@ function DataGridTable({ columnNames, rows, onHide, onSubmit }: Props) {
 
     const handleTableChanged = (columns: Column[], rows: string[][]) => {
         ref.current = { columns, rows };
-    }
+    };
 
     return (
         <>

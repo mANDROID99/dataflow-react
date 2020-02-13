@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ActionType, Action } from './dataEntriesFormReducer';
-import { Entry } from '../../types/graphInputTypes';
+import { ActionType, Action } from './dataEntriesDialogReducer';
+import { Entry } from '../../../../types/graphInputTypes';
 
 type Props = {
     index: number;

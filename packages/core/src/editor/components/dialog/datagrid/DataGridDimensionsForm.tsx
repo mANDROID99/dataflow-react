@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SpinnerInput from '../../common/SpinnerInput';
-import Button from '../../common/Button';
+import SpinnerInput from '../../../../common/SpinnerInput';
+import Button from '../../../../common/Button';
 
 type Props = {
     onHide: () => void;
