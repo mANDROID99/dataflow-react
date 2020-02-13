@@ -32,9 +32,11 @@ function renderView(viewConfig: ViewConfig) {
 }
 
 export default function Preview(props: Props) {
-    const { graph, graphConfig, params } = props;
+    const { graph, graphConfig, params, refreshCount } = props;
     const [state, dispatch] = useReducer(previewsReducer, null, init);
-    const processorsRef = useRef<NodeProcessor[]>();
+
+    const prevProcessors = useRef<NodeProcessor[]>();
+    const prevRefreshCount = useRef<number | undefined>(refreshCount);
 
     useEffect(() => {
         dispatch(reset());
@@ -46,16 +48,21 @@ export default function Preview(props: Props) {
 
         const paramsCopy: ChartParams = { ...params, actions };
         const procs = createProcessorsFromGraph(graph, graphConfig, paramsCopy);
-        processorsRef.current = procs;
-        return runProcessors(procs);
+        prevProcessors.current = procs;
+
+        const dispose = runProcessors(procs);
+        invokeProcessors(procs);
+
+        return dispose;
     }, [graphConfig, graph, params]);
 
     useEffect(() => {
-        const procs = processorsRef.current;
-        if (!procs) return;
-        
-        invokeProcessors(procs);
-    }, [graph, props.refreshCount]);
+        const procs = prevProcessors.current;
+        if (procs && refreshCount !== prevRefreshCount.current) {
+            prevRefreshCount.current = refreshCount;
+            invokeProcessors(procs);
+        }
+    }, [refreshCount]);
 
     const handleChangeActivePreview = (e: React.ChangeEvent<HTMLSelectElement>) => {
         dispatch(setActivePreview(e.target.value));
