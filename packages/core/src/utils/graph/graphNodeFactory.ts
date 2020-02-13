@@ -33,6 +33,7 @@ export function createGraphNode(x: number, y: number, type: string, config: Grap
     return {
         id,
         type,
+        name: type,
         x,
         y,
         width,

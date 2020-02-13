@@ -3,6 +3,7 @@
     "d3a2f84f-7021-4e05-871c-27c39919544c": {
       "id": "d3a2f84f-7021-4e05-871c-27c39919544c",
       "type": "data-grid",
+      "name": "data-grid",
       "x": 61,
       "y": 275.88888931274414,
       "width": 170,
@@ -55,6 +56,7 @@
     "287269be-a487-438a-a1e5-e310a6c059ee": {
       "id": "287269be-a487-438a-a1e5-e310a6c059ee",
       "type": "grid-view",
+      "name": "grid-view",
       "x": 816,
       "y": 498.79999923706055,
       "width": 170,
@@ -90,6 +92,7 @@
     "58b2122c-bc4c-4bbe-b450-830afa6227bd": {
       "id": "58b2122c-bc4c-4bbe-b450-830afa6227bd",
       "type": "grid-column",
+      "name": "grid-column",
       "x": 515,
       "y": 72.79999923706055,
       "width": 170,
@@ -125,6 +128,7 @@
     "6890947d-00d8-463f-8fb3-882f4e14063b": {
       "id": "6890947d-00d8-463f-8fb3-882f4e14063b",
       "type": "grid-column",
+      "name": "grid-column",
       "fields": {
         "name": "Y",
         "width": 100,
@@ -163,6 +167,7 @@
     "9a2b23db-a448-490a-a650-f257df118844": {
       "id": "9a2b23db-a448-490a-a650-f257df118844",
       "type": "compute",
+      "name": "compute",
       "x": 235,
       "y": 429,
       "width": 154,
@@ -202,6 +207,7 @@
     "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd": {
       "id": "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd",
       "type": "grid-column",
+      "name": "grid-column",
       "fields": {
         "name": "Total",
         "width": 100,

@@ -4,7 +4,7 @@ import { useGraphContext } from '../editor/graphEditorContext';
 
 type Props = {
     show: boolean;
-    children: React.ReactChild;
+    children: React.ReactChild | null;
     onHide?: () => void;
     onExit?: () => void;
 }

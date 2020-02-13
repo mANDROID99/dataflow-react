@@ -8,7 +8,6 @@ import { GraphNode } from '../../../types/graphTypes';
 import { useDrag } from '../../../utils/hooks/useDrag';
 import GraphNodeDragHandle, { DragWidthState } from './GraphNodeDragHandle';
 import { setNodePos, setNodeCollapsed } from '../../../store/actions';
-import TooltipIcon from './TooltipIcon';
 
 export type DragPosState = {
     x: number;
@@ -80,7 +79,7 @@ function GraphNodeHeader(props: Props) {
             </div>
             <div className="ngraph-node-title">
                 <div className="ngraph-text-ellipsis">
-                    {graphNodeConfig.title}
+                    {graphNode.name ?? graphNodeConfig.title}
                 </div>
             </div>
             <GraphNodeDragHandle

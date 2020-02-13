@@ -21,6 +21,9 @@ import GraphEditorNodes from './GraphEditorNodes';
 import SideBar from './sidebar/SideBar';
 import { selectGraph } from '../../store/selectors';
 import { GraphNodePortRefs } from '../GraphNodePortRefs';
+import { dialogsContext, DialogsManager } from './dialog/DialogsManager';
+import { useRef } from 'react';
+import DialogsContainer from './dialog/DialogsContainer';
 
 type Props<Ctx, P> = {
     modalRoot: HTMLElement;
@@ -30,6 +33,14 @@ type Props<Ctx, P> = {
     templates?: GraphTemplate[];
     onGraphChanged?: (graph: Graph) => void;
     renderPreview?: (params: GraphPreviewParams) => React.ReactNode | null;
+}
+
+function useDialogsManager() {
+    const ref = useRef<DialogsManager>();
+    if (!ref.current) {
+        ref.current = new DialogsManager();
+    }
+    return ref.current;
 }
 
 function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, forms, templates, onGraphChanged, renderPreview }: Props<Ctx, P>) {
@@ -71,28 +82,34 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, forms, templ
         };
     }, [graphConfig, templates, modalRoot, portRefs, params]);
 
+    // create the dialog manager instance
+    const dialogsManager = useDialogsManager();
+
     return (
         <graphContext.Provider value={graphContextValue}>
-            <DndProvider backend={Backend}>
-                <SideBar/>
-                <GraphEditorContent>
-                    <>
-                        <GraphConnectionsContainer/>
-                        <GraphEditorNodes
-                            graphConfig={graphConfig}
-                        />
-                    </>
-                </GraphEditorContent>
-                {renderPreview
-                    ? <GraphEditorPreview
-                        renderPreview={renderPreview}/>
-                    : undefined
-                }
-                <ContextMenu/>
-                <GraphForms
-                    formConfigs={formConfigs}
-                />
-            </DndProvider>
+            <dialogsContext.Provider value={dialogsManager}>
+                <DndProvider backend={Backend}>
+                    <SideBar/>
+                    <GraphEditorContent>
+                        <>
+                            <GraphConnectionsContainer/>
+                            <GraphEditorNodes
+                                graphConfig={graphConfig}
+                            />
+                        </>
+                    </GraphEditorContent>
+                    {renderPreview
+                        ? <GraphEditorPreview
+                            renderPreview={renderPreview}/>
+                        : undefined
+                    }
+                    <ContextMenu/>
+                    <GraphForms
+                        formConfigs={formConfigs}
+                    />
+                    <DialogsContainer dialogsManager={dialogsManager}/>
+                </DndProvider>
+            </dialogsContext.Provider>
         </graphContext.Provider>
     );
 }

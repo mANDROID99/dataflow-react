@@ -24,7 +24,8 @@ import {
     HideFormAction,
     SubmitFormAction,
     ClearFormAction,
-    SetNodeCollapsedAction
+    SetNodeCollapsedAction,
+    SetNodeNameAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
@@ -84,6 +85,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
 
             const clone: GraphNode = {
                 id,
+                name: node.name,
                 type: node.type,
                 fields: node.fields,
                 ports: {
@@ -102,10 +104,15 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         state.selectedNode = undefined;
     }),
 
+    [GraphActionType.SET_NODE_NAME]: produce((state: GraphEditorState, action: SetNodeNameAction) => {
+        const node = state.graph.nodes[action.nodeId];
+        if (!node) return;
+        node.name = action.name;
+    }),
+
     [GraphActionType.SET_FIELD_VALUE]: produce((state: GraphEditorState, action: SetFieldValueAction) => {
         const node = state.graph.nodes[action.nodeId];
         if (!node) return;
-        
         node.fields[action.fieldName] = action.value;
     }),
 

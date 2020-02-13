@@ -6,6 +6,7 @@ export enum GraphActionType {
     ADD_NODE = 'CREATE_NODE',
     DELETE_NODE = 'DELETE_NODE',
     CLONE_NODE = 'COPY_NODE',
+    SET_NODE_NAME = 'RENAME_NODE',
     SET_FIELD_VALUE = 'SET_FIELD_VALUE',
     SET_NODE_POS = 'SET_NODE_POS',
     SET_NODE_WIDTH = 'SET_NODE_WIDTH',
@@ -71,6 +72,20 @@ export function cloneNode(nodeId: string): CloneNodeAction {
     return {
         type: GraphActionType.CLONE_NODE,
         nodeId
+    };
+}
+
+export type SetNodeNameAction = {
+    type: GraphActionType.SET_NODE_NAME;
+    nodeId: string;
+    name: string;
+}
+
+export function setNodeName(nodeId: string, name: string): SetNodeNameAction {
+    return {
+        type: GraphActionType.SET_NODE_NAME,
+        nodeId,
+        name
     };
 }
 

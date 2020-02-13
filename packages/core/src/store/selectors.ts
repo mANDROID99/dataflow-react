@@ -27,6 +27,11 @@ export function selectGraphNodes(state: StoreState) {
     return state.editor.graph.nodes;
 }
 
+export function selectGraphNodeName(state: StoreState, nodeId: string): string | undefined {
+    const node = state.editor.graph.nodes[nodeId];
+    return node?.name;
+}
+
 export function createTemplateIdSelector(templates: GraphTemplate[]) {
     return (state: StoreState) => {
         const graph = state.editor.graph;

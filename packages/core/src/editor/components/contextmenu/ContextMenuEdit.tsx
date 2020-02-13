@@ -1,6 +1,10 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { deleteNode, cloneNode } from '../../../store/actions';
+import { useDispatch, useStore } from 'react-redux';
+import { deleteNode, cloneNode, setNodeName, hideContextMenu } from '../../../store/actions';
+import ContextMenuItem from './ContextMenuItem';
+import { useDialogs } from '../dialog/DialogsManager';
+import { DialogType } from '../dialog/dialogTypes';
+import { selectGraphNodeName } from '../../../store/selectors';
 
 type Props = {
     nodeId: string;
@@ -9,6 +13,8 @@ type Props = {
 function ContextMenuEdit(props: Props) {
     const { nodeId } = props;
     const dispatch = useDispatch();
+    const store = useStore();
+    const dialogsManager = useDialogs();
 
     const handleDeleteNode = () => {
         dispatch(deleteNode(nodeId));
@@ -18,15 +24,20 @@ function ContextMenuEdit(props: Props) {
         dispatch(cloneNode(nodeId));
     };
 
+    const handleRenameNode = () => {
+        dispatch(hideContextMenu());
+        const nodeName = selectGraphNodeName(store.getState(), nodeId);
+        dialogsManager.showDialog(DialogType.TEXT, { header: 'Name', text: nodeName ?? '' }).then(name => {
+            if (name) dispatch(setNodeName(nodeId, name));
+        });
+    };
+
     return (
         <div className="ngraph-contextmenu-content">
             <div className="ngraph-contextmenu-header">Edit</div>
-            <div className="ngraph-contextmenu-item" onClick={handleDeleteNode}>
-                <div className="ngraph-contextmenu-item-label" style={{ textAlign: 'center' }}>Delete</div>
-            </div>
-            <div className="ngraph-contextmenu-item" onClick={handleCloneNode}>
-                <div className="ngraph-contextmenu-item-label" style={{ textAlign: 'center' }}>Clone</div>
-            </div>
+            <ContextMenuItem label="Rename" onSelected={handleRenameNode}/>
+            <ContextMenuItem label="Clone" onSelected={handleCloneNode}/>
+            <ContextMenuItem label="Delete" onSelected={handleDeleteNode}/>
         </div>
     );
 }
