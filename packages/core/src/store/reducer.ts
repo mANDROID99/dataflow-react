@@ -21,14 +21,19 @@ import {
     SetPortDragTargetAction,
     ClearPortDragTargetAction,
     SetNodeCollapsedAction,
-    SetNodeNameAction
+    SetNodeNameAction,
+    UpdateNodeBoundsAction,
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
+import { clearBoundsAlignment, updateBoundsOverlapping } from "./boundsUpdater";
+
+const MARGIN = 5;
 
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
     [GraphActionType.LOAD_GRAPH]: produce((state: GraphEditorState, action: LoadGraphAction) => {
         state.graph = action.graph;
+        state.bounds = {};
         state.portDrag = undefined;
         state.contextMenu = undefined;
     }),
@@ -68,6 +73,10 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     
         state.contextMenu = undefined;
         state.selectedNode = undefined;
+
+        // clear node bounds
+        clearBoundsAlignment(state.bounds, action.nodeId);
+        delete state.bounds[action.nodeId];
     }),
 
     [GraphActionType.CLONE_NODE]: produce((state: GraphEditorState, action: CloneNodeAction) => {
@@ -157,6 +166,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     
         node.x = action.x;
         node.y = action.y;
+        clearBoundsAlignment(state.bounds, action.nodeId);
     }),
 
     [GraphActionType.SET_NODE_WIDTH]: produce((state: GraphEditorState, action: SetNodeWidthAction) => {
@@ -169,7 +179,9 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     [GraphActionType.SET_NODE_COLLAPSED]: produce((state: GraphEditorState, action: SetNodeCollapsedAction) => {
         const node = state.graph.nodes[action.nodeId];
         if (!node) return;
+
         node.collapsed = action.collapsed;
+        state.computeOverlapNodeId = action.nodeId;
     }),
 
     [GraphActionType.BEGIN_PORT_DRAG]: produce((state: GraphEditorState, action: BeginPortDragAction) => {
@@ -222,6 +234,39 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     
         if (portDrag && portDrag.target && comparePortTargets(portDrag.target, action.port)) {
             portDrag.target = undefined;
+        }
+    }),
+    
+    [GraphActionType.UPDATE_NODE_BOUNDS]: produce((state: GraphEditorState, action: UpdateNodeBoundsAction) => {
+        let bounds = state.bounds[action.nodeId];
+        if (bounds) {
+            bounds.x = action.x;
+            bounds.y = action.y;
+            bounds.width = action.width;
+            bounds.height = action.height;
+
+        } else {
+            bounds = {
+                x: action.x,
+                y: action.y,
+                width: action.width,
+                height: action.height
+            };
+
+            state.bounds[action.nodeId] = bounds;
+        }
+
+        if (state.computeOverlapNodeId === action.nodeId) {
+            state.computeOverlapNodeId = undefined;
+            const updated = updateBoundsOverlapping(state.bounds, action.nodeId, MARGIN);
+
+            for (const updatedId of updated) {
+                const node = state.graph.nodes[updatedId];
+
+                if (node) {
+                    node.y = state.bounds[updatedId].y;
+                }
+            }
         }
     })
 };

@@ -27,6 +27,14 @@ export type PortDragState = {
     target: PortTarget | undefined;
 }
 
+export type NodeBounds = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    alignBottomEdge?: string;
+}
+
 export type GraphEditorState = {
     graph: Graph;
     contextMenu: ContextMenuState | undefined;
@@ -35,6 +43,10 @@ export type GraphEditorState = {
     scrolling: boolean;
     selectedNode: string | undefined;
     portDrag: PortDragState | undefined;
+    bounds: {
+        [nodeId: string]: NodeBounds;
+    };
+    computeOverlapNodeId?: string;
 }
 
 export type StoreState = {

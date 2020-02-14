@@ -58,6 +58,7 @@ function GraphNodeHeader(props: Props) {
         },
         onEnd(event, state) {
             dispatch(setNodePos(nodeId, state.x, state.y));
+            onDrag(undefined);
         }
     });
 

@@ -20,7 +20,8 @@ export enum GraphActionType {
     BEGIN_PORT_DRAG = 'BEGIN_PORT_DRAG',
     END_PORT_DRAG = 'END_PORT_DRAG',
     SET_PORT_DRAG_TARGET = 'SET_PORT_DRAG_TARGET',
-    CLEAR_PORT_DRAG_TARGET = 'CLEAR_PORT_DRAG_TARGET'
+    CLEAR_PORT_DRAG_TARGET = 'CLEAR_PORT_DRAG_TARGET',
+    UPDATE_NODE_BOUNDS = 'UPDATE_NODE_BOUNDS'
 }
 
 export type LoadGraphAction = {
@@ -261,6 +262,26 @@ export function clearPortDragTarget(port: PortTarget) {
     };
 }
 
+export type UpdateNodeBoundsAction = {
+    type: GraphActionType.UPDATE_NODE_BOUNDS;
+    nodeId: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+export function updateNodeBounds(nodeId: string, x: number, y: number, width: number, height: number): UpdateNodeBoundsAction {
+    return {
+        type: GraphActionType.UPDATE_NODE_BOUNDS,
+        nodeId,
+        x,
+        y,
+        width,
+        height
+    };
+}
+
 export type GraphAction = 
     | LoadGraphAction
     | AddNodeAction
@@ -278,5 +299,6 @@ export type GraphAction =
     | EndPortDragAction
     | SetPortDragTargetAction
     | ClearPortDragTargetAction
+    | UpdateNodeBoundsAction
     ;
 

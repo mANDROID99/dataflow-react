@@ -1,19 +1,18 @@
-import React, { useRef, useState } from 'react';
-import cn from 'classnames';
+import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import cn from 'classnames';
 
 import { GraphNode } from '../../../types/graphTypes';
-import { ContextMenuTarget, ContextMenuTargetType } from '../../../types/storeTypes';
+import { ContextMenuTarget, ContextMenuTargetType, NodeBounds } from '../../../types/storeTypes';
 
 import GraphNodeField from './GraphNodeField';
 import GraphNodePort from './GraphNodePort';
 import { useGraphContext } from '../../graphEditorContext';
 import { DragWidthState } from './GraphNodeDragHandle';
 import GraphNodeHeader, { DragPosState } from './GraphNodeHeader';
-import { selectNode, showContextMenu } from '../../../store/actions';
+import { selectNode, showContextMenu, updateNodeBounds } from '../../../store/actions';
 import { selectNodeSelected } from '../../../store/selectors';
 import { useGraphNodeCallbacks } from './useGraphNodeCallbacks';
-import { useEffect } from 'react';
 
 type Props<Ctx> = {
     nodeId: string;
@@ -35,6 +34,10 @@ function useCountChanges(deps: any[]): number {
 
     if (changed) count.current++;
     return count.current;
+}
+
+function compareBounds(prev: NodeBounds, next: NodeBounds) {
+    return prev.x === next.x && prev.y === next.y && prev.width === next.width && prev.height === next.height;
 }
 
 function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement {
@@ -86,7 +89,6 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
         }
     });
 
-
     let x = node.x;
     let y = node.y;
     let width = node.width;
@@ -103,6 +105,23 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
     const portNamesIn = Object.keys(nodeConfig.ports.in);
     const portNamesOut = Object.keys(nodeConfig.ports.out);
     const dimsChangedCount = useCountChanges([x, y, width, node.collapsed]);
+
+    const prevBounds = useRef<NodeBounds>();
+    useEffect(() => {
+        const container = containerRef.current;
+        if (container) {
+            const x = container.offsetLeft;
+            const y = container.offsetTop;
+            const width = container.offsetWidth;
+            const height = container.offsetHeight;
+            const next: NodeBounds = { x, y, width, height };
+
+            if (prevBounds.current == null || !compareBounds(prevBounds.current, next)) {
+                prevBounds.current = next;
+                dispatch(updateNodeBounds(nodeId, x, y, width, height));
+            }
+        }
+    });
 
     return (
         <div
