@@ -46,7 +46,6 @@ export type GraphEditorState = {
     bounds: {
         [nodeId: string]: NodeBounds;
     };
-    computeOverlapNodeId?: string;
 }
 
 export type StoreState = {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -6,8 +6,8 @@ import { GraphNodeConfig } from '../../../types/graphConfigTypes';
 import { GraphNode } from '../../../types/graphTypes';
 
 import { useDrag } from '../../../utils/hooks/useDrag';
-import GraphNodeDragHandle, { DragWidthState } from './GraphNodeDragHandle';
-import { setNodePos, setNodeCollapsed } from '../../../store/actions';
+import GraphNodeDragHandle from './GraphNodeDragHandle';
+import { setNodeCollapsed, setNodePos, setNodeDragging } from '../../../store/actions';
 
 export type DragPosState = {
     x: number;
@@ -18,55 +18,40 @@ type Props = {
     nodeId: string;
     graphNode: GraphNode;
     graphNodeConfig: GraphNodeConfig<any, any>;
-    onDrag: (state: DragPosState | undefined) => void;
-    onDragWidth: (state: DragWidthState | undefined) => void;
 }
 
 type DragState = {
     startMouseX: number;
     startMouseY: number;
-    startPosX: number;
-    startPosY: number;
-    x: number;
-    y: number;
+    nodeX: number;
+    nodeY: number;
 }
 
 function GraphNodeHeader(props: Props) {
-    const { nodeId, graphNode, graphNodeConfig, onDrag, onDragWidth } = props;
+    const { nodeId, graphNode, graphNodeConfig } = props;
     const dispatch = useDispatch();
+    const headerRef = useRef<HTMLDivElement>(null);
 
     // setup drag behaviour
-    const startDrag = useDrag<DragState>({
+    useDrag<DragState>(headerRef, {
         onStart(event) {
+            dispatch(setNodeDragging(nodeId, true));
             return {
                 startMouseX: event.clientX,
                 startMouseY: event.clientY,
-                startPosX: graphNode.x,
-                startPosY: graphNode.y,
-                x: graphNode.x,
-                y: graphNode.y
+                nodeX: graphNode.x,
+                nodeY: graphNode.y
             };
         },
         onDrag(event, state) {
-            const x = state.startPosX + (event.clientX - state.startMouseX);
-            const y = state.startPosY + (event.clientY - state.startMouseY);
-
-            state.x = x;
-            state.y = y;
-
-            onDrag({ x, y });
+            const x = state.nodeX + (event.clientX - state.startMouseX);
+            const y = state.nodeY + (event.clientY - state.startMouseY);
+            dispatch(setNodePos(nodeId, x, y));
         },
-        onEnd(event, state) {
-            dispatch(setNodePos(nodeId, state.x, state.y));
-            onDrag(undefined);
+        onEnd() {
+            dispatch(setNodeDragging(nodeId, false));
         }
     });
-
-    const handleMouseDownHeader = (event: React.MouseEvent) => {
-        if (event.button === 0) {
-            startDrag(event.nativeEvent);
-        }
-    };
 
     const handleMinimize = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -74,8 +59,8 @@ function GraphNodeHeader(props: Props) {
     };
 
     return (
-        <div onMouseDown={handleMouseDownHeader} className="ngraph-node-header">
-            <div className="ngraph-node-header-icon" onMouseDown={handleMinimize}>
+        <div ref={headerRef} className="ngraph-node-header">
+            <div className="ngraph-node-header-icon" onClick={handleMinimize}>
                 <FontAwesomeIcon icon={graphNode.collapsed ? "plus" : "minus"}/>
             </div>
             <div className="ngraph-node-title">
@@ -87,7 +72,6 @@ function GraphNodeHeader(props: Props) {
                 nodeId={nodeId}
                 graphNodeWidth={graphNode.width}
                 graphNodeConfig={graphNodeConfig}
-                onDrag={onDragWidth}
             />
         </div>
     );

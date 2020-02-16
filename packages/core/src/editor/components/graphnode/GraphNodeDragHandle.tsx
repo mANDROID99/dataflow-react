@@ -5,18 +5,14 @@ import { GraphNodeConfig } from '../../../types/graphConfigTypes';
 
 import { useDrag } from '../../../utils/hooks/useDrag';
 import { getNodeMinWidth, getNodeMaxWidth } from '../../../utils/graph/graphNodeFactory';
-import { setNodeWidth } from '../../../store/actions';
+import { setNodeWidth, setNodeDragging } from '../../../store/actions';
 import { useDispatch } from 'react-redux';
-
-export type DragWidthState = {
-    width: number;
-}
+import { useRef } from 'react';
 
 type Props = {
     nodeId: string;
     graphNodeWidth: number;
     graphNodeConfig: GraphNodeConfig<any, any>;
-    onDrag: (state: DragWidthState | undefined) => void;
 }
 
 type DragState = {
@@ -26,14 +22,15 @@ type DragState = {
 }
 
 function GraphNodeDragHandle(props: Props) {
-    const { nodeId, graphNodeWidth, graphNodeConfig, onDrag } = props;
+    const { nodeId, graphNodeWidth, graphNodeConfig } = props;
+    const ref = useRef<HTMLDivElement>(null);
     const minWidth = getNodeMinWidth(graphNodeConfig);
     const maxWidth = getNodeMaxWidth(graphNodeConfig);
     const dispatch = useDispatch();
 
-    // setup drag behaviour
-    const startDrag = useDrag<DragState>({
+    useDrag<DragState>(ref, {
         onStart(event) {
+            dispatch(setNodeDragging(nodeId, true));
             return {
                 startX: event.clientX,
                 startWidth: graphNodeWidth,
@@ -51,25 +48,15 @@ function GraphNodeDragHandle(props: Props) {
                 w = maxWidth;
             }
 
-            state.width = w;
-
-            onDrag({ width: w });
+            dispatch(setNodeWidth(nodeId, w));
         },
-        onEnd(event, state) {
-            dispatch(setNodeWidth(nodeId, state.width));
+        onEnd() {
+            dispatch(setNodeDragging(nodeId, false));
         }
     });
 
-    const handleMouseDown = (event: React.MouseEvent) => {
-        if (event.button === 0) {
-            event.preventDefault();
-            event.stopPropagation();
-            startDrag(event.nativeEvent);
-        }
-    };
-
     return (
-        <div className="ngraph-node-header-icon ngraph-node-drag-handle" onMouseDown={handleMouseDown}>
+        <div ref={ref} className="ngraph-node-header-icon ngraph-node-drag-handle">
             <FontAwesomeIcon icon="arrows-alt-h"/>
         </div>
     );

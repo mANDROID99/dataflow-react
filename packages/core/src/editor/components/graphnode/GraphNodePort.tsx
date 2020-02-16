@@ -17,7 +17,6 @@ type Props = {
     nodeType: string;
     portName: string;
     portOut: boolean;
-    dimsChangedCount: number;
 }
 
 /**
@@ -163,5 +162,5 @@ function GraphNodePort(props: Props): React.ReactElement {
     );
 }
 
-export default React.memo(GraphNodePort);
+export default GraphNodePort;
 

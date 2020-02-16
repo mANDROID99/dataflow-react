@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { DialogOpts, DialogsManager } from "./DialogsManager";
+import React, { useContext, useEffect, useState } from "react";
+import { DialogOpts, dialogsContext } from "./DialogsManager";
 import Dialog from "./Dialog";
 
-type Props = {
-    dialogsManager: DialogsManager;
-}
-
-export default function DialogsContainer({ dialogsManager }: Props) {
+export default function DialogsContainer() {
     const [dialogs, setDialogs] = useState<DialogOpts[]>();
+    const dialogsManager = useContext(dialogsContext);
 
     useEffect(() => {
         setDialogs(dialogsManager.getDialogs());

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
 
@@ -8,9 +8,8 @@ import { ContextMenuTarget, ContextMenuTargetType, NodeBounds } from '../../../t
 import GraphNodeField from './GraphNodeField';
 import GraphNodePort from './GraphNodePort';
 import { useGraphContext } from '../../graphEditorContext';
-import { DragWidthState } from './GraphNodeDragHandle';
-import GraphNodeHeader, { DragPosState } from './GraphNodeHeader';
-import { selectNode, showContextMenu, updateNodeBounds } from '../../../store/actions';
+import GraphNodeHeader from './GraphNodeHeader';
+import { selectNode, showContextMenu, setNodeBounds, moveOverlapping } from '../../../store/actions';
 import { selectNodeSelected } from '../../../store/selectors';
 import { useGraphNodeCallbacks } from './useGraphNodeCallbacks';
 
@@ -20,43 +19,18 @@ type Props<Ctx> = {
     context: Ctx;
 }
 
-function useCountChanges(deps: any[]): number {
-    const ref = useRef(deps);
-    const count = useRef(0);
-    let changed = false;
-
-    for (let i = 0, n = deps.length; i < n; i++) {
-        if (ref.current[i] !== deps[i]) {
-            ref.current[i] = deps[i];
-            changed = true;
-        }
-    }
-
-    if (changed) count.current++;
-    return count.current;
-}
-
-function compareBounds(prev: NodeBounds, next: NodeBounds) {
-    return prev.x === next.x && prev.y === next.y && prev.width === next.width && prev.height === next.height;
-}
-
 function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement {
     const { nodeId, node, context } = props;
     const { graphConfig, params } = useGraphContext<Ctx, Params>();
+
     const dispatch = useDispatch();
     const containerRef = useRef<HTMLDivElement>(null);
-
-    // drag-state. Track it in internal state so we only update the graph
-    // when the mouse is released.
-    const [dragPos, setDragPos] = useState<DragPosState>();
-    const [dragWidth, setDragWidth] = useState<DragWidthState>();
     const selected = useSelector(selectNodeSelected(nodeId));
 
     const nodeType = node.type;
     const nodeConfig = graphConfig.nodes[nodeType];
 
     const handleMouseDownContainer = (event: React.MouseEvent) => {
-        // stop the canvas from dragging when the node is selected
         event.stopPropagation();
         if (!selected) {
             dispatch(selectNode(nodeId));
@@ -81,55 +55,60 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
     const nodeCallbacks = useGraphNodeCallbacks(nodeId, node, nodeConfig, context, params, dispatch);
 
     // notify when the graph-node changed
-    const prev = useRef<GraphNode>();
+    const prevNode = useRef<GraphNode>();
     useEffect(() => {
-        if (prev.current !== node) {
-            nodeCallbacks.onChanged(prev.current, node);
-            prev.current = node;
+        if (prevNode.current !== node) {
+            nodeCallbacks.onChanged(prevNode.current, node);
+            prevNode.current = node;
         }
     });
 
-    let x = node.x;
-    let y = node.y;
-    let width = node.width;
-
-    if (dragPos) {
-        x = dragPos.x;
-        y = dragPos.y;
-    }
-
-    if (dragWidth) {
-        width = dragWidth.width;
-    }
-
-    const portNamesIn = Object.keys(nodeConfig.ports.in);
-    const portNamesOut = Object.keys(nodeConfig.ports.out);
-    const dimsChangedCount = useCountChanges([x, y, width, node.collapsed]);
-
+    // Compute element bounds. If changed, update in the store
     const prevBounds = useRef<NodeBounds>();
     useEffect(() => {
         const container = containerRef.current;
-        if (container) {
-            const x = container.offsetLeft;
-            const y = container.offsetTop;
-            const width = container.offsetWidth;
-            const height = container.offsetHeight;
-            const next: NodeBounds = { x, y, width, height };
+        if (!container || node.dragging) return;
 
-            if (prevBounds.current == null || !compareBounds(prevBounds.current, next)) {
-                prevBounds.current = next;
-                dispatch(updateNodeBounds(nodeId, x, y, width, height));
-            }
+        const x = container.offsetLeft;
+        const y = container.offsetTop;
+        const w = container.offsetWidth;
+        const h = container.offsetHeight;
+
+        if (!prevBounds.current ||
+            prevBounds.current.x !== x || prevBounds.current.y !== y || prevBounds.current.width !== w || prevBounds.current.height !== h
+        ) {
+            prevBounds.current = { x, y, width: w, height: h };
+            dispatch(setNodeBounds(nodeId, x, y, w, h));
         }
     });
 
+    // move nodes overlapping with this one when the node is collapsed / expanded
+    const prevCollapsed = useRef(node.collapsed);
+    useEffect(() => {
+        if (prevCollapsed.current !== node.collapsed) {
+            prevCollapsed.current = node.collapsed;
+            dispatch(moveOverlapping(nodeId));
+        }
+    });
+
+    const x = node.x;
+    const y = node.y;
+    const width = node.width;
+
+    const portNamesIn = Object.keys(nodeConfig.ports.in);
+    const portNamesOut = Object.keys(nodeConfig.ports.out);
+    
     return (
         <div
             className={cn('ngraph-node', { selected })}
-            style={{ left: x, top: y, width }}
+            style={{
+                left: x,
+                top: y,
+                width
+            }}
             ref={containerRef}
             onContextMenu={handleContextMenu}
-            onMouseDown={handleMouseDownContainer}
+            onClick={handleMouseDownContainer}
         >
             <div className="ngraph-node-ports">
                 {portNamesIn.map((portName, index) => (
@@ -139,7 +118,6 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
                         nodeType={nodeType}
                         portName={portName}
                         portOut={false}
-                        dimsChangedCount={dimsChangedCount}
                     />
                 ))}
             </div>
@@ -148,8 +126,6 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
                     nodeId={nodeId}
                     graphNode={node}
                     graphNodeConfig={nodeConfig}
-                    onDrag={setDragPos}
-                    onDragWidth={setDragWidth}
                 />
                 {!node.collapsed && (
                     <div className="ngraph-node-fields">
@@ -177,7 +153,6 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
                         nodeType={nodeType}
                         portName={portName}
                         portOut={true}
-                        dimsChangedCount={dimsChangedCount}
                     />
                 ))}
             </div>

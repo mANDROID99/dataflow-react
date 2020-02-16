@@ -99,7 +99,7 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, o
                         : undefined
                     }
                     <ContextMenu/>
-                    <DialogsContainer dialogsManager={dialogsManager}/>
+                    <DialogsContainer/>
                 </DndProvider>
             </dialogsContext.Provider>
         </graphContext.Provider>

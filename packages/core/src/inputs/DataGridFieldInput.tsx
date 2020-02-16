@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { InputProps, DataGridInputValue } from '../types/graphInputTypes';
 
 import Button from '../common/Button';
-import { useDialogsManager } from '../editor/components/dialog/DialogsManager';
+import { dialogsContext } from '../editor/components/dialog/DialogsManager';
 import { DialogType } from '../types/dialogTypes';
 
 export default function DataGridFieldInput({ value, onChanged }: InputProps<DataGridInputValue>): React.ReactElement {
-    const dialogManager = useDialogsManager();
+    const dialogManager = useContext(dialogsContext);
 
-    const handleShowForm = () => {
+    const handleShowDialog = () => {
         dialogManager.showDialog(DialogType.DATA_GRID, {
             header: 'Edit',
             value
@@ -21,7 +21,7 @@ export default function DataGridFieldInput({ value, onChanged }: InputProps<Data
     const label = `Edit ${value && value.rows.length ? `(${value.rows.length})` : ''}`;
 
     return (
-        <Button onClick={handleShowForm}>
+        <Button onClick={handleShowDialog}>
             <span>{label}</span>
             <FontAwesomeIcon className="ngraph-btn-icon" icon="edit"/>
         </Button>

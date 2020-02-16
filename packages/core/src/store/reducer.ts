@@ -22,13 +22,15 @@ import {
     ClearPortDragTargetAction,
     SetNodeCollapsedAction,
     SetNodeNameAction,
-    UpdateNodeBoundsAction,
+    SetNodeBoundsAction,
+    MoveOverlappingBoundsAction,
+    SetNodeDraggingAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
-import { clearBoundsAlignment, updateBoundsOverlapping } from "./boundsUpdater";
+import { clearAlignment, updateBoundsOverlapping } from "./boundsUpdater";
 
-const MARGIN = 5;
+const OVERLAP_MARGIN = 5;
 
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
     [GraphActionType.LOAD_GRAPH]: produce((state: GraphEditorState, action: LoadGraphAction) => {
@@ -75,7 +77,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         state.selectedNode = undefined;
 
         // clear node bounds
-        clearBoundsAlignment(state.bounds, action.nodeId);
+        clearAlignment(state.bounds, action.nodeId);
         delete state.bounds[action.nodeId];
     }),
 
@@ -111,6 +113,11 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         const node = state.graph.nodes[action.nodeId];
         if (!node) return;
         node.name = action.name;
+    }),
+
+    [GraphActionType.SET_NODE_DRAGGING]: produce((state: GraphEditorState, action: SetNodeDraggingAction) => {
+        const node = state.graph.nodes[action.nodeId];
+        if (node) node.dragging = action.dragging;
     }),
 
     [GraphActionType.SET_FIELD_VALUE]: produce((state: GraphEditorState, action: SetFieldValueAction) => {
@@ -162,26 +169,24 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
 
     [GraphActionType.SET_NODE_POS]:  produce((state: GraphEditorState, action: SetNodePosAction) => {
         const node = state.graph.nodes[action.nodeId];
-        if (!node) return;
-    
-        node.x = action.x;
-        node.y = action.y;
-        clearBoundsAlignment(state.bounds, action.nodeId);
+        if (node) {
+            node.x = action.x;
+            node.y = action.y;
+        }
+        clearAlignment(state.bounds, action.nodeId);
     }),
 
     [GraphActionType.SET_NODE_WIDTH]: produce((state: GraphEditorState, action: SetNodeWidthAction) => {
         const node = state.graph.nodes[action.nodeId];
-        if (!node) return;
-    
-        node.width = action.width;
+        if (node) {
+            node.width = action.width;
+        }
     }),
 
     [GraphActionType.SET_NODE_COLLAPSED]: produce((state: GraphEditorState, action: SetNodeCollapsedAction) => {
         const node = state.graph.nodes[action.nodeId];
         if (!node) return;
-
         node.collapsed = action.collapsed;
-        state.computeOverlapNodeId = action.nodeId;
     }),
 
     [GraphActionType.BEGIN_PORT_DRAG]: produce((state: GraphEditorState, action: BeginPortDragAction) => {
@@ -237,8 +242,8 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         }
     }),
     
-    [GraphActionType.UPDATE_NODE_BOUNDS]: produce((state: GraphEditorState, action: UpdateNodeBoundsAction) => {
-        let bounds = state.bounds[action.nodeId];
+    [GraphActionType.SET_NODE_BOUNDS]: produce((state: GraphEditorState, action: SetNodeBoundsAction) => {
+        const bounds = state.bounds[action.nodeId];
         if (bounds) {
             bounds.x = action.x;
             bounds.y = action.y;
@@ -246,26 +251,25 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
             bounds.height = action.height;
 
         } else {
-            bounds = {
+            state.bounds[action.nodeId] = {
                 x: action.x,
                 y: action.y,
                 width: action.width,
                 height: action.height
             };
+        }        
+    }),
 
-            state.bounds[action.nodeId] = bounds;
-        }
+    [GraphActionType.MOVE_OVERLAPPING_BOUNDS]: produce((state: GraphEditorState, action: MoveOverlappingBoundsAction) => {
+        const updated = updateBoundsOverlapping(state.bounds, action.nodeId, OVERLAP_MARGIN);
 
-        if (state.computeOverlapNodeId === action.nodeId) {
-            state.computeOverlapNodeId = undefined;
-            const updated = updateBoundsOverlapping(state.bounds, action.nodeId, MARGIN);
+        for (const updatedId of updated) {
+            const node = state.graph.nodes[updatedId];
+            const nodeBounds = state.bounds[updatedId];
 
-            for (const updatedId of updated) {
-                const node = state.graph.nodes[updatedId];
-
-                if (node) {
-                    node.y = state.bounds[updatedId].y;
-                }
+            if (node && nodeBounds) {
+                node.y = nodeBounds.y;
+                node.x = nodeBounds.x;
             }
         }
     })

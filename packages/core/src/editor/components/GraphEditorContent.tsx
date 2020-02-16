@@ -29,11 +29,11 @@ function GraphEditorContent(props: Props) {
     const scrolling = useSelector(selectScrolling);
     const ref = useRef<HTMLDivElement | null>(null);
 
-    const drag = useDrag<DragState>({
+    useDrag<DragState>(ref, {
         onStart(event) {
+            const storeState = store.getState();
             const startMouseX = event.clientX;
             const startMouseY = event.clientY;
-            const storeState = store.getState();
 
             return {
                 startMouseX,
@@ -51,13 +51,6 @@ function GraphEditorContent(props: Props) {
             dispatch(endScroll());
         }
     });
-      
-    const handleBeginDrag = (event: React.MouseEvent) => {
-        dispatch(clearSelectedNode());
-        if (event.button === 0) {
-            drag(event.nativeEvent);
-        }
-    };
 
     const [, dropRef] = useDrop({
         accept: 'node',
@@ -77,13 +70,17 @@ function GraphEditorContent(props: Props) {
         }
     });
 
+    const handleClick = () => {
+        dispatch(clearSelectedNode());
+    };
+
     return (
         <div ref={(el) => {
             ref.current = el;
             dropRef(el);
         }}
-            onMouseDown={handleBeginDrag}
             className={classNames("ngraph-editor-content", { scrolling })}
+            onClick={handleClick}
         >
             {props.children}
         </div>

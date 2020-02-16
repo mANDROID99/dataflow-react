@@ -11,6 +11,7 @@ export enum GraphActionType {
     SET_NODE_POS = 'SET_NODE_POS',
     SET_NODE_WIDTH = 'SET_NODE_WIDTH',
     SET_NODE_COLLAPSED = 'SET_NODE_COLLAPSED',
+    SET_NODE_DRAGGING = 'SET_NODE_DRAGGING',
     SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU',
     HIDE_CONTEXT_MENU = 'HIDE_CONTEXT_MENU',
     END_SCROLL = 'END_SCROLL',
@@ -21,7 +22,8 @@ export enum GraphActionType {
     END_PORT_DRAG = 'END_PORT_DRAG',
     SET_PORT_DRAG_TARGET = 'SET_PORT_DRAG_TARGET',
     CLEAR_PORT_DRAG_TARGET = 'CLEAR_PORT_DRAG_TARGET',
-    UPDATE_NODE_BOUNDS = 'UPDATE_NODE_BOUNDS'
+    SET_NODE_BOUNDS = 'SET_NODE_BOUNDS',
+    MOVE_OVERLAPPING_BOUNDS = 'MOVE_OVERLAPPING_BOUNDS'
 }
 
 export type LoadGraphAction = {
@@ -202,6 +204,17 @@ export function setNodeWidth(nodeId: string, width: number): SetNodeWidthAction 
     };
 }
 
+export type SetNodeDraggingAction = {
+    type: GraphActionType.SET_NODE_DRAGGING;
+    nodeId: string;
+    dragging: boolean;
+}
+
+export function setNodeDragging(nodeId: string, dragging: boolean): SetNodeDraggingAction {
+    return { type: GraphActionType.SET_NODE_DRAGGING, nodeId, dragging };
+}
+
+
 export type SetNodeCollapsedAction = {
     type: GraphActionType.SET_NODE_COLLAPSED;
     nodeId: string;
@@ -262,8 +275,8 @@ export function clearPortDragTarget(port: PortTarget) {
     };
 }
 
-export type UpdateNodeBoundsAction = {
-    type: GraphActionType.UPDATE_NODE_BOUNDS;
+export type SetNodeBoundsAction = {
+    type: GraphActionType.SET_NODE_BOUNDS;
     nodeId: string;
     x: number;
     y: number;
@@ -271,15 +284,17 @@ export type UpdateNodeBoundsAction = {
     height: number;
 }
 
-export function updateNodeBounds(nodeId: string, x: number, y: number, width: number, height: number): UpdateNodeBoundsAction {
-    return {
-        type: GraphActionType.UPDATE_NODE_BOUNDS,
-        nodeId,
-        x,
-        y,
-        width,
-        height
-    };
+export function setNodeBounds(nodeId: string, x: number, y: number, width: number, height: number): SetNodeBoundsAction {
+    return { type: GraphActionType.SET_NODE_BOUNDS, nodeId, x, y, width, height };
+}
+
+export type MoveOverlappingBoundsAction = {
+    type: GraphActionType.MOVE_OVERLAPPING_BOUNDS;
+    nodeId: string;
+}
+
+export function moveOverlapping(nodeId: string): MoveOverlappingBoundsAction {
+    return { type: GraphActionType.MOVE_OVERLAPPING_BOUNDS, nodeId };
 }
 
 export type GraphAction = 
@@ -299,6 +314,7 @@ export type GraphAction =
     | EndPortDragAction
     | SetPortDragTargetAction
     | ClearPortDragTargetAction
-    | UpdateNodeBoundsAction
+    | SetNodeBoundsAction
+    | MoveOverlappingBoundsAction
     ;
 

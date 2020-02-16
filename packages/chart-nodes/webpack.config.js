@@ -2,7 +2,6 @@
 
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
-const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 
 module.exports = {
     devtool: 'source-map',
@@ -38,15 +37,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
-        plugins: [
-            PnpWebpackPlugin
-        ]
-    },
-    resolveLoader: {
-        plugins: [
-            PnpWebpackPlugin.moduleLoader(module),
-        ]
+        extensions: ['.tsx', '.ts', '.js']
     },
     output: {
         filename: 'bundle.js',

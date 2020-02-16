@@ -42,14 +42,14 @@ export function updateBoundsOverlapping(allBounds: { [key: string]: NodeBounds }
     return seen;
 }
 
-export function clearBoundsAlignment(allBounds: { [key: string]: NodeBounds }, nodeId: string) {
+export function clearAlignment(allBounds: { [key: string]: NodeBounds }, nodeId: string) {
     let bounds = allBounds[nodeId];
     if (!bounds) return;
 
     bounds.alignBottomEdge = undefined;
 
-    for (const n in allBounds) {
-        bounds = allBounds[n];
+    for (const id in allBounds) {
+        bounds = allBounds[id];
 
         if (bounds.alignBottomEdge === nodeId) {
             bounds.alignBottomEdge = undefined;

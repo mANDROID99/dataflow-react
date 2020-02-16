@@ -5,23 +5,33 @@ import { GraphPreviewParams } from '../../../types/graphEditorTypes';
 import { useToggle } from '../../../utils/hooks/useToggle';
 import { useSelector } from 'react-redux';
 import { selectGraph } from '../../../store/selectors';
+import Button from '../../../common/Button';
 
 type Props = {
     renderPreview: (params: GraphPreviewParams) => React.ReactNode | null;
 }
 
 function GraphEditorPreview(props: Props) {
-    const [expanded, toggleMaximized] = useToggle(true);
-    const [dims] = useState({ width: 300, height: 300 });
     const graph = useSelector(selectGraph);
+    const [graphBuffered, setGraphBuffered] = useState(graph);
+
+    const [minimized, toggleMinimized] = useToggle(false);
+    const [dims] = useState({ width: 300, height: 300 });
+
+    const handleUpdate = () => {
+        setGraphBuffered(graph);
+    };
 
     return (
         <div className="ngraph-preview">
             <div className="ngraph-preview-header">
                 <span className="ngraph-preview-header-title">Preview</span>
-                <FontAwesomeIcon className="ngraph-preview-header-icon" icon={expanded ? "minus" : "plus"} onClick={toggleMaximized}/>
+                {graph !== graphBuffered && (
+                    <Button onClick={handleUpdate}>Update</Button>
+                )}
+                <FontAwesomeIcon className="ngraph-preview-header-icon" icon={minimized ? "plus" : "minus"} onClick={toggleMinimized}/>
             </div>
-            {expanded ? (
+            {!minimized ? (
                 <div
                     className="ngraph-preview-body"
                     style={{
@@ -30,7 +40,7 @@ function GraphEditorPreview(props: Props) {
                     }}
                 >
                     {props.renderPreview({
-                        graph: graph,
+                        graph: graphBuffered,
                         width: dims.width,
                         height: dims.height
                     })}

@@ -30,7 +30,6 @@ export class DialogsManager extends Subscribeable<DialogOpts[]> {
             const dialogs = this.dialogs.slice(0);
             this.dialogs = dialogs;
             dialogs.push(dialog);
-
             this.notify(dialogs);
         });
     }
@@ -42,12 +41,11 @@ export class DialogsManager extends Subscribeable<DialogOpts[]> {
         const dialogs = this.dialogs.slice(0);
         this.dialogs = dialogs;
         dialogs.splice(index, 1);
-
         this.notify(dialogs);
     }
 }
 
-export const dialogsContext = createContext<DialogsManager>(new DialogsManager());
+export const dialogsContext: React.Context<DialogsManager> = createContext<DialogsManager>(null!);
 
 export function useDialogsManager() {
     return useContext(dialogsContext);

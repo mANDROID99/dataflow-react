@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 
 type DragOptions<T> = {
     onStart: (event: MouseEvent) => T;
@@ -6,49 +6,39 @@ type DragOptions<T> = {
     onEnd?: (event: MouseEvent, state: T) => void;
 }
 
-export function useDrag<T>(opts: DragOptions<T>): (event: MouseEvent) => void {
-    const [drag, setDrag] = useState<T | null>(null);
-
+export function useDrag<T>(ref: React.RefObject<HTMLElement>, opts: DragOptions<T>): void {
     const optsRef = useRef(opts);
     optsRef.current = opts;
 
     useEffect(() => {
-        if (drag === null) {
-            return;
-        }
+        const el = ref.current;
+        if (!el) return;
 
-        let isDragged = false;
+        let state: T;
 
-        function onDrag(event: MouseEvent): void {
-            isDragged = true;
-            optsRef.current.onDrag?.(event, drag!);
-        }
-
-        function onDragEnd(event: MouseEvent): void {
-            if (event.button === 0) {
-                if (isDragged) {
-                    optsRef.current.onEnd?.(event, drag!);
-                }
-                setDrag(null);
-            }
-        }
-
-        window.addEventListener('mousemove', onDrag);
-        window.addEventListener('mouseup', onDragEnd);
-
-        return (): void => {
-            window.removeEventListener('mousemove', onDrag);
-            window.removeEventListener('mouseup', onDragEnd);
+        const onDrag = (event: MouseEvent) => {
+            optsRef.current.onDrag?.(event, state);
         };
-    }, [drag]);
 
-    return useCallback((event: MouseEvent): void => {
-        const drag = optsRef.current.onStart(event);
+        const onDragEnd = (event: MouseEvent) => {
+            optsRef.current.onEnd?.(event, state);
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', onDragEnd);
+        };
 
-        if (drag === null) {
-            throw new Error('Drag state cannot be null!');
-        }
+        const onDragStart = (event: MouseEvent) => {
+            event.stopPropagation();
+            state = optsRef.current.onStart(event);
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', onDragEnd);
+        };
 
-        setDrag(drag);
-    }, []);
+        el.addEventListener('mousedown', onDragStart);
+
+        return () => {
+            el.removeEventListener('mousedown', onDragStart);
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', onDragEnd);
+        };
+    }, [ref]);
 }
