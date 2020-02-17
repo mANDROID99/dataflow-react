@@ -13,7 +13,7 @@ import {
     CloneNodeAction,
     SetFieldValueAction,
     ShowContextMenuAction,
-    UpdateScrollAction,
+    SetScrollAction,
     SelectNodeAction,
     SetNodePosAction,
     SetNodeWidthAction,
@@ -23,8 +23,7 @@ import {
     SetNodeCollapsedAction,
     SetNodeNameAction,
     SetNodeBoundsAction,
-    MoveOverlappingBoundsAction,
-    SetNodeDraggingAction
+    MoveOverlappingBoundsAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
@@ -115,11 +114,6 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         node.name = action.name;
     }),
 
-    [GraphActionType.SET_NODE_DRAGGING]: produce((state: GraphEditorState, action: SetNodeDraggingAction) => {
-        const node = state.graph.nodes[action.nodeId];
-        if (node) node.dragging = action.dragging;
-    }),
-
     [GraphActionType.SET_FIELD_VALUE]: produce((state: GraphEditorState, action: SetFieldValueAction) => {
         const node = state.graph.nodes[action.nodeId];
         if (!node) return;
@@ -149,14 +143,9 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         state.contextMenu = undefined;
     }),
 
-    [GraphActionType.UPDATE_SCROLL]: produce((state: GraphEditorState, action: UpdateScrollAction) => {
+    [GraphActionType.SET_SCROLL]: produce((state: GraphEditorState, action: SetScrollAction) => {
         state.scrollX = action.scrollX;
         state.scrollY = action.scrollY;
-        state.scrolling = true;
-    }),
-
-    [GraphActionType.END_SCROLL]: produce((state: GraphEditorState) => {
-        state.scrolling = false;
     }),
 
     [GraphActionType.SELECT_NODE]: produce((state: GraphEditorState, action: SelectNodeAction) => {

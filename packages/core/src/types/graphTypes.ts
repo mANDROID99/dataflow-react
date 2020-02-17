@@ -22,7 +22,6 @@ export type GraphNode = {
     width: number;
     ports: GraphNodePorts;
     collapsed?: boolean;
-    dragging?: boolean;
     fields: {
         [name: string]: unknown;
     };

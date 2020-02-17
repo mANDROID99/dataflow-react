@@ -71,10 +71,9 @@ function createPortTarget(nodeType: string, nodeId: string, portName: string, po
     };
 }
 
-function GraphNodePort(props: Props): React.ReactElement {
+function GraphNodePort(props: Props, ref: React.Ref<HTMLDivElement>): React.ReactElement {
     const { nodeId, nodeType, portName, portOut } = props;
     const dispatch = useDispatch();
-    const elRef = useRef<HTMLDivElement>(null);
     
     // resolve the config for the port
     const { graphConfig, ports } = useGraphContext();
@@ -92,22 +91,6 @@ function GraphNodePort(props: Props): React.ReactElement {
         };
     }, [nodeId, portName, portOut, ports]);
 
-    // update the port position
-    useEffect(() => {
-        const el = elRef.current;
-        if (!el) return;
-
-        const container = document.getElementById('nodes-container');
-        if (!container) return;
-
-        const portId = { nodeId, portName, portOut };
-        const containerBounds = container.getBoundingClientRect();
-        const bounds = el.getBoundingClientRect();
-
-        const x = bounds.left - containerBounds.left + bounds.width / 2;
-        const y = bounds.top - containerBounds.top + bounds.height / 2;
-        ports.setPortState(portId, { x, y });
-    });
 
     // select the current node state from the store
     const selector = useMemo(() => createPortStateSelector(graphConfig, portTarget), [graphConfig, portTarget]);
@@ -143,7 +126,7 @@ function GraphNodePort(props: Props): React.ReactElement {
     }
 
     return (
-        <div ref={elRef} className="ngraph-node-port-container">
+        <div ref={ref} className="ngraph-node-port-container">
             <div
                 className={classNames("ngraph-node-port", {
                     candidate: isDragCandidate,
@@ -162,5 +145,34 @@ function GraphNodePort(props: Props): React.ReactElement {
     );
 }
 
-export default GraphNodePort;
+const PortInner = React.memo(React.forwardRef<HTMLDivElement, Props>(GraphNodePort));
 
+export default function GraphNodePortContainer(props: Props) {
+    const ref = useRef<HTMLDivElement>(null);
+    const { ports } = useGraphContext();
+
+    // notify the port connections that the port position has changed
+    const prev = useRef<{ x: number; y: number }>();
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        const container = document.getElementById('nodes-container');
+        if (!container) return;
+
+        const portId = { nodeId: props.nodeId, portName: props.portName, portOut: props.portOut };
+        const containerBounds = container.getBoundingClientRect();
+        const bounds = el.getBoundingClientRect();
+
+        const x = bounds.left - containerBounds.left + bounds.width / 2;
+        const y = bounds.top - containerBounds.top + bounds.height / 2;
+
+        // check that the port state is changed
+        if (!prev.current || prev.current.x !== x || prev.current.y !== y) {
+            prev.current = { x, y };
+            ports.setPortState(portId, prev.current);
+        }
+    });
+
+    return <PortInner ref={ref} {...props}/>;
+}

@@ -11,10 +11,6 @@ export function selectScrollY(state: StoreState) {
     return state.editor.scrollY;
 }
 
-export function selectScrolling(state: StoreState) {
-    return state.editor.scrolling;
-}
-
 export function selectGraph(state: StoreState) {
     return state.editor.graph;
 }

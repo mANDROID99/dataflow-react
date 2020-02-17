@@ -40,7 +40,6 @@ export type GraphEditorState = {
     contextMenu: ContextMenuState | undefined;
     scrollX: number;
     scrollY: number;
-    scrolling: boolean;
     selectedNode: string | undefined;
     portDrag: PortDragState | undefined;
     bounds: {

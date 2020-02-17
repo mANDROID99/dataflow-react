@@ -1,30 +1,24 @@
 import React, { useMemo } from "react";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { GraphConfig } from "../../types/graphConfigTypes";
-
-import { selectGraphNodes, selectScrollX, selectScrollY } from "../../store/selectors";
+import { selectGraphNodes } from "../../store/selectors";
 import { computeContexts } from "../../processor/computeContexts";
 import GraphNodeComponent from './graphnode/GraphNode';
 import { useGraphContext } from "../graphEditorContext";
-import { StoreState } from "../../types/storeTypes";
 
 type Props<Ctx, P> = {
+    scrollX: number;
+    scrollY: number;
     graphConfig: GraphConfig<Ctx, P>;
 }
 
-function GraphEditorNodes<Ctx, P>({ graphConfig }: Props<Ctx, P>) {
+function GraphEditorNodes<Ctx, P>({ scrollX, scrollY, graphConfig }: Props<Ctx, P>) {
     const graphNodes = useSelector(selectGraphNodes);
     const { params } = useGraphContext<Ctx, P>();
 
     // compute the context for all nodes in the graph
     const nodeContexts = useMemo(() => computeContexts(params, graphNodes, graphConfig), [params, graphNodes, graphConfig]);
-
-    // select scroll offset from the store
-    const { scrollX, scrollY } = useSelector((state: StoreState) => ({
-        scrollX: selectScrollX(state),
-        scrollY: selectScrollY(state)
-    }), shallowEqual);
 
     return (
         <div id="nodes-container" className="ngraph-nodes" style={{ left: scrollX, top: scrollY }}>

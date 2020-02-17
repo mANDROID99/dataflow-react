@@ -11,11 +11,9 @@ export enum GraphActionType {
     SET_NODE_POS = 'SET_NODE_POS',
     SET_NODE_WIDTH = 'SET_NODE_WIDTH',
     SET_NODE_COLLAPSED = 'SET_NODE_COLLAPSED',
-    SET_NODE_DRAGGING = 'SET_NODE_DRAGGING',
     SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU',
     HIDE_CONTEXT_MENU = 'HIDE_CONTEXT_MENU',
-    END_SCROLL = 'END_SCROLL',
-    UPDATE_SCROLL = 'UPDATE_SCROLL',
+    SET_SCROLL = 'SET_SCROLL',
     SELECT_NODE = 'SELECT_NODE',
     CLEAR_SELECTED_NODE = 'CLEAR_SELECTED_NODE',
     BEGIN_PORT_DRAG = 'BEGIN_PORT_DRAG',
@@ -130,26 +128,18 @@ export function hideContextMenu(): HideContextMenuAction {
     };
 }
 
-export type UpdateScrollAction = {
-    type: GraphActionType.UPDATE_SCROLL;
+export type SetScrollAction = {
+    type: GraphActionType.SET_SCROLL;
     scrollX: number;
     scrollY: number;
 }
 
-export function updateScroll(scrollX: number, scrollY: number): UpdateScrollAction {
+export function setScroll(scrollX: number, scrollY: number): SetScrollAction {
     return {
-        type: GraphActionType.UPDATE_SCROLL,
+        type: GraphActionType.SET_SCROLL,
         scrollX,
         scrollY
     };
-}
-
-export type EndScrollAction = {
-    type: GraphActionType.END_SCROLL;
-}
-
-export function endScroll(): EndScrollAction {
-    return { type: GraphActionType.END_SCROLL };
 }
 
 export type SelectNodeAction = {
@@ -203,17 +193,6 @@ export function setNodeWidth(nodeId: string, width: number): SetNodeWidthAction 
         width
     };
 }
-
-export type SetNodeDraggingAction = {
-    type: GraphActionType.SET_NODE_DRAGGING;
-    nodeId: string;
-    dragging: boolean;
-}
-
-export function setNodeDragging(nodeId: string, dragging: boolean): SetNodeDraggingAction {
-    return { type: GraphActionType.SET_NODE_DRAGGING, nodeId, dragging };
-}
-
 
 export type SetNodeCollapsedAction = {
     type: GraphActionType.SET_NODE_COLLAPSED;
@@ -307,7 +286,7 @@ export type GraphAction =
     | ClearSelectedNodeAction
     | ShowContextMenuAction
     | HideContextMenuAction
-    | UpdateScrollAction
+    | SetScrollAction
     | SetNodePosAction
     | SetNodeWidthAction
     | BeginPortDragAction

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
 
@@ -19,9 +19,20 @@ type Props<Ctx> = {
     context: Ctx;
 }
 
+export type DragPosState = {
+    x: number;
+    y: number;
+}
+
+export type DragWidthState = {
+    width: number;
+}
+
 function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement {
     const { nodeId, node, context } = props;
     const { graphConfig, params } = useGraphContext<Ctx, Params>();
+    const [dragPosState, setDragPosState] = useState<DragPosState>();
+    const [dragWidthState, setDragWidthState] = useState<DragWidthState>();
 
     const dispatch = useDispatch();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -63,11 +74,14 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
         }
     });
 
+    // whether anything is currently dragging the node bounds
+    const isDragging = dragPosState != null || dragWidthState != null;
+
     // Compute element bounds. If changed, update in the store
     const prevBounds = useRef<NodeBounds>();
     useEffect(() => {
         const container = containerRef.current;
-        if (!container || node.dragging) return;
+        if (!container || isDragging) return;
 
         const x = container.offsetLeft;
         const y = container.offsetTop;
@@ -91,9 +105,18 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
         }
     });
 
-    const x = node.x;
-    const y = node.y;
-    const width = node.width;
+    let x = node.x;
+    let y = node.y;
+    let width = node.width;
+
+    if (dragPosState) {
+        x = dragPosState.x;
+        y = dragPosState.y;
+    }
+
+    if (dragWidthState) {
+        width = dragWidthState.width;
+    }
 
     const portNamesIn = Object.keys(nodeConfig.ports.in);
     const portNamesOut = Object.keys(nodeConfig.ports.out);
@@ -124,8 +147,10 @@ function GraphNodeComponent<Ctx, Params>(props: Props<Ctx>): React.ReactElement 
             <div className="ngraph-node-body">
                 <GraphNodeHeader
                     nodeId={nodeId}
-                    graphNode={node}
-                    graphNodeConfig={nodeConfig}
+                    node={node}
+                    nodeConfig={nodeConfig}
+                    onDragPosStateChanged={setDragPosState}
+                    onDragWidthStateChanged={setDragWidthState}
                 />
                 {!node.collapsed && (
                     <div className="ngraph-node-fields">

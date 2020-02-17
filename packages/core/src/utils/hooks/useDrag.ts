@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 
 type DragOptions<T> = {
+    checkTarget?: boolean;
     onStart: (event: MouseEvent) => T;
     onDrag?: (event: MouseEvent, state: T) => void;
     onEnd?: (event: MouseEvent, state: T) => void;
@@ -27,6 +28,11 @@ export function useDrag<T>(ref: React.RefObject<HTMLElement>, opts: DragOptions<
         };
 
         const onDragStart = (event: MouseEvent) => {
+            // check the event target matches the ref
+            if (optsRef.current.checkTarget && event.target !== ref.current) {
+                return;
+            }
+            
             event.stopPropagation();
             state = optsRef.current.onStart(event);
             document.addEventListener('mousemove', onDrag);

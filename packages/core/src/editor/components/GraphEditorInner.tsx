@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { useStore } from 'react-redux';
 import Backend from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
@@ -11,7 +11,7 @@ import { StoreState } from '../../types/storeTypes';
 
 import ContextMenu from './contextmenu/ContextMenu';
 import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
-import GraphEditorContent from './GraphEditorContent';
+import GraphEditorScroller from './GraphEditorScroller';
 import { graphContext, GraphContext } from '../graphEditorContext';
 import GraphEditorPreview from './preview/GraphEditorPreview';
 import GraphEditorNodes from './GraphEditorNodes';
@@ -19,7 +19,6 @@ import SideBar from './sidebar/SideBar';
 import { selectGraph } from '../../store/selectors';
 import { GraphNodePortRefs } from '../GraphNodePortRefs';
 import { dialogsContext, DialogsManager } from './dialog/DialogsManager';
-import { useRef } from 'react';
 import DialogsContainer from './dialog/DialogsContainer';
 
 type Props<Ctx, P> = {
@@ -85,14 +84,21 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, o
             <dialogsContext.Provider value={dialogsManager}>
                 <DndProvider backend={Backend}>
                     <SideBar/>
-                    <GraphEditorContent>
-                        <>
-                            <GraphConnectionsContainer/>
-                            <GraphEditorNodes
-                                graphConfig={graphConfig}
-                            />
-                        </>
-                    </GraphEditorContent>
+                    <GraphEditorScroller>
+                        {(scrollX, scrollY) => (
+                            <>
+                                <GraphConnectionsContainer
+                                    scrollX={scrollX}
+                                    scrollY={scrollY}
+                                />
+                                <GraphEditorNodes
+                                    graphConfig={graphConfig}
+                                    scrollX={scrollX}
+                                    scrollY={scrollY}
+                                />
+                            </>
+                        )}
+                    </GraphEditorScroller>
                     {renderPreview
                         ? <GraphEditorPreview
                             renderPreview={renderPreview}/>

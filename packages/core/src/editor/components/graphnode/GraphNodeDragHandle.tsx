@@ -1,44 +1,44 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useDispatch, batch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { GraphNodeConfig } from '../../../types/graphConfigTypes';
 
 import { useDrag } from '../../../utils/hooks/useDrag';
 import { getNodeMinWidth, getNodeMaxWidth } from '../../../utils/graph/graphNodeFactory';
-import { setNodeWidth, setNodeDragging } from '../../../store/actions';
-import { useDispatch } from 'react-redux';
-import { useRef } from 'react';
+import { setNodeWidth } from '../../../store/actions';
+
+import { DragWidthState } from './GraphNode';
 
 type Props = {
     nodeId: string;
-    graphNodeWidth: number;
-    graphNodeConfig: GraphNodeConfig<any, any>;
+    nodeWidth: number;
+    nodeConfig: GraphNodeConfig<any, any>;
+    onDragWidthStateChanged: (state: DragWidthState | undefined) => void;
 }
 
 type DragState = {
     startX: number;
-    startWidth: number;
+    nodeWidth: number;
     width: number;
 }
 
-function GraphNodeDragHandle(props: Props) {
-    const { nodeId, graphNodeWidth, graphNodeConfig } = props;
+function GraphNodeDragHandle({ nodeId, nodeWidth, nodeConfig, onDragWidthStateChanged }: Props) {
     const ref = useRef<HTMLDivElement>(null);
-    const minWidth = getNodeMinWidth(graphNodeConfig);
-    const maxWidth = getNodeMaxWidth(graphNodeConfig);
+    const minWidth = getNodeMinWidth(nodeConfig);
+    const maxWidth = getNodeMaxWidth(nodeConfig);
     const dispatch = useDispatch();
 
     useDrag<DragState>(ref, {
         onStart(event) {
-            dispatch(setNodeDragging(nodeId, true));
             return {
                 startX: event.clientX,
-                startWidth: graphNodeWidth,
-                width: graphNodeWidth
+                nodeWidth,
+                width: nodeWidth
             };
         },
         onDrag(event, state) {
-            let w = state.startWidth + (event.clientX - state.startX);
+            let w = state.nodeWidth + (event.clientX - state.startX);
 
             if (w < minWidth) {
                 w = minWidth;
@@ -48,10 +48,16 @@ function GraphNodeDragHandle(props: Props) {
                 w = maxWidth;
             }
 
-            dispatch(setNodeWidth(nodeId, w));
+            state.width = w;
+            onDragWidthStateChanged({ width: w });
         },
-        onEnd() {
-            dispatch(setNodeDragging(nodeId, false));
+        onEnd(event, state) {
+            if (state.width !== state.nodeWidth) {
+                batch(() => {
+                    onDragWidthStateChanged(undefined);
+                    dispatch(setNodeWidth(nodeId, state.width));
+                });
+            }
         }
     });
 

@@ -23,16 +23,12 @@ export class GraphNodePortRefs {
 
     setPortState(portId: PortId, portState: PortState) {
         const portkey = this.getPortKey(portId);
-        const prevState = this.ports.get(portkey);
+        const prev = this.ports.get(portkey);
 
-        if (prevState && (
-            prevState.x === portState.x && prevState.y === portState.y
-        )) {
-            return;
+        if (!prev || prev.x !== portState.x || prev.y !== portState.y) {
+            this.ports.set(portkey, portState);
+            this.notifyChanges(portkey, portState);
         }
-
-        this.ports.set(portkey, portState);
-        this.notifyChanges(portkey, portState);
     }
 
     clearPortState(portId: PortId) {
