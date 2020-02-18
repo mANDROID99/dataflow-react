@@ -7,6 +7,7 @@
         "x": 56,
         "y": 45.88888931274414,
         "width": 170,
+        "height": 0,
         "fields": {
           "data": {
             "columns": [
@@ -56,6 +57,7 @@
         "x": 582,
         "y": 48.88888931274414,
         "width": 170,
+        "height": 0,
         "fields": {
           "type": "line",
           "series": {
@@ -98,6 +100,7 @@
         "x": 308,
         "y": 47.88888931274414,
         "width": 170,
+        "height": 0,
         "fields": {
           "x": {
             "type": "column",
@@ -142,6 +145,7 @@
         "x": 959,
         "y": 405.88888931274414,
         "width": 170,
+        "height": 0,
         "fields": {
           "type": "line",
           "params": []
@@ -177,6 +181,7 @@
         "x": 582,
         "y": 712.8888893127441,
         "width": 170,
+        "height": 0,
         "fields": {
           "type": "linear",
           "params": [
@@ -206,6 +211,7 @@
         "x": 584,
         "y": 464.88888931274414,
         "width": 170,
+        "height": 0,
         "fields": {
           "type": "linear",
           "label": "X",

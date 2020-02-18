@@ -172,7 +172,7 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const columns = node.fields[FIELD_COLUMNS] as string[];
         return { columns };
     },
-    onChanged(prev, next, { params, setFieldValue }) {
+    onChanged(prev, next, { params, actions }) {
         if (!prev || (prev.fields[FIELD_REPORT_UUID] !== next.fields[FIELD_REPORT_UUID])) {
             const reportUuid = next.fields[FIELD_REPORT_UUID] as string;
             const report = params.reports.find(report => report.uuid === reportUuid);
@@ -185,10 +185,10 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 }));
             }
 
-            setFieldValue(FIELD_REPORT_PARAMS, reportParams);
+            actions.setFieldValue(FIELD_REPORT_PARAMS, reportParams);
         }
     },
-    onEvent(key, payload, { node, params, setFieldValue }) {
+    onEvent(key, payload, { node, params, actions }) {
         if (key === BTN_RESOLVE_COLUMNS) {
             const reportUuid = node.fields[FIELD_REPORT_UUID] as string;
             const mapReportParams = expressions.compileEntriesMapper(node.fields[FIELD_REPORT_PARAMS] as Entry<string>[]);
@@ -197,7 +197,7 @@ export const REPORT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params.actions.runReport(reportUuid, reportParams).then(data => {
                 if (data && data.length) {
                     const first = data[0];
-                    setFieldValue(FIELD_COLUMNS, Object.keys(first));
+                    actions.setFieldValue(FIELD_COLUMNS, Object.keys(first));
                 }
             });
         }

@@ -23,7 +23,8 @@ import {
     SetNodeCollapsedAction,
     SetNodeNameAction,
     SetNodeBoundsAction,
-    MoveOverlappingBoundsAction
+    MoveOverlappingBoundsAction,
+    SetNodeSizeAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
@@ -97,6 +98,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
                     out: {}
                 },
                 width: node.width,
+                height: node.height,
                 x: node.x + 20,
                 y: node.y + 20
             };
@@ -158,18 +160,23 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
 
     [GraphActionType.SET_NODE_POS]:  produce((state: GraphEditorState, action: SetNodePosAction) => {
         const node = state.graph.nodes[action.nodeId];
-        if (node) {
-            node.x = action.x;
-            node.y = action.y;
-        }
+        if (!node) return;
+        node.x = action.x;
+        node.y = action.y;
         clearAlignment(state.bounds, action.nodeId);
     }),
 
     [GraphActionType.SET_NODE_WIDTH]: produce((state: GraphEditorState, action: SetNodeWidthAction) => {
         const node = state.graph.nodes[action.nodeId];
-        if (node) {
-            node.width = action.width;
-        }
+        if (!node) return;
+        node.width = action.width;
+    }),
+
+    [GraphActionType.SET_NODE_SIZE]: produce((state: GraphEditorState, action: SetNodeSizeAction) => {
+        const node = state.graph.nodes[action.nodeId];
+        if (!node) return;
+        node.width = action.width;
+        node.height = action.height;
     }),
 
     [GraphActionType.SET_NODE_COLLAPSED]: produce((state: GraphEditorState, action: SetNodeCollapsedAction) => {

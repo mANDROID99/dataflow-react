@@ -31,3 +31,5 @@ export * from './common/table/simpleTableTypes';
 // re-export jexl so the user can modify it with additional transforms etc.
 import jexl from 'jexl';
 export { jexl };
+
+export { nodes, NodeType } from './nodes/nodes';

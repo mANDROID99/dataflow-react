@@ -7,21 +7,21 @@
 }
 
 .ngraph-node-body {
-    background: $grey-2;
-    border: 1px solid transparent;
-    border-radius: 5px;
     flex-grow: 1;
-    overflow: hidden;
 }
 
 .ngraph-node-header {
     align-items: center;
+    background-color: $grey-2;
     color: $grey-6;
     cursor: move;
     display: flex;
     font-size: 1.1rem;
     justify-content: center;
     padding: 0.5rem;
+    border: 1px solid $grey-3;
+    border-radius: 5px 5px 0 0;
+    border-bottom: 0;
 }
 
 .ngraph-node-title {
@@ -55,10 +55,17 @@
     min-width: 0;
     padding: 0.75rem;
     padding-bottom: 0.5rem;
+    border: 1px solid $grey-3;
+    border-radius: 0 0 5px 5px;
+    border-top: 0;
 }
 
 .ngraph-node.selected .ngraph-node-body {
     box-shadow: 0px 0px 5px rgba($primary, 0.5);
+}
+
+.ngraph-node.selected .ngraph-node-fields,
+.ngraph-node.selected .ngraph-node-header {
     border-color: $primary;
 }
 

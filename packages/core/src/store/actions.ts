@@ -10,6 +10,7 @@ export enum GraphActionType {
     SET_FIELD_VALUE = 'SET_FIELD_VALUE',
     SET_NODE_POS = 'SET_NODE_POS',
     SET_NODE_WIDTH = 'SET_NODE_WIDTH',
+    SET_NODE_SIZE = 'SET_NODE_SIZE',
     SET_NODE_COLLAPSED = 'SET_NODE_COLLAPSED',
     SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU',
     HIDE_CONTEXT_MENU = 'HIDE_CONTEXT_MENU',
@@ -180,11 +181,28 @@ export function setNodePos(nodeId: string, x: number,y: number): SetNodePosActio
     };
 }
 
+export type SetNodeSizeAction = {
+    type: GraphActionType.SET_NODE_WIDTH;
+    nodeId: string;
+    width: number;
+    height: number;
+}
+
+export function setNodeSize(nodeId: string, width: number, height: number): SetNodeSizeAction {
+    return {
+        type: GraphActionType.SET_NODE_WIDTH,
+        nodeId,
+        width,
+        height
+    };
+}
+
 export type SetNodeWidthAction = {
     type: GraphActionType.SET_NODE_WIDTH;
     nodeId: string;
     width: number;
 }
+
 
 export function setNodeWidth(nodeId: string, width: number): SetNodeWidthAction {
     return {
@@ -193,6 +211,7 @@ export function setNodeWidth(nodeId: string, width: number): SetNodeWidthAction 
         width
     };
 }
+
 
 export type SetNodeCollapsedAction = {
     type: GraphActionType.SET_NODE_COLLAPSED;

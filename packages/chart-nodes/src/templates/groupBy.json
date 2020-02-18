@@ -7,6 +7,7 @@
       "x": 17,
       "y": 27.88888931274414,
       "width": 170,
+      "height": 0,
       "fields": {
         "data": {
           "columns": [
@@ -56,6 +57,7 @@
       "x": 54,
       "y": 175.88888931274414,
       "width": 170,
+      "height": 0,
       "fields": {
         "group": {
           "type": "column",
@@ -89,6 +91,7 @@
       "x": 192,
       "y": 368.88888931274414,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "sum",
         "column": {
@@ -123,6 +126,7 @@
       "x": 428,
       "y": 130.88888931274414,
       "width": 170,
+      "height": 0,
       "fields": {
         "x": {
           "type": "column",
@@ -164,6 +168,7 @@
       "x": 699,
       "y": 80.88888931274414,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "bar",
         "series": {
@@ -207,6 +212,7 @@
       "x": 993,
       "y": 213.88888931274414,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "bar",
         "params": []
@@ -242,6 +248,7 @@
       "x": 717,
       "y": 559.8888893127441,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "linear",
         "params": [
@@ -272,6 +279,7 @@
       "x": 717,
       "y": 515.8888893127441,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "category",
         "params": [],

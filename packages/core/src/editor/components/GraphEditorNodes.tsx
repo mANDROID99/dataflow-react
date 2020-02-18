@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { GraphConfig } from "../../types/graphConfigTypes";
 import { selectGraphNodes } from "../../store/selectors";
 import { computeContexts } from "../../processor/computeContexts";
-import GraphNodeComponent from './graphnode/GraphNode';
+import GraphNodeContainer from './graphnode/GraphNodeContainer';
 import { useGraphContext } from "../graphEditorContext";
 
 type Props<Ctx, P> = {
@@ -30,7 +30,7 @@ function GraphEditorNodes<Ctx, P>({ scrollX, scrollY, graphConfig }: Props<Ctx, 
                 }
                 
                 return (
-                    <GraphNodeComponent
+                    <GraphNodeContainer
                         key={nodeId}
                         nodeId={nodeId}
                         context={context}

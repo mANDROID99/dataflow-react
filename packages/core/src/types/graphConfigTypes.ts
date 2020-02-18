@@ -1,6 +1,7 @@
 import { InputProps } from "./graphInputTypes";
 import { GraphNode } from "./graphTypes";
 import { NodeProcessor } from "./processorTypes";
+import { NodeActions } from "../editor/components/graphnode/graphNodeActions";
 
 export type GraphFieldInputConfig = {
     component: React.ComponentType<InputProps<any>>;
@@ -28,7 +29,7 @@ export type GraphNodeFieldConfig<Ctx, Params> = {
 }
 
 export type GraphNodePortConfig = {
-    type: string | string[];
+    type: string | string[] | null;
     multi?: boolean;
 }
 
@@ -36,16 +37,34 @@ export type CallbackParams<Ctx, Params> = {
     node: GraphNode;
     context: Ctx;
     params: Params;
-    setFieldValue(name: string, value: unknown): void;
+    actions: NodeActions;
+}
+
+export type GraphNodeComponentProps<Ctx, Params> = {
+    nodeId: string;
+    node: GraphNode;
+    nodeConfig: GraphNodeConfig<Ctx, Params>;
+    context: Ctx;
+    params: Params;
+    actions: NodeActions;
+    selected: boolean;
+    width: number;
+    height: number;
+    handleDragPos: (event: React.MouseEvent) => void;
+    handleDragSize: (event: React.MouseEvent) => void;
+    handleDragWidth: (event: React.MouseEvent) => void;
 }
 
 export type GraphNodeConfig<Ctx, Params = {}> = {
     title: string;
     description: string;
     menuGroup?: string;
-    maxWidth?: number;
     minWidth?: number;
+    maxWidth?: number;
+    minHeight?: number;
+    maxHeight?: number;
     width?: number;
+    height?: number;
     fields: {
         [key: string]: GraphNodeFieldConfig<Ctx, Params>;
     };
@@ -57,6 +76,7 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
             [key: string]: GraphNodePortConfig;
         };
     };
+    component?: React.ComponentType<GraphNodeComponentProps<Ctx, Params>>;
     mapContext?: (node: GraphNode, context: Ctx, params: Params) => Ctx;
     createProcessor: (node: GraphNode, params: Params) => NodeProcessor;
     onChanged?: (prev: GraphNode | undefined, next: GraphNode, params: CallbackParams<Ctx, Params>) => void;

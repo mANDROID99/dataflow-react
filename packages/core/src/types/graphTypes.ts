@@ -20,15 +20,19 @@ export type GraphNode = {
     x: number;
     y: number;
     width: number;
+    height: number;
     ports: GraphNodePorts;
     collapsed?: boolean;
     fields: {
         [name: string]: unknown;
     };
+    subNodes?: {
+        [nodeId: string]: GraphNode;
+    };
 }
 
 export type Graph = {
     nodes: {
-        [id: string]: GraphNode;
+        [nodeId: string]: GraphNode;
     };
 }

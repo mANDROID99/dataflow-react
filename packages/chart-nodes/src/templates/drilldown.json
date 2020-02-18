@@ -7,6 +7,7 @@
       "x": 61,
       "y": 34.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "url": "https://jsonplaceholder.typicode.com/posts",
         "method": "GET",
@@ -46,6 +47,7 @@
       "x": 943,
       "y": 339.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "bar",
         "params": [],
@@ -93,6 +95,7 @@
       "x": 411,
       "y": 347.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "x": {
           "type": "column",
@@ -134,6 +137,7 @@
       "x": 664,
       "y": 342.79999923706055,
       "width": 186,
+      "height": 0,
       "fields": {
         "type": "bar",
         "series": {
@@ -174,6 +178,7 @@
       "x": 728,
       "y": 798.7999992370605,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "linear",
         "label": "# Posts",
@@ -203,6 +208,7 @@
       "x": 942,
       "y": 797.7999992370605,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "category",
         "label": "UserId",
@@ -232,6 +238,7 @@
       "x": 271,
       "y": 57.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "group": {
           "type": "column",
@@ -265,6 +272,7 @@
       "x": 509,
       "y": 62.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "count",
         "column": {
@@ -299,6 +307,7 @@
       "x": 1257,
       "y": 217.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "url": "= \"https://jsonplaceholder.typicode.com/posts?userId=\" + data[0].userId",
         "method": "GET",
@@ -351,6 +360,7 @@
       "x": 1774,
       "y": 347.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "name": "grid"
       },
@@ -383,6 +393,7 @@
       "x": 61,
       "y": 390,
       "width": 170,
+      "height": 0,
       "fields": {
         "interval": 0,
         "delay": 0
@@ -406,6 +417,7 @@
       "x": 1528,
       "y": 74,
       "width": 170,
+      "height": 0,
       "fields": {
         "name": "Title",
         "width": 100,
@@ -480,6 +492,7 @@
         }
       },
       "width": 170,
+      "height": 0,
       "x": 1521,
       "y": 441
     }

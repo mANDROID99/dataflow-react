@@ -1,16 +1,11 @@
-import { GraphNode } from "./graphTypes";
-
-export type GraphNodeCallbacks = {
-    onChanged(prev: GraphNode | undefined, next: GraphNode): void;
-    onEvent(eventName: string, payload: unknown): void;
-}
+import { NodeActions } from "../editor/components/graphnode/graphNodeActions";
 
 export type InputProps<T> = {
     nodeId: string;
     fieldName: string;
     value: T | undefined;
     params: { [key: string]: unknown };
-    callbacks: GraphNodeCallbacks;
+    actions: NodeActions;
     onChanged: (value: unknown) => void;
 }
 

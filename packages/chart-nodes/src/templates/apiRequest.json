@@ -7,6 +7,7 @@
       "x": 101,
       "y": 37.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "url": "http://dummy.restapiexample.com/api/v1/employees",
         "method": "GET",
@@ -45,6 +46,7 @@
       "x": 991,
       "y": 345.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "bar",
         "params": []
@@ -80,6 +82,7 @@
       "x": 348,
       "y": 91.79999923706055,
       "width": 170,
+      "height": 0,
       "fields": {
         "x": {
           "type": "column",
@@ -121,6 +124,7 @@
       "x": 614,
       "y": 128.79999923706055,
       "width": 186,
+      "height": 0,
       "fields": {
         "type": "bar",
         "series": {
@@ -161,6 +165,7 @@
       "x": 635,
       "y": 752.7999992370605,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "linear",
         "label": "Salary",
@@ -190,6 +195,7 @@
       "x": 634,
       "y": 526.7999992370605,
       "width": 170,
+      "height": 0,
       "fields": {
         "type": "category",
         "label": "Employee Name",
@@ -219,6 +225,7 @@
       "x": 104,
       "y": 375,
       "width": 170,
+      "height": 0,
       "fields": {
         "interval": 0,
         "delay": 0

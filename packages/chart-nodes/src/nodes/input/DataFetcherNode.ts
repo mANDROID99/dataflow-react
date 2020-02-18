@@ -188,7 +188,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const columns = node.fields.columns as string[];
         return { columns };
     },
-    onEvent(key, payload, { node, params, setFieldValue }) {
+    onEvent(key, payload, { node, params, actions }) {
         if (key === BTN_RESOLVE_COLUMNS) {
             const ctx = params.variables;
             const mapUrl = expressions.compileExpression(node.fields.url as string);
@@ -201,7 +201,7 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             doFetch(url, headers, mapResponse, params).then((result) => {
                 if (result && result.length) {
                     const first = result[0];
-                    setFieldValue('columns', Object.keys(first));
+                    actions.setFieldValue('columns', Object.keys(first));
                 }
             })
         }

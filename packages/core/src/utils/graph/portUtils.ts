@@ -52,6 +52,11 @@ export function isPortConnectable<Ctx, Params>(draggedPort: PortTarget, port: Po
         const t1 = p1.type;
         const t2 = p2.type;
 
+        // null type matches anything
+        if (t1 == null || t2 == null) {
+            return true;
+        }
+
         if (typeof t1 === 'string') {
             if (typeof t2 === 'string') {
                 return t1 === t2;
@@ -81,6 +86,10 @@ export function resolvePortColors<Ctx, Params>(config: GraphConfig<Ctx, Params>,
 
         if (portConfig) {
             let types = portConfig.type;
+
+            if (types == null) {
+                return [DEFAULT_PORT_COLOR];
+            }
 
             if (typeof types === 'string') {
                 types = [types];
