@@ -1,21 +1,20 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import GraphNodeConnections from './GraphConnections';
 import GraphDragConnection from './GraphDragConnection';
 
 type Props = {
     scrollX: number;
     scrollY: number;
+    parent?: string;
 }
 
-function GraphConnectionsContainer({ scrollX, scrollY }: Props): React.ReactElement {
-    const containerRef = useRef<SVGSVGElement>(null);
+function GraphConnectionsContainer({ scrollX, scrollY, parent }: Props): React.ReactElement {
     const transform = `translate(${scrollX},${scrollY})`;
-
     return (
         <svg className="ngraph-graph-connections">
-            <g ref={containerRef} transform={transform}>
-                <GraphDragConnection containerRef={containerRef}/>
-                <GraphNodeConnections/>
+            <g transform={transform}>
+                <GraphDragConnection parent={parent}/>
+                <GraphNodeConnections parent={parent}/>
             </g>
         </svg>
     );

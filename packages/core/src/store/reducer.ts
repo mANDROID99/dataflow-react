@@ -13,7 +13,6 @@ import {
     CloneNodeAction,
     SetFieldValueAction,
     ShowContextMenuAction,
-    SetScrollAction,
     SelectNodeAction,
     SetNodePosAction,
     SetNodeWidthAction,
@@ -40,17 +39,33 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         state.contextMenu = undefined;
     }),
 
-    [GraphActionType.ADD_NODE]: produce((state: GraphEditorState, action: AddNodeAction) => {
-        const node = action.node;
-        state.graph.nodes[action.node.id] = node;
+    [GraphActionType.ADD_NODE]: produce((state: GraphEditorState, { node, parent }: AddNodeAction) => {
+        const graph = state.graph;
+        node.parent = parent;
+        graph.nodes[node.id] = node;
+
         state.contextMenu = undefined;
         state.selectedNode = undefined;
+
+        // register node-id with parent
+        if (parent) {
+            const parentNode = graph.nodes[parent];
+            if (parentNode) {
+                const subNodes = parentNode.subNodes;
+                if (subNodes) {
+                    subNodes.push(node.id);
+                } else {
+                    parentNode.subNodes = [node.id];
+                }
+            }
+        } else {
+            graph.nodeIds.push(node.id);
+        }
     }),
 
-    [GraphActionType.DELETE_NODE]: produce((state: GraphEditorState, action: DeleteNodeAction) => {
+    [GraphActionType.DELETE_NODE]: produce((state: GraphEditorState, { nodeId }: DeleteNodeAction) => {
         const graph = state.graph;
         const nodes = graph.nodes;
-        const nodeId = action.nodeId;
         const node = nodes[nodeId];
         
         if (node) {
@@ -70,15 +85,36 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
                 }
             }
     
-            delete nodes[action.nodeId];
+            delete nodes[nodeId];
+
+            // unregister node-id from parent
+            if (node.parent) {
+                const parentNode = graph.nodes[node.parent];
+                if (parentNode) {
+                    const subNodes = parentNode.subNodes;
+                    if (subNodes) {
+                        const i = subNodes.indexOf(nodeId);
+                        if (i >= 0) {
+                            subNodes.splice(i, 1);
+                        }
+                    }
+                }
+                
+            } else {
+                const nodeIds = graph.nodeIds;
+                const i = nodeIds.indexOf(nodeId);
+                if (i >= 0) {
+                    nodeIds.splice(i, 1);
+                }
+            }
         }
     
         state.contextMenu = undefined;
         state.selectedNode = undefined;
 
         // clear node bounds
-        clearAlignment(state.bounds, action.nodeId);
-        delete state.bounds[action.nodeId];
+        clearAlignment(state.bounds, nodeId);
+        delete state.bounds[nodeId];
     }),
 
     [GraphActionType.CLONE_NODE]: produce((state: GraphEditorState, action: CloneNodeAction) => {
@@ -143,11 +179,6 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
 
     [GraphActionType.HIDE_CONTEXT_MENU]: produce((state: GraphEditorState) => {
         state.contextMenu = undefined;
-    }),
-
-    [GraphActionType.SET_SCROLL]: produce((state: GraphEditorState, action: SetScrollAction) => {
-        state.scrollX = action.scrollX;
-        state.scrollY = action.scrollY;
     }),
 
     [GraphActionType.SELECT_NODE]: produce((state: GraphEditorState, action: SelectNodeAction) => {

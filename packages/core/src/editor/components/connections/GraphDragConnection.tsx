@@ -5,25 +5,23 @@ import { selectPortDrag } from "../../../store/selectors";
 import { PortState } from '../../GraphNodePortRefs';
 import { endPortDrag } from '../../../store/actions';
 import { plot } from './curveHelpers';
-import { useGraphContext } from '../../graphEditorContext';
+import { useContainerContext } from '../../graphContainerContext';
 
 type DragConnectionProps = {
-    containerRef: React.RefObject<SVGSVGElement>;
     portOut: boolean;
     draggedPort: PortState;
+    container: React.RefObject<HTMLElement>;
 }
 
-function GraphDragConnection(props: DragConnectionProps) {
-    const { portOut, draggedPort, containerRef } = props;
+function GraphDragConnection({ portOut, draggedPort, container }: DragConnectionProps) {
     const dispatch = useDispatch();
     const [drag, setDrag] = useState({ x: draggedPort.x, y: draggedPort.y });
 
     useEffect(() => {
         const handleMouseMove = (event: MouseEvent) => {
-            const container = document.getElementById('nodes-container');
-            if (!container) return;
+            if (!container.current) return;
 
-            const containerBounds = container.getBoundingClientRect();
+            const containerBounds = container.current.getBoundingClientRect();
             setDrag({
                 x: event.clientX - containerBounds.left,
                 y: event.clientY - containerBounds.top
@@ -41,7 +39,7 @@ function GraphDragConnection(props: DragConnectionProps) {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [dispatch, containerRef]);
+    }, [dispatch, container]);
 
     const d = plot(draggedPort.x, draggedPort.y, drag.x, drag.y, portOut);
     return (
@@ -50,14 +48,14 @@ function GraphDragConnection(props: DragConnectionProps) {
 }
 
 type Props = {
-    containerRef: React.RefObject<SVGSVGElement>;
+    parent?: string;
 }
 
-function GraphDragConnectionContainer(props: Props) {
-    const { ports } = useGraphContext();
+function GraphDragConnectionContainer({ parent }: Props) {
+    const { ports, container } = useContainerContext();
     const portDrag = useSelector(selectPortDrag);
 
-    if (!portDrag) {
+    if (!portDrag || portDrag.port.parentNodeId !== parent) {
         return null;
     }
 
@@ -68,9 +66,9 @@ function GraphDragConnectionContainer(props: Props) {
 
     return (
         <GraphDragConnection
-            containerRef={props.containerRef}
             portOut={portDrag.port.portOut}
             draggedPort={portState}
+            container={container}
         />
     );
 }

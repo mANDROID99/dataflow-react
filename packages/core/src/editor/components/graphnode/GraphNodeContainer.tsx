@@ -69,7 +69,6 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context }: Props<Ctx>):
                     let w = node.width + dx;
                     w = clamp(w, minW, maxW);
                     actions.setWidth(w);
-
                 }
 
             } else if (type === DragType.DRAG_SIZE) {

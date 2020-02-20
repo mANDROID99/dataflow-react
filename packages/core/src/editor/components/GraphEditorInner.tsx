@@ -17,7 +17,6 @@ import GraphEditorPreview from './preview/GraphEditorPreview';
 import GraphEditorNodes from './GraphEditorNodes';
 import SideBar from './sidebar/SideBar';
 import { selectGraph } from '../../store/selectors';
-import { GraphNodePortRefs } from '../GraphNodePortRefs';
 import { dialogsContext, DialogsManager } from './dialog/DialogsManager';
 import DialogsContainer from './dialog/DialogsContainer';
 
@@ -59,22 +58,16 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, o
         }
     }, [store, onGraphChanged]);
 
-    // construct the port refs instance
-    const portRefs = useMemo(() => {
-        return new GraphNodePortRefs();
-    }, []);
-
     // construct the graph context. Be careful that this doesn't change often, otherwise it will have
     // a large performance impact.
     const graphContextValue = useMemo((): GraphContext<Ctx, P> => {
         return {
             graphConfig,
             modalRoot,
-            ports: portRefs,
             params: params || graphConfig.params!,
             templates: templates || [],
         };
-    }, [graphConfig, templates, modalRoot, portRefs, params]);
+    }, [graphConfig, templates, modalRoot, params]);
 
     // create the dialog manager instance
     const dialogsManager = useDialogsManager();
@@ -92,7 +85,6 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, o
                                     scrollY={scrollY}
                                 />
                                 <GraphEditorNodes
-                                    graphConfig={graphConfig}
                                     scrollX={scrollX}
                                     scrollY={scrollY}
                                 />

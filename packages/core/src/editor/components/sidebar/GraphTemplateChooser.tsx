@@ -2,12 +2,12 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGraphContext } from '../../graphEditorContext';
 import { loadGraph } from '../../../store/actions';
-import { createTemplateIdSelector } from '../../../store/selectors';
+import { selectTemplateId } from '../../../store/selectors';
 
 function GraphTemplateChooser() {
     const dispatch = useDispatch();
     const { templates } = useGraphContext();
-    const templateId = useSelector(createTemplateIdSelector(templates));
+    const templateId = useSelector(selectTemplateId(templates));
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const template = templates.find(t => t.id === e.target.value);

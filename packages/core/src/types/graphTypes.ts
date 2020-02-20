@@ -26,13 +26,13 @@ export type GraphNode = {
     fields: {
         [name: string]: unknown;
     };
-    subNodes?: {
-        [nodeId: string]: GraphNode;
-    };
+    subNodes?: string[];
+    parent?: string;
 }
 
 export type Graph = {
     nodes: {
         [nodeId: string]: GraphNode;
     };
+    nodeIds: string[];
 }

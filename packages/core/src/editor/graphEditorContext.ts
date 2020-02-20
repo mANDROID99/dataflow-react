@@ -1,13 +1,11 @@
 import React, { useContext } from 'react';
 import { GraphConfig } from "../types/graphConfigTypes";
 import { GraphTemplate } from "../types/graphTemplateTypes";
-import { GraphNodePortRefs } from './GraphNodePortRefs';
 
 export type GraphContext<Ctx, Params> = {
     modalRoot: HTMLElement;
     graphConfig: GraphConfig<Ctx, Params>;
     templates: GraphTemplate[];
-    ports: GraphNodePortRefs;
     params: Params;
 }
 

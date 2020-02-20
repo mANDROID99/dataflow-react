@@ -2,6 +2,7 @@ import { Graph } from "./graphTypes";
 
 export type PortTarget = {
     nodeId: string;
+    parentNodeId: string | undefined;
     nodeType: string;
     portName: string;
     portOut: boolean;
@@ -38,8 +39,6 @@ export type NodeBounds = {
 export type GraphEditorState = {
     graph: Graph;
     contextMenu: ContextMenuState | undefined;
-    scrollX: number;
-    scrollY: number;
     selectedNode: string | undefined;
     portDrag: PortDragState | undefined;
     bounds: {

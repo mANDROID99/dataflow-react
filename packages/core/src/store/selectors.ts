@@ -1,15 +1,7 @@
 import { StoreState } from "../types/storeTypes";
 import { GraphTemplate } from "../types/graphTemplateTypes";
 import { PortId } from "../editor/GraphNodePortRefs";
-import { TargetPort } from "../types/graphTypes";
-
-export function selectScrollX(state: StoreState) {
-    return state.editor.scrollX;
-}
-
-export function selectScrollY(state: StoreState) {
-    return state.editor.scrollY;
-}
+import { TargetPort, GraphNode } from "../types/graphTypes";
 
 export function selectGraph(state: StoreState) {
     return state.editor.graph;
@@ -23,12 +15,71 @@ export function selectGraphNodes(state: StoreState) {
     return state.editor.graph.nodes;
 }
 
+export function selectSubNodeIds(parent?: string) {
+    return (state: StoreState): string[] => {
+        const graph = state.editor.graph;
+
+        if (parent) {
+            const parentNode = graph.nodes[parent];
+            if (!parentNode || !parentNode.subNodes) {
+                return [];
+            }
+            return parentNode.subNodes;
+
+        } else {
+            return graph.nodeIds;
+        }
+    };
+}
+
+export function createSubNodesSelector(parent?: string) {
+    let prev: {
+        subNodeIds: string[];
+        graphNodes: { [key: string]: GraphNode };
+        subNodes: { [key: string]: GraphNode };
+    } | undefined;
+
+    const subNodeIdsSelector = selectSubNodeIds(parent);
+    return (state: StoreState): { [key: string]: GraphNode } => {
+        const graphNodes = selectGraphNodes(state);
+        const subNodeIds = subNodeIdsSelector(state);
+
+        // return previous if nothing changed
+        if (prev && prev.subNodeIds === subNodeIds && prev.graphNodes === graphNodes) {
+            return prev.subNodes;
+        }
+
+        let subNodes: { [key: string]: GraphNode } = {};
+
+        // modified if sub-node ids changed
+        let modified = prev ? prev.subNodeIds !== subNodeIds : true;
+
+        // clone the "slice", checking for modifications on the way
+        for (const nodeId of subNodeIds) {
+            const node = graphNodes[nodeId];
+            if (prev && prev.graphNodes[nodeId] !== node) {
+                modified = true;
+            }
+            subNodes[nodeId] = node;
+        }
+
+        // use the previous value if nothing changed
+        if (!modified) {
+            subNodes = prev!.subNodes;
+        }
+
+        // set the previous state
+        prev = { graphNodes, subNodes, subNodeIds };
+        return subNodes;
+    };
+}
+
 export function selectGraphNodeName(state: StoreState, nodeId: string): string | undefined {
     const node = state.editor.graph.nodes[nodeId];
     return node?.name;
 }
 
-export function createTemplateIdSelector(templates: GraphTemplate[]) {
+export function selectTemplateId(templates: GraphTemplate[]) {
     return (state: StoreState) => {
         const graph = state.editor.graph;
         return templates.find(t => t.data === graph)?.id;

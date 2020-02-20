@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Graph } from '../../../types/graphTypes';
+import { GraphNode } from '../../../types/graphTypes';
 
-import { selectGraph } from '../../../store/selectors';
+import { createSubNodesSelector } from '../../../store/selectors';
 import GraphConnection from './GraphConnection';
 import { PortId } from '../../GraphNodePortRefs';
 
@@ -13,15 +13,16 @@ type Connection = {
     end: PortId;
 };
 
+type Props = {
+    parent?: string;
+}
 
 function getConnectionKey(startNode: string, startPort: string, endNode: string, endPort: string): string {
     return startNode + '__' + startPort + '__' + endNode + '__' + endPort;
 }
 
-
-function getConnections(graph: Graph): Connection[] {
+function getConnections(nodes: { [key: string]: GraphNode }): Connection[] {
     const connections: Connection[] = [];
-    const nodes = graph.nodes;
 
     for (const nodeId in nodes) {
         const node = nodes[nodeId];
@@ -49,9 +50,9 @@ function getConnections(graph: Graph): Connection[] {
     return connections;
 }
 
-function GraphConnections() {
-    const graph = useSelector(selectGraph);
-    const connections = getConnections(graph);
+function GraphConnections({ parent }: Props) {
+    const nodes = useSelector(useMemo(() => createSubNodesSelector(parent), [parent]));
+    const connections = getConnections(nodes);
     
     return (
         <>

@@ -14,7 +14,6 @@ export enum GraphActionType {
     SET_NODE_COLLAPSED = 'SET_NODE_COLLAPSED',
     SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU',
     HIDE_CONTEXT_MENU = 'HIDE_CONTEXT_MENU',
-    SET_SCROLL = 'SET_SCROLL',
     SELECT_NODE = 'SELECT_NODE',
     CLEAR_SELECTED_NODE = 'CLEAR_SELECTED_NODE',
     BEGIN_PORT_DRAG = 'BEGIN_PORT_DRAG',
@@ -40,12 +39,14 @@ export function loadGraph(graph: Graph): LoadGraphAction {
 export type AddNodeAction = {
     type: GraphActionType.ADD_NODE;
     node: GraphNode;
+    parent?: string;
 }
 
-export function addNode(node: GraphNode): AddNodeAction {
+export function addNode(node: GraphNode, parent?: string): AddNodeAction {
     return {
         type: GraphActionType.ADD_NODE,
-        node
+        node,
+        parent
     };
 }
 
@@ -129,20 +130,6 @@ export function hideContextMenu(): HideContextMenuAction {
     };
 }
 
-export type SetScrollAction = {
-    type: GraphActionType.SET_SCROLL;
-    scrollX: number;
-    scrollY: number;
-}
-
-export function setScroll(scrollX: number, scrollY: number): SetScrollAction {
-    return {
-        type: GraphActionType.SET_SCROLL,
-        scrollX,
-        scrollY
-    };
-}
-
 export type SelectNodeAction = {
     type: GraphActionType.SELECT_NODE;
     nodeId: string;
@@ -182,7 +169,7 @@ export function setNodePos(nodeId: string, x: number,y: number): SetNodePosActio
 }
 
 export type SetNodeSizeAction = {
-    type: GraphActionType.SET_NODE_WIDTH;
+    type: GraphActionType.SET_NODE_SIZE;
     nodeId: string;
     width: number;
     height: number;
@@ -190,7 +177,7 @@ export type SetNodeSizeAction = {
 
 export function setNodeSize(nodeId: string, width: number, height: number): SetNodeSizeAction {
     return {
-        type: GraphActionType.SET_NODE_WIDTH,
+        type: GraphActionType.SET_NODE_SIZE,
         nodeId,
         width,
         height
@@ -305,7 +292,6 @@ export type GraphAction =
     | ClearSelectedNodeAction
     | ShowContextMenuAction
     | HideContextMenuAction
-    | SetScrollAction
     | SetNodePosAction
     | SetNodeWidthAction
     | BeginPortDragAction

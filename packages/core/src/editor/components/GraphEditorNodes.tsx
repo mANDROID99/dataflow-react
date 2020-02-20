@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 
-import { GraphConfig } from "../../types/graphConfigTypes";
-import { selectGraphNodes } from "../../store/selectors";
+import { createSubNodesSelector } from "../../store/selectors";
 import { computeContexts } from "../../processor/computeContexts";
 import GraphNodeContainer from './graphnode/GraphNodeContainer';
 import { useGraphContext } from "../graphEditorContext";
@@ -10,19 +9,21 @@ import { useGraphContext } from "../graphEditorContext";
 type Props<Ctx, P> = {
     scrollX: number;
     scrollY: number;
-    graphConfig: GraphConfig<Ctx, P>;
+    parent?: string;
 }
 
-function GraphEditorNodes<Ctx, P>({ scrollX, scrollY, graphConfig }: Props<Ctx, P>) {
-    const graphNodes = useSelector(selectGraphNodes);
-    const { params } = useGraphContext<Ctx, P>();
+function GraphEditorNodes<Ctx, P>({ parent, scrollX, scrollY }: Props<Ctx, P>) {
+    const { params, graphConfig } = useGraphContext<Ctx, P>();
+    
+    // select state from the store
+    const subNodes = useSelector(useMemo(() => createSubNodesSelector(parent), [parent]));
 
-    // compute the context for all nodes in the graph
-    const nodeContexts = useMemo(() => computeContexts(params, graphNodes, graphConfig), [params, graphNodes, graphConfig]);
+    // compute context for all nodes in the graph
+    const nodeContexts = useMemo(() => computeContexts(params, subNodes, graphConfig), [params, subNodes, graphConfig]);
 
     return (
         <div id="nodes-container" className="ngraph-nodes" style={{ left: scrollX, top: scrollY }}>
-            {(graphNodes ? Object.keys(graphNodes) : []).map(nodeId => {
+            {Object.keys(subNodes).map(nodeId => {
                 const context = nodeContexts.get(nodeId);
 
                 if (!context) {
@@ -34,7 +35,7 @@ function GraphEditorNodes<Ctx, P>({ scrollX, scrollY, graphConfig }: Props<Ctx, 
                         key={nodeId}
                         nodeId={nodeId}
                         context={context}
-                        node={graphNodes[nodeId]}
+                        node={subNodes[nodeId]}
                     />
                 );
             })}

@@ -11,6 +11,11 @@ import { useGraphContext } from '../../graphEditorContext';
 import { beginPortDrag, setPortDragTarget, clearPortDragTarget } from '../../../store/actions';
 import { selectPortDrag } from '../../../store/selectors';
 import GraphNodePortHandle from './GraphNodePortHandle';
+import { useContainerContext } from '../../graphContainerContext';
+
+type InnerProps = Props & {
+    parentNodeId: string | undefined;
+}
 
 type Props = {
     nodeId: string;
@@ -59,38 +64,30 @@ function createPortStateSelector(graphConfig: GraphConfig<any, any>, port: PortT
     });
 }
 
-function createPortTarget(nodeType: string, nodeId: string, portName: string, portOut: boolean, portConfig?: GraphNodePortConfig): PortTarget {
+function createPortTarget(nodeType: string, nodeId: string, parentNodeId: string | undefined, portName: string, portOut: boolean, portConfig: GraphNodePortConfig | undefined): PortTarget {
     const connectMulti: boolean = portConfig?.multi ?? false;
-
     return {
         nodeType,
+        parentNodeId,
         nodeId,
         portName,
         portOut,
-        connectMulti
+        connectMulti,
     };
 }
 
-function GraphNodePort(props: Props, ref: React.Ref<HTMLDivElement>): React.ReactElement {
-    const { nodeId, nodeType, portName, portOut } = props;
+function GraphNodePort(props: InnerProps, ref: React.Ref<HTMLDivElement>): React.ReactElement {
+    const { nodeId, parentNodeId, nodeType, portName, portOut } = props;
     const dispatch = useDispatch();
     
     // resolve the config for the port
-    const { graphConfig, ports } = useGraphContext();
+    const { graphConfig } = useGraphContext();
     const portConfig = getPortConfig(graphConfig, nodeType, portName, portOut);
 
     // port target is how the port will be referred to in the store
     const portTarget = useMemo(() => {
-        return createPortTarget(nodeType, nodeId, portName, portOut, portConfig);
-    }, [nodeType, nodeId, portName, portOut, portConfig]);
-
-    // mount / unmount the port
-    useEffect(() => {
-        return () => {
-            ports.clearPortState({ nodeId, portName, portOut });
-        };
-    }, [nodeId, portName, portOut, ports]);
-
+        return createPortTarget(nodeType,nodeId, parentNodeId, portName, portOut, portConfig);
+    }, [nodeType, nodeId, parentNodeId, portName, portOut, portConfig]);
 
     // select the current node state from the store
     const selector = useMemo(() => createPortStateSelector(graphConfig, portTarget), [graphConfig, portTarget]);
@@ -145,23 +142,21 @@ function GraphNodePort(props: Props, ref: React.Ref<HTMLDivElement>): React.Reac
     );
 }
 
-const PortInner = React.memo(React.forwardRef<HTMLDivElement, Props>(GraphNodePort));
+const PortInner = React.memo(React.forwardRef<HTMLDivElement, InnerProps>(GraphNodePort));
 
 export default function GraphNodePortContainer(props: Props) {
+    const { nodeId, portName, portOut } = props;
     const ref = useRef<HTMLDivElement>(null);
-    const { ports } = useGraphContext();
+    const { ports, container, parentNodeId } = useContainerContext();
 
     // notify the port connections that the port position has changed
     const prev = useRef<{ x: number; y: number }>();
     useEffect(() => {
         const el = ref.current;
-        if (!el) return;
-
-        const container = document.getElementById('nodes-container');
-        if (!container) return;
+        if (!el || !container.current) return;
 
         const portId = { nodeId: props.nodeId, portName: props.portName, portOut: props.portOut };
-        const containerBounds = container.getBoundingClientRect();
+        const containerBounds = container.current.getBoundingClientRect();
         const bounds = el.getBoundingClientRect();
 
         const x = bounds.left - containerBounds.left + bounds.width / 2;
@@ -174,5 +169,12 @@ export default function GraphNodePortContainer(props: Props) {
         }
     });
 
-    return <PortInner ref={ref} {...props}/>;
+    // mount / unmount the port
+    useEffect(() => {
+        return () => {
+            ports.clearPortState({ nodeId, portName, portOut });
+        };
+    }, [nodeId, portName, portOut, ports]);
+
+    return <PortInner ref={ref} {...props} parentNodeId={parentNodeId}/>;
 }

@@ -3,8 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { GraphNodeComponentProps, DragType } from "../../types/graphConfigTypes";
 import GraphEditorScroller from '../../editor/components/GraphEditorScroller';
+import GraphEditorNodes from '../../editor/components/GraphEditorNodes';
+import GraphConnectionsContainer from '../../editor/components/connections/GraphConnectionsContainer';
 
-export default function SubGraphNodeComponent({ node, nodeConfig, handleDrag, actions, width, height }: GraphNodeComponentProps<any, any>) {
+export default function SubGraphNodeComponent({ node, nodeId, nodeConfig, handleDrag, actions, width, height }: GraphNodeComponentProps<any, any>) {
 
     const handleToggleCollaped = () => {
         actions.setCollapsed(!node.collapsed);
@@ -33,15 +35,22 @@ export default function SubGraphNodeComponent({ node, nodeConfig, handleDrag, ac
                     <svg className="ngraph-subgraph-resizer" width="10px" height="10px" onMouseDown={handleDragSize}>
                         <path d="M10 0L10 10L0 10"/>
                     </svg>
-                    {/* <GraphEditorScroller>
+                    <GraphEditorScroller parent={nodeId}>
                         {(scrollX, scrollY) => (
-                            <GraphEditorNodes
-                                scrollX={scrollX}
-                                scrollY={scrollY}
-                                graphConfig={}
-                            />
+                            <>
+                                <GraphConnectionsContainer
+                                    scrollX={scrollX}
+                                    scrollY={scrollY}
+                                    parent={nodeId}
+                                />
+                                <GraphEditorNodes
+                                    scrollX={scrollX}
+                                    scrollY={scrollY}
+                                    parent={nodeId}
+                                />
+                            </>
                         )}
-                    </GraphEditorScroller> */}
+                    </GraphEditorScroller>
                 </div>
             )}
         </div>

@@ -1,25 +1,25 @@
-import React, { useRef, useState } from 'react';
-import { useDispatch, batch, useSelector } from 'react-redux';
+import React, { useRef, useState, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
 import { useDrop } from 'react-dnd';
 import classNames from 'classnames';
 
 import { useDrag } from '../../utils/hooks/useDrag';
-import { selectScrollX, selectScrollY } from '../../store/selectors';
-import { setScroll, clearSelectedNode, addNode } from '../../store/actions';
+import { clearSelectedNode, addNode } from '../../store/actions';
 import { createGraphNode } from '../../utils/graph/graphNodeFactory';
 import { useGraphContext } from '../graphEditorContext';
+import { containerContext, GraphContainerContext } from '../graphContainerContext';
+import { GraphNodePortRefs } from '../GraphNodePortRefs';
 
 type Props = {
+    parent?: string;
     children: (scrollX: number, scrollY: number) => React.ReactNode | null;
 }
 
 type DragState = {
     startMouseX: number;
     startMouseY: number;
-    startScrollX: number;
-    startScrollY: number;
-    scrollX: number;
-    scrollY: number;
+    startX: number;
+    startY: number;
 }
 
 type ScrollState = {
@@ -27,44 +27,34 @@ type ScrollState = {
     y: number;
 };
 
-function GraphEditorScroller(props: Props) {
+function GraphEditorScroller({ parent, children }: Props) {
     const dispatch = useDispatch();
     const { graphConfig } = useGraphContext();
     const ref = useRef<HTMLDivElement | null>(null);
-
-    const [scrollState, setScrollState] = useState<ScrollState>();
-    const scrollX = useSelector(selectScrollX);
-    const scrollY = useSelector(selectScrollY);
+    const [scroll, setScroll] = useState<ScrollState>({ x: 0, y: 0 });
+    const [scrolling, setScrolling] = useState(false);
 
     useDrag<DragState>(ref, {
         checkTarget: true,
         onStart(event) {
             const startMouseX = event.clientX;
             const startMouseY = event.clientY;
+            setScrolling(true);
+
             return {
                 startMouseX,
                 startMouseY,
-                startScrollX: scrollX,
-                startScrollY: scrollY,
-                scrollX,
-                scrollY
+                startX: scroll.x,
+                startY: scroll.y
             };
         },
         onDrag(event, state) {
-            state.scrollX = state.startScrollX + event.clientX - state.startMouseX;
-            state.scrollY = state.startScrollY + event.clientY - state.startMouseY;
-            setScrollState({
-                x: state.scrollX,
-                y: state.scrollY
-            });
+            const x = state.startX + event.clientX - state.startMouseX;
+            const y = state.startY + event.clientY - state.startMouseY;
+            setScroll({ x, y });
         },
-        onEnd(event, state) {
-            if (state.scrollX !== state.startScrollX || state.scrollY !== state.startScrollY) {
-                batch(() => {
-                    setScrollState(undefined);
-                    dispatch(setScroll(state.scrollX, state.scrollY));
-                });
-            }
+        onEnd() {
+            setScrolling(false);
         }
     });
 
@@ -80,23 +70,23 @@ function GraphEditorScroller(props: Props) {
             const y = offset.y - bounds.top - scrollY;
 
             const graphNode = createGraphNode(x, y, item.id, graphConfig);
-            dispatch(addNode(graphNode));
+            dispatch(addNode(graphNode, parent));
         }
     });
+
+    // construct the container context
+    const context = useMemo((): GraphContainerContext => {
+        return {
+            ports: new GraphNodePortRefs(),
+            container: ref,
+            parentNodeId: parent
+        };
+    }, [parent]);
 
     const handleClick = () => {
         dispatch(clearSelectedNode());
     };
-
-    const scrolling = scrollState != null;
-    let sx = scrollX;
-    let sy = scrollY;
-
-    if (scrollState) {
-        sx = scrollState.x;
-        sy = scrollState.y;
-    }
-
+    
     return (
         <div ref={(el) => {
             ref.current = el;
@@ -105,7 +95,9 @@ function GraphEditorScroller(props: Props) {
             className={classNames("ngraph-editor-content", { scrolling })}
             onClick={handleClick}
         >
-            {props.children(sx, sy)}
+            <containerContext.Provider value={context}>
+                {children(scroll.x, scroll.y)}
+            </containerContext.Provider>
         </div>
     );
 }

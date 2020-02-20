@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { PortId } from "../../GraphNodePortRefs";
 import { plot } from './curveHelpers';
-import { useGraphContext } from '../../graphEditorContext';
+import { useContainerContext } from '../../graphContainerContext';
 
 type ConnectionProps = {
     startPort: PortId;
@@ -11,7 +11,7 @@ type ConnectionProps = {
 
 function GraphConnection(props: ConnectionProps) {
     const { startPort, endPort } = props;
-    const { ports } = useGraphContext();
+    const { ports } = useContainerContext();
 
     const [startPos, setStartPos] = useState(() => ports.getPortState(startPort));
     const [endPos, setEndPos] = useState(() => ports.getPortState(endPort));

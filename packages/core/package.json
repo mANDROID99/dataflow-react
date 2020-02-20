@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "test": "jest",
-    "test:inspect": "NODE_OPTIONS='--inspect-brk=5858 --require ../../.pnp.js' jest --runInBand",
+    "test:inspect": "node --inspect-brk=5858 ../../node_modules/jest/bin/jest.js --runInBand",
     "test:watch": "jest --watch",
     "build": "webpack --mode=development",
     "build:watch": "webpack --watch --mode=development"
