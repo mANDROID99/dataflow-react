@@ -18,6 +18,7 @@ export const SUB_GRAPH_NODE: GraphNodeConfig<any, any> = {
     menuGroup: 'Layout',
     description: 'Sub graph',
     fields: {},
+    height: 300,
     ports: {
         in: {
             input: {

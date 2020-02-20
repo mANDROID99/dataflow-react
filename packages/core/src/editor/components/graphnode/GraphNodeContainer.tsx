@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import cn from 'classnames';
 
@@ -6,7 +6,7 @@ import { GraphNode } from '../../../types/graphTypes';
 import GraphNodePort from './GraphNodePort';
 import { useGraphContext } from '../../graphEditorContext';
 import { selectNodeSelected } from '../../../store/selectors';
-import { GraphNodeComponentProps } from '../../../types/graphConfigTypes';
+import { GraphNodeComponentProps, DragType } from '../../../types/graphConfigTypes';
 import { selectNode, showContextMenu, setNodeBounds, moveOverlapping } from '../../../store/actions';
 import { ContextMenuTarget, ContextMenuTargetType, NodeBounds } from '../../../types/storeTypes';
 import { useGraphNodeActions } from './graphNodeActions';
@@ -56,68 +56,62 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context }: Props<Ctx>):
         }
     });
 
-    // drag-pos behaviour
-    const [dragPos, handleDragPos] = useDragBehaviour({
-        onDragEnd(dx, dy) {
-            if (dx !== 0 || dy !== 0) {
-                actions.setPos(node.x + dx, node.y + dy);
+    // drag behaviour
+    const [drag, handleDrag] = useDragBehaviour<DragType>({
+        onDragEnd(dx, dy, type) {
+            if (type === DragType.DRAG_POS) {
+                if (dx !== 0 || dy !== 0) {
+                    actions.setPos(node.x + dx, node.y + dy);
+                }
+
+            } else if (type === DragType.DRAG_WIDTH) {
+                if (dx !== 0) {
+                    let w = node.width + dx;
+                    w = clamp(w, minW, maxW);
+                    actions.setWidth(w);
+
+                }
+
+            } else if (type === DragType.DRAG_SIZE) {
+                if (dx !== 0 || dy !== 0) {
+                    let w = node.width + dx;
+                    w = clamp(w, minW, maxW);
+    
+                    let h = node.height + dy;
+                    h = clamp(h, minH, maxH);
+    
+                    actions.setSize(w, h);
+                }
             }
         }
     });
 
-    // drag-size behaviour
-    const [dragSize, handleDragSize] = useDragBehaviour({
-        onDragEnd(dw, dh) {
-            if (dw !== 0 || dh !== 0) {
-                let w = node.width + dw;
-                w = clamp(w, minW, maxW);
-
-                let h = node.height + dh;
-                h = clamp(h, minH, maxH);
-
-                actions.setSize(w, h);
-            }
-        }
-    });
-
-    // drag-widh behaviour
-    const [dragWidth, handleDragWidth] = useDragBehaviour({
-        onDragEnd(dw) {
-            if (dw !== 0) {
-                let w = node.width + dw;
-                w = clamp(w, minW, maxW);
-                actions.setWidth(w);
-            }
-        }
-    });
-
-    // resolve the new position
+    // apply drag offset
     let x = node.x;
     let y = node.y;
-
-    if (dragPos) {
-        x += dragPos.dx;
-        y += dragPos.dy;
-    }
-
     let width = node.width;
     let height = node.height;
 
-    if (dragSize) {
-        width += dragSize.dx;
-        height += dragSize.dy;
+    if (drag) {
+        if (drag.param === DragType.DRAG_POS) {
+            x += drag.dx;
+            y += drag.dy;
+
+        } else if (drag.param === DragType.DRAG_WIDTH) {
+            width += drag.dx;
+
+        } else if (drag.param === DragType.DRAG_SIZE) {
+            width += drag.dx;
+            height += drag.dy;
+        }
     }
 
-    if (dragWidth) {
-        width += dragWidth.dx;
-    }
-
-    // clamp the size between the allowed bounds
+    // clamp the size
     width = clamp(width, minW, maxW);
     height = clamp(height, minH, maxH);
 
     // whether anything is currently affecting the node bounds
-    const isDragging = dragPos != null || dragSize != null;
+    const isDragging = drag != null;
 
     // Detect element measured bounds changes, update in the store
     const prevBounds = useRef<NodeBounds>();
@@ -195,9 +189,7 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context }: Props<Ctx>):
         actions,
         width,
         height,
-        handleDragPos,
-        handleDragSize,
-        handleDragWidth
+        handleDrag
     };
 
     const renderBody = () => {

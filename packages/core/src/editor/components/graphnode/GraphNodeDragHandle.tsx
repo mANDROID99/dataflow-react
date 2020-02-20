@@ -1,18 +1,22 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { GraphNodeConfig } from '../../../types/graphConfigTypes';
+import { GraphNodeConfig, DragType } from '../../../types/graphConfigTypes';
 
 type Props = {
-    nodeId: string;
     nodeWidth: number;
     nodeConfig: GraphNodeConfig<any, any>;
-    onDragWidth: (event: React.MouseEvent) => void;
+    onDrag: (event: React.MouseEvent, type: DragType) => void;
 }
 
-function GraphNodeDragHandle({  onDragWidth }: Props) {
+function GraphNodeDragHandle({ onDrag }: Props) {
+
+    const handleDragWidth = (e: React.MouseEvent) => {
+        onDrag(e, DragType.DRAG_WIDTH);
+    };
+
     return (
-        <div onMouseDown={onDragWidth} className="ngraph-node-header-icon ngraph-node-drag-handle">
+        <div onMouseDown={handleDragWidth} className="ngraph-node-header-icon ngraph-node-drag-handle">
             <FontAwesomeIcon icon="arrows-alt-h"/>
         </div>
     );

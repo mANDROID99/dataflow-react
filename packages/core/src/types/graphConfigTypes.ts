@@ -40,6 +40,12 @@ export type CallbackParams<Ctx, Params> = {
     actions: NodeActions;
 }
 
+export enum DragType {
+    DRAG_POS,
+    DRAG_WIDTH,
+    DRAG_SIZE
+}
+
 export type GraphNodeComponentProps<Ctx, Params> = {
     nodeId: string;
     node: GraphNode;
@@ -50,9 +56,7 @@ export type GraphNodeComponentProps<Ctx, Params> = {
     selected: boolean;
     width: number;
     height: number;
-    handleDragPos: (event: React.MouseEvent) => void;
-    handleDragSize: (event: React.MouseEvent) => void;
-    handleDragWidth: (event: React.MouseEvent) => void;
+    handleDrag: (event: React.MouseEvent, type: DragType) => void;
 }
 
 export type GraphNodeConfig<Ctx, Params = {}> = {

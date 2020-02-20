@@ -10,8 +10,17 @@
     border: 1px solid $grey-3;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+    position: relative;
 }
 
 .ngraph-node.selected .ngraph-subgraph-container {
     border-color: $primary;
+}
+
+.ngraph-subgraph-resizer {
+    fill: $grey-3;
+    bottom: 4px;
+    position: absolute;
+    right: 4px;
+    cursor: nwse-resize;
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { GraphNodeConfig } from '../../../types/graphConfigTypes';
+import { GraphNodeConfig, DragType } from '../../../types/graphConfigTypes';
 import { GraphNode } from '../../../types/graphTypes';
 
 import GraphNodeDragHandle from './GraphNodeDragHandle';
@@ -12,20 +12,10 @@ type Props = {
     nodeId: string;
     node: GraphNode;
     nodeConfig: GraphNodeConfig<any, any>;
-    onDragPos: (event: React.MouseEvent) => void;
-    onDragWidth?: (event: React.MouseEvent) => void;
+    onDrag: (event: React.MouseEvent, type: DragType) => void;
 }
 
-type DragState = {
-    startMouseX: number;
-    startMouseY: number;
-    nodeX: number;
-    nodeY: number;
-    x: number;
-    y: number;
-}
-
-function GraphNodeHeader({ nodeId, node, nodeConfig, onDragPos, onDragWidth }: Props) {
+function GraphNodeHeader({ nodeId, node, nodeConfig, onDrag }: Props) {
     const dispatch = useDispatch();
 
     const handleMinimize = (e: React.MouseEvent) => {
@@ -33,22 +23,23 @@ function GraphNodeHeader({ nodeId, node, nodeConfig, onDragPos, onDragWidth }: P
         dispatch(setNodeCollapsed(nodeId, !node.collapsed));
     };
 
+    const handleDragPos = (e: React.MouseEvent) => {
+        onDrag(e, DragType.DRAG_POS);
+    };
+
     return (
         <div className="ngraph-node-header">
             <div className="ngraph-node-header-icon" onClick={handleMinimize}>
                 <FontAwesomeIcon icon={node.collapsed ? "plus" : "minus"}/>
             </div>
-            <div className="ngraph-node-title ngraph-text-ellipsis" onMouseDown={onDragPos}>
+            <div className="ngraph-node-title ngraph-text-ellipsis" onMouseDown={handleDragPos}>
                 {node.name ?? nodeConfig.title}
             </div>
-            {onDragWidth && (
-                <GraphNodeDragHandle
-                    nodeId={nodeId}
-                    nodeWidth={node.width}
-                    nodeConfig={nodeConfig}
-                    onDragWidth={onDragWidth}
-                />
-            )}
+            <GraphNodeDragHandle
+                nodeWidth={node.width}
+                nodeConfig={nodeConfig}
+                onDrag={onDrag}
+            />
         </div>
     );
 }

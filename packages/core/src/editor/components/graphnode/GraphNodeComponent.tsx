@@ -12,15 +12,14 @@ export type DragWidthState = {
     width: number;
 }
 
-export default function GraphNodeContainer<Ctx, Params>({ node, nodeConfig, nodeId, context, handleDragPos, handleDragWidth, width, actions }: GraphNodeComponentProps<Ctx, Params>) {
+export default function GraphNodeContainer<Ctx, Params>({ node, nodeConfig, nodeId, context, handleDrag, width, actions }: GraphNodeComponentProps<Ctx, Params>) {
     return (
         <div className="ngraph-node-body" style={{ width }}>
             <GraphNodeHeader
                 nodeId={nodeId}
                 node={node}
                 nodeConfig={nodeConfig}
-                onDragPos={handleDragPos}
-                onDragWidth={handleDragWidth}
+                onDrag={handleDrag}
             />
             {!node.collapsed && (
                 <div className="ngraph-node-fields">
