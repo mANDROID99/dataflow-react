@@ -7,8 +7,9 @@ import { useDrag } from '../../utils/hooks/useDrag';
 import { clearSelectedNode, addNode } from '../../store/actions';
 import { createGraphNode } from '../../utils/graph/graphNodeFactory';
 import { useGraphContext } from '../graphEditorContext';
-import { containerContext, GraphContainerContext } from '../graphContainerContext';
+import { containerContext, GraphContainerContext, Pos } from '../graphContainerContext';
 import { GraphNodePortRefs } from '../GraphNodePortRefs';
+import { useEffect } from 'react';
 
 type Props = {
     parent?: string;
@@ -30,11 +31,12 @@ type ScrollState = {
 function GraphEditorScroller({ parent, children }: Props) {
     const dispatch = useDispatch();
     const { graphConfig } = useGraphContext();
-    const ref = useRef<HTMLDivElement | null>(null);
+    const container = useRef<HTMLDivElement | null>(null);
     const [scroll, setScroll] = useState<ScrollState>({ x: 0, y: 0 });
     const [scrolling, setScrolling] = useState(false);
+    const scrollOffset = useRef<Pos>(scroll);
 
-    useDrag<DragState>(ref, {
+    useDrag<DragState>(container, {
         checkTarget: true,
         onStart(event) {
             const startMouseX = event.clientX;
@@ -62,23 +64,35 @@ function GraphEditorScroller({ parent, children }: Props) {
         accept: 'node',
         drop(item: { id: string; type: string }, monitor) {
             const offset = monitor.getClientOffset();
-            const el = ref.current;
-            if (!offset || !el) return;
+            if (!offset) return;
 
-            const bounds = el.getBoundingClientRect();
-            const x = offset.x - bounds.left - scrollX;
-            const y = offset.y - bounds.top - scrollY;
+            const x = offset.x - scrollOffset.current.x;
+            const y = offset.y - scrollOffset.current.y;
 
             const graphNode = createGraphNode(x, y, item.id, graphConfig);
             dispatch(addNode(graphNode, parent));
         }
     });
 
+    // update the scroll-offset ref
+    useEffect(() => {
+        const el = container.current;
+        let x = scroll.x, y = scroll.y;
+
+        if (el) {
+            const bounds = el.getBoundingClientRect();
+            x += bounds.left;
+            y += bounds.top;
+        }
+
+        scrollOffset.current = { x, y };
+    });
+
     // construct the container context
     const context = useMemo((): GraphContainerContext => {
         return {
             ports: new GraphNodePortRefs(),
-            container: ref,
+            scrollOffset,
             parentNodeId: parent
         };
     }, [parent]);
@@ -89,10 +103,10 @@ function GraphEditorScroller({ parent, children }: Props) {
     
     return (
         <div ref={(el) => {
-            ref.current = el;
+            container.current = el;
             dropRef(el);
         }}
-            className={classNames("ngraph-editor-content", { scrolling })}
+            className={classNames("ngraph-editor-scroller", { scrolling })}
             onClick={handleClick}
         >
             <containerContext.Provider value={context}>

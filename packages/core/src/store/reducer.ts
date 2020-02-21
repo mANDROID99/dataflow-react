@@ -1,7 +1,7 @@
 import produce from "immer";
 import { v4 } from "uuid";
 
-import { GraphEditorState, ContextMenuTargetType } from "../types/storeTypes";
+import { GraphEditorState, ContextMenuTargetType, NodeBounds } from "../types/storeTypes";
 import { GraphNode, Graph } from "../types/graphTypes";
 import { clearPortTargets, createConnection } from "../utils/store/connectionUtils";
 import {
@@ -40,6 +40,52 @@ function getSubNodeIds(graph: Graph, parent: string | undefined) {
     }
 }
 
+function deleteNode(graph: Graph, bounds: { [key: string]: NodeBounds }, nodeId: string) {
+    const nodes = graph.nodes;
+    const node = nodes[nodeId];
+    if (!node) return;
+
+    // remove child nodes
+    const subNodes = node.subNodes;
+    if (subNodes) {
+        for (const subNodeId of subNodes) {
+            deleteNode(graph, bounds, subNodeId);
+        }
+    }
+
+     // clear out ports
+     for (const portId in node.ports.out) {
+        const targets = node.ports.out[portId];
+        if (targets) {
+            clearPortTargets(graph, targets, nodeId, portId, true);
+        }
+    }
+
+    // clear in ports
+    for (const portId in node.ports.in) {
+        const targets = node.ports.in[portId];
+        if (targets) {
+            clearPortTargets(graph, targets, nodeId, portId, false);
+        }
+    }
+    
+    // unregister node-id from parent
+    const subNodeIds = getSubNodeIds(graph, node.parent);
+    if (subNodeIds) {
+        const i = subNodeIds.indexOf(nodeId);
+        if (i >= 0) {
+            subNodeIds.splice(i, 1);
+        }
+    }
+
+    // remove the node from the store
+    delete nodes[nodeId];
+
+    // remove node bounds
+    clearAlignment(bounds, nodeId);
+    delete bounds[nodeId];
+}
+
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
     [GraphActionType.LOAD_GRAPH]: produce((state: GraphEditorState, action: LoadGraphAction) => {
         state.graph = action.graph;
@@ -73,45 +119,9 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     }),
 
     [GraphActionType.DELETE_NODE]: produce((state: GraphEditorState, { nodeId }: DeleteNodeAction) => {
-        const graph = state.graph;
-        const nodes = graph.nodes;
-        const node = nodes[nodeId];
-        
-        if (node) {
-            // clear out ports
-            for (const portId in node.ports.out) {
-                const targets = node.ports.out[portId];
-                if (targets) {
-                    clearPortTargets(graph, targets, nodeId, portId, true);
-                }
-            }
-    
-            // clear in ports
-            for (const portId in node.ports.in) {
-                const targets = node.ports.in[portId];
-                if (targets) {
-                    clearPortTargets(graph, targets, nodeId, portId, false);
-                }
-            }
-    
-            delete nodes[nodeId];
-
-            // unregister node-id from parent
-            const subNodeIds = getSubNodeIds(graph, node.parent);
-            if (subNodeIds) {
-                const i = subNodeIds.indexOf(nodeId);
-                if (i >= 0) {
-                    subNodeIds.splice(i, 1);
-                }
-            }
-        }
-    
+        deleteNode(state.graph, state.bounds, nodeId);
         state.contextMenu = undefined;
         state.selectedNode = undefined;
-
-        // clear node bounds
-        clearAlignment(state.bounds, nodeId);
-        delete state.bounds[nodeId];
     }),
 
     [GraphActionType.CLONE_NODE]: produce((state: GraphEditorState, action: CloneNodeAction) => {

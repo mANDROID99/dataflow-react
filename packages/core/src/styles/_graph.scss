@@ -16,11 +16,12 @@
     line-height: 1.5;
 }
 
-.ngraph-editor-content {
+.ngraph-editor-scroller {
     cursor: grab;
     flex-grow: 1;
     position: relative;
     overflow: hidden;
+    
     &.scrolling {
         cursor: grabbing;
     }

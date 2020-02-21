@@ -22,7 +22,7 @@ function GraphEditorNodes<Ctx, P>({ parent, scrollX, scrollY }: Props<Ctx, P>) {
     const nodeContexts = useMemo(() => computeContexts(params, subNodes, graphConfig), [params, subNodes, graphConfig]);
 
     return (
-        <div id="nodes-container" className="ngraph-nodes" style={{ left: scrollX, top: scrollY }}>
+        <div id="graph-nodes-container" className="ngraph-nodes" style={{ left: scrollX, top: scrollY }}>
             {Object.keys(subNodes).map(nodeId => {
                 const context = nodeContexts.get(nodeId);
 

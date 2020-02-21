@@ -147,20 +147,20 @@ const PortInner = React.memo(React.forwardRef<HTMLDivElement, InnerProps>(GraphN
 export default function GraphNodePortContainer(props: Props) {
     const { nodeId, portName, portOut } = props;
     const ref = useRef<HTMLDivElement>(null);
-    const { ports, container, parentNodeId } = useContainerContext();
+    const { ports, scrollOffset, parentNodeId } = useContainerContext();
 
     // notify the port connections that the port position has changed
     const prev = useRef<{ x: number; y: number }>();
     useEffect(() => {
         const el = ref.current;
-        if (!el || !container.current) return;
+        if (!el) return;
 
         const portId = { nodeId: props.nodeId, portName: props.portName, portOut: props.portOut };
-        const containerBounds = container.current.getBoundingClientRect();
         const bounds = el.getBoundingClientRect();
 
-        const x = bounds.left - containerBounds.left + bounds.width / 2;
-        const y = bounds.top - containerBounds.top + bounds.height / 2;
+        // compute the position relative to the scroll container
+        const x = bounds.left + bounds.width / 2 - scrollOffset.current.x;
+        const y = bounds.top + bounds.height / 2 - scrollOffset.current.y;
 
         // check that the port state is changed
         if (!prev.current || prev.current.x !== x || prev.current.y !== y) {
