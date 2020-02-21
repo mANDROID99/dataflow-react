@@ -9,23 +9,22 @@ function hitTestBounds(a: NodeBounds, b: NodeBounds) {
         && hitTest(a.y, a.y + a.height, b.y, b.y + b.height);
 }
 
-export function updateBoundsOverlapping(allBounds: { [key: string]: NodeBounds }, nodeId: string, margin: number) {
+export function updateBoundsOverlapping(allBounds: { [key: string]: NodeBounds }, allNodeIds: string[], startNodeId: string, margin: number) {
     const seen = new Set<string>();
-    const nodeIds = Object.keys(allBounds);
-    nodeIds.sort((a, b) => allBounds[a].y - allBounds[b].y);
+    allNodeIds.sort((a, b) => allBounds[a].y - allBounds[b].y);
 
     function update(testNodeId: string) {
         seen.add(testNodeId);
-        const testBounds = allBounds[testNodeId];
+        const bounds = allBounds[testNodeId];
         const next: string[] = [];
 
-        for (const nodeId of nodeIds) {
+        for (const nodeId of allNodeIds) {
             if (nodeId !== testNodeId && !seen.has(nodeId)) {
-                const nodeBounds = allBounds[nodeId];
+                const otherBounds = allBounds[nodeId];
 
-                if (nodeBounds.alignBottomEdge === testNodeId || hitTestBounds(testBounds, nodeBounds)) {
-                    nodeBounds.y = testBounds.y + testBounds.height + margin;
-                    nodeBounds.alignBottomEdge = testNodeId;
+                if (otherBounds.alignBottomEdge === testNodeId || hitTestBounds(bounds, otherBounds)) {
+                    otherBounds.y = bounds.y + bounds.height + margin;
+                    otherBounds.alignBottomEdge = testNodeId;
                     next.push(nodeId);
                 }
             }
@@ -38,7 +37,7 @@ export function updateBoundsOverlapping(allBounds: { [key: string]: NodeBounds }
         }
     }
 
-    update(nodeId);
+    update(startNodeId);
     return seen;
 }
 

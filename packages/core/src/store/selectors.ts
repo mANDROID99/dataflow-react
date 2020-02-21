@@ -16,15 +16,12 @@ export function selectGraphNodes(state: StoreState) {
 }
 
 export function selectSubNodeIds(parent?: string) {
-    return (state: StoreState): string[] => {
+    return (state: StoreState): string[] | undefined => {
         const graph = state.editor.graph;
 
         if (parent) {
             const parentNode = graph.nodes[parent];
-            if (!parentNode || !parentNode.subNodes) {
-                return [];
-            }
-            return parentNode.subNodes;
+            return parentNode?.subNodes;
 
         } else {
             return graph.nodeIds;
@@ -34,7 +31,7 @@ export function selectSubNodeIds(parent?: string) {
 
 export function createSubNodesSelector(parent?: string) {
     let prev: {
-        subNodeIds: string[];
+        subNodeIds: string[] | undefined;
         graphNodes: { [key: string]: GraphNode };
         subNodes: { [key: string]: GraphNode };
     } | undefined;
@@ -55,12 +52,14 @@ export function createSubNodesSelector(parent?: string) {
         let modified = prev ? prev.subNodeIds !== subNodeIds : true;
 
         // clone the "slice", checking for modifications on the way
-        for (const nodeId of subNodeIds) {
-            const node = graphNodes[nodeId];
-            if (prev && prev.graphNodes[nodeId] !== node) {
-                modified = true;
+        if (subNodeIds) {
+            for (const nodeId of subNodeIds) {
+                const node = graphNodes[nodeId];
+                if (prev && prev.graphNodes[nodeId] !== node) {
+                    modified = true;
+                }
+                subNodes[nodeId] = node;
             }
-            subNodes[nodeId] = node;
         }
 
         // use the previous value if nothing changed

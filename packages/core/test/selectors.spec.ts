@@ -97,3 +97,15 @@ test('returns the same instance when a node outside the scope changed', () => {
     const r2 = selector({ editor: state });
     expect(r1).toBe(r2);
 });
+
+test('returns empty object when sub-node ids are undefined', () => {
+    const node1 = graphNode('node-1');
+    const state = createInitialState();
+    state.graph.nodeIds = ['node-1'];
+    state.graph.nodes = {
+        'node-1': node1
+    };
+
+    const selector = createSubNodesSelector('node-2');
+    expect(selector({ editor: state })).toEqual({ });
+});

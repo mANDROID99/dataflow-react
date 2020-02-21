@@ -38,13 +38,17 @@ export function isPortConnectable<Ctx, Params>(draggedPort: PortTarget, port: Po
         return false;
     }
 
-    // can't connect to itself
+    // can't connect to itself!
     if (draggedPort.nodeId === port.nodeId) {
         return false;
     }
 
-    // check whether the port-types match
+    // check that the nodes have the same parent
+    if (draggedPort.parentNodeId !== port.parentNodeId) {
+        return false;
+    }
 
+    // check whether the port-types match
     const p1 = getPortConfig(graphConfig, port.nodeType, port.portName, port.portOut);
     const p2 = getPortConfig(graphConfig, draggedPort.nodeType, draggedPort.portName, draggedPort.portOut);
 

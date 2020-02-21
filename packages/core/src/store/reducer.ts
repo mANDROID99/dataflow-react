@@ -2,7 +2,7 @@ import produce from "immer";
 import { v4 } from "uuid";
 
 import { GraphEditorState, ContextMenuTargetType } from "../types/storeTypes";
-import { GraphNode } from "../types/graphTypes";
+import { GraphNode, Graph } from "../types/graphTypes";
 import { clearPortTargets, createConnection } from "../utils/store/connectionUtils";
 import {
     GraphAction,
@@ -30,6 +30,15 @@ import { createInitialState } from "./initialState";
 import { clearAlignment, updateBoundsOverlapping } from "./boundsUpdater";
 
 const OVERLAP_MARGIN = 5;
+
+function getSubNodeIds(graph: Graph, parent: string | undefined) {
+    if (parent) {
+        const parentNode = graph.nodes[parent];
+        return parentNode?.subNodes;
+    } else {
+        return graph.nodeIds;
+    }
+}
 
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
     [GraphActionType.LOAD_GRAPH]: produce((state: GraphEditorState, action: LoadGraphAction) => {
@@ -88,23 +97,11 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
             delete nodes[nodeId];
 
             // unregister node-id from parent
-            if (node.parent) {
-                const parentNode = graph.nodes[node.parent];
-                if (parentNode) {
-                    const subNodes = parentNode.subNodes;
-                    if (subNodes) {
-                        const i = subNodes.indexOf(nodeId);
-                        if (i >= 0) {
-                            subNodes.splice(i, 1);
-                        }
-                    }
-                }
-                
-            } else {
-                const nodeIds = graph.nodeIds;
-                const i = nodeIds.indexOf(nodeId);
+            const subNodeIds = getSubNodeIds(graph, node.parent);
+            if (subNodeIds) {
+                const i = subNodeIds.indexOf(nodeId);
                 if (i >= 0) {
-                    nodeIds.splice(i, 1);
+                    subNodeIds.splice(i, 1);
                 }
             }
         }
@@ -288,9 +285,17 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     }),
 
     [GraphActionType.MOVE_OVERLAPPING_BOUNDS]: produce((state: GraphEditorState, action: MoveOverlappingBoundsAction) => {
-        const updated = updateBoundsOverlapping(state.bounds, action.nodeId, OVERLAP_MARGIN);
+        const graph = state.graph;
+        const node = graph.nodes[action.nodeId];
+        if (!node) return;
 
-        for (const updatedId of updated) {
+        const subNodeIds = getSubNodeIds(graph, node.parent);
+        if (!subNodeIds) return;
+
+        const updatedIds = updateBoundsOverlapping(
+            state.bounds, subNodeIds, action.nodeId, OVERLAP_MARGIN);
+
+        for (const updatedId of updatedIds) {
             const node = state.graph.nodes[updatedId];
             const nodeBounds = state.bounds[updatedId];
 
