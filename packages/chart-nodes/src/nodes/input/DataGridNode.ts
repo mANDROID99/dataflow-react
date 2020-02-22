@@ -16,7 +16,7 @@ class DataGridProcessor implements NodeProcessor {
         return NodeType.DATA_GRID
     }
     
-    registerProcessor(): void { }
+    register(): void { }
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_ROWS) {

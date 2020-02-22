@@ -27,7 +27,7 @@ class ComputeProcessor implements NodeProcessor {
         return NodeType.COMPUTE;
     }
     
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_ROWS) {
             processor.subscribe(portOut, this.onNext.bind(this))
         }

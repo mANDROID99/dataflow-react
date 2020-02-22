@@ -1,8 +1,8 @@
-import { GraphNodeConfig, NodeProcessor } from "@react-ngraph/core";
-import { ChartContext, ChartParams } from "../../types/contextTypes";
+import { GraphNodeConfig } from "../../types/graphConfigTypes";
+import { NodeProcessor } from "../../types/processorTypes";
 import { NodeType } from "../nodes";
 
-const PORT_SIGNAL = 'signal';
+const PORT_INPUT = 'input';
 
 class StartNodeProcessor implements NodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
@@ -12,7 +12,7 @@ class StartNodeProcessor implements NodeProcessor {
     }
     
     subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_SIGNAL) {
+        if (portName === PORT_INPUT) {
             this.subs.push(sub);
         }
     }
@@ -26,15 +26,15 @@ class StartNodeProcessor implements NodeProcessor {
     }
 }
 
-export const START_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
+export const START_NODE: GraphNodeConfig<any, any> = {
     title: 'Start',
     description: 'Start node',
     menuGroup: 'Internal',
     ports: {
         in: {},
         out: {
-            [PORT_SIGNAL]: {
-                type: 'signal'
+            [PORT_INPUT]: {
+                type: null
             }
         }
     },

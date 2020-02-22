@@ -57,7 +57,7 @@ class DataFetcherProcessor implements NodeProcessor {
         return NodeType.DATA_GRID;
     }
 
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_DATA) {
             processor.subscribe(portOut, this.onNextData.bind(this));
 

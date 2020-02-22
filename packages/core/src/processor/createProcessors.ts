@@ -34,9 +34,9 @@ export function createProcessorsFromGraph<Params>(graph: Graph, graphConfig: Gra
                 for (const pt of port) {
                     const sourceProcessor = getOrCreateProcessor(pt.node);
 
-                    // regsiter the child with the parent
-                    if (sourceProcessor && processor.registerProcessor) {
-                        processor.registerProcessor(portName, pt.port, sourceProcessor);
+                    // register the processor with the upstream
+                    if (sourceProcessor && processor.register) {
+                        processor.register(portName, pt.port, sourceProcessor);
                     }
                 }
             }

@@ -28,7 +28,7 @@ class DataPointNodeProcessor implements NodeProcessor {
         return NodeType.DATA_POINTS;
     }
 
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_ROWS) {
             processor.subscribe(portOut, this.onNext.bind(this));
         }

@@ -13,10 +13,8 @@ import { GRID_VIEW_NODE } from "./grid/GridViewNode";
 import { GRID_COLUMN_NODE } from './grid/GridColumnNode';
 import { SCHEDULER_NODE } from "./input/SchedulerNode";
 import { REPORT_NODE } from "./input/ReportNode";
-import { START_NODE } from "./input/StartNode";
 
 export enum NodeType {
-    START='start',
     DATA_GRID='data-grid',
     DATA_FETCHER='data-fetcher',
     COMPUTE='compute',
@@ -35,7 +33,6 @@ export enum NodeType {
 }
 
 export const nodes = {
-    [NodeType.START]: START_NODE,
     [NodeType.DATA_GRID]: DATA_GRID_NODE,
     [NodeType.DATA_FETCHER]: DATA_FETCHER_NODE,
     [NodeType.COMPUTE]: COMPUTE_NODE,

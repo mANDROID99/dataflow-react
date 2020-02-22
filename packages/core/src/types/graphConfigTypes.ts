@@ -59,6 +59,15 @@ export type GraphNodeComponentProps<Ctx, Params> = {
     handleDrag: (event: React.MouseEvent, type: DragType) => void;
 }
 
+export type CreateNodeParams<Ctx, Params> = {
+    id: string;
+    x: number;
+    y: number;
+    parent: string | undefined;
+    params: Params;
+    createNodeAt(x: number, y: number, parent: string | undefined, type: string): GraphNode | GraphNode[];
+};
+
 export type GraphNodeConfig<Ctx, Params = {}> = {
     title: string;
     description: string;
@@ -81,6 +90,7 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
         };
     };
     component?: React.ComponentType<GraphNodeComponentProps<Ctx, Params>>;
+    createNode?: (params: CreateNodeParams<Ctx, Params>) => GraphNode | GraphNode[];
     mapContext?: (node: GraphNode, context: Ctx, params: Params) => Ctx;
     createProcessor: (node: GraphNode, params: Params) => NodeProcessor;
     onChanged?: (prev: GraphNode | undefined, next: GraphNode, params: CallbackParams<Ctx, Params>) => void;

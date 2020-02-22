@@ -29,7 +29,7 @@ class DataSetNodeProcessor implements NodeProcessor {
         return NodeType.DATA_SETS;
     }
     
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_POINTS) {
             processor.subscribe(portOut, this.onNext.bind(this));
         }

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import { useDrag } from '../../utils/hooks/useDrag';
 import { clearSelectedNode, addNode } from '../../store/actions';
-import { createGraphNode } from '../../utils/graph/graphNodeFactory';
+import { graphNodeFactory } from '../../utils/graph/graphNodeFactory';
 import { useGraphContext } from '../graphEditorContext';
 import { containerContext, GraphContainerContext, Pos } from '../graphContainerContext';
 import { GraphNodePortRefs } from '../GraphNodePortRefs';
@@ -30,7 +30,7 @@ type ScrollState = {
 
 function GraphEditorScroller({ parent, children }: Props) {
     const dispatch = useDispatch();
-    const { graphConfig } = useGraphContext();
+    const { graphConfig, params } = useGraphContext();
     const container = useRef<HTMLDivElement | null>(null);
     const [scroll, setScroll] = useState<ScrollState>({ x: 0, y: 0 });
     const [scrolling, setScrolling] = useState(false);
@@ -69,8 +69,8 @@ function GraphEditorScroller({ parent, children }: Props) {
             const x = offset.x - scrollOffset.current.x;
             const y = offset.y - scrollOffset.current.y;
 
-            const graphNode = createGraphNode(x, y, item.id, graphConfig);
-            dispatch(addNode(graphNode, parent));
+            const graphNode = graphNodeFactory(graphConfig, params)(x, y, parent, item.id);
+            dispatch(addNode(graphNode));
         }
     });
 

@@ -44,7 +44,7 @@ class ReportNodeProcessor implements NodeProcessor {
         return NodeType.REPORT;
     }
     
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_ROWS) {
             processor.subscribe(portOut, this.onNextRows.bind(this));
 

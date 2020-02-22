@@ -21,7 +21,7 @@ class SchedulerProcessor implements NodeProcessor {
         return NodeType.SORT_BY
     }
     
-    registerProcessor(): void { }
+    register(): void { }
 
     subscribe(portName: string, sub: (value: unknown) => void): void {
         if (portName === PORT_SIGNAL) {

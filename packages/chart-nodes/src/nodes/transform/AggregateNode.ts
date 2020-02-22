@@ -28,7 +28,7 @@ class AggregateNodeProcessor implements NodeProcessor {
         return NodeType.AGGREGATE
     }
     
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_GROUPS) {
             processor.subscribe(portOut, this.onNext.bind(this));
         }

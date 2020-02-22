@@ -113,7 +113,7 @@ class JoinNodeProcessor implements NodeProcessor {
         return NodeType.JOIN;
     }
     
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_LEFT) {
             processor.subscribe(portOut, this.onNextLeft.bind(this));
 

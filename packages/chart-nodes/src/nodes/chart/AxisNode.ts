@@ -20,7 +20,7 @@ class AxisNodeProcessor implements NodeProcessor {
         return NodeType.AXIS;
     }
 
-    registerProcessor() { }
+    register() { }
 
     subscribe(port: string, sub: (value: unknown) => void): void {
         if (port === PORT_AXIS) {

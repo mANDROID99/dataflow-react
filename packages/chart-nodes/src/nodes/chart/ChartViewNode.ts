@@ -39,7 +39,7 @@ class ChartViewProcessor implements NodeProcessor {
         return NodeType.CHART_VIEW;
     }
 
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_DATASETS) {
             const i = this.datasets.length++;
             processor.subscribe(portOut, this.onNextDatasets.bind(this, i));

@@ -94,28 +94,36 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         state.contextMenu = undefined;
     }),
 
-    [GraphActionType.ADD_NODE]: produce((state: GraphEditorState, { node, parent }: AddNodeAction) => {
+    [GraphActionType.ADD_NODE]: produce((state: GraphEditorState, { node }: AddNodeAction) => {
         const graph = state.graph;
-        node.parent = parent;
-        graph.nodes[node.id] = node;
+        const nodes = Array.isArray(node) ? node : [node];
 
-        state.contextMenu = undefined;
-        state.selectedNode = undefined;
+        for (const n of nodes) {
+            graph.nodes[n.id] = n;
 
-        // register node-id with parent
-        if (parent) {
-            const parentNode = graph.nodes[parent];
-            if (parentNode) {
-                const subNodes = parentNode.subNodes;
-                if (subNodes) {
-                    subNodes.push(node.id);
-                } else {
-                    parentNode.subNodes = [node.id];
+            // register node-id with parent
+            let nodeIds: string[] = graph.nodeIds;
+            if (n.parent) {
+                const parentNode = graph.nodes[n.parent];
+                if (parentNode) {
+                    const subNodes = parentNode.subNodes;
+                    if (!subNodes) {
+                        parentNode.subNodes = [];
+                        nodeIds = parentNode.subNodes;
+                    } else {
+                        nodeIds = subNodes;
+                    }
                 }
             }
-        } else {
-            graph.nodeIds.push(node.id);
+
+            if (nodeIds.indexOf(n.id) < 0) {
+                nodeIds.push(n.id);
+            }
         }
+
+        // clear the current selection
+        state.contextMenu = undefined;
+        state.selectedNode = undefined;
     }),
 
     [GraphActionType.DELETE_NODE]: produce((state: GraphEditorState, { nodeId }: DeleteNodeAction) => {

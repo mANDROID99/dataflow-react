@@ -24,7 +24,7 @@ class GridViewProcessor implements NodeProcessor {
         return NodeType.GRID_VIEW;
     }
 
-    registerProcessor(portIn: string, portOut: string, processor: NodeProcessor): void {
+    register(portIn: string, portOut: string, processor: NodeProcessor): void {
         if (portIn === PORT_COLUMNS) {
             const i = this.columns.length++;
             processor.subscribe(portOut, this.onNext.bind(this, i));
