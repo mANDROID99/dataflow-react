@@ -135,28 +135,28 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     [GraphActionType.CLONE_NODE]: produce((state: GraphEditorState, action: CloneNodeAction) => {
         const graph = state.graph;
         const node = graph.nodes[action.nodeId];
+        if (!node) return;
     
-        if (node) {
-            const id = v4();
+        const id = v4();
 
-            const clone: GraphNode = {
-                id,
-                name: node.name,
-                type: node.type,
-                fields: node.fields,
-                ports: {
-                    in: {},
-                    out: {}
-                },
-                width: node.width,
-                height: node.height,
-                x: node.x + 20,
-                y: node.y + 20
-            };
+        const clone: GraphNode = {
+            ...node,
+            id,
+            ports: {
+                in: {},
+                out: {}
+            },
+            x: node.x + 20,
+            y: node.y + 20
+        };
 
-            graph.nodes[id] = clone;
+        graph.nodes[id] = clone;
+
+        const parents = getSubNodeIds(graph, node.parent);
+        if (parents) {
+            parents.push(id);
         }
-    
+        
         state.contextMenu = undefined;
         state.selectedNode = undefined;
     }),
