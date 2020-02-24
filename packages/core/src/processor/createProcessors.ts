@@ -1,6 +1,6 @@
 import { Graph } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
-import { NodeProcessor } from "../types/processorTypes";
+import { NodeProcessor } from "../types/nodeProcessorTypes";
 
 export function createProcessorsFromGraph<Params>(graph: Graph, graphConfig: GraphConfig<any, Params>, params?: Params): NodeProcessor[] {
     const processors: NodeProcessor[] = [];
@@ -25,18 +25,16 @@ export function createProcessorsFromGraph<Params>(graph: Graph, graphConfig: Gra
         processors.push(processor);
         processorsLookup.set(nodeId, processor);
 
-        // resolve children
-        const ports = node.ports.in;
+        // resolve connections
+        const ports = node.ports.out;
         for (const portName in ports) {
             const port = ports[portName];
 
             if (port && port.length) {
                 for (const pt of port) {
-                    const sourceProcessor = getOrCreateProcessor(pt.node);
-
-                    // register the processor with the upstream
-                    if (sourceProcessor && processor.register) {
-                        processor.register(portName, pt.port, sourceProcessor);
+                    const nextProcessor = getOrCreateProcessor(pt.node);
+                    if (nextProcessor) {
+                        processor.registerConnection(portName, pt.port, nextProcessor);
                     }
                 }
             }

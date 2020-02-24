@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { GraphNodeComponentProps, DragType } from "../../types/graphConfigTypes";
+import { GraphNodeComponentProps, DragType } from '../../types/graphNodeComponentTypes';
 import GraphScroller from '../../editor/components/GraphScroller';
 import GraphEditorNodes from '../../editor/components/GraphEditorNodes';
 import GraphConnectionsContainer from '../../editor/components/connections/GraphConnectionsContainer';

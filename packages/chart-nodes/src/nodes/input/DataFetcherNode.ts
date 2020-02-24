@@ -1,8 +1,7 @@
-import { GraphNodeConfig, InputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, NodeProcessor, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { asString } from "../../utils/conversions";
 import { Row } from "../../types/valueTypes";
-import { NodeType } from "../nodes";
 
 const KEY_DATA = 'data';
 const PORT_ROWS = 'rows';
@@ -42,38 +41,40 @@ function resolveHeaders(mapHeaders: expressions.EntriesMapper, ctx: { [key: stri
     return headers;
 }
 
-class DataFetcherProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
+class DataFetcherProcessor extends BaseNodeProcessor {
     private data?: Row[];
     private count = 0;
     private running = false;
+    private waitForSignal = false;
 
     constructor(
         private readonly params: ChartParams,
         private readonly config: Config
-    ) { }
-
-    get type(): string {
-        return NodeType.DATA_GRID;
+    ) {
+        super();
     }
 
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_DATA) {
-            processor.subscribe(portOut, this.onNextData.bind(this));
-
-        } else if (portIn === PORT_SIGNAL) {
-            processor.subscribe(portOut, this.onNextScheduler.bind(this));
+    registerConnectionInverse(portName: string): number {
+        if (portName === PORT_SIGNAL) {
+            this.waitForSignal = true;
         }
+        return super.registerConnectionInverse(portName);
     }
 
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_ROWS) {
-            this.subs.push(sub);
+    process(portName: string, values: unknown[]) {
+        if (portName === PORT_DATA) {
+            this.onNextData(values[0]);
+
+        } else if (portName === PORT_SIGNAL) {
+            this.onNextSignal();
         }
     }
 
     start() {
         this.running = true;
+        if (!this.waitForSignal) {
+            this.update();
+        }
     }
 
     stop() {
@@ -85,14 +86,11 @@ class DataFetcherProcessor implements NodeProcessor {
         this.update();
     }
 
-    private onNextScheduler() {
+    private onNextSignal() {
         this.update();
     }
     
     private update() {
-        const subs = this.subs;
-        if (!subs.length) return;
-
         const ctx = Object.assign({}, this.params.variables);
         ctx[KEY_DATA] = this.data;
 
@@ -106,9 +104,7 @@ class DataFetcherProcessor implements NodeProcessor {
         doFetch(url, headers, config.mapResponse, this.params)
             .then(data => {
                 if (this.running && this.count === c) {
-                    for (const sub of subs) {
-                        sub(data);
-                    }
+                    this.emitResult(PORT_DATA, data);
                 }
             });
     }

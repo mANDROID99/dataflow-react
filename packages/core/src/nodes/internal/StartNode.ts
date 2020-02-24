@@ -1,26 +1,38 @@
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
-import { NodeProcessor } from "../../types/processorTypes";
-import { NodeType } from "../nodes";
+import { NodeProcessor } from "../../types/nodeProcessorTypes";
 
 const PORT_INPUT = 'input';
 
-class StartNodeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
+type RegisteredConnection = {
+    processor: NodeProcessor;
+    port: string;
+    key: number;
+}
 
-    get type(): string {
-        return NodeType.START;
-    }
-    
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_INPUT) {
-            this.subs.push(sub);
+class StartNodeProcessor implements NodeProcessor {
+    private targets: RegisteredConnection[] = [];
+
+    registerConnection(portOut: string, portIn: string, processor: NodeProcessor): void {
+        if (portOut === PORT_INPUT) {
+            const key = processor.registerConnectionInverse(portIn);
+            this.targets.push({
+                key,
+                port: portIn,
+                processor
+            });
         }
     }
+    
+    registerConnectionInverse(): number {
+        return -1;
+    }
 
+    onNext(): void { /** do nothing */ }
+    
     invoke() {
-        if (this.subs.length) {
-            for (const sub of this.subs) {
-                sub(null);
+        if (this.targets.length) {
+            for (const target of this.targets) {
+                target.processor.onNext(target.port, target.key, null);
             }
         }
     }

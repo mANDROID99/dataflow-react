@@ -1,4 +1,4 @@
-import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, Entry, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, Entry, expressions, NodeProcessor, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/conversions';
@@ -17,36 +17,20 @@ type Config = {
     mapBackgroundColor: expressions.Mapper,
 }
 
-class DataSetNodeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
-
+class DataSetNodeProcessor extends BaseNodeProcessor {
     constructor(
         private readonly params: ChartParams,
         private readonly config: Config
-    ) { }
-
-    get type(): string {
-        return NodeType.DATA_SETS;
-    }
-    
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_POINTS) {
-            processor.subscribe(portOut, this.onNext.bind(this));
-        }
+    ) {
+        super();
     }
 
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_DATASETS) {
-            this.subs.push(sub);
-        }
-    }
-
-    private onNext(value: unknown) {
-        if (!this.subs.length) {
+    process(portName: string, inputs: unknown[]) {
+        if (portName !== PORT_POINTS) {
             return;
         }
 
-        const points = value as ChartDataPoint[];
+        const points = inputs[0] as ChartDataPoint[];
         const dataSetsByKey = new Map<string, ChartDataSet>();
         const dataSets: ChartDataSet[] = [];
 
@@ -81,9 +65,7 @@ class DataSetNodeProcessor implements NodeProcessor {
             }
         }
 
-        for (const sub of this.subs) {
-            sub(dataSets);
-        }
+        this.emitResult(PORT_DATASETS, dataSets);
     }
 }
 

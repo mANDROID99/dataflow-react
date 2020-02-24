@@ -1,9 +1,8 @@
-import { InputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from '@react-ngraph/core';
+import { InputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { pushDistinct } from '../../utils/arrayUtils';
 import { Row } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
-import { NodeType } from '../nodes';
 
 const PORT_ROWS = 'rows';
 const KEY_ACC = 'acc';
@@ -15,43 +14,26 @@ type Config = {
     mapValue: expressions.Mapper;
 }
 
-class ComputeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
-
+class ComputeProcessor extends BaseNodeProcessor {
     constructor(
         private readonly params: ChartParams,
         private readonly config: Config
-    ) { }
-
-    get type(): string {
-        return NodeType.COMPUTE;
+    ) {
+        super();
     }
     
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_ROWS) {
-            processor.subscribe(portOut, this.onNext.bind(this))
-        }
-    }
-
-    subscribe(port: string, sub: (value: unknown) => void): void {
-        if (port === PORT_ROWS) {
-            this.subs.push(sub);
-        }
-    }
-
-    private onNext(value: unknown) {
-        if (!this.subs.length) {
+    process(portName: string, values: unknown[]) {
+        if (portName !== PORT_ROWS) {
             return;
         }
 
-        const rows = value as Row[];
+        const rows = values[0] as Row[];
+
         const nextRows: Row[] = this.config.reduce
             ? this.reduceRows(rows)
             : this.mapRows(rows);
 
-        for (const sub of this.subs) {
-            sub(nextRows);
-        }
+        this.emitResult(PORT_ROWS, nextRows);
     }
 
     private reduceRows(rows: Row[]) {

@@ -1,7 +1,6 @@
-import { GraphNodeConfig, InputType, Entry, NodeProcessor, expressions } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { AxisType, ChartAxisConfig } from "../../types/valueTypes";
-import { NodeType } from "../nodes";
 
 const PORT_AXIS = 'axis';
 
@@ -11,37 +10,19 @@ type Config = {
     params: Entry<unknown>[];
 }
 
-class AxisNodeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
-
-    constructor(private readonly config: Config) { }
-
-    get type(): string {
-        return NodeType.AXIS;
-    }
-
-    register() { }
-
-    subscribe(port: string, sub: (value: unknown) => void): void {
-        if (port === PORT_AXIS) {
-            this.subs.push(sub);
-        }
+class AxisNodeProcessor extends BaseNodeProcessor {
+    constructor(private readonly config: Config) {
+        super();
     }
 
     start() {
-        if (!this.subs.length) {
-            return;
-        }
-
         const axis: ChartAxisConfig = {
             type: this.config.axisType,
             label: this.config.label,
             params: this.config.params
         };
         
-        for (const sub of this.subs) {
-            sub(axis);
-        }
+        this.emitResult(PORT_AXIS, axis);
     }
 }
 

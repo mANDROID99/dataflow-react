@@ -1,6 +1,5 @@
-import { GraphNodeConfig, InputType, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, NodeProcessor, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { NodeType } from "../nodes";
 
 const PORT_SIGNAL = 'signal';
 
@@ -9,24 +8,12 @@ type Config = {
     delay: number;
 }
 
-class SchedulerProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
+class SchedulerProcessor extends BaseNodeProcessor {
     private handle?: number;
 
     constructor(private readonly config: Config) {
+        super();
         this.onTick = this.onTick.bind(this);
-    }
-
-    get type(): string {
-        return NodeType.SORT_BY
-    }
-    
-    register(): void { }
-
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_SIGNAL) {
-            this.subs.push(sub);
-        }
     }
 
     start() {
@@ -40,9 +27,7 @@ class SchedulerProcessor implements NodeProcessor {
     }
 
     private onTick() {
-        for (const sub of this.subs) {
-            sub(null);
-        }
+        this.emitResult(PORT_SIGNAL, null);
 
         if (this.config.interval > 0) {
             this.handle = window.setTimeout(this.onTick, this.config.interval);

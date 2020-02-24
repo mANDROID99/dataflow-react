@@ -1,7 +1,8 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { GraphNodeConfig, DragType } from '../../../types/graphConfigTypes';
+import { GraphNodeConfig } from '../../../types/graphConfigTypes';
+import { DragType } from '../../../types/graphNodeComponentTypes';
 
 type Props = {
     nodeWidth: number;

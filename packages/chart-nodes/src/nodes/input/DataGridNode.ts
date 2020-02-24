@@ -1,32 +1,17 @@
-import { GraphNodeConfig, InputType, emptyDataGrid, expressions, DataGridInputValue, NodeProcessor } from "@react-ngraph/core";
-import { NodeType } from '../nodes';
+import { GraphNodeConfig, InputType, emptyDataGrid, expressions, DataGridInputValue, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
 
 const PORT_ROWS = 'rows';
 
-class DataGridProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
-
+class DataGridProcessor extends BaseNodeProcessor {
     constructor(
         private readonly data: DataGridInputValue
-    ) { }
-
-    get type(): string {
-        return NodeType.DATA_GRID
-    }
-    
-    register(): void { }
-
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_ROWS) {
-            this.subs.push(sub);
-        }
+    ) {
+        super();
     }
 
     start(): void {
-        if (!this.subs.length) return;
-        
         const gridColumns = this.data.columns;
         const gridRows = this.data.rows;
 
@@ -41,9 +26,7 @@ class DataGridProcessor implements NodeProcessor {
             return data;
         });
 
-        for (const sub of this.subs) {
-            sub(rows);
-        }
+        this.emitResult(PORT_ROWS, rows);
     }
 }
 

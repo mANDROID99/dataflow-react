@@ -1,54 +1,20 @@
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
-import { NodeProcessor } from "../../types/processorTypes";
 import { GraphNode } from "../../types/graphTypes";
 
 import { NodeType } from "../nodes";
 import SubGraphNodeComponent from "./SubGraphNodeComponent";
 import { DEFAULT_NODE_WIDTH } from "../../utils/graph/graphNodeFactory";
+import { ProxyPortsNodeProcessor } from "../ProxyPortsNodeProcessor";
 
-const PORT_INPUT = 'input';
-const PORT_OUTPUT = 'output';
+const PORT_IN = 'input';
+const PORT_OUT = 'output';
 const PORT_OUT_INTERAL = '__out';
 const PORT_IN_INTERNAL = '__in';
 
-class SubGraphNodeProcessor implements NodeProcessor {
-    private readonly internalSubs: ((value: unknown) => void)[] = [];
-    private readonly externalSubs: ((value: unknown) => void)[] = [];
-
-    get type(): string {
-        return NodeType.SUB_GRAPH;
-    }
-    
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_OUT_INTERAL) {
-            this.internalSubs.push(sub);
-
-        } else if (portName === PORT_OUTPUT) {
-            this.externalSubs.push(sub);
-        }
-    }
-
-    register(portIn: string, portOut: string, processor: NodeProcessor) {
-        if (portIn === PORT_IN_INTERNAL) {
-            processor.subscribe(portOut, this.onNextInternal.bind(this));
-
-        } else if (portIn === PORT_INPUT) {
-            processor.subscribe(portOut, this.onNextExternal.bind(this));
-        }
-    }
-
-    private onNextExternal(value: unknown) {
-        for (const sub of this.internalSubs) {
-            sub(value);
-        }
-    }
-
-    private onNextInternal(value: unknown) {
-        for (const sub of this.externalSubs) {
-            sub(value);
-        }
-    }
-}
+const proxyPortsMapping = new Map([
+    [PORT_IN, PORT_OUT_INTERAL],
+    [PORT_IN_INTERNAL, PORT_OUT]
+]);
 
 export const SUB_GRAPH_NODE: GraphNodeConfig<any, any> = {
     title: 'Sub-Graph',
@@ -58,12 +24,12 @@ export const SUB_GRAPH_NODE: GraphNodeConfig<any, any> = {
     height: 300,
     ports: {
         in: {
-            [PORT_INPUT]: {
+            [PORT_IN]: {
                 type: null
             }
         },
         out: {
-            [PORT_OUTPUT]: {
+            [PORT_OUT]: {
                 type: null
             }
         }
@@ -115,7 +81,7 @@ export const SUB_GRAPH_NODE: GraphNodeConfig<any, any> = {
             endNode
         ];
     },
-    createProcessor(node, params) {
-        return new SubGraphNodeProcessor();
+    createProcessor() {
+        return new ProxyPortsNodeProcessor(proxyPortsMapping);
     }
 };

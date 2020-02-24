@@ -1,11 +1,11 @@
-import { NodeActions } from "../editor/components/graphnode/graphNodeActions";
+import { GraphNodeActions } from "./graphNodeComponentTypes";
 
 export type InputProps<T> = {
     nodeId: string;
     fieldName: string;
     value: T | undefined;
     params: { [key: string]: unknown };
-    actions: NodeActions;
+    actions: GraphNodeActions;
     onChanged: (value: unknown) => void;
 }
 

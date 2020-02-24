@@ -1,8 +1,7 @@
-import { GraphNodeConfig, InputType, NodeProcessor, columnExpression, expressions, ColumnMapperInputValue } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, expressions, ColumnMapperInputValue, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row, GridValueConfig, GridColumnConfig } from "../../types/valueTypes";
 import { asString } from "../../utils/conversions";
-import { NodeType } from "../nodes";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 
 const PORT_ROWS = 'rows';
@@ -22,32 +21,20 @@ type Config = {
     mapBgColor: expressions.Mapper
 };
 
-class GridColumnNodeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
-
+class GridColumnNodeProcessor extends BaseNodeProcessor {
     constructor(
         private readonly config: Config,
         private readonly context: { [key: string]: unknown }
-    ) { }
+    ) {
+        super();
+    }
     
-    get type(): string {
-        return NodeType.GRID_COLUMN;
-    }
-
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_ROWS) {
-            processor.subscribe(portOut, this.onNext.bind(this));
+    process(port: string, inputs: unknown[]){
+        if (port !== PORT_ROWS) {
+            return;
         }
-    }
 
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_COLUMN) {
-            this.subs.push(sub);
-        }
-    }
-
-    private onNext(value: unknown) {
-        const rows = value as Row[];
+        const rows = inputs[0] as Row[];
         const values = rows.map<GridValueConfig>((row, i) => {
             const ctx = rowToEvalContext(row, i, this.context);
             const value = asString(this.config.mapValue(ctx));
@@ -66,10 +53,8 @@ class GridColumnNodeProcessor implements NodeProcessor {
             width: this.config.width,
             values
         }
-        
-        for (const sub of this.subs) {
-            sub(column);
-        }
+
+        this.emitResult(PORT_COLUMN, column);
     }
 }
 

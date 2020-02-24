@@ -1,10 +1,9 @@
-import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, NodeProcessor, expressions } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 
 import { Row, JoinType } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
-import { NodeType } from "../nodes";
 
 type KeyExtractor = (row: Row, i: number) => string;
 
@@ -96,8 +95,7 @@ type Config = {
     mapKeyRight: expressions.Mapper;
 }
 
-class JoinNodeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
+class JoinNodeProcessor extends BaseNodeProcessor {
     private left?: Row[];
     private right?: Row[];
 
@@ -105,41 +103,24 @@ class JoinNodeProcessor implements NodeProcessor {
         private readonly params: ChartParams,
         private readonly config: Config
     ) {
+        super();
         this.extractKeyLeft = this.extractKeyLeft.bind(this);
         this.extractKeyRight = this.extractKeyRight.bind(this);
     }
 
-    get type(): string {
-        return NodeType.JOIN;
-    }
-    
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_LEFT) {
-            processor.subscribe(portOut, this.onNextLeft.bind(this));
+    process(portName: string, values: unknown[]) {
+        if (portName === PORT_LEFT) {
+            this.left = values[0] as Row[];
+            this.update();
 
-        } else if (portIn === PORT_RIGHT) {
-            processor.subscribe(portOut, this.onNextRight.bind(this));
+        } else if (portName === PORT_RIGHT) {
+            this.right = values[0] as Row[];
+            this.update();
         }
-    }
-
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_ROWS) {
-            this.subs.push(sub);
-        }
-    }
-
-    private onNextLeft(value: unknown) {
-        this.left = value as Row[];
-        this.update();
-    }
-
-    private onNextRight(value: unknown) {
-        this.right = value as Row[];
-        this.update();
     }
 
     private update() {
-        if (!this.subs.length || !this.left || !this.right) {
+        if (!this.left || !this.right) {
             return;
         }
 
@@ -158,9 +139,7 @@ class JoinNodeProcessor implements NodeProcessor {
                 break;
         }
 
-        for (const sub of this.subs) {
-            sub(rows);
-        }
+        this.emitResult(PORT_ROWS, rows);
     }
 
     private extractKeyLeft(row: Row, index: number): string {

@@ -2,8 +2,9 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { GraphNodeConfig, DragType } from '../../../types/graphConfigTypes';
+import { GraphNodeConfig } from '../../../types/graphConfigTypes';
 import { GraphNode } from '../../../types/graphTypes';
+import { DragType } from '../../../types/graphNodeComponentTypes';
 
 import GraphNodeDragHandle from './GraphNodeDragHandle';
 import { setNodeCollapsed } from '../../../store/actions';

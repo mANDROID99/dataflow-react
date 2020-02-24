@@ -6,7 +6,7 @@ export * from './types/graphConfigTypes';
 export * from './types/graphTemplateTypes';
 export * from './types/graphTypes';
 export * from './types/graphInputTypes';
-export * from './types/processorTypes';
+export * from './types/nodeProcessorTypes';
 
 // processor
 export { computeContexts } from './processor/computeContexts';
@@ -33,3 +33,5 @@ import jexl from 'jexl';
 export { jexl };
 
 export { nodes, NodeType } from './nodes/nodes';
+export { BaseNodeProcessor } from './nodes/BaseNodeProcessor';
+export { ProxyPortsNodeProcessor } from './nodes/ProxyPortsNodeProcessor';

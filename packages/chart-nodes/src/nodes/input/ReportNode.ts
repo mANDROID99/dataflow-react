@@ -1,4 +1,4 @@
-import { GraphNodeConfig, NodeProcessor, InputType, Entry, expressions } from "@react-ngraph/core";
+import { GraphNodeConfig, NodeProcessor, InputType, Entry, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { NodeType } from "../nodes";
@@ -29,42 +29,43 @@ function resolveReportParams(mapReportParams: expressions.EntriesMapper, ctx: { 
     return reportParams;
 }
 
-class ReportNodeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
+class ReportNodeProcessor extends BaseNodeProcessor {
     private data?: Row[];
     private count = 0;
     private running = false;
+    private waitForSignal = false;
 
     constructor(
         private readonly params: ChartParams,
         private readonly config: Config
-    ) { }
-
-    get type(): string {
-        return NodeType.REPORT;
-    }
-    
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_ROWS) {
-            processor.subscribe(portOut, this.onNextRows.bind(this));
-
-        } else if (portIn === PORT_SIGNAL) {
-            processor.subscribe(portOut, this.onNextScheduler.bind(this));
-        }
+    ) {
+        super();
     }
 
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_ROWS) {
-            this.subs.push(sub);
+    registerConnectionInverse(portName: string): number {
+        if (portName === PORT_SIGNAL) {
+            this.waitForSignal = true;
         }
+        return super.registerConnectionInverse(portName);
     }
 
     start() {
         this.running = true;
+        if (!this.waitForSignal) {
+            this.update();
+        }
     }
 
     stop() {
         this.running = false;
+    }
+
+    process(portName: string, values: unknown[]) {
+        if (portName === PORT_ROWS) {
+            this.onNextRows(values[0]);
+        } else if (portName === PORT_SIGNAL) {
+            this.onNextSignal();
+        }
     }
 
     private onNextRows(value: unknown) {
@@ -72,17 +73,13 @@ class ReportNodeProcessor implements NodeProcessor {
         this.update();
     }
 
-    private onNextScheduler() {
+    private onNextSignal() {
         this.update();
     }
 
     private update() {
-        const subs = this.subs;
-        if (!subs.length) return;
-
         const reportUuid = this.config.reportUuid;
         if (!reportUuid) return;
-
 
         const ctx = Object.assign({}, this.params.variables);
         ctx[KEY_DATA] = this.data;
@@ -94,9 +91,7 @@ class ReportNodeProcessor implements NodeProcessor {
                 return;
             }
 
-            for (const sub of subs) {
-                sub(data);
-            }
+            this.emitResult(PORT_ROWS, data);
         });
     }
 }

@@ -12,26 +12,15 @@ import {
 import { ContextMenuTargetType, ContextMenuTarget } from "../../../types/storeTypes";
 import { GraphNodeConfig } from "../../../types/graphConfigTypes";
 import { GraphNode } from "../../../types/graphTypes";
+import { GraphNodeActions } from "../../../types/graphNodeComponentTypes";
 
-export type NodeActions = {
-    setPos(x: number, y: number): void;
-    setSize(width: number, height: number): void;
-    setWidth(width: number): void;
-    setFieldValue(fieldName: string, value: unknown): void;
-    setCollapsed(collapsed: boolean): void;
-    select(): void;
-    showContextMenu(x: number, y: number): void;
-    triggerEvent(key: string, payload: null): void;
-    triggerNodeChanged(prev: GraphNode, next: GraphNode): void;
-}
-
-export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, nodeConfig: GraphNodeConfig<C, P>, node: GraphNode, context: C, params: P): NodeActions {
+export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, nodeConfig: GraphNodeConfig<C, P>, node: GraphNode, context: C, params: P): GraphNodeActions {
     const paramsRef = useRef({ node, context, params });
     useEffect(() => {
         paramsRef.current = { node, context, params };
     });
 
-    return useMemo((): NodeActions => ({
+    return useMemo((): GraphNodeActions => ({
         setPos(x, y) {
             dispatch(setNodePos(nodeId, x, y));
         },

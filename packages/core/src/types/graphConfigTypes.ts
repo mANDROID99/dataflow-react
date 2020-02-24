@@ -1,74 +1,56 @@
 import { InputProps } from "./graphInputTypes";
 import { GraphNode } from "./graphTypes";
-import { NodeProcessor } from "./processorTypes";
-import { NodeActions } from "../editor/components/graphnode/graphNodeActions";
+import { NodeProcessor } from "./nodeProcessorTypes";
+import { GraphNodeComponentProps, GraphNodeActions } from "./graphNodeComponentTypes";
 
 export type GraphFieldInputConfig = {
     component: React.ComponentType<InputProps<any>>;
 }
 
-export type FieldResolverParams<Ctx, Params> = {
+export type FieldResolverParams<C, P> = {
     fields: { [key: string]: unknown };
-    context: Ctx;
-    params: Params;
+    context: C;
+    params: P;
 }
 
-export type FieldResolverCallback<Ctx, Params> = (params: FieldResolverParams<Ctx, Params>) => { [key: string]: unknown }
+export type FieldResolverCallback<C, P> = (params: FieldResolverParams<C, P>) => { [key: string]: unknown }
 
-export type FieldResolverConfig<Ctx, Params> = {
-    compute: FieldResolverCallback<Ctx, Params>;
-    eq?: (prev: FieldResolverParams<Ctx, Params>, next: FieldResolverParams<Ctx, Params>) => boolean;
-} | FieldResolverCallback<Ctx, Params>;
+export type FieldResolverConfig<C, P> = {
+    compute: FieldResolverCallback<C, P>;
+    eq?: (prev: FieldResolverParams<C, P>, next: FieldResolverParams<C, P>) => boolean;
+} | FieldResolverCallback<C, P>;
 
-export type GraphNodeFieldConfig<Ctx, Params> = {
+export type GraphNodeFieldConfig<C, P> = {
     label: string;
     type: string;
     initialValue: unknown;
     params?: { [key: string]: unknown };
-    resolve?: FieldResolverConfig<Ctx, Params>;
+    resolve?: FieldResolverConfig<C, P>;
 }
 
 export type GraphNodePortConfig = {
     type: string | string[] | null;
     multi?: boolean;
+    hidden?: boolean;
 }
 
-export type CallbackParams<Ctx, Params> = {
+export type CallbackParams<C, P> = {
     node: GraphNode;
-    context: Ctx;
-    params: Params;
-    actions: NodeActions;
+    context: C;
+    params: P;
+    actions: GraphNodeActions;
 }
 
-export enum DragType {
-    DRAG_POS,
-    DRAG_WIDTH,
-    DRAG_SIZE
-}
-
-export type GraphNodeComponentProps<Ctx, Params> = {
-    nodeId: string;
-    node: GraphNode;
-    nodeConfig: GraphNodeConfig<Ctx, Params>;
-    context: Ctx;
-    params: Params;
-    actions: NodeActions;
-    selected: boolean;
-    width: number;
-    height: number;
-    handleDrag: (event: React.MouseEvent, type: DragType) => void;
-}
-
-export type CreateNodeParams<Ctx, Params> = {
+export type NodeCreationParams<P> = {
     id: string;
     x: number;
     y: number;
     parent: string | undefined;
-    params: Params;
+    params: P;
     createNodeAt(x: number, y: number, parent: string | undefined, type: string): GraphNode | GraphNode[];
 };
 
-export type GraphNodeConfig<Ctx, Params = {}> = {
+export type GraphNodeConfig<C, P = {}> = {
     title: string;
     description: string;
     menuGroup?: string;
@@ -79,7 +61,7 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
     width?: number;
     height?: number;
     fields: {
-        [key: string]: GraphNodeFieldConfig<Ctx, Params>;
+        [key: string]: GraphNodeFieldConfig<C, P>;
     };
     ports: {
         in: {
@@ -89,26 +71,26 @@ export type GraphNodeConfig<Ctx, Params = {}> = {
             [key: string]: GraphNodePortConfig;
         };
     };
-    component?: React.ComponentType<GraphNodeComponentProps<Ctx, Params>>;
-    createNode?: (params: CreateNodeParams<Ctx, Params>) => GraphNode | GraphNode[];
-    mapContext?: (node: GraphNode, context: Ctx, params: Params) => Ctx;
-    createProcessor: (node: GraphNode, params: Params) => NodeProcessor;
-    onChanged?: (prev: GraphNode | undefined, next: GraphNode, params: CallbackParams<Ctx, Params>) => void;
-    onEvent?: (key: string, payload: unknown, params: CallbackParams<Ctx, Params>) => void;
+    component?: React.ComponentType<GraphNodeComponentProps<C, P>>;
+    createNode?: (params: NodeCreationParams<P>) => GraphNode | GraphNode[];
+    createProcessor: (node: GraphNode, params: P) => NodeProcessor;
+    mapContext?: (node: GraphNode, context: C, params: P) => C;
+    onChanged?: (prev: GraphNode | undefined, next: GraphNode, params: CallbackParams<C, P>) => void;
+    onEvent?: (key: string, payload: unknown, params: CallbackParams<C, P>) => void;
 }
 
 export type PortTypeConfig = {
     color: string;
 }
 
-export type ContextMerger<Ctx> = (left: Ctx, right: Ctx) => Ctx;
+export type ContextMerger<C> = (left: C, right: C) => C;
 
-export type GraphConfig<Ctx, Params = {}> = {
-    params?: Params;
-    context: Ctx;
-    mergeContexts: ContextMerger<Ctx>;
+export type GraphConfig<C, P> = {
+    params?: P;
+    context: C;
+    mergeContexts: ContextMerger<C>;
     nodes: {
-        [type: string]: GraphNodeConfig<Ctx, Params>;
+        [type: string]: GraphNodeConfig<C, P>;
     };
     inputs: {
         [type: string]: GraphFieldInputConfig;

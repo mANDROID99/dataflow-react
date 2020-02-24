@@ -1,10 +1,9 @@
-import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataPoint, Row } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
-import { NodeType } from "../nodes";
 
 const PORT_ROWS = 'rows';
 const PORT_POINTS = 'points';
@@ -16,34 +15,20 @@ type Config = {
     mapColor: expressions.Mapper;
 }
 
-class DataPointNodeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
-
+class DataPointNodeProcessor extends BaseNodeProcessor {
     constructor(
         private readonly params: ChartParams,
         private readonly config: Config
-    ) { }
-
-    get type(): string {
-        return NodeType.DATA_POINTS;
+    ) {
+        super();
     }
 
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_ROWS) {
-            processor.subscribe(portOut, this.onNext.bind(this));
+    process(portName: string, inputs: unknown[]) {
+        if (portName !== PORT_ROWS) {
+            return;
         }
-    }
 
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_POINTS) {
-            this.subs.push(sub);
-        }
-    }
-
-    private onNext(value: unknown) {
-        if (!this.subs.length) return;
-
-        const rows = value as Row[];
+        const rows = inputs[0] as Row[];
         const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
             const ctx = rowToEvalContext(row, i, this.params.variables);
 
@@ -54,9 +39,7 @@ class DataPointNodeProcessor implements NodeProcessor {
             return { x, y, r, color, row }
         });
 
-        for (const sub of this.subs) {
-            sub(points);
-        }
+        this.emitResult(PORT_POINTS, points);
     }
 }
 

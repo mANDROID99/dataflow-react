@@ -3,17 +3,17 @@ import { useDispatch } from 'react-redux';
 
 import { GraphNodeFieldConfig, GraphFieldInputConfig, FieldResolverParams } from '../../../types/graphConfigTypes';
 import { InputProps } from '../../../types/graphInputTypes';
+import { GraphNodeActions } from '../../../types/graphNodeComponentTypes';
 import { useGraphContext } from '../../graphEditorContext';
 import { useFieldParams } from '../../../utils/useFieldParams';
 import { setFieldValue } from '../../../store/actions';
-import { NodeActions } from './graphNodeActions';
 
 type Props<Ctx, Params> = {
     nodeId: string;
     context: Ctx;
     fieldName: string;
     fieldConfig: GraphNodeFieldConfig<Ctx, Params>;
-    actions: NodeActions;
+    actions: GraphNodeActions;
     fields: { [key: string]: unknown };
 }
 

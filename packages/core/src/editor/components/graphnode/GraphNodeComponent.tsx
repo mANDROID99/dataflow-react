@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraphNodeComponentProps } from "../../../types/graphConfigTypes";
+import { GraphNodeComponentProps } from '../../../types/graphNodeComponentTypes';
 import GraphNodeField from './GraphNodeField';
 import GraphNodeHeader from './GraphNodeHeader';
 
@@ -12,7 +12,7 @@ export type DragWidthState = {
     width: number;
 }
 
-export default function GraphNodeContainer<Ctx, Params>({ node, nodeConfig, nodeId, context, handleDrag, width, actions }: GraphNodeComponentProps<Ctx, Params>) {
+export default function GraphNodeComponent<Ctx, Params>({ node, nodeConfig, nodeId, context, handleDrag, width, actions }: GraphNodeComponentProps<Ctx, Params>) {
     return (
         <div className="ngraph-node-body" style={{ width }}>
             <GraphNodeHeader

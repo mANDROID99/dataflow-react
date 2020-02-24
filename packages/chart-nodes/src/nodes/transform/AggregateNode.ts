@@ -1,11 +1,10 @@
-import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row, KEY_GROUP } from "../../types/valueTypes";
 import { asNumber } from "../../utils/conversions";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { AggregatorType, createAggregator } from "./aggregators";
 import { rowToEvalContext } from "../../utils/expressionUtils";
-import { NodeType } from "../nodes";
 
 const PORT_GROUPS = 'groups';
 const PORT_ROWS = 'rows';
@@ -16,34 +15,20 @@ type Config = {
     mapColumn: expressions.Mapper
 }
 
-class AggregateNodeProcessor implements NodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
-
+class AggregateNodeProcessor extends BaseNodeProcessor {
     constructor(
         private readonly params: ChartParams,
         private readonly config: Config
-    ) { }
-
-    get type(): string {
-        return NodeType.AGGREGATE
+    ) {
+        super();
     }
-    
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_GROUPS) {
-            processor.subscribe(portOut, this.onNext.bind(this));
+
+    process(portName: string, values: unknown[]) {
+        if (portName !== PORT_ROWS) {
+            return;
         }
-    }
 
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_ROWS) {
-            this.subs.push(sub);
-        }
-    }
-
-    onNext(value: unknown) {
-        if (!this.subs.length) return;
-
-        const rows = value as Row[];
+        const rows = values[0] as Row[];
         const result: Row[] = [];
         const aggregator = createAggregator(this.config.aggType);
         let amt: number | undefined;
@@ -82,9 +67,7 @@ class AggregateNodeProcessor implements NodeProcessor {
             });
         }
         
-        for (const sub of this.subs) {
-            sub(result);
-        }
+        this.emitResult(PORT_ROWS, result);
     }
 }
 

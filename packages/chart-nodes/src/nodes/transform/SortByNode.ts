@@ -1,8 +1,7 @@
-import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
 import { rowToEvalContext } from "../../utils/expressionUtils";
-import { NodeType } from "../nodes";
 
 const PORT_ROWS = 'rows';
 
@@ -11,34 +10,22 @@ type Config = {
     mapColumnKey: expressions.Mapper;
 }
 
-class SortByNodeProcessor implements NodeProcessor {
+class SortByNodeProcessor extends BaseNodeProcessor {
     private readonly subs: ((value: unknown) => void)[] = [];
 
     constructor(
         private readonly params: ChartParams,
         private readonly config: Config
-    ) { }
-
-    get type(): string {
-        return NodeType.SORT_BY;
+    ) {
+        super();
     }
-    
-    register(portIn: string, portOut: string, processor: NodeProcessor): void {
-        if (portIn === PORT_ROWS) {
-            processor.subscribe(portOut, this.onNext.bind(this));
+
+    process(portName: string, values: unknown[]) {
+        if (portName !== PORT_ROWS) {
+            return;
         }
-    }
 
-    subscribe(portName: string, sub: (value: unknown) => void): void {
-        if (portName === PORT_ROWS) {
-            this.subs.push(sub);
-        }
-    }
-
-    private onNext(value: unknown) {
-        if (!this.subs.length) return;
-
-        const rows = value as Row[];
+        const rows = values[0] as Row[];
         const rowsSorted = rows.slice(0);
 
         rowsSorted.sort((a, b) => {
