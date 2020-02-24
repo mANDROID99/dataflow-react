@@ -2,7 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { GraphNodeComponentProps, DragType } from "../../types/graphConfigTypes";
-import GraphEditorScroller from '../../editor/components/GraphEditorScroller';
+import GraphScroller from '../../editor/components/GraphScroller';
 import GraphEditorNodes from '../../editor/components/GraphEditorNodes';
 import GraphConnectionsContainer from '../../editor/components/connections/GraphConnectionsContainer';
 
@@ -35,7 +35,7 @@ export default function SubGraphNodeComponent({ node, nodeId, nodeConfig, handle
                     <svg className="ngraph-subgraph-resizer" width="10px" height="10px" onMouseDown={handleDragSize}>
                         <path d="M10 0L10 10L0 10"/>
                     </svg>
-                    <GraphEditorScroller parent={nodeId}>
+                    <GraphScroller parent={nodeId}>
                         {(scrollX, scrollY) => (
                             <>
                                 <GraphConnectionsContainer
@@ -50,7 +50,7 @@ export default function SubGraphNodeComponent({ node, nodeId, nodeConfig, handle
                                 />
                             </>
                         )}
-                    </GraphEditorScroller>
+                    </GraphScroller>
                 </div>
             )}
         </div>

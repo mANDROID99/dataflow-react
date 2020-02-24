@@ -20,7 +20,6 @@ class SubGraphNodeProcessor implements NodeProcessor {
     }
     
     subscribe(portName: string, sub: (value: unknown) => void): void {
-        console.log('sub!');
         if (portName === PORT_OUT_INTERAL) {
             this.internalSubs.push(sub);
 

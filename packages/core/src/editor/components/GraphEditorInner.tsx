@@ -11,7 +11,7 @@ import { StoreState } from '../../types/storeTypes';
 
 import ContextMenu from './contextmenu/ContextMenu';
 import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
-import GraphEditorScroller from './GraphEditorScroller';
+import GraphScroller from './GraphScroller';
 import { graphContext, GraphContext } from '../graphEditorContext';
 import GraphEditorPreview from './preview/GraphEditorPreview';
 import GraphEditorNodes from './GraphEditorNodes';
@@ -77,7 +77,7 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, o
             <dialogsContext.Provider value={dialogsManager}>
                 <DndProvider backend={Backend}>
                     <SideBar/>
-                    <GraphEditorScroller>
+                    <GraphScroller>
                         {(scrollX, scrollY) => (
                             <>
                                 <GraphConnectionsContainer
@@ -90,7 +90,7 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, o
                                 />
                             </>
                         )}
-                    </GraphEditorScroller>
+                    </GraphScroller>
                     {renderPreview
                         ? <GraphEditorPreview
                             renderPreview={renderPreview}/>

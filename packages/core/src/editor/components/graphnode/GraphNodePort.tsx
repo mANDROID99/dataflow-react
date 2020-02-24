@@ -22,6 +22,7 @@ type Props = {
     nodeType: string;
     portName: string;
     portOut: boolean;
+    container: React.RefObject<Element>;
 }
 
 /**
@@ -145,22 +146,24 @@ function GraphNodePort(props: InnerProps, ref: React.Ref<HTMLDivElement>): React
 const PortInner = React.memo(React.forwardRef<HTMLDivElement, InnerProps>(GraphNodePort));
 
 export default function GraphNodePortContainer(props: Props) {
-    const { nodeId, portName, portOut } = props;
+    const { nodeId, portName, portOut, container } = props;
     const ref = useRef<HTMLDivElement>(null);
-    const { ports, scrollOffset, parentNodeId } = useContainerContext();
+    const { ports, parentNodeId } = useContainerContext();
 
     // notify the port connections that the port position has changed
     const prev = useRef<{ x: number; y: number }>();
     useEffect(() => {
         const el = ref.current;
-        if (!el) return;
+        const c = container.current;
+        if (!el || !c) return;
 
-        const portId = { nodeId: props.nodeId, portName: props.portName, portOut: props.portOut };
+        const portId = { nodeId, portName, portOut };
         const bounds = el.getBoundingClientRect();
+        const containerBounds = c.getBoundingClientRect(); 
 
         // compute the position relative to the scroll container
-        const x = bounds.left + bounds.width / 2 - scrollOffset.current.x;
-        const y = bounds.top + bounds.height / 2 - scrollOffset.current.y;
+        const x = bounds.left + bounds.width / 2 - containerBounds.left;
+        const y = bounds.top + bounds.height / 2 - containerBounds.top;
 
         // check that the port state is changed
         if (!prev.current || prev.current.x !== x || prev.current.y !== y) {

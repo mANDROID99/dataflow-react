@@ -18,6 +18,7 @@ type Props<Ctx> = {
     nodeId: string;
     node: GraphNode;
     context: Ctx;
+    container: React.RefObject<Element>;
 }
 
 function clamp(x: number, min: number | undefined, max: number | undefined): number {
@@ -32,7 +33,7 @@ function clamp(x: number, min: number | undefined, max: number | undefined): num
     return x;
 }
 
-function GraphNodeContainer<Ctx, Params>({ nodeId, node, context }: Props<Ctx>): React.ReactElement {
+function GraphNodeContainer<Ctx, Params>({ nodeId, node, context, container }: Props<Ctx>): React.ReactElement {
     const { graphConfig, params } = useGraphContext<Ctx, Params>();
     const selected = useSelector(selectNodeSelected(nodeId));
     const dispatch = useDispatch();
@@ -172,6 +173,7 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context }: Props<Ctx>):
                         nodeType={nodeType}
                         portName={portName}
                         portOut={portOut}
+                        container={container}
                     /> 
                 ))}
             </div>

@@ -5,23 +5,29 @@ import { selectPortDrag } from "../../../store/selectors";
 import { PortState } from '../../GraphNodePortRefs';
 import { endPortDrag } from '../../../store/actions';
 import { plot } from './curveHelpers';
-import { useContainerContext, Pos } from '../../graphContainerContext';
+import { useContainerContext } from '../../graphContainerContext';
 
 type DragConnectionProps = {
+    container: React.RefObject<SVGGElement>;
     portOut: boolean;
     draggedPort: PortState;
-    scrollOffset: React.MutableRefObject<Pos>;
 }
 
-function GraphDragConnection({ portOut, draggedPort, scrollOffset }: DragConnectionProps) {
+function GraphDragConnection({ portOut, draggedPort, container }: DragConnectionProps) {
     const dispatch = useDispatch();
     const [drag, setDrag] = useState({ x: draggedPort.x, y: draggedPort.y });
 
     useEffect(() => {
         const handleMouseMove = (event: MouseEvent) => {
+            const c = container.current;
+            if (!c) return;
+
+            const point = new DOMPoint(event.clientX, event.clientY)
+                .matrixTransform(c.getScreenCTM()!.inverse());
+                
             setDrag({
-                x: event.clientX - scrollOffset.current.x,
-                y: event.clientY - scrollOffset.current.y
+                x: point.x,
+                y: point.y
             });
         };
 
@@ -36,7 +42,7 @@ function GraphDragConnection({ portOut, draggedPort, scrollOffset }: DragConnect
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [dispatch, scrollOffset]);
+    }, [container, dispatch]);
 
     const d = plot(draggedPort.x, draggedPort.y, drag.x, drag.y, portOut);
     return (
@@ -45,11 +51,12 @@ function GraphDragConnection({ portOut, draggedPort, scrollOffset }: DragConnect
 }
 
 type Props = {
+    container: React.RefObject<SVGGElement>;
     parent?: string;
 }
 
-function GraphDragConnectionContainer({ parent }: Props) {
-    const { ports, scrollOffset } = useContainerContext();
+function GraphDragConnectionContainer({ parent, container }: Props) {
+    const { ports } = useContainerContext();
     const portDrag = useSelector(selectPortDrag);
 
     if (!portDrag || portDrag.port.parentNodeId !== parent) {
@@ -65,7 +72,7 @@ function GraphDragConnectionContainer({ parent }: Props) {
         <GraphDragConnection
             portOut={portDrag.port.portOut}
             draggedPort={portState}
-            scrollOffset={scrollOffset}
+            container={container}
         />
     );
 }

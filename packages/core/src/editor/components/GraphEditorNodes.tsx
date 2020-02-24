@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
 
 import { createSubNodesSelector } from "../../store/selectors";
 import { computeContexts } from "../../processor/computeContexts";
-import GraphNodeContainer from './graphnode/GraphNodeContainer';
 import { useGraphContext } from "../graphEditorContext";
+import GraphNodeContainer from './graphnode/GraphNodeContainer';
 
 type Props<Ctx, P> = {
     scrollX: number;
@@ -14,6 +14,7 @@ type Props<Ctx, P> = {
 
 function GraphEditorNodes<Ctx, P>({ parent, scrollX, scrollY }: Props<Ctx, P>) {
     const { params, graphConfig } = useGraphContext<Ctx, P>();
+    const container = useRef<HTMLDivElement>(null);
     
     // select state from the store
     const subNodes = useSelector(useMemo(() => createSubNodesSelector(parent), [parent]));
@@ -22,7 +23,7 @@ function GraphEditorNodes<Ctx, P>({ parent, scrollX, scrollY }: Props<Ctx, P>) {
     const nodeContexts = useMemo(() => computeContexts(params, subNodes, graphConfig), [params, subNodes, graphConfig]);
 
     return (
-        <div id="graph-nodes-container" className="ngraph-nodes" style={{ left: scrollX, top: scrollY }}>
+        <div ref={container} className="ngraph-nodes" style={{ left: scrollX, top: scrollY }}>
             {Object.keys(subNodes).map(nodeId => {
                 const context = nodeContexts.get(nodeId);
 
@@ -36,6 +37,7 @@ function GraphEditorNodes<Ctx, P>({ parent, scrollX, scrollY }: Props<Ctx, P>) {
                         nodeId={nodeId}
                         context={context}
                         node={subNodes[nodeId]}
+                        container={container}
                     />
                 );
             })}
