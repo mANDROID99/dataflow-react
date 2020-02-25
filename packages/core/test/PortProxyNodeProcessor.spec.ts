@@ -1,4 +1,4 @@
-import { PortProxyNodeProcessor } from '../src/nodes/PortProxyNodeProcessor';
+import { ProxyPortsNodeProcessor } from '../src/nodes/ProxyPortsNodeProcessor';
 
 const PORT_IN = 'input';
 const PORT_OUT = 'output';
@@ -6,7 +6,7 @@ const PORT_OUT_INTERAL = '__out';
 const PORT_IN_INTERNAL = '__in';
 
 function createProcessor() {
-    return new PortProxyNodeProcessor(new Map([
+    return new ProxyPortsNodeProcessor(new Map([
         [PORT_IN, PORT_OUT_INTERAL],
         [PORT_IN_INTERNAL, PORT_OUT]
     ]));

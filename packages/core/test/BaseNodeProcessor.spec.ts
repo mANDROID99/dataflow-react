@@ -1,10 +1,10 @@
 import { BaseNodeProcessor } from '../src/nodes/BaseNodeProcessor';
 
 class TestProcessor extends BaseNodeProcessor {
-    protected process(portName: string, values: unknown[]): void {
+    process(portName: string, values: unknown[]): void {
         if (portName === 'portIn') {
             const v = (values as string[]).map(v => v.toUpperCase());
-            super.onResult('portOut', v);
+            super.emitResult('portOut', v);
         } else {
             throw new Error();
         }
