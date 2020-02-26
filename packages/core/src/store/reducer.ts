@@ -23,7 +23,8 @@ import {
     SetNodeNameAction,
     SetNodeBoundsAction,
     MoveOverlappingBoundsAction,
-    SetNodeSizeAction
+    SetNodeSizeAction,
+    SetNodeContextAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
@@ -40,7 +41,7 @@ function getSubNodeIds(graph: Graph, parent: string | undefined) {
     }
 }
 
-function deleteNode(graph: Graph, bounds: { [key: string]: NodeBounds }, nodeId: string) {
+function deleteNode(graph: Graph, nodeBounds: { [key: string]: NodeBounds }, nodeContexts: { [nodeId: string]: unknown }, nodeId: string) {
     const nodes = graph.nodes;
     const node = nodes[nodeId];
     if (!node) return;
@@ -49,7 +50,7 @@ function deleteNode(graph: Graph, bounds: { [key: string]: NodeBounds }, nodeId:
     const subNodes = node.subNodes;
     if (subNodes) {
         for (const subNodeId of subNodes) {
-            deleteNode(graph, bounds, subNodeId);
+            deleteNode(graph, nodeBounds, nodeContexts, subNodeId);
         }
     }
 
@@ -82,14 +83,15 @@ function deleteNode(graph: Graph, bounds: { [key: string]: NodeBounds }, nodeId:
     delete nodes[nodeId];
 
     // remove node bounds
-    clearAlignment(bounds, nodeId);
-    delete bounds[nodeId];
+    clearAlignment(nodeBounds, nodeId);
+    delete nodeBounds[nodeId];
+    delete nodeContexts[nodeId];
 }
 
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
     [GraphActionType.LOAD_GRAPH]: produce((state: GraphEditorState, action: LoadGraphAction) => {
         state.graph = action.graph;
-        state.bounds = {};
+        state.nodeBounds = {};
         state.portDrag = undefined;
         state.contextMenu = undefined;
     }),
@@ -127,7 +129,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     }),
 
     [GraphActionType.DELETE_NODE]: produce((state: GraphEditorState, { nodeId }: DeleteNodeAction) => {
-        deleteNode(state.graph, state.bounds, nodeId);
+        deleteNode(state.graph, state.nodeBounds, state.nodeContexts, nodeId);
         state.contextMenu = undefined;
         state.selectedNode = undefined;
     }),
@@ -209,7 +211,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         if (!node) return;
         node.x = action.x;
         node.y = action.y;
-        clearAlignment(state.bounds, action.nodeId);
+        clearAlignment(state.nodeBounds, action.nodeId);
     }),
 
     [GraphActionType.SET_NODE_WIDTH]: produce((state: GraphEditorState, action: SetNodeWidthAction) => {
@@ -285,7 +287,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     }),
     
     [GraphActionType.SET_NODE_BOUNDS]: produce((state: GraphEditorState, action: SetNodeBoundsAction) => {
-        const bounds = state.bounds[action.nodeId];
+        const bounds = state.nodeBounds[action.nodeId];
         if (bounds) {
             bounds.x = action.x;
             bounds.y = action.y;
@@ -293,13 +295,17 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
             bounds.height = action.height;
 
         } else {
-            state.bounds[action.nodeId] = {
+            state.nodeBounds[action.nodeId] = {
                 x: action.x,
                 y: action.y,
                 width: action.width,
                 height: action.height
             };
         }        
+    }),
+
+    [GraphActionType.SET_NODE_CONTEXT]: produce((state: GraphEditorState, action: SetNodeContextAction) => {
+        state.nodeContexts[action.nodeId] = action.nodeContext;
     }),
 
     [GraphActionType.MOVE_OVERLAPPING_BOUNDS]: produce((state: GraphEditorState, action: MoveOverlappingBoundsAction) => {
@@ -311,11 +317,11 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         if (!subNodeIds) return;
 
         const updatedIds = updateBoundsOverlapping(
-            state.bounds, subNodeIds, action.nodeId, OVERLAP_MARGIN);
+            state.nodeBounds, subNodeIds, action.nodeId, OVERLAP_MARGIN);
 
         for (const updatedId of updatedIds) {
             const node = state.graph.nodes[updatedId];
-            const nodeBounds = state.bounds[updatedId];
+            const nodeBounds = state.nodeBounds[updatedId];
 
             if (node && nodeBounds) {
                 node.y = nodeBounds.y;

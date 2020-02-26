@@ -1,6 +1,6 @@
 import { NodeProcessor } from "../types/nodeProcessorTypes";
 
-class Port {
+class ValuesCollector {
     private readonly portName: string;
     private readonly sub: (portName: string, value: unknown[]) => void;
     private values: unknown[] | undefined;
@@ -20,7 +20,7 @@ class Port {
         this.notifyChanged();
     }
 
-    register(): number {
+    registerOne(): number {
         return this.n++;
     }
 
@@ -35,59 +35,81 @@ class Port {
     }
 }
 
-type RegisteredConnection = {
+type InputConnection = {
+    port: string;
+    processor: NodeProcessor;
+}
+
+type OutputConnection = {
     processor: NodeProcessor;
     port: string;
     key: number;
 }
 
+type InputPort = {
+    value: ValuesCollector;
+    connections: InputConnection[];
+}
+
+type OutputPort = {
+    connections: OutputConnection[];
+}
+
 export abstract class BaseNodeProcessor implements NodeProcessor {
-    protected readonly outputs = new Map<string, RegisteredConnection[]>();
-    protected readonly inputs = new Map<string, Port>();
+    protected readonly outputs = new Map<string, OutputPort>();
+    protected readonly inputs = new Map<string, InputPort>();
     
-    process?(portName: string, values: unknown[]): void;
+    abstract process(portName: string, values: unknown[]): void;
 
     registerConnection(portOut: string, portIn: string, processor: NodeProcessor): void {
-        const key = processor.registerConnectionInverse(portIn);
-        const item = {
+        const key = processor.registerConnectionInverse(portOut, portIn, this);
+        const conn: OutputConnection = {
             processor,
             port: portIn,
             key
         };
 
-        const handlers = this.outputs.get(portOut);
-        if (!handlers) {
-            this.outputs.set(portOut, [item]);
+        let output: OutputPort | undefined = this.outputs.get(portOut);
+        if (!output) {
+            output = { connections: [conn] };
+            this.outputs.set(portOut, output);
+
         } else {
-            handlers.push(item);
+            output.connections.push(conn);
         }
     }
 
-    registerConnectionInverse(portName: string): number {
-        if (this.process) {
-            let port = this.inputs.get(portName);
-            if (!port) {
-                port = new Port(portName, this.process.bind(this));
-                this.inputs.set(portName, port);
-            }
-            return port.register();
+    registerConnectionInverse(portOut: string, portIn: string, processor: NodeProcessor): number {
+        const conn: InputConnection = {
+            port: portOut,
+            processor
+        };
+
+        let input: InputPort | undefined = this.inputs.get(portIn);
+        if (!input) {
+            const value = new ValuesCollector(portIn, this.process.bind(this));
+            input = { connections: [conn], value };
+            this.inputs.set(portIn, input);
+
         } else {
-            return -1;
+            input.connections.push(conn);
         }
+
+        return input.value.registerOne();
     }
 
     onNext(portName: string, key: number, value: unknown): void {
-        const port = this.inputs.get(portName);
-        if (!port) return;
-        port.setValue(key, value);
+        const input = this.inputs.get(portName);
+        if (!input) return;
+        input.value.setValue(key, value);
     }
 
     protected emitResult(portName: string, value: unknown): void {
-        const outputs = this.outputs.get(portName);
-        if (!outputs) return;
+        const output = this.outputs.get(portName);
+        if (!output) return;
 
-        for (const output of outputs) {
-            output.processor.onNext(output.port, output.key, value);
+        for (const conn of output.connections) {
+            conn.processor.onNext(conn.port, conn.key, value);
         }
     }
 }

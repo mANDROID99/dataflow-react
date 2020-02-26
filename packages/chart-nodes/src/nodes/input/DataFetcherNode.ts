@@ -9,6 +9,12 @@ const PORT_DATA = 'data';
 const PORT_SIGNAL = 'signal';
 const BTN_RESOLVE_COLUMNS = 'btn-resolve-columns';
 
+const FIELD_URL = 'url';
+const FIELD_COLUMNS = 'columns';
+const FIELD_HEADERS = 'headers';
+const FIELD_MAP_RESPONSE = 'mapResponse';
+const FIELD_ACTIONS = 'actions';
+
 type Config = {
     mapUrl: expressions.Mapper,
     mapHeaders: expressions.EntriesMapper,
@@ -54,11 +60,11 @@ class DataFetcherProcessor extends BaseNodeProcessor {
         super();
     }
 
-    registerConnectionInverse(portName: string): number {
-        if (portName === PORT_SIGNAL) {
+    registerConnectionInverse(portOut: string, portIn: string, processor: NodeProcessor): number {
+        if (portIn === PORT_SIGNAL) {
             this.waitForSignal = true;
         }
-        return super.registerConnectionInverse(portName);
+        return super.registerConnectionInverse(portOut, portIn, processor);
     }
 
     process(portName: string, values: unknown[]) {
@@ -115,27 +121,27 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     menuGroup: 'Input',
     description: 'Fetches data by performing an HTTP request.',
     fields: {
-        url: {
+        [FIELD_URL]: {
             label: 'Map URL',
             type: InputType.TEXT,
             initialValue: ''
         },
-        headers: {
+        [FIELD_HEADERS]: {
             label: 'Headers',
             type: InputType.DATA_ENTRIES,
             initialValue: []
         },
-        mapResponse: {
+        [FIELD_MAP_RESPONSE]: {
             label: 'Map Response',
             type: InputType.TEXT,
             initialValue: ''
         },
-        columns: {
+        [FIELD_COLUMNS]: {
             label: 'Columns',
             type: InputType.DATA_LIST,
             initialValue: []
         },
-        actions: {
+        [FIELD_ACTIONS]: {
             label: 'Actions',
             type: InputType.ACTIONS,
             initialValue: null,
@@ -166,9 +172,9 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     createProcessor(node, params): NodeProcessor {
-        const mapUrlExpr = node.fields.url as string;
-        const mapResponseExpr = node.fields.mapResponse as string;
-        const headerEntries = node.fields.headers as Entry<string>[];
+        const mapUrlExpr = node.fields[FIELD_URL] as string;
+        const mapResponseExpr = node.fields[FIELD_MAP_RESPONSE] as string;
+        const headerEntries = node.fields[FIELD_HEADERS] as Entry<string>[];
 
         const mapUrl = expressions.compileExpression(mapUrlExpr);
         const mapHeaders = expressions.compileEntriesMapper(headerEntries);
@@ -180,16 +186,18 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             mapResponse
         });
     },
-    mapContext(node): ChartContext {
-        const columns = node.fields.columns as string[];
-        return { columns };
+    computeContext: {
+        compute(_, columns: string[]) {
+            return { columns };    
+        },
+        deps: ({ node }) => node.fields[FIELD_COLUMNS] as string[]
     },
     onEvent(key, payload, { node, params, actions }) {
         if (key === BTN_RESOLVE_COLUMNS) {
             const ctx = params.variables;
-            const mapUrl = expressions.compileExpression(node.fields.url as string);
-            const mapResponse = expressions.compileExpression(node.fields.mapResponse as string);
-            const mapHeaders = expressions.compileEntriesMapper(node.fields.headers as Entry<string>[]);
+            const mapUrl = expressions.compileExpression(node.fields[FIELD_URL] as string);
+            const mapResponse = expressions.compileExpression(node.fields[FIELD_MAP_RESPONSE] as string);
+            const mapHeaders = expressions.compileEntriesMapper(node.fields[FIELD_HEADERS] as Entry<string>[]);
 
             const url = asString(mapUrl(ctx));
             const headers = resolveHeaders(mapHeaders, ctx);

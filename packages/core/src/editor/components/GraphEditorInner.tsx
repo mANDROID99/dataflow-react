@@ -14,7 +14,7 @@ import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
 import GraphScroller from './GraphScroller';
 import { graphContext, GraphContext } from '../graphEditorContext';
 import GraphEditorPreview from './preview/GraphEditorPreview';
-import GraphEditorNodes from './GraphEditorNodes';
+import GraphNodes from './GraphNodes';
 import SideBar from './sidebar/SideBar';
 import { selectGraph } from '../../store/selectors';
 import { dialogsContext, DialogsManager } from './dialog/DialogsManager';
@@ -84,7 +84,7 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, o
                                     scrollX={scrollX}
                                     scrollY={scrollY}
                                 />
-                                <GraphEditorNodes
+                                <GraphNodes
                                     scrollX={scrollX}
                                     scrollY={scrollY}
                                 />

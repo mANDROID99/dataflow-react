@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { GraphNodeComponentProps, DragType } from '../../types/graphNodeComponentTypes';
 import GraphScroller from '../../editor/components/GraphScroller';
-import GraphEditorNodes from '../../editor/components/GraphEditorNodes';
+import GraphNodes from '../../editor/components/GraphNodes';
 import GraphConnectionsContainer from '../../editor/components/connections/GraphConnectionsContainer';
 
 export default function SubGraphNodeComponent({ node, nodeId, nodeConfig, handleDrag, actions, width, height }: GraphNodeComponentProps<any, any>) {
@@ -43,7 +43,7 @@ export default function SubGraphNodeComponent({ node, nodeId, nodeConfig, handle
                                     scrollY={scrollY}
                                     parent={nodeId}
                                 />
-                                <GraphEditorNodes
+                                <GraphNodes
                                     scrollX={scrollX}
                                     scrollY={scrollY}
                                     parent={nodeId}

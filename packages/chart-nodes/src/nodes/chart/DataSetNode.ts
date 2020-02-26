@@ -1,9 +1,9 @@
-import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, Entry, expressions, NodeProcessor, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, Entry, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/conversions';
 import { pointToEvalContext } from '../../utils/expressionUtils';
-import { NodeType } from "../nodes";
+import { COMPUTE_CONTEXT_MERGE_INPUTS } from "../../chartContext";
 
 const PORT_POINTS = 'points';
 const PORT_DATASETS = 'datasets';
@@ -113,8 +113,8 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 optional: true,
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         },
         label: {
@@ -125,8 +125,8 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 optional: true,
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         },
         borderColor: {
@@ -137,8 +137,8 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 optional: true,
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         },
         backgroundColor: {
@@ -149,8 +149,8 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 optional: true,
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         },
         params: {
@@ -159,6 +159,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: []
         }
     },
+    computeContext: COMPUTE_CONTEXT_MERGE_INPUTS,
     createProcessor(node, params) {
         const datasetType = node.fields.type as string;
         const mapLabelExpr = node.fields.label as ColumnMapperInputValue;

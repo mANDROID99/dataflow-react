@@ -4,6 +4,7 @@ import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataPoint, Row } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
+import { COMPUTE_CONTEXT_MERGE_INPUTS } from "../../chartContext";
 
 const PORT_ROWS = 'rows';
 const PORT_POINTS = 'points';
@@ -67,8 +68,8 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params: {
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         },
         y: {
@@ -78,8 +79,8 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params: {
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         },
         r: {
@@ -90,8 +91,8 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 optional: true,
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         },
         color: {
@@ -102,11 +103,12 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 optional: true,
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         }
     },
+    computeContext: COMPUTE_CONTEXT_MERGE_INPUTS,
     createProcessor(node, params) {
         const mapXExpr = node.fields.x as ColumnMapperInputValue;
         const mapYExpr = node.fields.y as ColumnMapperInputValue;

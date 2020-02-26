@@ -3,12 +3,18 @@ import { ChartContext } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
 
 const PORT_ROWS = 'rows';
+const FIELD_DATA = 'data';
 
 class DataGridProcessor extends BaseNodeProcessor {
+    
     constructor(
         private readonly data: DataGridInputValue
     ) {
         super();
+    }
+
+    process(): void {
+        /* do nothing */
     }
 
     start(): void {
@@ -36,7 +42,7 @@ export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     menuGroup: 'Input',
     description: 'Input table of values.',
     fields: {
-        data: {
+        [FIELD_DATA]: {
             label: 'Data',
             type: InputType.DATA_GRID,
             initialValue: emptyDataGrid()
@@ -51,13 +57,13 @@ export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
         }
     },
     createProcessor(node) {
-        const data = node.fields.data as DataGridInputValue;  
+        const data = node.fields[FIELD_DATA] as DataGridInputValue;  
         return new DataGridProcessor(data);
     },
-    mapContext(node): ChartContext {
-        const data = node.fields.data as DataGridInputValue;
-        return {
-            columns: data.columns
-        };
+    computeContext: {
+        compute(_, deps: DataGridInputValue[]) {
+            return { columns: deps[0].columns };    
+        },
+        deps: ({ node }) => [node.fields[FIELD_DATA] as DataGridInputValue]
     }
 };

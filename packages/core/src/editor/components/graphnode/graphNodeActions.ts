@@ -7,20 +7,21 @@ import {
     setFieldValue,
     showContextMenu,
     selectNode,
-    setNodeWidth
+    setNodeWidth,
+    setNodeContext
 } from "../../../store/actions";
 import { ContextMenuTargetType, ContextMenuTarget } from "../../../types/storeTypes";
 import { GraphNodeConfig } from "../../../types/graphConfigTypes";
 import { GraphNode } from "../../../types/graphTypes";
 import { GraphNodeActions } from "../../../types/graphNodeComponentTypes";
 
-export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, nodeConfig: GraphNodeConfig<C, P>, node: GraphNode, context: C, params: P): GraphNodeActions {
+export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, nodeConfig: GraphNodeConfig<C, P>, node: GraphNode, context: C | undefined, params: P): GraphNodeActions<C> {
     const paramsRef = useRef({ node, context, params });
     useEffect(() => {
         paramsRef.current = { node, context, params };
     });
 
-    return useMemo((): GraphNodeActions => ({
+    return useMemo((): GraphNodeActions<C> => ({
         setPos(x, y) {
             dispatch(setNodePos(nodeId, x, y));
         },
@@ -51,6 +52,10 @@ export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, no
                 nodeId
             };
             dispatch(showContextMenu(target, x, y));
+        },
+
+        setNodeContext(nodeContext) {
+            dispatch(setNodeContext(nodeId, nodeContext));
         },
 
         triggerEvent(key, payload) {

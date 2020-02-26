@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import cn from 'classnames';
 
 import { GraphNode } from '../../../types/graphTypes';
 import GraphNodePort from './GraphNodePort';
 import { useGraphContext } from '../../graphEditorContext';
-import { selectNodeSelected } from '../../../store/selectors';
+import { selectNodeSelected, createNodeContextSelector } from '../../../store/selectors';
 import { selectNode, showContextMenu, setNodeBounds, moveOverlapping } from '../../../store/actions';
 import { ContextMenuTarget, ContextMenuTargetType, NodeBounds } from '../../../types/storeTypes';
 import { DragType, GraphNodeComponentProps } from '../../../types/graphNodeComponentTypes';
@@ -14,10 +14,9 @@ import { useDragBehaviour } from '../../../utils/hooks/useDragBehaviour';
 import GraphNodeComponent from './GraphNodeComponent';
 import { getNodeMinWidth, getNodeMaxWidth, getNodeMinHeight, getNodeMaxHeight } from '../../../utils/graph/graphNodeFactory';
 
-type Props<Ctx> = {
+type Props = {
     nodeId: string;
     node: GraphNode;
-    context: Ctx;
     container: React.RefObject<Element>;
 }
 
@@ -33,8 +32,8 @@ function clamp(x: number, min: number | undefined, max: number | undefined): num
     return x;
 }
 
-function GraphNodeContainer<Ctx, Params>({ nodeId, node, context, container }: Props<Ctx>): React.ReactElement {
-    const { graphConfig, params } = useGraphContext<Ctx, Params>();
+function GraphNode<C, P>({ nodeId, node, container }: Props): React.ReactElement {
+    const { graphConfig, params } = useGraphContext<C, P>();
     const selected = useSelector(selectNodeSelected(nodeId));
     const dispatch = useDispatch();
     const ref = useRef<HTMLDivElement>(null);
@@ -46,8 +45,16 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context, container }: P
     const minH = getNodeMinHeight(nodeConfig);
     const maxH = getNodeMaxHeight(nodeConfig);
 
+    // compute the new node context. Uses "createMemoizedCallbackSelector" to determine if the context needs to be recomputed
+    const context = useSelector(useMemo(() => createNodeContextSelector(nodeId, nodeConfig, params), [nodeId, nodeConfig, params]));
+   
     // construct the actions to pass down
     const actions = useGraphNodeActions(nodeId, dispatch, nodeConfig, node, context, params);
+
+    // update the node-context in the store
+    useEffect(() => {
+        actions.setNodeContext(context);
+    }, [actions, context]);
 
     // notify when the graph-node changed
     const prevNode = useRef<GraphNode>(node);
@@ -107,11 +114,11 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context, container }: P
         }
     }
 
-    // clamp the size
+    // clamp the node size
     width = clamp(width, minW, maxW);
     height = clamp(height, minH, maxH);
 
-    // whether anything is currently affecting the node bounds
+    // dont update the bounds while the node is being dragged
     const isDragging = drag != null;
 
     // Detect element measured bounds changes, update in the store
@@ -181,7 +188,7 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context, container }: P
         );
     };
 
-    const componentProps: GraphNodeComponentProps<Ctx, Params> = {
+    const componentProps: GraphNodeComponentProps<C, P> = {
         nodeId,
         node,
         nodeConfig,
@@ -217,4 +224,4 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context, container }: P
     );
 }
 
-export default React.memo(GraphNodeContainer);
+export default React.memo(GraphNode);

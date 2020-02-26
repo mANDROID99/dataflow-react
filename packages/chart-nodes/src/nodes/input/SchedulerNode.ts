@@ -3,6 +3,9 @@ import { ChartContext, ChartParams } from "../../types/contextTypes";
 
 const PORT_SIGNAL = 'signal';
 
+const FIELD_INTERVAL = 'interval';
+const FIELD_DELAY = 'delay';
+
 type Config = {
     interval: number;
     delay: number;
@@ -24,6 +27,10 @@ class SchedulerProcessor extends BaseNodeProcessor {
         if (this.handle != null) {
             window.clearTimeout(this.handle);
         }
+    }
+
+    process(): void {
+        /* do nothing */
     }
 
     private onTick() {
@@ -48,7 +55,7 @@ export const SCHEDULER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     fields: {
-        interval: {
+        [FIELD_INTERVAL]: {
             label: 'Interval',   
             type: InputType.NUMBER,
             initialValue: 0,
@@ -56,7 +63,7 @@ export const SCHEDULER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 min: 0
             }
         },
-        delay: {
+        [FIELD_DELAY]: {
             label: 'Delay',
             type: InputType.NUMBER,
             initialValue: 0,
@@ -66,8 +73,8 @@ export const SCHEDULER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     createProcessor(node): NodeProcessor {
-        const interval = node.fields.interval as number;
-        const delay = node.fields.delay as number;
+        const interval = node.fields[FIELD_INTERVAL] as number;
+        const delay = node.fields[FIELD_DELAY] as number;
         return new SchedulerProcessor({
             interval,
             delay

@@ -41,8 +41,11 @@ export type GraphEditorState = {
     contextMenu: ContextMenuState | undefined;
     selectedNode: string | undefined;
     portDrag: PortDragState | undefined;
-    bounds: {
+    nodeBounds: {
         [nodeId: string]: NodeBounds;
+    };
+    nodeContexts: {
+        [nodeId: string]: unknown;
     };
 }
 

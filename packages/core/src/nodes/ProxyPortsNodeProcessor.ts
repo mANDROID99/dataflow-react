@@ -1,19 +1,19 @@
 import { NodeProcessor } from "../types/nodeProcessorTypes";
 
-type Connection = {
+type OutputConnection = {
     port: string;
     processor: NodeProcessor;
 }
 
-type RegisteredConnection = {
+type InputProxyConnection = {
     processor: NodeProcessor;
     port: string;
     key: number;
 }
 
 export class ProxyPortsNodeProcessor implements NodeProcessor {
-    private readonly inputs = new Map<string, RegisteredConnection[][]>();
-    private readonly outputs = new Map<string, Connection[]>();
+    private readonly inputs = new Map<string, InputProxyConnection[][]>();
+    private readonly outputs = new Map<string, OutputConnection[]>();
 
     private readonly mapping: Map<string, string>;
     private readonly inverseMapping: Map<string, string>;
@@ -33,8 +33,12 @@ export class ProxyPortsNodeProcessor implements NodeProcessor {
         const inputs = this.inputs.get(proxyPortIn);
         if (inputs) {
             for (const input of inputs) {
-                const key = processor.registerConnectionInverse(portIn);
-                input.push({ key, port: portIn, processor });
+                const key = processor.registerConnectionInverse(portOut, portIn, this);
+                input.push({
+                    key,
+                    port: portIn,
+                    processor
+                });
             }
         }
 
@@ -50,29 +54,29 @@ export class ProxyPortsNodeProcessor implements NodeProcessor {
         });
     }
 
-    registerConnectionInverse(portName: string): number {
-        const proxyPortOut = this.mapping.get(portName);
+    registerConnectionInverse(portOut: string, portIn: string): number {
+        const proxyPortOut = this.mapping.get(portIn);
         if (!proxyPortOut) {
-            console.warn('Register connection inverse. Unmapped port: ' + portName);
+            console.warn('Register connection inverse. Unmapped port: ' + portIn);
             return - 1;
         }
 
         const outputs = this.outputs.get(proxyPortOut);
 
-        let registrations: RegisteredConnection[];
+        let connections: InputProxyConnection[];
         if (outputs) {
-            registrations = outputs.map(this.createRegistration);
+            connections = outputs.map(this.outputToInputProxyConnection.bind(this, proxyPortOut));
         } else {
-            registrations = [];
+            connections = [];
         }
 
-        let inputs = this.inputs.get(portName);
+        let inputs = this.inputs.get(portIn);
         if (!inputs) {
             inputs = [];
-            this.inputs.set(portName, inputs);
+            this.inputs.set(portIn, inputs);
         }
 
-        inputs.push(registrations);
+        inputs.push(connections);
         return inputs.length - 1;
     }
 
@@ -80,17 +84,14 @@ export class ProxyPortsNodeProcessor implements NodeProcessor {
         const inputs = this.inputs.get(portName);
         if (!inputs) return;
 
-        const proxyPortOut = this.mapping.get(portName);
-        if (!proxyPortOut) return;
-
-        const registrations = inputs[key];
-        for (const binding of registrations) {
-            binding.processor.onNext(binding.port, binding.key, value);
+        const proxies = inputs[key];
+        for (const outputProxy of proxies) {
+            outputProxy.processor.onNext(outputProxy.port, outputProxy.key, value);
         }
     }
 
-    private createRegistration(connection: Connection): RegisteredConnection {
-        const key = connection.processor.registerConnectionInverse(connection.port);
+    private outputToInputProxyConnection(portOut: string, connection: OutputConnection): InputProxyConnection {
+        const key = connection.processor.registerConnectionInverse(portOut, connection.port, this);
         return { ...connection, key };
     }
 

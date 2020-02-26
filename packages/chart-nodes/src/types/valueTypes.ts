@@ -81,7 +81,7 @@ export type GridValueConfig = {
 export type GridColumnConfig = {
     name: string;
     width: number;
-    values: GridValueConfig[];
+    mapper: (row: Row, index: number) => GridValueConfig;
 }
 
 export type GridViewConfig = {

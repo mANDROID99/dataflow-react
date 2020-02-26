@@ -1,33 +1,33 @@
 import React, { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { GraphNodeFieldConfig, GraphFieldInputConfig, FieldResolverParams } from '../../../types/graphConfigTypes';
+import { GraphNodeFieldConfig, GraphFieldInputConfig } from '../../../types/graphConfigTypes';
 import { InputProps } from '../../../types/graphInputTypes';
 import { GraphNodeActions } from '../../../types/graphNodeComponentTypes';
 import { useGraphContext } from '../../graphEditorContext';
-import { useFieldParams } from '../../../utils/useFieldParams';
 import { setFieldValue } from '../../../store/actions';
+import { createMemoizedCallbackSelector } from '../../../utils/createMemoizedCallbackSelector';
 
-type Props<Ctx, Params> = {
+type Props<C, P> = {
     nodeId: string;
-    context: Ctx;
+    context: C;
     fieldName: string;
-    fieldConfig: GraphNodeFieldConfig<Ctx, Params>;
-    actions: GraphNodeActions;
+    fieldConfig: GraphNodeFieldConfig<C, P>;
+    actions: GraphNodeActions<C>;
     fields: { [key: string]: unknown };
 }
 
-function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, fields, actions }: Props<Ctx, Params>) {
+function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fields, actions }: Props<C, P>) {
     const inputType = fieldConfig.type;
     const fieldValue = fields[fieldName];
     
     const dispatch = useDispatch();
-    const { graphConfig, params } = useGraphContext<Ctx, Params>();
+    const { graphConfig, params } = useGraphContext<C, P>();
     const input: GraphFieldInputConfig | undefined = graphConfig.inputs[inputType];
     
-    // resolve next field params
-    const resolverParams = useMemo<FieldResolverParams<Ctx, Params>>(() => ({ context, params, fields }), [context, params, fields]);
-    const fieldParams = useFieldParams(fieldConfig, resolverParams);
+    // resolve next field params. Uses "createMemoizedCallbackSelector" to compare the previous and next values, to determine if params need to be recomputed
+    const fieldParamsSelector = useMemo(() => fieldConfig.resolveParams && createMemoizedCallbackSelector(fieldConfig.resolveParams), [fieldConfig.resolveParams]);
+    const fieldParams = useMemo(() => fieldParamsSelector?.({ context, params, fields }), [fieldParamsSelector, context, params, fields]);
 
     // handle the input value changed
     const handleChanged = useCallback((value: unknown) => {
@@ -46,7 +46,7 @@ function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, 
             value: fieldValue,
             fieldName,
             nodeId,
-            params: fieldParams,
+            params: fieldParams || {},
             actions,
             onChanged: handleChanged
         };
@@ -62,7 +62,7 @@ function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, 
         nodeId
     ]);
 
-    if (fieldParams.hidden) {
+    if (fieldParams?.hidden) {
         return null;
     }
 

@@ -2,6 +2,8 @@ import { StoreState } from "../types/storeTypes";
 import { GraphTemplate } from "../types/graphTemplateTypes";
 import { PortId } from "../editor/GraphNodePortRefs";
 import { TargetPort, GraphNode } from "../types/graphTypes";
+import { GraphNodeConfig } from "../types/graphConfigTypes";
+import { createMemoizedCallbackSelector } from "../utils/createMemoizedCallbackSelector";
 
 export function selectGraph(state: StoreState) {
     return state.editor.graph;
@@ -26,6 +28,42 @@ export function selectSubNodeIds(parent?: string) {
         } else {
             return graph.nodeIds;
         }
+    };
+}
+
+export function selectGraphNode(state: StoreState, nodeId: string): GraphNode | undefined {
+    return state.editor.graph.nodes[nodeId];
+}
+
+export function selectGraphNodeName(state: StoreState, nodeId: string): string | undefined {
+    const node = selectGraphNode(state, nodeId);
+    return node?.name;
+}
+
+export function selectTemplateId(templates: GraphTemplate[]) {
+    return (state: StoreState) => {
+        const graph = state.editor.graph;
+        return templates.find(t => t.data === graph)?.id;
+    };
+}
+
+export function selectContextMenu(state: StoreState) {
+    return state.editor.contextMenu;
+}
+
+export function selectNodeSelected(nodeId: string) {
+    return (state: StoreState) => {
+        return state.editor.selectedNode === nodeId;
+    };
+}
+
+export function selectPortTargets(port: PortId) {
+    return (state: StoreState): TargetPort[] | undefined => {
+        const node = state.editor.graph.nodes[port.nodeId];
+        if (!node) return;
+
+        const ports = port.portOut ? node.ports.out : node.ports.in;
+        return ports[port.portName];
     };
 }
 
@@ -73,34 +111,21 @@ export function createSubNodesSelector(parent?: string) {
     };
 }
 
-export function selectGraphNodeName(state: StoreState, nodeId: string): string | undefined {
-    const node = state.editor.graph.nodes[nodeId];
-    return node?.name;
-}
+export function createNodeContextSelector<C, P>(nodeId: string, graphNodeConfig: GraphNodeConfig<C, P>, params: P): (state: StoreState) => C | undefined {
+    if (!graphNodeConfig.computeContext) {
+        return () => undefined;
+    }
 
-export function selectTemplateId(templates: GraphTemplate[]) {
+    const selector = createMemoizedCallbackSelector(graphNodeConfig.computeContext);
     return (state: StoreState) => {
-        const graph = state.editor.graph;
-        return templates.find(t => t.data === graph)?.id;
-    };
-}
-
-export function selectContextMenu(state: StoreState) {
-    return state.editor.contextMenu;
-}
-
-export function selectNodeSelected(nodeId: string) {
-    return (state: StoreState) => {
-        return state.editor.selectedNode === nodeId;
-    };
-}
-
-export function selectPortTargets(port: PortId) {
-    return (state: StoreState): TargetPort[] | undefined => {
-        const node = state.editor.graph.nodes[port.nodeId];
+        const node = selectGraphNode(state, nodeId);
         if (!node) return;
 
-        const ports = port.portOut ? node.ports.out : node.ports.in;
-        return ports[port.portName];
-    };
+        return selector({
+            node,
+            contexts: state.editor.nodeContexts as { [nodeId: string]: C | undefined },
+            params
+        });
+    }
 }
+

@@ -19,7 +19,7 @@ test('processes an input', () => {
     };
 
     const processor = new TestProcessor();
-    const key = processor.registerConnectionInverse('portIn');
+    const key = processor.registerConnectionInverse('', 'portIn', null as any);
     processor.registerConnection('portOut', 'in', receiver);
     processor.onNext('portIn', key, 'input');
 
@@ -41,7 +41,7 @@ test('multiple consumers', () => {
     };
 
     const processor = new TestProcessor();
-    const key = processor.registerConnectionInverse('portIn');
+    const key = processor.registerConnectionInverse('', 'portIn', null as any);
     processor.registerConnection('portOut', 'in', receiver1);
     processor.registerConnection('portOut', 'in', receiver2);
     processor.onNext('portIn', key, 'input');
@@ -61,9 +61,9 @@ test('multiple producers', () => {
     };
 
     const processor = new TestProcessor();
-    const key1 = processor.registerConnectionInverse('portIn');
-    const key2 = processor.registerConnectionInverse('portIn');
-    const key3 = processor.registerConnectionInverse('portIn');
+    const key1 = processor.registerConnectionInverse('', 'portIn', null as any);
+    const key2 = processor.registerConnectionInverse('', 'portIn', null as any);
+    const key3 = processor.registerConnectionInverse('', 'portIn', null as any);
 
     processor.registerConnection('portOut', 'in', receiver);
     processor.onNext('portIn', key1, 'a');

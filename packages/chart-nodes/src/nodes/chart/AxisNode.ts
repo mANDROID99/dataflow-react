@@ -11,8 +11,13 @@ type Config = {
 }
 
 class AxisNodeProcessor extends BaseNodeProcessor {
+    
     constructor(private readonly config: Config) {
         super();
+    }
+
+    process(): void {
+        // do nothing
     }
 
     start() {

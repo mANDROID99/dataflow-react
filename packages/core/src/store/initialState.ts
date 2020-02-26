@@ -15,6 +15,7 @@ export function createInitialState(): GraphEditorState {
         contextMenu: undefined,
         selectedNode: undefined,
         portDrag: undefined,
-        bounds: {}
+        nodeBounds: {},
+        nodeContexts: {}
     };
 }

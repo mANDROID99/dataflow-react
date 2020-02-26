@@ -1,10 +1,10 @@
-import { GraphNodeConfig, InputType, columnExpression, expressions, ColumnMapperInputValue, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, expressions, ColumnMapperInputValue, BaseNodeProcessor, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { Row, GridValueConfig, GridColumnConfig } from "../../types/valueTypes";
+import { Row, GridColumnConfig, GridValueConfig } from "../../types/valueTypes";
 import { asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
+import { COMPUTE_CONTEXT_MERGE_OUTPUTS } from "../../chartContext";
 
-const PORT_ROWS = 'rows';
 const PORT_COLUMN = 'column';
 
 const FIELD_NAME = 'name';
@@ -29,32 +29,30 @@ class GridColumnNodeProcessor extends BaseNodeProcessor {
         super();
     }
     
-    process(port: string, inputs: unknown[]){
-        if (port !== PORT_ROWS) {
-            return;
-        }
-
-        const rows = inputs[0] as Row[];
-        const values = rows.map<GridValueConfig>((row, i) => {
-            const ctx = rowToEvalContext(row, i, this.context);
-            const value = asString(this.config.mapValue(ctx));
-            const fontColor = asString(this.config.mapFontColor(ctx), undefined);
-            const bgColor = asString(this.config.mapBgColor(ctx), undefined);
-
-            return {
-                value,
-                fontColor,
-                bgColor
-            };
-        });
-
+    start() {
         const column: GridColumnConfig = {
             name: this.config.name,
             width: this.config.width,
-            values
-        }
-
+            mapper: this.mapRow.bind(this)
+        };
         this.emitResult(PORT_COLUMN, column);
+    }
+
+    process(): void {
+        /* do nothing */
+    }
+
+    private mapRow(row: Row, index: number): GridValueConfig {
+        const ctx = rowToEvalContext(row, index, this.context);
+        const value = asString(this.config.mapValue(ctx));
+        const fontColor = asString(this.config.mapFontColor(ctx), undefined);
+        const bgColor = asString(this.config.mapBgColor(ctx), undefined);
+
+        return {
+            value,
+            fontColor,
+            bgColor
+        };
     }
 }
 
@@ -63,11 +61,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     menuGroup: 'Grid',
     description: 'Column to show in the grid.',
     ports: {
-        in: {
-            [PORT_ROWS]: {
-                type: 'row[]'
-            }
-        },
+        in: {},
         out: {
             [PORT_COLUMN]: {
                 type: 'column'
@@ -92,7 +86,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params: {
                 target: 'row'
             },
-            resolve: ({ context }) => ({
+            resolveParams: ({ context }) => ({
                 columns: context.columns
             })
         },
@@ -104,7 +98,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 optional: true,
                 target: 'row'
             },
-            resolve: ({ context }) => ({
+            resolveParams: ({ context }) => ({
                 columns: context.columns
             })
         },
@@ -116,11 +110,12 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 optional: true,
                 target: 'row'
             },
-            resolve: ({ context }) => ({
+            resolveParams: ({ context }) => ({
                 columns: context.columns
             })
         }
     },
+    computeContext: COMPUTE_CONTEXT_MERGE_OUTPUTS,
     createProcessor(node, params) {
         const fields = node.fields;
         const name = fields.name as string;

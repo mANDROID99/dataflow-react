@@ -103,11 +103,9 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params: {
                 target: 'row'
             },
-            resolve: {
-                compute: ({ context }) => ({
-                    columns: context.groupColumns || context.columns
-                })
-            }
+            resolveParams: ({ context }) => ({
+                columns: context ? context.groupColumns || context.columns : undefined
+            })
         },
         alias: {
             label: 'Alias',

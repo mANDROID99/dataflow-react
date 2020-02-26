@@ -1,4 +1,4 @@
-import { GraphNodeConfig, InputType, Entry, expressions, GraphNode, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, expressions, GraphNode, BaseNodeProcessor, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataSet, ChartAxisConfig, ChartViewConfig, ChartEventType, ViewType, ChartEventConfig } from "../../types/valueTypes";
 
@@ -32,15 +32,15 @@ class ChartViewProcessor extends BaseNodeProcessor {
         this.yAxes = [];
     }
 
-    registerConnectionInverse(portName: string) {
-        if (portName === PORT_DATASETS) {
+    registerConnectionInverse(portOut: string, portIn: string, processor: NodeProcessor) {
+        if (portIn === PORT_DATASETS) {
             this.datasets = undefined;
-        } else if (portName === PORT_X_AXES) {
+        } else if (portIn === PORT_X_AXES) {
             this.xAxes = undefined;
-        } else if (portName === PORT_Y_AXES) {
+        } else if (portIn === PORT_Y_AXES) {
             this.yAxes = undefined;
         }
-        return super.registerConnectionInverse(portName);
+        return super.registerConnectionInverse(portOut, portIn, processor);
     }
 
     process(portName: string, inputs: unknown[]) {

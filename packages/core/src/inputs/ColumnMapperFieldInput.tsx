@@ -17,7 +17,7 @@ export default function ColumnMapperFieldInput(props: InputProps<ColumnMapperInp
     const target = params.target as string | undefined;
     
     const options = useMemo(() => {
-        let opts: Option[] = (params.columns as Option[]) || [];
+        let opts: Option[] = (params.columns as Option[] | undefined) || [];
 
         if (params.optional) {
             opts = ['' as Option].concat(opts);
