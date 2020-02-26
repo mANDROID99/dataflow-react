@@ -30,6 +30,7 @@ export type GraphNodeFieldConfig<C, P> = {
 
 export type GraphNodePortConfig = {
     type: string | string[] | null;
+    label?: string;
     multi?: boolean;
     hidden?: boolean;
 }

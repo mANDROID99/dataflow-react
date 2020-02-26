@@ -120,7 +120,8 @@ function GraphNodePort(props: InnerProps, ref: React.Ref<HTMLDivElement>): React
     };
 
     function renderLabel(): React.ReactElement {
-        return <div className="ngraph-node-port-label">{ portName }</div>;
+        const label = portConfig?.label ?? portName;
+        return <div className="ngraph-node-port-label">{label}</div>;
     }
 
     return (

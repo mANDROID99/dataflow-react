@@ -15,27 +15,8 @@ const params: ChartParams = {
         test: 1
     },
     actions: {
-        fetch: requestHandler,
-        runReport() {
-            throw new Error('Not implemented!');
-        }
-    },
-    reports: [
-        {
-            name: 'First Report',
-            uuid: 'report-1',
-            parameters: [
-                { name: 'a', defaultValue: 'A' }
-            ]
-        },
-        {
-            name: 'Second Report',
-            uuid: 'report-2',
-            parameters: [
-                { name: 'b', defaultValue: 'B' }
-            ]
-        }
-    ]
+        fetch: requestHandler
+    }
 }
 
 export default function Main() {

@@ -51,7 +51,7 @@ export const SUB_GRAPH_NODE: GraphNodeConfig<any, any> = {
         
         // construct the start node
         const startNode = createNodeAt(20, 20, id, NodeType.SUB_GRAPH_START) as GraphNode;
-        const endNode = createNodeAt(50, 50, id, NodeType.SUB_GRAPH_END) as GraphNode;
+        const endNode = createNodeAt(100, 100, id, NodeType.SUB_GRAPH_END) as GraphNode;
         subGraphNode.subNodes = [startNode.id, endNode.id];
 
         // setup connnections

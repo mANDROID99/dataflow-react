@@ -25,3 +25,12 @@
     cursor: nwse-resize;
     z-index: 2;
 }
+
+.ngraph-custom-node {
+    margin: 0 0.75rem;
+}
+
+.ngraph-custom-node-label {
+    cursor: move;
+    font-size: 0.9em;
+}
