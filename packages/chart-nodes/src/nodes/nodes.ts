@@ -12,7 +12,6 @@ import { DATA_POINT_NODE } from "./chart/DataPointNode";
 import { GRID_VIEW_NODE } from "./grid/GridViewNode";
 import { GRID_COLUMN_NODE } from './grid/GridColumnNode';
 import { SCHEDULER_NODE } from "./input/SchedulerNode";
-import { REPORT_NODE } from "./input/ReportNode";
 
 export enum NodeType {
     DATA_GRID='data-grid',
@@ -28,8 +27,7 @@ export enum NodeType {
     JOIN='join',
     SORT_BY='sortBy',
     AGGREGATE='aggregate',
-    SCHEDULER='scheduler',
-    REPORT='report'
+    SCHEDULER='scheduler'
 }
 
 export const nodes = {
@@ -46,6 +44,5 @@ export const nodes = {
     [NodeType.DATA_POINTS]: DATA_POINT_NODE,
     [NodeType.GRID_VIEW]: GRID_VIEW_NODE,
     [NodeType.GRID_COLUMN]: GRID_COLUMN_NODE,
-    [NodeType.SCHEDULER]: SCHEDULER_NODE,
-    [NodeType.REPORT]: REPORT_NODE
+    [NodeType.SCHEDULER]: SCHEDULER_NODE
 };

@@ -1,5 +1,4 @@
 import { ViewConfig } from './valueTypes';
-import { ReportDefinition } from "./reportTypes";
 
 export type ChartContext = {
     columns: string[];
@@ -17,7 +16,6 @@ export type RequestHandler = (params: RequestParams) => Promise<Response>;
 
 export type ChartActions = {
     renderView?(viewId: string, viewConfig: ViewConfig): void;
-    runReport: (reportUuid: string, params: { [key: string]: string }) => Promise<{ [key: string]: unknown }[]>;
     fetch: (params: RequestParams) => Promise<Response>;
 }
 
@@ -26,5 +24,5 @@ export type ChartParams = {
     variables: {
         [key: string]: unknown;
     };
-    reports: ReportDefinition[];
+    extra?: { [key: string]: any };
 };

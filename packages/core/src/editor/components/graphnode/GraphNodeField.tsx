@@ -36,7 +36,7 @@ function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, 
 
     // create the React input element
     const inputComponent = input?.component;
-    const renderInput = () => {
+    const inputElement = useMemo(() => {
         if (!inputComponent) {
             return 'Unknown Input Type';
         }
@@ -52,7 +52,15 @@ function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, 
         };
 
         return React.createElement(inputComponent, inputProps);
-    };
+    }, [
+        actions,
+        fieldName,
+        fieldParams,
+        fieldValue,
+        handleChanged,
+        inputComponent,
+        nodeId
+    ]);
 
     if (fieldParams.hidden) {
         return null;
@@ -62,7 +70,7 @@ function GraphNodeField<Ctx, Params>({ nodeId, context, fieldName, fieldConfig, 
         <div className="ngraph-node-field">
             <div className="ngraph-text-label ngraph-text-ellipsis">{ fieldConfig.label }</div>
             <div className="ngraph-node-field-input">
-                {renderInput()}
+                {inputElement}
             </div>
         </div>
     );

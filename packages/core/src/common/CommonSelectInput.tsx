@@ -22,7 +22,7 @@ function CommonSelectInput(props: Props) {
 
     useEffect(() => {
         if (options.length > 0 && !options.some(opt => resolveOptionValue(opt) === value)) {
-            // choose a different option if input is not a valid option
+            // choose a different option if input is not valid
             onChange(resolveOptionValue(options[0]));
         }
     }, [value, options, onChange]);

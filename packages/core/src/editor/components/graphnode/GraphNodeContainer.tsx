@@ -53,6 +53,7 @@ function GraphNodeContainer<Ctx, Params>({ nodeId, node, context, container }: P
     const prevNode = useRef<GraphNode>(node);
     useEffect(() => {
         if (prevNode.current !== node && nodeConfig.onChanged) {
+            prevNode.current = node;
             actions.triggerNodeChanged(prevNode.current, node);
         }
     });
