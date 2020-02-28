@@ -3,6 +3,7 @@ import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { pushDistinct } from '../../utils/arrayUtils';
 import { Row } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
+import { getContextsForPorts, mergeContextsArray } from '../../chartContext';
 
 const PORT_ROWS = 'rows';
 const KEY_ACC = 'acc';
@@ -93,8 +94,8 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params: {
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.columns
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
             })
         },
         reduce: {
@@ -106,9 +107,25 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Seed',
             type: InputType.TEXT,
             initialValue: '',
-            resolve: ({ fields }) => ({
+            resolveParams: ({ fields }) => ({
                 hidden: !fields.reduce
             })
+        }
+    },
+    computeContext: {
+        compute({ node }, contexts) {
+            const context = mergeContextsArray(contexts);
+            if (!context) return;
+
+            const alias = node.fields.alias as string;
+            const columns = pushDistinct(context.columns, alias);
+            return {
+                ...context,
+                columns
+            };
+        },
+        deps({ node, contexts }) {
+            return getContextsForPorts(node.ports.in, contexts);
         }
     },
     createProcessor(node, params) {
@@ -121,13 +138,5 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const seed = expressions.compileExpression(seedExpr)(params.variables);
 
         return new ComputeProcessor(params, { alias, reduce, seed, mapValue });
-    },
-    mapContext(node, context) {
-        const alias = node.fields.alias as string;
-        const columns = pushDistinct(context.columns, alias);
-        return {
-            ...context,
-            columns
-        };
     }
 };

@@ -2,7 +2,7 @@ import { Column, GraphNodeConfig, InputType, GraphNode, BaseNodeProcessor } from
 
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ViewType, GridColumnConfig, GridValueConfig, Row } from "../../types/valueTypes";
-import { COMPUTE_CONTEXT_MERGE_INPUTS } from "../../chartContext";
+import { mergeContextsArray, getContextsForSinglePort } from "../../chartContext";
 
 function getDefaultViewName(node: GraphNode) {
     return 'grid-' + node.id;
@@ -28,7 +28,7 @@ class GridViewProcessor extends BaseNodeProcessor {
             this.data = values[0] as Row[];
 
         } else if (portName === PORT_COLUMNS) {
-            this.columns = values[0] as GridColumnConfig[];
+            this.columns = values as GridColumnConfig[];
         }
 
         if (!this.data || !this.columns) {
@@ -36,7 +36,7 @@ class GridViewProcessor extends BaseNodeProcessor {
         }
 
         // map column configs to columns
-        const columnConfigs = values as GridColumnConfig[];
+        const columnConfigs = this.columns
         const columns: Column[] = columnConfigs.map<Column>(column => ({
             name: column.name,
             editable: true,
@@ -63,13 +63,13 @@ export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     description: 'Displays the data as a grid view.',
     ports: {
         in: {
+            [PORT_DATA]: {
+                type: 'row[]'
+            },
             [PORT_COLUMNS]: {
                 type: 'column',
                 multi: true
             },
-            [PORT_DATA]: {
-                type: 'row[]'
-            }
         },
         out: {
             [PORT_ON_CLICK]: {
@@ -84,7 +84,15 @@ export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.TEXT
         }
     },
-    computeContext: COMPUTE_CONTEXT_MERGE_INPUTS,
+    computeContext: {
+        compute(_, contexts: ChartContext[]) {
+            return mergeContextsArray(contexts);
+        },
+        deps({ node, contexts }) {
+            const targets = node.ports.in[PORT_DATA];
+            return getContextsForSinglePort(targets, contexts);
+        }
+    },
     createProcessor(node, params) {
         let viewName = node.fields.name as string;
 

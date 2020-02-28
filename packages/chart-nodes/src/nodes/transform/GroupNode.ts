@@ -4,6 +4,7 @@ import { KEY_GROUP, Row } from "../../types/valueTypes";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
+import { getContextsForPorts, mergeContextsArray } from "../../chartContext";
 
 const PORT_ROWS = 'rows';
 const PORT_GROUPS = 'groups';
@@ -110,8 +111,8 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             params: {
                 target: 'row'
             },
-            resolve: ({ context }) => ({
-                columns: context.groupColumns ?? context.columns
+            resolveParams: ({ context }) => ({
+                columns: context ? context.groupColumns ?? context.columns : undefined
             })
         },
         alias: {
@@ -120,28 +121,35 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.TEXT
         }
     },
+    computeContext: {
+        compute({ node }, contexts) {
+            const context = mergeContextsArray(contexts);
+            if (!context) return;
+
+            const alias = node.fields.alias as string;
+            if (context.groupColumns) {
+                const columns = pushDistinct(context.columns, alias);
+                return {
+                    columns,
+                    groupColumns: context.groupColumns
+                };
+    
+            } else {
+                const columns = [alias];
+                return {
+                    columns,
+                    groupColumns: context.columns
+                };
+            }
+        },
+        deps({ node, contexts }) {
+            return getContextsForPorts(node.ports.in, contexts);
+        }
+    },
     createProcessor(node, params) {
         const alias = node.fields.alias as string;
         const mapGroupExpr = node.fields.group as ColumnMapperInputValue;
         const mapGroup = expressions.compileColumnMapper(mapGroupExpr, 'row');
         return new GroupNodeProcessor(params, { alias, mapGroup });
-    },
-    mapContext(node, context): ChartContext {
-        const alias = node.fields.alias as string;
-
-        if (context.groupColumns) {
-            const columns = pushDistinct(context.columns, alias);
-            return {
-                columns,
-                groupColumns: context.groupColumns
-            };
-
-        } else {
-            const columns = [alias];
-            return {
-                columns,
-                groupColumns: context.columns
-            };
-        }
     }
 };

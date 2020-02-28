@@ -9,7 +9,6 @@ export * from './types/graphInputTypes';
 export * from './types/nodeProcessorTypes';
 
 // processor
-export { computeContexts } from './processor/computeContexts';
 export { createProcessorsFromGraph, runProcessors, invokeProcessors } from './processor/createProcessors';
 
 // editor

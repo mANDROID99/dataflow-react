@@ -21,19 +21,18 @@ type Config = {
     mapResponse: expressions.Mapper
 };
 
-function doFetch(url: string, headers: { [key: string]: string}, mapResponse: expressions.Mapper, params: ChartParams) {
-    return params.actions.fetch({
+async function doFetch(url: string, headers: { [key: string]: string}, mapResponse: expressions.Mapper, params: ChartParams) {
+    const response = await params.actions.fetch({
         url,
         method: 'GET',
         headers
-    })
-        .then(res => res.json())
-        .then(data => {
-            const ctx = Object.assign({}, params.variables);
-            ctx[KEY_DATA] = data;
+    });
 
-            return (mapResponse(ctx) || data) as { [key: string]: unknown }[];
-        });
+    const data = await response.json();
+    const ctx = Object.assign({}, params.variables);
+    ctx[KEY_DATA] = data;
+    
+    return (mapResponse(ctx) || data) as { [key: string]: unknown }[];
 }
 
 function resolveHeaders(mapHeaders: expressions.EntriesMapper, ctx: { [key: string]: unknown }) {

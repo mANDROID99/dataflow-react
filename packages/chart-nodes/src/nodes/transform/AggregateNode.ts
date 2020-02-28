@@ -5,6 +5,7 @@ import { asNumber } from "../../utils/conversions";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { AggregatorType, createAggregator } from "./aggregators";
 import { rowToEvalContext } from "../../utils/expressionUtils";
+import { getContextsForPorts, mergeContextsArray } from "../../chartContext";
 
 const PORT_GROUPS = 'groups';
 const PORT_ROWS = 'rows';
@@ -113,29 +114,36 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.TEXT
         },
     },
+    computeContext: {
+        compute({ node }, contexts: ChartContext[]) {
+            const context = mergeContextsArray(contexts);
+            if (!context) return;
+
+            const alias = node.fields.alias as string;
+            if (context.groupColumns) {
+                const columns = pushDistinct(context.columns, alias);
+                return {
+                    groupColumns: context.groupColumns,
+                    columns
+                };
+
+            } else {
+                const columns = [alias];
+                return {
+                    columns,
+                    groupColumns: context.columns
+                };
+            }
+        },
+        deps({ node, contexts }) {
+            return getContextsForPorts(node.ports.in, contexts);
+        }
+    },
     createProcessor(node, params) {
         const columnExpr = node.fields.column as ColumnMapperInputValue;
         const alias = node.fields.alias as string;
         const aggType = node.fields.type as AggregatorType;
         const mapColumn = expressions.compileColumnMapper(columnExpr, 'row');
         return new AggregateNodeProcessor(params, { alias, aggType, mapColumn });
-    },
-    mapContext(node, context): ChartContext {
-        const alias = node.fields.alias as string;
-
-        if (context.groupColumns) {
-            const columns = pushDistinct(context.columns, alias);
-            return {
-                groupColumns: context.groupColumns,
-                columns
-            };
-
-        } else {
-            const columns = [alias];
-            return {
-                columns,
-                groupColumns: context.columns
-            };
-        }
     }
 };

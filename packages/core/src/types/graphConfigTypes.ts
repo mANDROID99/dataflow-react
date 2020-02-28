@@ -9,7 +9,7 @@ export type GraphFieldInputConfig = {
 
 export type FieldResolverParams<C, P> = {
     fields: { [key: string]: unknown };
-    context: C;
+    context: C | undefined;
     params: P;
 }
 

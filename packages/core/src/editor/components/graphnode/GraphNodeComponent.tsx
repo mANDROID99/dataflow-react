@@ -12,7 +12,7 @@ export type DragWidthState = {
     width: number;
 }
 
-export default function GraphNodeComponent<Ctx, Params>({ node, nodeConfig, nodeId, context, handleDrag, width, actions }: GraphNodeComponentProps<Ctx, Params>) {
+export default function GraphNodeComponent<C, P>({ node, nodeConfig, nodeId, context, handleDrag, width, actions }: GraphNodeComponentProps<C, P>) {
     return (
         <div className="ngraph-node-body" style={{ width }}>
             <GraphNodeHeader
@@ -25,7 +25,7 @@ export default function GraphNodeComponent<Ctx, Params>({ node, nodeConfig, node
                 <div className="ngraph-node-fields">
                     {Object.entries(nodeConfig.fields).map(([fieldName, fieldConfig]) => {
                         return (
-                            <GraphNodeField<Ctx, Params>
+                            <GraphNodeField<C, P>
                                 key={fieldName}
                                 nodeId={nodeId}
                                 context={context}

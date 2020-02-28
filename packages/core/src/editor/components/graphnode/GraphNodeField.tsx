@@ -10,7 +10,7 @@ import { createMemoizedCallbackSelector } from '../../../utils/createMemoizedCal
 
 type Props<C, P> = {
     nodeId: string;
-    context: C;
+    context: C | undefined;
     fieldName: string;
     fieldConfig: GraphNodeFieldConfig<C, P>;
     actions: GraphNodeActions<C>;
@@ -27,7 +27,20 @@ function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fields,
     
     // resolve next field params. Uses "createMemoizedCallbackSelector" to compare the previous and next values, to determine if params need to be recomputed
     const fieldParamsSelector = useMemo(() => fieldConfig.resolveParams && createMemoizedCallbackSelector(fieldConfig.resolveParams), [fieldConfig.resolveParams]);
-    const fieldParams = useMemo(() => fieldParamsSelector?.({ context, params, fields }), [fieldParamsSelector, context, params, fields]);
+    const paramsResolved = useMemo(() => fieldParamsSelector?.({ context, params, fields }), [fieldParamsSelector, context, params, fields]);
+
+    // merge the resolved with the static field params
+    const paramsMerged = useMemo(() => {
+        if (paramsResolved && fieldConfig.params) {
+            return Object.assign({}, paramsResolved, fieldConfig.params);
+
+        } else if (paramsResolved) {
+            return paramsResolved;
+
+        } else {
+            return fieldConfig.params;
+        }
+    }, [paramsResolved, fieldConfig.params]);
 
     // handle the input value changed
     const handleChanged = useCallback((value: unknown) => {
@@ -46,7 +59,7 @@ function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fields,
             value: fieldValue,
             fieldName,
             nodeId,
-            params: fieldParams || {},
+            params: paramsMerged || {},
             actions,
             onChanged: handleChanged
         };
@@ -55,14 +68,14 @@ function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fields,
     }, [
         actions,
         fieldName,
-        fieldParams,
+        paramsMerged,
         fieldValue,
         handleChanged,
         inputComponent,
         nodeId
     ]);
 
-    if (fieldParams?.hidden) {
+    if (paramsResolved?.hidden) {
         return null;
     }
 

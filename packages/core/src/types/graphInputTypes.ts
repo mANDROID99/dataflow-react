@@ -5,7 +5,7 @@ export type InputProps<T> = {
     fieldName: string;
     value: T | undefined;
     params: { [key: string]: unknown };
-    actions: GraphNodeActions;
+    actions: GraphNodeActions<any>;
     onChanged: (value: unknown) => void;
 }
 

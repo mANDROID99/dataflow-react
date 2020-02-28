@@ -70,7 +70,6 @@ function GraphScroller({ parent, children }: Props) {
             const bounds = c.getBoundingClientRect();
             const x = offset.x - scroll.x - bounds.left;
             const y = offset.y - scroll.y - bounds.top;
-            console.log(scroll.x);
 
             const graphNode = graphNodeFactory(graphConfig, params)(x, y, parent, item.id);
             dispatch(addNode(graphNode));

@@ -87,7 +87,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 target: 'row'
             },
             resolveParams: ({ context }) => ({
-                columns: context.columns
+                columns: context?.columns
             })
         },
         [FIELD_FONT_COLOR]: {
@@ -99,7 +99,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 target: 'row'
             },
             resolveParams: ({ context }) => ({
-                columns: context.columns
+                columns: context?.columns
             })
         },
         [FIELD_BG_COLOR]: {
@@ -111,7 +111,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 target: 'row'
             },
             resolveParams: ({ context }) => ({
-                columns: context.columns
+                columns: context?.columns
             })
         }
     },
