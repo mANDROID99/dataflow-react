@@ -30,6 +30,7 @@ export type GraphNodeFieldConfig<C, P> = {
     label: string;
     type: string;
     initialValue: unknown;
+    fieldGroup?: string;
     params?: { [key: string]: unknown };
     resolveParams?: MemoizedCallback<FieldResolverParams<C, P>, { [key: string]: unknown }>;
 }

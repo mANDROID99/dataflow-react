@@ -98,6 +98,7 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         color: {
             label: 'Map Color',
             type: InputType.COLUMN_MAPPER,
+            fieldGroup: 'Styling',
             initialValue: columnExpression(''),
             params: {
                 optional: true,

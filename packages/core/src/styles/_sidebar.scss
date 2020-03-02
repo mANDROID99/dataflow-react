@@ -25,7 +25,6 @@
     cursor: pointer;
     display: flex;
     padding-left: 0.5rem;
-    margin-bottom: 0.5rem;
 
     &:hover {
         color: #80bfff;
@@ -38,12 +37,6 @@
 
 .ngraph-nodelist-header-text {
     font-size: 1.1em;
-}
-
-.ngraph-nodelist-group-items {
-    transition: height 0.5s;
-    overflow: hidden;
-    margin-bottom: 0.5rem;
 }
 
 .ngraph-nodelist-item {

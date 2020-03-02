@@ -21,8 +21,17 @@
     justify-content: center;
     padding: 0.5rem;
     border: 1px solid $grey-3;
-    border-radius: 5px 5px 0 0;
+    border-radius: 5px;
+}
+
+.ngraph-node.selected .ngraph-node-header {
+    border-color: $primary;
+}
+
+.ngraph-node:not(.collapsed) .ngraph-node-header {
     border-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .ngraph-node-title {
@@ -47,15 +56,10 @@
     cursor: ew-resize;
 }
 
-.ngraph-node.selected .ngraph-node-header {
-    border-color: $primary;
-}
-
 .ngraph-node-fields {
     background-color: rgba($grey-3, 0.8);
     min-width: 0;
-    padding: 0.75rem;
-    padding-bottom: 0.5rem;
+    padding: 0.5rem 0;
     border: 1px solid $grey-3;
     border-radius: 0 0 5px 5px;
     border-top: 0;
@@ -132,5 +136,19 @@
 }
 
 .ngraph-node-field {
-    margin-bottom: 0.5rem;
+    padding: 0.25rem 0.75rem;
+}
+
+.ngraph-node-field-group-header {
+    display: flex;
+    cursor: pointer;
+    color: $grey-6;
+    padding: 0.25rem 0.75rem;
+    &:hover {
+        color: $grey-7;
+    }
+}
+
+.ngraph-node-field-group-expander {
+    margin-right: 0.5rem;
 }

@@ -146,6 +146,7 @@ export const CHART_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         params: {
             label: 'Params',
+            fieldGroup: 'More',
             type: InputType.DATA_ENTRIES,
             initialValue: []
         }

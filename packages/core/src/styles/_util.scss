@@ -52,3 +52,13 @@
 .hidden {
     visibility: hidden;
 }
+
+.ngraph-collapse.collapsed {
+    display: none;
+}
+
+.ngraph-collapse.collapsing {
+    height: 0;
+    transition: height 0.4s ease;
+    overflow: hidden;
+}

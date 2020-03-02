@@ -211,7 +211,7 @@ function GraphNode<C, P>({ nodeId, node, container }: Props): React.ReactElement
 
     return (
         <div
-            className={cn('ngraph-node', { selected })}
+            className={cn('ngraph-node', { selected, collapsed: node.collapsed })}
             style={{ left: x, top: y }}
             ref={ref}
             onContextMenu={handleContextMenu}

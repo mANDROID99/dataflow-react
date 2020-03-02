@@ -1,7 +1,7 @@
 import React from 'react';
 import { GraphNodeComponentProps } from '../../../types/graphNodeComponentTypes';
-import GraphNodeField from './GraphNodeField';
 import GraphNodeHeader from './GraphNodeHeader';
+import GraphNodeFieldGroups from './GraphNodeFieldGroups';
 
 export type DragPosState = {
     x: number;
@@ -22,21 +22,13 @@ export default function GraphNodeComponent<C, P>({ node, nodeConfig, nodeId, con
                 onDrag={handleDrag}
             />
             {!node.collapsed && (
-                <div className="ngraph-node-fields">
-                    {Object.entries(nodeConfig.fields).map(([fieldName, fieldConfig]) => {
-                        return (
-                            <GraphNodeField<C, P>
-                                key={fieldName}
-                                nodeId={nodeId}
-                                context={context}
-                                fieldName={fieldName}
-                                fieldConfig={fieldConfig}
-                                actions={actions}
-                                fields={node.fields}
-                            />
-                        );
-                    })}
-                </div>
+                <GraphNodeFieldGroups
+                    nodeId={nodeId}
+                    nodeConfig={nodeConfig}
+                    fields={node.fields}
+                    actions={actions}
+                    context={context}
+                />
             )}
         </div>
     );

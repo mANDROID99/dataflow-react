@@ -94,6 +94,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             label: 'Map Font Color',
+            fieldGroup: 'Styling',
             params: {
                 optional: true,
                 target: 'row'
@@ -106,6 +107,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             label: 'Map Background Color',
+            fieldGroup: 'Styling',
             params: {
                 optional: true,
                 target: 'row'

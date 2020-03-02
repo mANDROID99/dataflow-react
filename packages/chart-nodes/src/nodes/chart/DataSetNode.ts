@@ -131,6 +131,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         borderColor: {
             label: 'Map Border Color',
+            fieldGroup: 'Styling',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: {
@@ -143,6 +144,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         backgroundColor: {
             label: 'Map Background Color',
+            fieldGroup: 'Styling',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: {
@@ -155,6 +157,7 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         params: {
             label: 'Params',
+            fieldGroup: 'More',
             type: InputType.DATA_ENTRIES,
             initialValue: []
         }
