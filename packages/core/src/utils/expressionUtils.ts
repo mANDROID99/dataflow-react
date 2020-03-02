@@ -57,7 +57,11 @@ function getExpressionStartIndex(input: string): number {
  * compile an expression string to an evaluatable function
  * @param input 
  */
-export function compileExpression(input: string): (context: { [key: string]: unknown }) => unknown {
+export function compileExpression(input: string | undefined): (context: { [key: string]: unknown }) => unknown {
+    if (typeof input !== 'string') {
+        return () => input;
+    }
+
     const idx = getExpressionStartIndex(input);
 
     if (idx < 0) {
@@ -95,8 +99,8 @@ export function compileExpression(input: string): (context: { [key: string]: unk
  * @param input 
  * @param target 
  */
-export function columnMapperToExpression(input: ColumnMapperInputValue, target?: string): string {
-    if (typeof input === 'string') {
+export function columnMapperToExpression(input: ColumnMapperInputValue | undefined, target?: string): string | undefined {
+    if (typeof input === 'string' || input == null) {
         return input;
 
     } else if (input.type === ColumnMapperType.COLUMN) {
@@ -124,7 +128,7 @@ export function columnMapperToExpression(input: ColumnMapperInputValue, target?:
  * @param target 
  */
 export function compileColumnMapper(input: ColumnMapperInputValue, target?: string): (ctx: { [key: string]: unknown }) => unknown {
-    const expr: string = columnMapperToExpression(input, target);
+    const expr: string | undefined = columnMapperToExpression(input, target);
     return compileExpression(expr);
 }
 

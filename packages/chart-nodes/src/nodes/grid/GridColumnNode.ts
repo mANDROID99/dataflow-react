@@ -9,16 +9,22 @@ const PORT_COLUMN = 'column';
 
 const FIELD_NAME = 'name';
 const FIELD_WIDTH = 'width';
-const FIELD_VALUE = 'value';
-const FIELD_FONT_COLOR = 'fontColor';
-const FIELD_BG_COLOR = 'bgColor';
+const FIELD_KEY = 'key';
+const FIELD_ORDER = 'order';
+const FIELD_MAP_VALUE = 'value';
+const FIELD_MAP_FONT_COLOR = 'fontColor';
+const FIELD_MAP_BG_COLOR = 'bgColor';
+const FIELD_REST_TEMPLATE = 'template';
 
 type Config = {
     name: string;
     width: number;
-    mapValue: expressions.Mapper,
-    mapFontColor: expressions.Mapper,
-    mapBgColor: expressions.Mapper
+    order: number;
+    key: string;
+    restTemplate: boolean;
+    mapValue: expressions.Mapper;
+    mapFontColor: expressions.Mapper;
+    mapBgColor: expressions.Mapper;
 };
 
 class GridColumnNodeProcessor extends BaseNodeProcessor {
@@ -31,9 +37,12 @@ class GridColumnNodeProcessor extends BaseNodeProcessor {
     
     start() {
         const column: GridColumnConfig = {
+            key: this.config.key,
             name: this.config.name,
             width: this.config.width,
-            mapper: this.mapRow.bind(this)
+            order: this.config.order,
+            restTemplate: this.config.restTemplate,
+            mapRow: this.mapStyle.bind(this)
         };
         this.emitResult(PORT_COLUMN, column);
     }
@@ -42,17 +51,20 @@ class GridColumnNodeProcessor extends BaseNodeProcessor {
         /* do nothing */
     }
 
-    private mapRow(row: Row, index: number): GridValueConfig {
-        const ctx = rowToEvalContext(row, index, this.context);
-        const value = asString(this.config.mapValue(ctx));
-        const fontColor = asString(this.config.mapFontColor(ctx), undefined);
-        const bgColor = asString(this.config.mapBgColor(ctx), undefined);
+    private mapStyle(row: Row, rowIndex: number, columnKey: string): Partial<GridValueConfig> {
+        const ctx = rowToEvalContext(row, rowIndex, columnKey, this.context);
+        const result: Partial<GridValueConfig> = {};
 
-        return {
-            value,
-            fontColor,
-            bgColor
-        };
+        const fontColor = asString(this.config.mapFontColor(ctx));
+        if (fontColor) result.fontColor = fontColor;
+
+        const bgColor = asString(this.config.mapBgColor(ctx), undefined);
+        if (bgColor) result.bgColor = bgColor;
+
+        const value = asString(this.config.mapValue(ctx));
+        if (value) result.value = value;
+
+        return result;
     }
 }
 
@@ -72,25 +84,44 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         [FIELD_NAME]: {
             type: InputType.TEXT,
             initialValue: '',
-            label: 'Column Name'
+            label: 'Column Name',
+            resolveParams: ({ fields }) => ({
+                hidden: fields[FIELD_REST_TEMPLATE]
+            })
+        },
+        [FIELD_KEY]: {
+            type: InputType.SELECT,
+            initialValue: columnExpression(''),
+            label: 'Row Key',
+            resolveParams: ({ context, fields }) => ({
+                options: context?.columns,
+                hidden: fields[FIELD_REST_TEMPLATE]
+            })
         },
         [FIELD_WIDTH]: {
             type: InputType.NUMBER,
             initialValue: 100,
             label: 'Column Width'
         },
-        [FIELD_VALUE]: {
+        [FIELD_ORDER]: {
+            type: InputType.NUMBER,
+            initialValue: 0,
+            label: 'Column Order'
+        },
+        [FIELD_MAP_VALUE]: {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             label: 'Map Value',
+            fieldGroup: 'Styling',
             params: {
+                optional: true,
                 target: 'row'
             },
             resolveParams: ({ context }) => ({
                 columns: context?.columns
             })
         },
-        [FIELD_FONT_COLOR]: {
+        [FIELD_MAP_FONT_COLOR]: {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             label: 'Map Font Color',
@@ -103,7 +134,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 columns: context?.columns
             })
         },
-        [FIELD_BG_COLOR]: {
+        [FIELD_MAP_BG_COLOR]: {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             label: 'Map Background Color',
@@ -115,17 +146,26 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             resolveParams: ({ context }) => ({
                 columns: context?.columns
             })
+        },
+        [FIELD_REST_TEMPLATE]: {
+            label: 'Rest Template',
+            type: InputType.CHECK,
+            initialValue: false,
+            fieldGroup: 'More'
         }
     },
     computeContext: COMPUTE_CONTEXT_MERGE_OUTPUTS,
     createProcessor(node, params) {
         const fields = node.fields;
-        const name = fields.name as string;
-        const width = fields.width as number;
-        const mapValue = expressions.compileColumnMapper(fields[FIELD_VALUE] as ColumnMapperInputValue, 'row');
-        const mapFontColor = expressions.compileColumnMapper(fields[FIELD_FONT_COLOR] as ColumnMapperInputValue, 'row');
-        const mapBgColor = expressions.compileColumnMapper(fields[FIELD_BG_COLOR] as ColumnMapperInputValue, 'row');
-        return new GridColumnNodeProcessor({ name, width, mapValue, mapFontColor, mapBgColor }, params.variables);
+        const name = fields[FIELD_NAME] as string;
+        const key = fields[FIELD_KEY] as string;
+        const width = fields[FIELD_WIDTH] as number;
+        const order = fields[FIELD_ORDER] as number;
+        const restTemplate = fields[FIELD_REST_TEMPLATE] as boolean;
+        const mapValue = expressions.compileColumnMapper(fields[FIELD_MAP_VALUE] as ColumnMapperInputValue, 'row');
+        const mapFontColor = expressions.compileColumnMapper(fields[FIELD_MAP_FONT_COLOR] as ColumnMapperInputValue, 'row');
+        const mapBgColor = expressions.compileColumnMapper(fields[FIELD_MAP_BG_COLOR] as ColumnMapperInputValue, 'row');
+        return new GridColumnNodeProcessor({ name, key, width, order, restTemplate, mapValue, mapFontColor, mapBgColor }, params.variables);
     }
 }
 

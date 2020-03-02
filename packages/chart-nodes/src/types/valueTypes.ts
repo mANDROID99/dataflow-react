@@ -79,9 +79,12 @@ export type GridValueConfig = {
 }
 
 export type GridColumnConfig = {
+    key: string;
     name: string;
     width: number;
-    mapper: (row: Row, index: number) => GridValueConfig;
+    order: number;
+    restTemplate: boolean;
+    mapRow: (row: Row, rowIndex: number, columnKey: string) => Partial<GridValueConfig>;
 }
 
 export type GridViewConfig = {
