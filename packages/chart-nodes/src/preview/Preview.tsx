@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useRef } from 'react';
-import { Graph, GraphConfig, createProcessorsFromGraph, runProcessors, invokeProcessors, NodeProcessor } from '@react-ngraph/core';
+import { Graph, GraphConfig, createProcessorsFromGraph, runAllProcessors, invokeAllProcessors, NodeProcessor } from '@react-ngraph/core';
 
 import { ChartContext, ChartParams } from "../types/contextTypes";
 import { previewsReducer, reset, updatePreview, setActivePreview, init } from './previewsReducer';
@@ -35,7 +35,7 @@ export default function Preview(props: Props) {
     const { graph, graphConfig, params, refreshCount } = props;
     const [state, dispatch] = useReducer(previewsReducer, null, init);
 
-    const prevProcessors = useRef<NodeProcessor[]>();
+    const prevProcessors = useRef<Map<string, NodeProcessor>>();
     const prevRefreshCount = useRef<number | undefined>(refreshCount);
 
     useEffect(() => {
@@ -50,8 +50,8 @@ export default function Preview(props: Props) {
         const procs = createProcessorsFromGraph(graph, graphConfig, paramsCopy);
         prevProcessors.current = procs;
 
-        const dispose = runProcessors(procs);
-        invokeProcessors(procs);
+        const dispose = runAllProcessors(procs);
+        invokeAllProcessors(procs);
 
         return dispose;
     }, [graphConfig, graph, params]);
@@ -60,7 +60,7 @@ export default function Preview(props: Props) {
         const procs = prevProcessors.current;
         if (procs && refreshCount !== prevRefreshCount.current) {
             prevRefreshCount.current = refreshCount;
-            invokeProcessors(procs);
+            invokeAllProcessors(procs);
         }
     }, [refreshCount]);
 

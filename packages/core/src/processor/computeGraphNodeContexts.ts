@@ -2,65 +2,108 @@ import { Graph } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
 import { resolvePortTargetsByProxy } from "./createProcessors";
 
-export function computeGraphNodeContexts<C, P>(graph: Graph, graphConfig: GraphConfig<C, P>, params: P | undefined): Map<string, C> {
-    const nodeContexts = new Map<string, C>();
-    const baseContext: C = graphConfig.context;
-    if (params === undefined) {
-        params = graphConfig.params!;
-    }
+type NodeContext<C> = {
+    context: C;
+    childContext: C;
+}
 
-    // track node-ids seen, avoid infinite loop
-    const seen = new Set<string>();
+export function createGraphNodeContextsSelector<C, P>(graphConfig: GraphConfig<C, P>, params: P | undefined) {
+    let prevNodeContexts: Map<string, NodeContext<C>> | undefined;
+    let prevResult: Map<string, C> | undefined;
+    let prevGraph: Graph | undefined;
+    let prevNodeIds: string[] | undefined;
 
-    // recursively compute node contexts
-    function getOrComputeContext(nodeId: string): C | undefined {
-        const node = graph.nodes[nodeId];
-        const nodeConfig = graphConfig.nodes[node.type];
-
-        if (nodeContexts.has(nodeId)) {
-            const context: C = nodeContexts.get(nodeId)!;
-            return nodeConfig.mapContext?.({ node, context, params: params! }) ?? context;
-        }
-
-        if (seen.has(nodeId)) {
-            throw new Error(`compute contexts: cyclic dependency detected! nodeId = "${nodeId}"`);
-        }
-
-        seen.add(nodeId);
+    return (nodeIds: string[], graph: Graph): Map<string, C> => {
         
-        // compute context, starting with base context
-        let context: C = baseContext;
-        const ports = node.ports.in;
+        // return previous if nothing changed
+        if (graph === prevGraph && nodeIds === prevNodeIds) {
+            return prevResult!;
+        }
 
-        for (const portName in ports) {
-            const portTargets = ports[portName];
+        if (params === undefined) {
+            params = graphConfig.params!;
+        }    
 
-            if (portTargets && portTargets.length) {
-                const portTargetsByProxy = resolvePortTargetsByProxy(portTargets, graph, graphConfig, false);
+        const nodeContexts = new Map<string, NodeContext<C>>();
+        const result = new Map<string, C>();
+        const baseContext: C = graphConfig.context;
+        const seen = new Set<string>();
+        
+        /**
+         * recursively compute node contexts. Returns the previous context computed if
+         * neither the node nor its dependencies changed
+         * @param nodeId 
+         */
+        function getOrComputeContext(nodeId: string): NodeContext<C> {
+            if (nodeContexts.has(nodeId)) {
+                return nodeContexts.get(nodeId)!;
+            }
+    
+            // infinite loop detected!
+            if (seen.has(nodeId)) throw new Error(`compute contexts: cyclic dependency detected! nodeId = "${nodeId}"`);
+            seen.add(nodeId);
 
-                for (const portTarget of portTargetsByProxy) {
-                    const ctx = getOrComputeContext(portTarget.node);
-                    if (ctx) {
-                        if (graphConfig.mergeContexts) {
-                            context = graphConfig.mergeContexts(context, ctx);
+            const node = graph.nodes[nodeId];
+            const nodeConfig = graphConfig.nodes[node.type];
+            const prevNode = prevGraph && prevGraph.nodes[nodeId];
+            const ports = node.ports.in;
 
-                        } else {
-                            context = ctx;
+            // node is modified if the graph-node is changed
+            let modified = prevNodeContexts == null || prevNode !== node;
+
+            // gather parent contexts
+            const parentContexts: C[] = [];
+            for (const portName in ports) {
+                const portTargets = ports[portName];
+    
+                if (portTargets && portTargets.length) {
+                    const portTargetsByProxy = resolvePortTargetsByProxy(portTargets, graph, graphConfig, false);
+                    
+                    for (const portTarget of portTargetsByProxy) {
+                        const parentContext = getOrComputeContext(portTarget.node);
+                        parentContexts.push(parentContext.childContext);
+
+                        // node is modified if the parent was modified
+                        if (!prevNodeContexts || prevNodeContexts.get(portTarget.node) !== parentContext) {
+                            modified = true;
                         }
                     }
                 }
             }
+
+            if (modified) {
+                let context: C = baseContext;
+                
+                // compute context, starting with the base. This is basically a reduce
+                if (graphConfig.mergeContexts) {
+                    for (const parentContext of parentContexts) {
+                        context = graphConfig.mergeContexts(context, parentContext);
+                    }
+                }
+
+                // map the child context. This is the context that will be passed to downstream nodes
+                const childContext: C = nodeConfig.mapContext?.({ context, params: params!, node }) ?? context;
+                const nodeContext: NodeContext<C> = { context, childContext };
+                nodeContexts.set(nodeId, nodeContext);
+                result.set(nodeId, context);
+                return nodeContext;
+
+            } else {
+                const context: NodeContext<C> = prevNodeContexts!.get(nodeId)!;
+                nodeContexts.set(nodeId, context);
+                result.set(nodeId, context.context);
+                return context;
+            }
         }
-
-        nodeContexts.set(nodeId, context);
-        return nodeConfig.mapContext?.({ node, context, params: params! }) ?? context;
-    }
-
-    for (const nodeId in graph.nodes) {
-        getOrComputeContext(nodeId);
-    }
-
-    return nodeContexts;
+    
+        for (const nodeId of nodeIds) {
+            getOrComputeContext(nodeId);
+        }
+    
+        prevNodeContexts = nodeContexts;
+        prevNodeIds = nodeIds;
+        prevGraph = graph;
+        prevResult = result;
+        return result;
+    };
 }
-
-

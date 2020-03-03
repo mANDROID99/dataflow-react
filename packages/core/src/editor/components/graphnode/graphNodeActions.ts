@@ -7,8 +7,7 @@ import {
     setFieldValue,
     showContextMenu,
     selectNode,
-    setNodeWidth,
-    setNodeContext
+    setNodeWidth
 } from "../../../store/actions";
 import { ContextMenuTargetType, ContextMenuTarget } from "../../../types/storeTypes";
 import { GraphNodeConfig } from "../../../types/graphConfigTypes";
@@ -52,10 +51,6 @@ export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, no
                 nodeId
             };
             dispatch(showContextMenu(target, x, y));
-        },
-
-        setNodeContext(nodeContext) {
-            dispatch(setNodeContext(nodeId, nodeContext));
         },
 
         triggerEvent(key, payload) {

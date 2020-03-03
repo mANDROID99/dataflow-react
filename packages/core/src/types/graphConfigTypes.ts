@@ -9,13 +9,13 @@ export type GraphFieldInputConfig = {
 
 export type FieldResolverParams<C, P> = {
     fields: { [key: string]: unknown };
-    context: C | undefined;
+    context: C;
     params: P;
 }
 
 export type MapContextParams<C, P> = {
     node: GraphNode;
-    context: C | undefined;
+    context: C;
     params: P;
 }
 

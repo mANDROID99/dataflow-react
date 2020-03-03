@@ -10,10 +10,10 @@ import { createMemoizedCallbackSelector } from '../../../utils/createMemoizedCal
 
 type Props<C, P> = {
     nodeId: string;
-    context: C | undefined;
+    context: C;
     fieldName: string;
     fieldConfig: GraphNodeFieldConfig<C, P>;
-    actions: GraphNodeActions<C>;
+    actions: GraphNodeActions;
     fields: { [key: string]: unknown };
 }
 

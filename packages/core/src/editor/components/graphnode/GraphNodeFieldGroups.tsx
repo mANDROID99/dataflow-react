@@ -10,9 +10,9 @@ type Props<C, P> = {
     fields: {
         [name: string]: unknown;
     };
-    context: C | undefined;
+    context: C;
     nodeConfig: GraphNodeConfig<C, P>;
-    actions: GraphNodeActions<C>;
+    actions: GraphNodeActions;
 }
 
 function resolveFieldGroups<C, P>(fields: { [key: string]: GraphNodeFieldConfig<C, P> }) {

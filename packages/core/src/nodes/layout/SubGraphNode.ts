@@ -4,17 +4,12 @@ import { GraphNode } from "../../types/graphTypes";
 import { NodeType } from "../nodes";
 import SubGraphNodeComponent from "./SubGraphNodeComponent";
 import { DEFAULT_NODE_WIDTH } from "../../utils/graph/graphNodeFactory";
-import { ProxyPortsNodeProcessor } from "../ProxyPortsNodeProcessor";
+import { DummyNodeProcessor } from "../DummyNodeProcessor";
 
 const PORT_IN = 'input';
 const PORT_OUT = 'output';
 const PORT_OUT_INTERAL = '__out';
 const PORT_IN_INTERNAL = '__in';
-
-const proxyPortsMapping = new Map([
-    [PORT_IN, PORT_OUT_INTERAL],
-    [PORT_IN_INTERNAL, PORT_OUT]
-]);
 
 export const SUB_GRAPH_NODE: GraphNodeConfig<any, any> = {
     title: 'Sub-Graph',
@@ -94,6 +89,6 @@ export const SUB_GRAPH_NODE: GraphNodeConfig<any, any> = {
         ];
     },
     createProcessor() {
-        return new ProxyPortsNodeProcessor(proxyPortsMapping);
+        return new DummyNodeProcessor();
     }
 };

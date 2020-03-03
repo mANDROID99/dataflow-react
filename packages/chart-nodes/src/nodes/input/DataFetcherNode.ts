@@ -185,11 +185,9 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             mapResponse
         });
     },
-    computeContext: {
-        compute(columns: string[]) {
-            return { columns };    
-        },
-        deps: ({ node }) => [node.fields[FIELD_COLUMNS] as string[]]
+    mapContext({ node }) {
+        const columns = node.fields[FIELD_COLUMNS] as string[];
+        return { columns };
     },
     onEvent(key, payload, { node, params, actions }) {
         if (key === BTN_RESOLVE_COLUMNS) {

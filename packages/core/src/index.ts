@@ -9,7 +9,7 @@ export * from './types/graphInputTypes';
 export * from './types/nodeProcessorTypes';
 
 // processor
-export { createProcessorsFromGraph, runProcessors, invokeProcessors } from './processor/createProcessors';
+export { createProcessorsFromGraph, runAllProcessors, invokeAllProcessors } from './processor/createProcessors';
 
 // editor
 import GraphEditor from './editor/components/GraphEditor';
@@ -33,4 +33,3 @@ export { jexl };
 
 export { nodes, NodeType } from './nodes/nodes';
 export { BaseNodeProcessor } from './nodes/BaseNodeProcessor';
-export { ProxyPortsNodeProcessor } from './nodes/ProxyPortsNodeProcessor';

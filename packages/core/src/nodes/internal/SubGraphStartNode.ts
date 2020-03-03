@@ -1,13 +1,9 @@
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
-import { ProxyPortsNodeProcessor } from "../ProxyPortsNodeProcessor";
 import GraphNodeLabelComponent from "./GraphNodeLabelComponent";
+import { DummyNodeProcessor } from "../DummyNodeProcessor";
 
 const PORT_OUT = 'input';
 const PORT_IN_INTERNAL = '__in';
-
-const proxyPortsMapping = new Map<string, string>([
-    [PORT_IN_INTERNAL, PORT_OUT]
-]);
 
 export const SUBGRAPH_START_NODE: GraphNodeConfig<any, any> = {
     title: 'Start',
@@ -31,6 +27,6 @@ export const SUBGRAPH_START_NODE: GraphNodeConfig<any, any> = {
     fields: {},
     component: GraphNodeLabelComponent,
     createProcessor() {
-        return new ProxyPortsNodeProcessor(proxyPortsMapping);
+        return new DummyNodeProcessor();
     }
 };

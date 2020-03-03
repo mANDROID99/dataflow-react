@@ -8,9 +8,9 @@ import GraphNodeField from './GraphNodeField';
 
 type Props<C, P> = {
     nodeId: string;
-    context: C | undefined;
+    context: C;
     groupName: string;
-    actions: GraphNodeActions<C>;
+    actions: GraphNodeActions;
     group: { [key: string]: GraphNodeFieldConfig<C, P> };
     fields: { [key: string]: unknown };
 };

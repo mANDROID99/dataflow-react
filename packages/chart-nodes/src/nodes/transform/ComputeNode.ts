@@ -3,7 +3,6 @@ import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { pushDistinct } from '../../utils/arrayUtils';
 import { Row } from '../../types/valueTypes';
 import { rowToEvalContext } from '../../utils/expressionUtils';
-import { getContextsForPorts, mergeContextsArray } from '../../chartContext';
 
 const PORT_ROWS = 'rows';
 const KEY_ACC = 'acc';
@@ -112,20 +111,13 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             })
         }
     },
-    computeContext: {
-        compute(alias: string, ...contexts) {
-            const context = mergeContextsArray(contexts);
-            if (!context) return;
-
-            const columns = pushDistinct(context.columns, alias);
-            return {
-                ...context,
-                columns
-            };
-        },
-        deps({ node, contexts }) {
-            return [node.fields.alias, ...getContextsForPorts(node.ports.in, contexts)];
-        }
+    mapContext({ node, context }){
+        const alias = node.fields.alias as string;
+        const columns = pushDistinct(context.columns, alias);
+        return {
+            ...context,
+            columns
+        };
     },
     createProcessor(node, params) {
         const alias = node.fields.alias as string;

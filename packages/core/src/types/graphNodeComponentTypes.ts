@@ -23,7 +23,7 @@ export type GraphNodeComponentProps<C, P> = {
     nodeId: string;
     node: GraphNode;
     nodeConfig: GraphNodeConfig<C, P>;
-    context: C | undefined;
+    context: C;
     params: P;
     actions: GraphNodeActions;
     selected: boolean;

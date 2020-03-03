@@ -59,10 +59,8 @@ export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
         const data = node.fields[FIELD_DATA] as DataGridInputValue;  
         return new DataGridProcessor(data);
     },
-    computeContext: {
-        compute(columns: string[]) {
-            return { columns };    
-        },
-        deps: ({ node }) => [(node.fields[FIELD_DATA] as DataGridInputValue).columns]
+    mapContext({ node }) {
+        const columns = (node.fields[FIELD_DATA] as DataGridInputValue).columns;
+        return { columns };
     }
 };

@@ -2,6 +2,8 @@ import { StoreState } from "../types/storeTypes";
 import { GraphTemplate } from "../types/graphTemplateTypes";
 import { PortId } from "../editor/GraphNodePortRefs";
 import { TargetPort, GraphNode } from "../types/graphTypes";
+import { createGraphNodeContextsSelector } from "../processor/computeGraphNodeContexts";
+import { GraphConfig } from "../types/graphConfigTypes";
 
 export function selectGraph(state: StoreState) {
     return state.editor.graph;
@@ -65,7 +67,7 @@ export function selectPortTargets(port: PortId) {
     };
 }
 
-export function createSubNodesSelector(parent?: string) {
+export function selectSubGraphNodes(parent?: string) {
     let prev: {
         subNodeIds: string[] | undefined;
         graphNodes: { [key: string]: GraphNode };
@@ -106,5 +108,19 @@ export function createSubNodesSelector(parent?: string) {
         // set the previous state
         prev = { graphNodes, subNodes, subNodeIds };
         return subNodes;
+    };
+}
+
+export function selectGraphNodeContexts<C, P>(parent: string | undefined, graphConfig: GraphConfig<C, P>, params: P) {
+    const subNodeIdsSelector = selectSubNodeIds(parent);
+    const graphNodeContextsSelector = createGraphNodeContextsSelector(graphConfig, params);
+
+    return (state: StoreState): Map<string, C> => {
+        const subNodeIds = subNodeIdsSelector(state);
+        if (!subNodeIds) {
+            return new Map<string, C>();
+        }
+
+        return graphNodeContextsSelector(subNodeIds, state.editor.graph);
     };
 }

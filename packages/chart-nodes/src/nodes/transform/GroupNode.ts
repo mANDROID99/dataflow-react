@@ -4,7 +4,6 @@ import { KEY_GROUP, Row } from "../../types/valueTypes";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
-import { getContextsForPorts, mergeContextsArray } from "../../chartContext";
 
 const PORT_ROWS = 'rows';
 const PORT_GROUPS = 'groups';
@@ -121,28 +120,22 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.TEXT
         }
     },
-    computeContext: {
-        compute(alias: string, ...contexts: ChartContext[]) {
-            const context = mergeContextsArray(contexts);
-            if (!context) return;
+    mapContext({ node, context }) {
+        const alias = node.fields.alias as string;
 
-            if (context.groupColumns) {
-                const columns = pushDistinct(context.columns, alias);
-                return {
-                    columns,
-                    groupColumns: context.groupColumns
-                };
-    
-            } else {
-                const columns = [alias];
-                return {
-                    columns,
-                    groupColumns: context.columns
-                };
-            }
-        },
-        deps({ node, contexts }) {
-            return [node.fields.alias, ...getContextsForPorts(node.ports.in, contexts)];
+        if (context.groupColumns) {
+            const columns = pushDistinct(context.columns, alias);
+            return {
+                columns,
+                groupColumns: context.groupColumns
+            };
+
+        } else {
+            const columns = [alias];
+            return {
+                columns,
+                groupColumns: context.columns
+            };
         }
     },
     createProcessor(node, params) {

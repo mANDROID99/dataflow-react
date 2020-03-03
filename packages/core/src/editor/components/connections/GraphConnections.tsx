@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { GraphNode } from '../../../types/graphTypes';
 
-import { createSubNodesSelector } from '../../../store/selectors';
+import { selectSubGraphNodes } from '../../../store/selectors';
 import GraphConnection from './GraphConnection';
 import { PortId } from '../../GraphNodePortRefs';
 
@@ -51,7 +51,7 @@ function getConnections(nodes: { [key: string]: GraphNode }): Connection[] {
 }
 
 function GraphConnections({ parent }: Props) {
-    const nodes = useSelector(useMemo(() => createSubNodesSelector(parent), [parent]));
+    const nodes = useSelector(useMemo(() => selectSubGraphNodes(parent), [parent]));
     const connections = getConnections(nodes);
     
     return (

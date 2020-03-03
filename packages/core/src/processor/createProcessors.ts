@@ -94,10 +94,10 @@ export function createProcessorsFromGraph<C, P>(graph: Graph, graphConfig: Graph
     return processsors;
 }
 
-export function runProcessors(processors: NodeProcessor[]): () => void {
+export function runAllProcessors(processors: Map<string, NodeProcessor>): () => void {
 
     // start all processors
-    for (const processor of processors) {
+    for (const processor of processors.values()) {
         if (processor.start) {
             processor.start();
         }
@@ -105,7 +105,7 @@ export function runProcessors(processors: NodeProcessor[]): () => void {
 
     return () => {
         // clean-up
-        for (const processor of processors) {
+        for (const processor of processors.values()) {
             if (processor.stop) {
                 processor.stop();
             }
@@ -113,9 +113,9 @@ export function runProcessors(processors: NodeProcessor[]): () => void {
     };
 }
 
-export function invokeProcessors(processors: NodeProcessor[]) {
-    if (processors.length) {
-        for (const processor of processors) {
+export function invokeAllProcessors(processors: Map<string, NodeProcessor>) {
+    if (processors.size) {
+        for (const processor of processors.values()) {
             if (processor.invoke) {
                 processor.invoke();
             }
