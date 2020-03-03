@@ -2,7 +2,6 @@ import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, e
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
 import { rowToEvalContext } from "../../utils/expressionUtils";
-import { COMPUTE_CONTEXT_MERGE_INPUTS } from "../../chartContext";
 
 const PORT_ROWS = 'rows';
 
@@ -84,7 +83,6 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: false
         }
     },
-    computeContext: COMPUTE_CONTEXT_MERGE_INPUTS,
     createProcessor(node, params) {
         const descending = node.fields.desc as boolean;
         const mapColumnKeyExpr = node.fields.column as ColumnMapperInputValue;

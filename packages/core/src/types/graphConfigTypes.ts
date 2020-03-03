@@ -21,9 +21,9 @@ export type ContextResolverParams<C, P> = {
     params: P;
 }
 
-export type MemoizedCallback<P, T, D = any> = {
-    compute: (param: P, deps: D[]) => T;
-    deps?: (param: P) => D[];
+export type MemoizedCallback<P, T, D extends any[] = any> = {
+    compute: (...deps: D) => T;
+    deps: (param: P) => D;
 } | ((param: P) => T);
 
 export type GraphNodeFieldConfig<C, P> = {
@@ -93,6 +93,7 @@ export type PortTypeConfig = {
 
 export type GraphConfig<C, P> = {
     params?: P;
+    computeContext?: MemoizedCallback<ContextResolverParams<C, P>, C | undefined>;
     nodes: {
         [type: string]: GraphNodeConfig<C, P>;
     };

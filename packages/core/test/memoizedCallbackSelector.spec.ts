@@ -1,25 +1,15 @@
 import { createMemoizedCallbackSelector } from '../src/utils/createMemoizedCallbackSelector';
 
 test('computes a value', () => {
-    const selector = createMemoizedCallbackSelector<string, string>((input) => input.toUpperCase());
+    const selector = createMemoizedCallbackSelector((input: string) => input.toUpperCase());
     expect(selector('foo')).toEqual('FOO');
     expect(selector('bar')).toEqual('BAR');
 });
 
-test('never recomputes when no dependencies provided', () => {
-    const selector = createMemoizedCallbackSelector({
-        compute: (input: string) => ({ input })
-    });
-
-    const a1 = selector('foo');
-    const a2 = selector('foo');
-    expect(a1).toBe(a2);
-});
-
 test('memoizes with dependencies', () => {
     const selector = createMemoizedCallbackSelector({
-        compute: (input: string) => ({ input }),
-        deps: (p) => [p]
+        compute: (input) => ({ input }),
+        deps: (p: string) => [p]
     });
 
     const a1 = selector('foo');

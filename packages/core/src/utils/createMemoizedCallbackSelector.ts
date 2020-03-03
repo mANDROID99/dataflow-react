@@ -14,7 +14,7 @@ function compareDeps(prev: any[], next: any[]): boolean {
     return true;
 }
 
-export function createMemoizedCallbackSelector<P, T, D>(config: MemoizedCallback<P, T, D>): (param: P) => T {
+export function createMemoizedCallbackSelector<P, T, D extends any[]>(config: MemoizedCallback<P, T, D>): (param: P) => T {
     let prev: T | undefined;
     let prevDeps: D[] | undefined;
 
@@ -23,14 +23,7 @@ export function createMemoizedCallbackSelector<P, T, D>(config: MemoizedCallback
             return config(param);
 
         } else {
-            let deps: D[];
-
-            if (config.deps) {
-                deps = config.deps(param);
-            } else {
-                // NEVER recompute when no deps callback provided
-                deps = [];
-            }
+            const deps = config.deps(param);
 
             // return previous value if deps not changed
             if (prevDeps && compareDeps(prevDeps, deps)) {
@@ -38,7 +31,8 @@ export function createMemoizedCallbackSelector<P, T, D>(config: MemoizedCallback
             }
             
             prevDeps = deps;
-            return prev = config.compute(param, deps);
+            prev = config.compute.apply(null, deps);
+            return prev;
         }
     };
 }

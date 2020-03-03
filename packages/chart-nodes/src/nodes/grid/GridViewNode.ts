@@ -2,7 +2,6 @@ import { Column, GraphNodeConfig, InputType, GraphNode, BaseNodeProcessor } from
 
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ViewType, GridColumnConfig, GridValueConfig, Row } from "../../types/valueTypes";
-import { mergeContextsArray, getContextsForSinglePort } from "../../chartContext";
 import { asString } from "../../utils/conversions";
 
 function getDefaultViewName(node: GraphNode) {
@@ -114,15 +113,6 @@ export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Name',
             initialValue: '',
             type: InputType.TEXT
-        }
-    },
-    computeContext: {
-        compute(_, contexts: ChartContext[]) {
-            return mergeContextsArray(contexts);
-        },
-        deps({ node, contexts }) {
-            const targets = node.ports.in[PORT_DATA];
-            return getContextsForSinglePort(targets, contexts);
         }
     },
     createProcessor(node, params) {

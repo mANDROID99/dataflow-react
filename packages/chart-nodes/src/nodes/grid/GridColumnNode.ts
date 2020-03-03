@@ -1,10 +1,10 @@
-import { GraphNodeConfig, InputType, columnExpression, expressions, ColumnMapperInputValue, BaseNodeProcessor, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, expressions, ColumnMapperInputValue, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row, GridColumnConfig, GridValueConfig } from "../../types/valueTypes";
 import { asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
-import { COMPUTE_CONTEXT_MERGE_OUTPUTS } from "../../chartContext";
 
+const PORT_DATA = 'data';
 const PORT_COLUMN = 'column';
 
 const FIELD_NAME = 'name';
@@ -73,7 +73,11 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     menuGroup: 'Grid',
     description: 'Column to show in the grid.',
     ports: {
-        in: {},
+        in: {
+            [PORT_DATA]: {
+                type: 'row[]'
+            }
+        },
         out: {
             [PORT_COLUMN]: {
                 type: 'column'
@@ -154,7 +158,6 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             fieldGroup: 'More'
         }
     },
-    computeContext: COMPUTE_CONTEXT_MERGE_OUTPUTS,
     createProcessor(node, params) {
         const fields = node.fields;
         const name = fields[FIELD_NAME] as string;

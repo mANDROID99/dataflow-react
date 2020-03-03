@@ -46,7 +46,7 @@ function GraphNode<C, P>({ nodeId, node, container }: Props): React.ReactElement
     const maxH = getNodeMaxHeight(nodeConfig);
 
     // compute the new node context. Uses "createMemoizedCallbackSelector" to determine if the context needs to be recomputed
-    const context = useSelector(useMemo(() => createNodeContextSelector(nodeId, nodeConfig, params), [nodeId, nodeConfig, params]));
+    const context = useSelector(useMemo(() => createNodeContextSelector(nodeId, graphConfig, nodeConfig, params), [nodeId, graphConfig, nodeConfig, params]));
    
     // construct the actions to pass down
     const actions = useGraphNodeActions(nodeId, dispatch, nodeConfig, node, context, params);

@@ -4,7 +4,6 @@ import { Row, JoinType } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
-import { COMPUTE_CONTEXT_MERGE_INPUTS } from "../../chartContext";
 
 type KeyExtractor = (row: Row, i: number) => string;
 
@@ -205,7 +204,6 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             })
         }
     },
-    computeContext: COMPUTE_CONTEXT_MERGE_INPUTS,
     createProcessor(node, params) {
         const joinType = node.fields.joinType as JoinType;
         

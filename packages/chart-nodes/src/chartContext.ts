@@ -1,4 +1,4 @@
-import { MemoizedCallback, ContextResolverParams, TargetPorts, TargetPort } from "@react-ngraph/core";
+import { MemoizedCallback, ContextResolverParams, TargetPorts } from "@react-ngraph/core";
 import { mergeDistinct } from "./utils/arrayUtils";
 import { ChartContext, ChartParams } from "./types/contextTypes";
 
@@ -37,32 +37,11 @@ export function getContextsForPorts(ports: TargetPorts, contexts: { [key: string
     return portContexts;
 }
 
-export function getContextsForSinglePort(port: TargetPort[] | undefined, contexts: { [key: string]: ChartContext | undefined }) {
-    const portContexts: ChartContext[] = [];
-    if (port && port.length) {
-        for (const t of port) {
-            const ctx = contexts[t.node];
-            if (ctx) portContexts.push(ctx);
-        }
-    }
-    return portContexts;
-}
-
-
-export const COMPUTE_CONTEXT_MERGE_INPUTS: MemoizedCallback<ContextResolverParams<ChartContext, ChartParams>, ChartContext | undefined, ChartContext> = {
-    compute(_, contexts) {
+export const COMPUTE_CONTEXT_MERGE_INPUTS: MemoizedCallback<ContextResolverParams<ChartContext, ChartParams>, ChartContext | undefined, ChartContext[]> = {
+    compute(...contexts) {
         return mergeContextsArray(contexts);
     },
     deps({ node, contexts }) {
         return getContextsForPorts(node.ports.in, contexts);
-    }
-};
-
-export const COMPUTE_CONTEXT_MERGE_OUTPUTS:  MemoizedCallback<ContextResolverParams<ChartContext, ChartParams>, ChartContext | undefined, ChartContext> = {
-    compute(_, contexts) {
-        return mergeContextsArray(contexts);
-    },
-    deps({ node, contexts }) {
-        return getContextsForPorts(node.ports.out, contexts);
     }
 };

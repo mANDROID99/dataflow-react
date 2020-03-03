@@ -3,7 +3,6 @@ import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/conversions';
 import { rowToEvalContext } from '../../utils/expressionUtils';
-import { COMPUTE_CONTEXT_MERGE_INPUTS } from "../../chartContext";
 
 const PORT_POINTS = 'points';
 const PORT_DATASETS = 'datasets';
@@ -162,7 +161,6 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: []
         }
     },
-    computeContext: COMPUTE_CONTEXT_MERGE_INPUTS,
     createProcessor(node, params) {
         const datasetType = node.fields.type as string;
         const mapLabelExpr = node.fields.label as ColumnMapperInputValue;

@@ -113,11 +113,10 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     computeContext: {
-        compute({ node }, contexts) {
+        compute(alias: string, ...contexts) {
             const context = mergeContextsArray(contexts);
             if (!context) return;
 
-            const alias = node.fields.alias as string;
             const columns = pushDistinct(context.columns, alias);
             return {
                 ...context,
@@ -125,7 +124,7 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             };
         },
         deps({ node, contexts }) {
-            return getContextsForPorts(node.ports.in, contexts);
+            return [node.fields.alias, ...getContextsForPorts(node.ports.in, contexts)];
         }
     },
     createProcessor(node, params) {
