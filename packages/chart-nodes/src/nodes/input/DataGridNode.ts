@@ -36,7 +36,6 @@ class DataGridProcessor extends BaseNodeProcessor {
     }
 }
 
-
 export const DATA_GRID_NODE: GraphNodeConfig<ChartContext> = {
     title: 'Data-Grid',
     menuGroup: 'Input',

@@ -7,7 +7,7 @@ export enum DragType {
     DRAG_SIZE
 }
 
-export type GraphNodeActions<C> = {
+export type GraphNodeActions = {
     setPos(x: number, y: number): void;
     setSize(width: number, height: number): void;
     setWidth(width: number): void;
@@ -17,7 +17,6 @@ export type GraphNodeActions<C> = {
     showContextMenu(x: number, y: number): void;
     triggerEvent(key: string, payload: null): void;
     triggerNodeChanged(prev: GraphNode, next: GraphNode): void;
-    setNodeContext(context: C | undefined): void;
 }
 
 export type GraphNodeComponentProps<C, P> = {
@@ -26,7 +25,7 @@ export type GraphNodeComponentProps<C, P> = {
     nodeConfig: GraphNodeConfig<C, P>;
     context: C | undefined;
     params: P;
-    actions: GraphNodeActions<C>;
+    actions: GraphNodeActions;
     selected: boolean;
     width: number;
     height: number;

@@ -15,13 +15,13 @@ import { GraphNodeConfig } from "../../../types/graphConfigTypes";
 import { GraphNode } from "../../../types/graphTypes";
 import { GraphNodeActions } from "../../../types/graphNodeComponentTypes";
 
-export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, nodeConfig: GraphNodeConfig<C, P>, node: GraphNode, context: C | undefined, params: P): GraphNodeActions<C> {
+export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, nodeConfig: GraphNodeConfig<C, P>, node: GraphNode, context: C | undefined, params: P): GraphNodeActions {
     const paramsRef = useRef({ node, context, params });
     useEffect(() => {
         paramsRef.current = { node, context, params };
     });
 
-    return useMemo((): GraphNodeActions<C> => ({
+    return useMemo((): GraphNodeActions => ({
         setPos(x, y) {
             dispatch(setNodePos(nodeId, x, y));
         },

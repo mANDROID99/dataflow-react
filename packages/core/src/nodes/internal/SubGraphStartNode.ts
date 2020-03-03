@@ -13,11 +13,18 @@ export const SUBGRAPH_START_NODE: GraphNodeConfig<any, any> = {
     title: 'Start',
     description: 'Sub-graph start node',
     ports: {
-        in: {},
+        in: {
+            [PORT_IN_INTERNAL]: {
+                type: null,
+                hidden: true,
+                proxy: PORT_OUT
+            }
+        },
         out: {
             [PORT_OUT]: {
                 type: null,
-                label: ''
+                label: '',
+                proxy: PORT_IN_INTERNAL
             }
         }
     },

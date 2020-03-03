@@ -13,11 +13,9 @@ export type FieldResolverParams<C, P> = {
     params: P;
 }
 
-export type ContextResolverParams<C, P> = {
+export type MapContextParams<C, P> = {
     node: GraphNode;
-    contexts: {
-        [key: string]: C | undefined;
-    };
+    context: C | undefined;
     params: P;
 }
 
@@ -40,13 +38,14 @@ export type GraphNodePortConfig = {
     label?: string;
     multi?: boolean;
     hidden?: boolean;
+    proxy?: string;
 }
 
 export type CallbackParams<C, P> = {
     node: GraphNode;
     context: C | undefined;
     params: P;
-    actions: GraphNodeActions<C>;
+    actions: GraphNodeActions;
 }
 
 export type NodeCreationParams<P> = {
@@ -82,7 +81,7 @@ export type GraphNodeConfig<C, P = {}> = {
     component?: React.ComponentType<GraphNodeComponentProps<C, P>>;
     createNode?: (params: NodeCreationParams<P>) => GraphNode | GraphNode[];
     createProcessor: (node: GraphNode, params: P) => NodeProcessor;
-    computeContext?: MemoizedCallback<ContextResolverParams<C, P>, C | undefined>;
+    mapContext?: (params: MapContextParams<C, P>) => C;
     onChanged?: (prev: GraphNode | undefined, next: GraphNode, params: CallbackParams<C, P>) => void;
     onEvent?: (key: string, payload: unknown, params: CallbackParams<C, P>) => void;
 }
@@ -93,7 +92,8 @@ export type PortTypeConfig = {
 
 export type GraphConfig<C, P> = {
     params?: P;
-    computeContext?: MemoizedCallback<ContextResolverParams<C, P>, C | undefined>;
+    context: C;
+    mergeContexts?: (left: C, right: C) => C;
     nodes: {
         [type: string]: GraphNodeConfig<C, P>;
     };

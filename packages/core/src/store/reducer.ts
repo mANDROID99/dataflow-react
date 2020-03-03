@@ -23,8 +23,7 @@ import {
     SetNodeNameAction,
     SetNodeBoundsAction,
     MoveOverlappingBoundsAction,
-    SetNodeSizeAction,
-    SetNodeContextAction
+    SetNodeSizeAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
@@ -41,7 +40,7 @@ function getSubNodeIds(graph: Graph, parent: string | undefined) {
     }
 }
 
-function deleteNode(graph: Graph, nodeBounds: { [key: string]: NodeBounds }, nodeContexts: { [nodeId: string]: unknown }, nodeId: string) {
+function deleteNode(graph: Graph, nodeBounds: { [key: string]: NodeBounds }, nodeId: string) {
     const nodes = graph.nodes;
     const node = nodes[nodeId];
     if (!node) return;
@@ -50,7 +49,7 @@ function deleteNode(graph: Graph, nodeBounds: { [key: string]: NodeBounds }, nod
     const subNodes = node.subNodes;
     if (subNodes) {
         for (const subNodeId of subNodes) {
-            deleteNode(graph, nodeBounds, nodeContexts, subNodeId);
+            deleteNode(graph, nodeBounds, subNodeId);
         }
     }
 
@@ -85,7 +84,6 @@ function deleteNode(graph: Graph, nodeBounds: { [key: string]: NodeBounds }, nod
     // remove node bounds
     clearAlignment(nodeBounds, nodeId);
     delete nodeBounds[nodeId];
-    delete nodeContexts[nodeId];
 }
 
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
@@ -129,7 +127,7 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
     }),
 
     [GraphActionType.DELETE_NODE]: produce((state: GraphEditorState, { nodeId }: DeleteNodeAction) => {
-        deleteNode(state.graph, state.nodeBounds, state.nodeContexts, nodeId);
+        deleteNode(state.graph, state.nodeBounds, nodeId);
         state.contextMenu = undefined;
         state.selectedNode = undefined;
     }),
@@ -302,10 +300,6 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
                 height: action.height
             };
         }        
-    }),
-
-    [GraphActionType.SET_NODE_CONTEXT]: produce((state: GraphEditorState, action: SetNodeContextAction) => {
-        state.nodeContexts[action.nodeId] = action.nodeContext;
     }),
 
     [GraphActionType.MOVE_OVERLAPPING_BOUNDS]: produce((state: GraphEditorState, action: MoveOverlappingBoundsAction) => {

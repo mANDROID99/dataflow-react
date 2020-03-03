@@ -44,9 +44,6 @@ export type GraphEditorState = {
     nodeBounds: {
         [nodeId: string]: NodeBounds;
     };
-    nodeContexts: {
-        [nodeId: string]: unknown;
-    };
 }
 
 export type StoreState = {

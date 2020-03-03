@@ -17,10 +17,17 @@ export const SUBGRAPH_END_NODE: GraphNodeConfig<any, any> = {
             [PORT_IN]: {
                 type: null,
                 multi: true,
-                label: ''
+                label: '',
+                proxy: PORT_OUT_INTERNAL
             }
         },
-        out: {}
+        out: {
+            [PORT_OUT_INTERNAL]: {
+                type: null,
+                hidden: true,
+                proxy: PORT_IN
+            }
+        }
     },
     fields: {},
     component: GraphNodeLabelComponent,

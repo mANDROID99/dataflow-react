@@ -25,12 +25,24 @@ export const SUB_GRAPH_NODE: GraphNodeConfig<any, any> = {
     ports: {
         in: {
             [PORT_IN]: {
-                type: null
+                type: null,
+                proxy: PORT_OUT_INTERAL
+            },
+            [PORT_IN_INTERNAL]: {
+                type: null,
+                proxy: PORT_OUT,
+                hidden: true
             }
         },
         out: {
             [PORT_OUT]: {
-                type: null
+                type: null,
+                proxy: PORT_IN_INTERNAL
+            },
+            [PORT_OUT_INTERAL]: {
+                type: null,
+                hidden: true,
+                proxy: PORT_IN
             }
         }
     },

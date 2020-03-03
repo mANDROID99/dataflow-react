@@ -2,8 +2,6 @@ import { StoreState } from "../types/storeTypes";
 import { GraphTemplate } from "../types/graphTemplateTypes";
 import { PortId } from "../editor/GraphNodePortRefs";
 import { TargetPort, GraphNode } from "../types/graphTypes";
-import { GraphNodeConfig, GraphConfig } from "../types/graphConfigTypes";
-import { createMemoizedCallbackSelector } from "../utils/createMemoizedCallbackSelector";
 
 export function selectGraph(state: StoreState) {
     return state.editor.graph;
@@ -110,23 +108,3 @@ export function createSubNodesSelector(parent?: string) {
         return subNodes;
     };
 }
-
-export function createNodeContextSelector<C, P>(nodeId: string, graphConfig: GraphConfig<C, P>, graphNodeConfig: GraphNodeConfig<C, P>, params: P): (state: StoreState) => C | undefined {
-    const computeContext = graphNodeConfig.computeContext || graphConfig.computeContext;
-    if (!computeContext) {
-        return () => undefined;
-    }
-
-    const selector = createMemoizedCallbackSelector(computeContext);
-    return (state: StoreState) => {
-        const node = selectGraphNode(state, nodeId);
-        if (!node) return;
-
-        return selector({
-            node,
-            contexts: state.editor.nodeContexts as { [nodeId: string]: C | undefined },
-            params
-        });
-    }
-}
-
