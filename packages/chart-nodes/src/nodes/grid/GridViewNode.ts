@@ -77,7 +77,7 @@ class GridViewProcessor extends BaseNodeProcessor {
         const gridData: GridValueConfig[][] = this.data.map((row, index) => {
             return columnConfigs.map<GridValueConfig>(column => ({
                 value: asString(row[column.key]),
-                ...column.mapRow(row, column.key, index)
+                ...column.mapRow(row, index, column.key)
             }));
         });
 

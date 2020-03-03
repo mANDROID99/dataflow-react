@@ -144,12 +144,12 @@ class JoinNodeProcessor extends BaseNodeProcessor {
     }
 
     private extractKeyLeft(row: Row, index: number): string {
-        const ctx = rowToEvalContext(row, index, this.params.variables);
+        const ctx = rowToEvalContext(row, index, null, this.params.variables);
         return asString(this.config.mapKeyLeft(ctx));
     }
 
     private extractKeyRight(row: Row, index: number): string {
-        const ctx = rowToEvalContext(row, index, this.params.variables);
+        const ctx = rowToEvalContext(row, index, null, this.params.variables);
         return asString(this.config.mapKeyRight(ctx));
     }
 }

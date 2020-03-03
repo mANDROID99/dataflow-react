@@ -31,7 +31,7 @@ class DataPointNodeProcessor extends BaseNodeProcessor {
 
         const rows = inputs[0] as Row[];
         const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
-            const ctx = rowToEvalContext(row, i, this.params.variables);
+            const ctx = rowToEvalContext(row, i, null, this.params.variables);
 
             const x = asValue(this.config.mapX(ctx), 0);
             const y = asValue(this.config.mapY(ctx), 0);

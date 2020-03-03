@@ -43,7 +43,7 @@ class AggregateNodeProcessor extends BaseNodeProcessor {
                 
                 for (let j = 0, m = subRows.length; j < m; j++) {
                     const subRow = subRows[j];
-                    const ctx = rowToEvalContext(subRow, j, this.params.variables);
+                    const ctx = rowToEvalContext(subRow, j, null, this.params.variables);
                     const value = asNumber(this.config.mapColumn(ctx));
                     subAmt = aggregator(subAmt, value, j);
                 }
@@ -55,7 +55,7 @@ class AggregateNodeProcessor extends BaseNodeProcessor {
                 });
                 
             } else {
-                const ctx = rowToEvalContext(row, i, this.params.variables);
+                const ctx = rowToEvalContext(row, i, null, this.params.variables);
                 const value = asNumber(this.config.mapColumn(ctx));
                 amt = aggregator(amt, value, i);
             }

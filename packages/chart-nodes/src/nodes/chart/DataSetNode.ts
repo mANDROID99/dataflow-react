@@ -2,7 +2,7 @@ import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, E
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/conversions';
-import { pointToEvalContext } from '../../utils/expressionUtils';
+import { rowToEvalContext } from '../../utils/expressionUtils';
 import { COMPUTE_CONTEXT_MERGE_INPUTS } from "../../chartContext";
 
 const PORT_POINTS = 'points';
@@ -37,7 +37,7 @@ class DataSetNodeProcessor extends BaseNodeProcessor {
         if (points.length) {
             for (let i = 0, n = points.length; i < n; i++){
                 const point = points[i];
-                const ctx = pointToEvalContext(point, i, this.params.variables);
+                const ctx = rowToEvalContext(point.row, i, null, this.params.variables);
 
                 const seriesKey = asString(this.config.mapSeriesKey(ctx));
                 let dataSet: ChartDataSet | undefined = dataSetsByKey.get(seriesKey);

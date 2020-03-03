@@ -44,7 +44,7 @@ class ComputeProcessor extends BaseNodeProcessor {
 
         let value = config.seed;
         for (let i = 0, n = rows.length; i < n; i++) {
-            const ctx = rowToEvalContext(rows[i], i, this.params.variables);
+            const ctx = rowToEvalContext(rows[i], i, null, this.params.variables);
             ctx[KEY_ACC] = value;
             value = mapValue(ctx);
         }
@@ -58,7 +58,7 @@ class ComputeProcessor extends BaseNodeProcessor {
         const mapValue = config.mapValue;
 
         return rows.map((row, i) => {
-            const ctx = rowToEvalContext(row, i, this.params.variables);
+            const ctx = rowToEvalContext(row, i, null, this.params.variables);
             const value = mapValue(ctx);
             return { ...row, [alias]: value };
         })

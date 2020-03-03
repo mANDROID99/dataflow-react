@@ -40,7 +40,7 @@ class GroupNodeProcessor extends BaseNodeProcessor {
 
                 for (let j = 0, m = subRows.length; j < m; j++) {
                     const subRow = subRows[j];
-                    const ctx = rowToEvalContext(subRow, j, this.params.variables);
+                    const ctx = rowToEvalContext(subRow, j, null, this.params.variables);
                     const groupName = asString(this.config.mapGroup(ctx));
 
                     if (groupName) {
@@ -62,7 +62,7 @@ class GroupNodeProcessor extends BaseNodeProcessor {
                 }
 
             } else {
-                const ctx = rowToEvalContext(row, i, this.params.variables);
+                const ctx = rowToEvalContext(row, i, null, this.params.variables);
                 const groupName = asString(this.config.mapGroup(ctx));
 
                 if (groupName) {

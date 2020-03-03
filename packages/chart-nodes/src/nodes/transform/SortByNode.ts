@@ -30,8 +30,8 @@ class SortByNodeProcessor extends BaseNodeProcessor {
         const rowsSorted = rows.slice(0);
 
         rowsSorted.sort((a, b) => {
-            const sortKeyA = this.config.mapColumnKey(rowToEvalContext(a, null, this.params.variables)) as any;
-            const sortKeyB = this.config.mapColumnKey(rowToEvalContext(b, null, this.params.variables)) as any;
+            const sortKeyA = this.config.mapColumnKey(rowToEvalContext(a, null, null, this.params.variables)) as any;
+            const sortKeyB = this.config.mapColumnKey(rowToEvalContext(b, null, null, this.params.variables)) as any;
           
             if (sortKeyB > sortKeyA) {
                 return this.config.descending ? 1 : -1;
