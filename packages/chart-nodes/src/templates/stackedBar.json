@@ -1,0 +1,353 @@
+{
+    "nodeIds": [
+      "731adb7f-2797-49fd-89bc-f73613c49d2b",
+      "98fe8734-1862-46ab-aff2-92bf7b0c9436",
+      "beebada0-d7f4-4997-b5c2-4f917a131404",
+      "ba6c3c8f-6667-461e-99d6-6fcbb0223ed0",
+      "fbca306f-c45c-4d0f-9022-45f84284a2e2",
+      "3458fb4b-f6e7-4364-aeb6-04ae2c7dff6f",
+      "5e7f9879-7fd3-42fe-a856-e7d583bcbf3b",
+      "5f3be08a-fde9-4256-bb1c-5be2f8616fda"
+    ],
+    "nodes": {
+      "98fe8734-1862-46ab-aff2-92bf7b0c9436": {
+        "id": "98fe8734-1862-46ab-aff2-92bf7b0c9436",
+        "type": "data-grid",
+        "name": "Data-Grid",
+        "x": 168,
+        "y": 166,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "data": {
+            "columns": [
+              "Country",
+              "Percent Smokers",
+              "Gender"
+            ],
+            "rows": [
+              [
+                "England",
+                "16.5",
+                "M"
+              ],
+              [
+                "England",
+                "13",
+                "F"
+              ],
+              [
+                "France",
+                "35.6",
+                "M"
+              ],
+              [
+                "France",
+                "30",
+                "F"
+              ],
+              [
+                "Belgium",
+                "21.6",
+                "M"
+              ],
+              [
+                "Belgium",
+                "16.4",
+                "F"
+              ]
+            ]
+          }
+        },
+        "ports": {
+          "in": {},
+          "out": {
+            "rows": [
+              {
+                "node": "fbca306f-c45c-4d0f-9022-45f84284a2e2",
+                "port": "left"
+              }
+            ]
+          }
+        }
+      },
+      "beebada0-d7f4-4997-b5c2-4f917a131404": {
+        "id": "beebada0-d7f4-4997-b5c2-4f917a131404",
+        "type": "datapoints",
+        "name": "Data-Points",
+        "x": 448,
+        "y": 271,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "x": {
+            "type": "column",
+            "value": "Country"
+          },
+          "y": "= row[\"Percent Smokers\"]",
+          "r": {
+            "type": "column",
+            "value": ""
+          },
+          "color": {
+            "type": "column",
+            "value": ""
+          }
+        },
+        "ports": {
+          "in": {
+            "rows": [
+              {
+                "node": "fbca306f-c45c-4d0f-9022-45f84284a2e2",
+                "port": "rows"
+              }
+            ]
+          },
+          "out": {
+            "points": [
+              {
+                "node": "731adb7f-2797-49fd-89bc-f73613c49d2b",
+                "port": "points"
+              }
+            ]
+          }
+        }
+      },
+      "731adb7f-2797-49fd-89bc-f73613c49d2b": {
+        "id": "731adb7f-2797-49fd-89bc-f73613c49d2b",
+        "type": "datasets",
+        "name": "Data-Sets",
+        "x": 690,
+        "y": 147,
+        "width": 200,
+        "height": 0,
+        "fields": {
+          "type": "bar",
+          "series": {
+            "type": "column",
+            "value": "Gender"
+          },
+          "label": {
+            "type": "column",
+            "value": "Gender"
+          },
+          "borderColor": {
+            "type": "column",
+            "value": ""
+          },
+          "backgroundColor": {
+            "type": "column",
+            "value": "Colour"
+          },
+          "params": []
+        },
+        "ports": {
+          "in": {
+            "points": [
+              {
+                "node": "beebada0-d7f4-4997-b5c2-4f917a131404",
+                "port": "points"
+              }
+            ]
+          },
+          "out": {
+            "datasets": [
+              {
+                "node": "ba6c3c8f-6667-461e-99d6-6fcbb0223ed0",
+                "port": "datasets"
+              }
+            ]
+          }
+        }
+      },
+      "ba6c3c8f-6667-461e-99d6-6fcbb0223ed0": {
+        "id": "ba6c3c8f-6667-461e-99d6-6fcbb0223ed0",
+        "type": "chart-view",
+        "name": "Chart View",
+        "x": 1065,
+        "y": 370,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "name": "",
+          "type": "bar",
+          "params": []
+        },
+        "ports": {
+          "in": {
+            "datasets": [
+              {
+                "node": "731adb7f-2797-49fd-89bc-f73613c49d2b",
+                "port": "datasets"
+              }
+            ],
+            "xAxes": [
+              {
+                "node": "3458fb4b-f6e7-4364-aeb6-04ae2c7dff6f",
+                "port": "axis"
+              }
+            ],
+            "yAxes": [
+              {
+                "node": "5e7f9879-7fd3-42fe-a856-e7d583bcbf3b",
+                "port": "axis"
+              }
+            ]
+          },
+          "out": {}
+        }
+      },
+      "3458fb4b-f6e7-4364-aeb6-04ae2c7dff6f": {
+        "id": "3458fb4b-f6e7-4364-aeb6-04ae2c7dff6f",
+        "type": "axis",
+        "name": "X-Axis",
+        "x": 831,
+        "y": 563,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "type": "category",
+          "label": "Country",
+          "params": [
+            {
+              "key": "ticks.beginAtZero",
+              "value": "true"
+            },
+            {
+              "key": "stacked",
+              "value": "true"
+            }
+          ]
+        },
+        "ports": {
+          "in": {},
+          "out": {
+            "axis": [
+              {
+                "node": "ba6c3c8f-6667-461e-99d6-6fcbb0223ed0",
+                "port": "xAxes"
+              }
+            ]
+          }
+        },
+        "collapsed": true
+      },
+      "5e7f9879-7fd3-42fe-a856-e7d583bcbf3b": {
+        "id": "5e7f9879-7fd3-42fe-a856-e7d583bcbf3b",
+        "type": "axis",
+        "name": "Y-Axis",
+        "x": 833,
+        "y": 612,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "type": "linear",
+          "label": "% Smokers",
+          "params": [
+            {
+              "key": "ticks.beginAtZero",
+              "value": "true"
+            },
+            {
+              "key": "stacked",
+              "value": "true"
+            }
+          ]
+        },
+        "ports": {
+          "in": {},
+          "out": {
+            "axis": [
+              {
+                "node": "ba6c3c8f-6667-461e-99d6-6fcbb0223ed0",
+                "port": "yAxes"
+              }
+            ]
+          }
+        },
+        "collapsed": true
+      },
+      "5f3be08a-fde9-4256-bb1c-5be2f8616fda": {
+        "id": "5f3be08a-fde9-4256-bb1c-5be2f8616fda",
+        "type": "data-grid",
+        "name": "Data-Colours",
+        "x": 138,
+        "y": 647,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "data": {
+            "columns": [
+              "Gender",
+              "Colour"
+            ],
+            "rows": [
+              [
+                "M",
+                "red"
+              ],
+              [
+                "F",
+                "blue"
+              ]
+            ]
+          }
+        },
+        "ports": {
+          "in": {},
+          "out": {
+            "rows": [
+              {
+                "node": "fbca306f-c45c-4d0f-9022-45f84284a2e2",
+                "port": "right"
+              }
+            ]
+          }
+        }
+      },
+      "fbca306f-c45c-4d0f-9022-45f84284a2e2": {
+        "id": "fbca306f-c45c-4d0f-9022-45f84284a2e2",
+        "type": "join",
+        "name": "Join",
+        "x": 213,
+        "y": 384,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "joinType": "left",
+          "joinKeyLeft": {
+            "type": "column",
+            "value": "Gender"
+          },
+          "joinKeyRight": {
+            "type": "column",
+            "value": "Gender"
+          }
+        },
+        "ports": {
+          "in": {
+            "right": [
+              {
+                "node": "5f3be08a-fde9-4256-bb1c-5be2f8616fda",
+                "port": "rows"
+              }
+            ],
+            "left": [
+              {
+                "node": "98fe8734-1862-46ab-aff2-92bf7b0c9436",
+                "port": "rows"
+              }
+            ]
+          },
+          "out": {
+            "rows": [
+              {
+                "node": "beebada0-d7f4-4997-b5c2-4f917a131404",
+                "port": "rows"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }

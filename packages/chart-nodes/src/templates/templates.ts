@@ -2,9 +2,9 @@ import { GraphTemplate } from "@react-ngraph/core";
 
 // // import json files
 import basicGrid from './basicGrid.json';
-// import basicLine from './basicLine.json';
-// import basicMultiline from './basicMultiLine.json';
-// import basicGroupBy from './groupBy.json';
+import basicLine from './basicLine.json';
+import basicMultiline from './basicMultiLine.json';
+import stackedBar from './stackedBar.json';
 // import apiRequest from './apiRequest.json';
 // import drilldown from './drilldown.json';
 
@@ -14,23 +14,23 @@ const BASIC_GRID: GraphTemplate = {
     data: basicGrid
 };
 
-// const BASIC_LINE: GraphTemplate = {
-//     id: 'basic-line',
-//     label: 'Basic Line',
-//     data: basicLine
-// };
+const BASIC_LINE: GraphTemplate = {
+    id: 'basic-line',
+    label: 'Basic Line',
+    data: basicLine
+};
 
-// const BASIC_MULTILINE: GraphTemplate = {
-//     id: 'basic-multiline',
-//     label: 'Basic Multi-Line',
-//     data: basicMultiline
-// };
+const BASIC_MULTILINE: GraphTemplate = {
+    id: 'basic-multiline',
+    label: 'Basic Multi-Line',
+    data: basicMultiline
+};
 
-// const BASIC_GROUP_BY: GraphTemplate = {
-//     id: 'basic-groupby',
-//     label: 'Basic Group-By',
-//     data: basicGroupBy
-// };
+const STACKED_BAR: GraphTemplate = {
+    id: 'basic-groupby',
+    label: 'Stacked Bar',
+    data: stackedBar
+};
 
 // const API_REQUEST: GraphTemplate = {
 //     id: 'api-request',
@@ -46,7 +46,9 @@ const BASIC_GRID: GraphTemplate = {
 
 export const templates = [
     BASIC_GRID,
-    // BASIC_LINE,
+    BASIC_LINE,
+    BASIC_MULTILINE,
+    STACKED_BAR
     // BASIC_MULTILINE,
     // BASIC_GROUP_BY,
     // API_REQUEST,
