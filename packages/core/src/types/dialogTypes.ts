@@ -5,7 +5,8 @@ export enum DialogType {
     TEXT,
     DATA_LIST,
     DATA_ENTRIES,
-    DATA_GRID
+    DATA_GRID,
+    CONFIRM
 }
 
 export type DialogComponentProps<P, R> = {
@@ -38,11 +39,17 @@ export type DataGridDialogParams = {
     value: DataGridInputValue | undefined;
 }
 
+export type ConfirmDialogParams = {
+    title: string;
+    text: string;
+}
+
 export type DialogParams<T extends DialogType> =
     T extends DialogType.TEXT ? TextDialogParams :
     T extends DialogType.DATA_LIST ? DataListDialogParams :
     T extends DialogType.DATA_ENTRIES ? DataEntriesDialogParams :
     T extends DialogType.DATA_GRID ? DataGridDialogParams :
+    T extends DialogType.CONFIRM ? ConfirmDialogParams :
     never;
 
 export type DialogResult<T extends DialogType> =
@@ -50,4 +57,5 @@ export type DialogResult<T extends DialogType> =
     T extends DialogType.DATA_LIST ? string[] | undefined :
     T extends DialogType.DATA_ENTRIES ? Entry<string>[] | undefined :
     T extends DialogType.DATA_GRID ? DataGridInputValue | undefined :
+    T extends DialogType.CONFIRM ? boolean :
     never;

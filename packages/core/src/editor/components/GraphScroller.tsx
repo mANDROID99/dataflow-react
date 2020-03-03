@@ -4,7 +4,7 @@ import { useDrop } from 'react-dnd';
 import classNames from 'classnames';
 
 import { useDrag } from '../../utils/hooks/useDrag';
-import { clearSelectedNode, addNode } from '../../store/actions';
+import { clearSelectedNode, addNode, showContextMenu } from '../../store/actions';
 import { graphNodeFactory } from '../../utils/graph/graphNodeFactory';
 import { useGraphContext } from '../graphEditorContext';
 import { containerContext, GraphContainerContext } from '../graphContainerContext';
@@ -87,6 +87,11 @@ function GraphScroller({ parent, children }: Props) {
     const handleClick = () => {
         dispatch(clearSelectedNode());
     };
+
+    const handleContextMenu = (e: React.MouseEvent) => {
+        e.preventDefault();
+        dispatch(showContextMenu(undefined, e.clientX, e.clientY));
+    };
     
     return (
         <div ref={(el) => {
@@ -94,6 +99,7 @@ function GraphScroller({ parent, children }: Props) {
             dropRef(el);
         }}
             className={classNames("ngraph-editor-scroller", { scrolling })}
+            onContextMenu={handleContextMenu}
             onClick={handleClick}
         >
             <containerContext.Provider value={context}>

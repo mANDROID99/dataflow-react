@@ -56,15 +56,33 @@
     border-bottom: 1px solid $grey-3;
     text-align: center;
     font-size: 1.2rem;
-    padding: 0.5rem;
+    padding: 0.75rem;
 }
 
 .ngraph-modal-footer {
     border-top: 1px solid $grey-3;
-    padding: 0.5rem;
+    padding: 0.75rem;
     text-align: end;
 }
 
 .ngraph-modal-footer .ngraph-btn {
     margin-left: 0.5rem;
+}
+
+.ngraph-dialog-confirm-header {
+    color: #fba92e;
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
+.ngraph-dialog-confirm-header-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.ngraph-dialog-confirm-body {
+    padding: 0.75rem;
+    max-width: 35rem;
 }

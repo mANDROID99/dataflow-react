@@ -94,6 +94,16 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         state.contextMenu = undefined;
     }),
 
+    [GraphActionType.CLEAR_GRAPH]: produce((state: GraphEditorState) => {
+        state.graph = {
+            nodeIds: [],
+            nodes: {}
+        };
+        state.nodeBounds = {};
+        state.portDrag = undefined;
+        state.contextMenu = undefined;
+    }),
+
     [GraphActionType.ADD_NODE]: produce((state: GraphEditorState, { node }: AddNodeAction) => {
         const graph = state.graph;
         const nodes = Array.isArray(node) ? node : [node];

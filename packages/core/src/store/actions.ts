@@ -3,6 +3,7 @@ import { ContextMenuTarget, PortTarget } from "../types/storeTypes";
 
 export enum GraphActionType {
     LOAD_GRAPH = 'LOAD_GRAPH',
+    CLEAR_GRAPH = 'CLEAR_GRAPH',
     ADD_NODE = 'CREATE_NODE',
     DELETE_NODE = 'DELETE_NODE',
     CLONE_NODE = 'COPY_NODE',
@@ -34,6 +35,16 @@ export function loadGraph(graph: Graph): LoadGraphAction {
     return {
         type: GraphActionType.LOAD_GRAPH,
         graph
+    };
+}
+
+export type ClearGraphAction = {
+    type: GraphActionType.CLEAR_GRAPH;
+}
+
+export function clearGraph(): ClearGraphAction {
+    return {
+        type: GraphActionType.CLEAR_GRAPH
     };
 }
 

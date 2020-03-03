@@ -1,256 +1,163 @@
 {
-  "nodes": {
-    "d3a2f84f-7021-4e05-871c-27c39919544c": {
-      "id": "d3a2f84f-7021-4e05-871c-27c39919544c",
-      "type": "data-grid",
-      "name": "data-grid",
-      "x": 61,
-      "y": 275.88888931274414,
-      "width": 170,
-      "height": 0,
-      "fields": {
-        "data": {
-          "columns": [
-            "X",
-            "Y"
-          ],
-          "rows": [
-            [
-              "1",
-              "2"
+    "nodes": {
+      "3e8a4b37-ea5d-49e1-9b13-9d158fb4ba52": {
+        "id": "3e8a4b37-ea5d-49e1-9b13-9d158fb4ba52",
+        "type": "subgraph-end",
+        "name": "End",
+        "x": 500,
+        "y": 484,
+        "width": 170,
+        "height": 0,
+        "fields": {},
+        "parent": "aad32121-350a-46a3-a65f-0012ee3e308f",
+        "ports": {
+          "in": {
+            "output": []
+          },
+          "out": {
+            "__out": []
+          }
+        }
+      },
+      "c1af16f6-654a-4282-8d29-6bcce120bf73": {
+        "id": "c1af16f6-654a-4282-8d29-6bcce120bf73",
+        "type": "data-grid",
+        "name": "Data-Grid",
+        "x": 122,
+        "y": 148,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "data": {
+            "columns": [
+              "Foo",
+              "Bar",
+              "Baz"
             ],
-            [
-              "2",
-              "4"
-            ],
-            [
-              "3",
-              "3"
-            ],
-            [
-              "4",
-              "4"
-            ],
-            [
-              "5",
-              "1"
+            "rows": [
+              [
+                "Apple",
+                "1",
+                "Green"
+              ],
+              [
+                "Orange",
+                "2",
+                "Orange"
+              ],
+              [
+                "Pear",
+                "3",
+                "Green"
+              ],
+              [
+                "Banana",
+                "4",
+                "Yellow"
+              ],
+              [
+                "Avocado",
+                "5",
+                "Green"
+              ]
             ]
-          ]
+          }
+        },
+        "ports": {
+          "in": {},
+          "out": {
+            "rows": [
+              {
+                "node": "6ddb8ea7-808a-4b82-bc1e-e903823a9671",
+                "port": "data"
+              },
+              {
+                "node": "e122b50c-267e-4a44-8891-0c2ee54a8fa2",
+                "port": "data"
+              }
+            ]
+          }
         }
       },
-      "ports": {
-        "in": {},
-        "out": {
-          "rows": [
-            {
-              "node": "287269be-a487-438a-a1e5-e310a6c059ee",
-              "port": "rows"
-            },
-            {
-              "node": "9a2b23db-a448-490a-a650-f257df118844",
-              "port": "rows"
-            }
-          ]
-        }
-      }
-    },
-    "287269be-a487-438a-a1e5-e310a6c059ee": {
-      "id": "287269be-a487-438a-a1e5-e310a6c059ee",
-      "type": "grid-view",
-      "name": "grid-view",
-      "x": 816,
-      "y": 498.79999923706055,
-      "width": 170,
-      "height": 0,
-      "fields": {
-        "name": "grid-1"
-      },
-      "ports": {
-        "in": {
-          "rows": [
-            {
-              "node": "d3a2f84f-7021-4e05-871c-27c39919544c",
-              "port": "rows"
-            }
-          ],
-          "columns": [
-            {
-              "node": "6890947d-00d8-463f-8fb3-882f4e14063b",
-              "port": "column"
-            },
-            {
-              "node": "58b2122c-bc4c-4bbe-b450-830afa6227bd",
-              "port": "column"
-            },
-            {
-              "node": "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd",
-              "port": "column"
-            }
-          ]
+      "6ddb8ea7-808a-4b82-bc1e-e903823a9671": {
+        "id": "6ddb8ea7-808a-4b82-bc1e-e903823a9671",
+        "type": "grid-column",
+        "name": "Grid Column",
+        "x": 386,
+        "y": 291,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "name": "Foo",
+          "key": "Foo",
+          "width": 100,
+          "order": 0,
+          "value": {
+            "type": "column",
+            "value": ""
+          },
+          "fontColor": {
+            "type": "column",
+            "value": ""
+          },
+          "bgColor": {
+            "type": "column",
+            "value": ""
+          },
+          "template": true
         },
-        "out": {}
-      }
-    },
-    "58b2122c-bc4c-4bbe-b450-830afa6227bd": {
-      "id": "58b2122c-bc4c-4bbe-b450-830afa6227bd",
-      "type": "grid-column",
-      "name": "grid-column",
-      "x": 515,
-      "y": 72.79999923706055,
-      "width": 170,
-      "height": 0,
-      "fields": {
-        "name": "X",
-        "width": 100,
-        "value": {
-          "type": "column",
-          "value": "X"
-        },
-        "fontColor": "= row.X > 3 ? \"white\" : undefined",
-        "bgColor": "= row.X > 3 ? \"green\" : undefined"
-      },
-      "ports": {
-        "in": {
-          "rows": [
-            {
-              "node": "9a2b23db-a448-490a-a650-f257df118844",
-              "port": "rows"
-            }
-          ]
-        },
-        "out": {
-          "column": [
-            {
-              "node": "287269be-a487-438a-a1e5-e310a6c059ee",
-              "port": "columns"
-            }
-          ]
-        }
-      }
-    },
-    "6890947d-00d8-463f-8fb3-882f4e14063b": {
-      "id": "6890947d-00d8-463f-8fb3-882f4e14063b",
-      "type": "grid-column",
-      "name": "grid-column",
-      "fields": {
-        "name": "Y",
-        "width": 100,
-        "value": {
-          "type": "column",
-          "value": "Y"
-        },
-        "fontColor": "= (row.X % 2 == 0) && (row.Y % 2 == 0) ? \"orange\" : undefined",
-        "bgColor": {
-          "type": "column",
-          "value": ""
+        "ports": {
+          "in": {
+            "data": [
+              {
+                "node": "c1af16f6-654a-4282-8d29-6bcce120bf73",
+                "port": "rows"
+              }
+            ]
+          },
+          "out": {
+            "column": [
+              {
+                "node": "e122b50c-267e-4a44-8891-0c2ee54a8fa2",
+                "port": "columns"
+              }
+            ]
+          }
         }
       },
-      "ports": {
-        "in": {
-          "rows": [
-            {
-              "node": "9a2b23db-a448-490a-a650-f257df118844",
-              "port": "rows"
-            }
-          ]
+      "e122b50c-267e-4a44-8891-0c2ee54a8fa2": {
+        "id": "e122b50c-267e-4a44-8891-0c2ee54a8fa2",
+        "type": "grid-view",
+        "name": "Grid View",
+        "x": 667,
+        "y": 229,
+        "width": 170,
+        "height": 0,
+        "fields": {
+          "name": ""
         },
-        "out": {
-          "column": [
-            {
-              "node": "287269be-a487-438a-a1e5-e310a6c059ee",
-              "port": "columns"
-            }
-          ]
-        }
-      },
-      "width": 170,
-      "height": 0,
-      "x": 512,
-      "y": 396.79999923706055
-    },
-    "9a2b23db-a448-490a-a650-f257df118844": {
-      "id": "9a2b23db-a448-490a-a650-f257df118844",
-      "type": "compute",
-      "name": "compute",
-      "x": 235,
-      "y": 429,
-      "width": 154,
-      "height": 0,
-      "fields": {
-        "alias": "total",
-        "value": "= acc + row.Y",
-        "reduce": true,
-        "seed": "0"
-      },
-      "ports": {
-        "in": {
-          "rows": [
-            {
-              "node": "d3a2f84f-7021-4e05-871c-27c39919544c",
-              "port": "rows"
-            }
-          ]
-        },
-        "out": {
-          "rows": [
-            {
-              "node": "6890947d-00d8-463f-8fb3-882f4e14063b",
-              "port": "rows"
-            },
-            {
-              "node": "58b2122c-bc4c-4bbe-b450-830afa6227bd",
-              "port": "rows"
-            },
-            {
-              "node": "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd",
-              "port": "rows"
-            }
-          ]
+        "ports": {
+          "in": {
+            "columns": [
+              {
+                "node": "6ddb8ea7-808a-4b82-bc1e-e903823a9671",
+                "port": "column"
+              }
+            ],
+            "data": [
+              {
+                "node": "c1af16f6-654a-4282-8d29-6bcce120bf73",
+                "port": "rows"
+              }
+            ]
+          },
+          "out": {}
         }
       }
     },
-    "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd": {
-      "id": "d935f2d6-b5a5-459c-bdbe-14e7f8ef4cdd",
-      "type": "grid-column",
-      "name": "grid-column",
-      "fields": {
-        "name": "Total",
-        "width": 100,
-        "value": {
-          "type": "column",
-          "value": "total"
-        },
-        "fontColor": {
-          "type": "column",
-          "value": ""
-        },
-        "bgColor": {
-          "type": "column",
-          "value": ""
-        }
-      },
-      "ports": {
-        "in": {
-          "rows": [
-            {
-              "node": "9a2b23db-a448-490a-a650-f257df118844",
-              "port": "rows"
-            }
-          ]
-        },
-        "out": {
-          "column": [
-            {
-              "node": "287269be-a487-438a-a1e5-e310a6c059ee",
-              "port": "columns"
-            }
-          ]
-        }
-      },
-      "width": 166,
-      "height": 0,
-      "x": 515,
-      "y": 724.7999992370605
-    }
+    "nodeIds": [
+      "c1af16f6-654a-4282-8d29-6bcce120bf73",
+      "6ddb8ea7-808a-4b82-bc1e-e903823a9671",
+      "e122b50c-267e-4a44-8891-0c2ee54a8fa2"
+    ]
   }
-}

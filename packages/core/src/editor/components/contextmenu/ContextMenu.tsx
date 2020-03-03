@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ContextMenuTargetType } from '../../../types/storeTypes';
 
 import Overlay from '../../../common/Overlay';
-import ContextMenuEdit from './ContextMenuEdit';
 import { hideContextMenu } from '../../../store/actions';
 import { selectContextMenu } from '../../../store/selectors';
+import ContextMenuGraph from './ContextMenuGraph';
+import ContextMenuNode from './ContextMenuNode';
 
 function ContextMenu() {
     const dispatch = useDispatch();
@@ -27,9 +28,10 @@ function ContextMenu() {
     function renderContent() {
         if (target) {
             if (target.type === ContextMenuTargetType.GRAPH_NODE) {
-                return <ContextMenuEdit nodeId={target.nodeId}/>;
+                return <ContextMenuNode nodeId={target.nodeId}/>;
             }
         }
+        return <ContextMenuGraph/>;
     }
 
     return (
