@@ -208,6 +208,20 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
 
     [GraphActionType.SELECT_NODE]: produce((state: GraphEditorState, action: SelectNodeAction) => {
         state.selectedNode = action.nodeId;
+
+        // move to front
+        const graph = state.graph;
+        const graphNode = graph.nodes[action.nodeId];
+        if (!graphNode) return;
+
+        const subNodeIds = getSubNodeIds(state.graph, graphNode.parent);
+        if (!subNodeIds) return;
+
+        const i = subNodeIds.indexOf(action.nodeId);
+        if (i >= 0 && i < subNodeIds.length - 1) {
+            subNodeIds.splice(i, 1);
+            subNodeIds.push(action.nodeId);
+        }
     }),
 
     [GraphActionType.CLEAR_SELECTED_NODE]: produce((state: GraphEditorState) => {

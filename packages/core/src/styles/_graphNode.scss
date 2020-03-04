@@ -7,10 +7,6 @@
     position: absolute;
 }
 
-.ngraph-node.selected {
-    z-index: 1;
-}
-
 .ngraph-node-body {
     flex-grow: 1;
 }
@@ -26,10 +22,6 @@
     padding: 0.5rem;
     border: 1px solid $grey-3;
     border-radius: 5px;
-}
-
-.ngraph-node.selected .ngraph-node-header {
-    border-color: $primary;
 }
 
 .ngraph-node:not(.collapsed) .ngraph-node-header {
@@ -69,12 +61,12 @@
     border-top: 0;
 }
 
-.ngraph-node.selected .ngraph-node-body {
+.ngraph-node.selected > .ngraph-node-body {
     box-shadow: 0px 0px 5px rgba($primary, 0.5);
 }
 
-.ngraph-node.selected .ngraph-node-fields,
-.ngraph-node.selected .ngraph-node-header {
+.ngraph-node.selected > .ngraph-node-body > .ngraph-node-fields,
+.ngraph-node.selected > .ngraph-node-body > .ngraph-node-header {
     border-color: $primary;
 }
 
@@ -130,7 +122,7 @@
     }
 }
 
-.ngraph-node.selected .ngraph-node-port-handle-outer {
+.ngraph-node.selected > .ngraph-node-ports .ngraph-node-port-handle-outer {
     stroke: $primary;
 }
 
