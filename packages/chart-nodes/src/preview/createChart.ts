@@ -1,5 +1,6 @@
 import Chart, { ChartOptions } from 'chart.js';
 import { ChartDataPoint, ChartAxisConfig, AxisType, ChartDataSet, ChartViewConfig, ChartEventConfig, ChartEventType } from '../types/valueTypes';
+import { scale } from './colorScheme';
 import { asString, asNumber } from '../utils/conversions';
 import { writeKeyValues } from '../utils/keyPathUtils';
 
@@ -52,28 +53,43 @@ function mapLabels(dataSets: ChartDataSet[]): string[] {
     return Array.from(labels);
 }
 
-function mapDataSetBackgroundColor(points: ChartDataPoint[], backgroundColor: string) {
-    let bg: string[] | undefined;
-    
-    for (let i = 0, n = points.length; i < n; i++) {
-        const point = points[i];
-
-        if (point.color) {
-            if (!bg) {
-                bg = new Array(n);
-                bg.fill(backgroundColor);
-            }
-
-            bg[i] = point.color;
-        }
-    }
-
-    return bg ?? backgroundColor;
-}
-
 function mapDataSets(dataSets: ChartDataSet[], dataMapper: DataMapper) {
-    return dataSets.map((ds): Chart.ChartDataSets => {
+    return dataSets.map((ds, i, datasets): Chart.ChartDataSets => {
+        let backgroundColor: string | string[];
+        const bgColorIndexable = ds.type !== 'line';
+        
+        if (ds.backgroundColor) {
+            backgroundColor = ds.backgroundColor;
+        } else {
+            // get the background color for the dataset from the color scheme
+            backgroundColor = scale(i / datasets.length).hex();
+        }
+
+        // set individual background color for points that define it
+        if (bgColorIndexable) {
+            const points = ds.data;
+            for (let j = 0, n = points.length; j < n; j++) {
+                const point = points[j];
+                if (point.color || datasets.length === 1) {
+                    if (typeof backgroundColor === 'string') {
+                        const bg = backgroundColor;
+                        backgroundColor = new Array(n);
+                        backgroundColor.fill(bg);
+                    }
+
+                    if (point.color) {
+                        backgroundColor[j] = point.color;
+                    } else {
+                        // get the background color for the point from the color scheme
+                        backgroundColor[j] = scale(j / n).hex();
+                    }
+                }
+            }
+        }
+
+        // map data to chart values
         const data = dataMapper(ds.data);
+
         const dataSet: Chart.ChartDataSets = {
             type: ds.type,
             data,
@@ -82,10 +98,11 @@ function mapDataSets(dataSets: ChartDataSet[], dataMapper: DataMapper) {
 
         if (ds.borderColor) {
             dataSet.borderColor = ds.borderColor;
+        } else {
+            dataSet.borderColor = scale(i / datasets.length).hex();
         }
 
-        dataSet.backgroundColor = mapDataSetBackgroundColor(ds.data, ds.backgroundColor);
-
+        dataSet.backgroundColor = backgroundColor;
         writeKeyValues(ds.params, dataSet as any);
         return dataSet;
     });

@@ -10,6 +10,7 @@ const PORT_SIGNAL = 'signal';
 const BTN_RESOLVE_COLUMNS = 'btn-resolve-columns';
 
 const FIELD_URL = 'url';
+const FIELD_QUERY_PARAMS = 'params';
 const FIELD_COLUMNS = 'columns';
 const FIELD_HEADERS = 'headers';
 const FIELD_MAP_RESPONSE = 'mapResponse';
@@ -17,6 +18,7 @@ const FIELD_ACTIONS = 'actions';
 
 type Config = {
     mapUrl: expressions.Mapper,
+    mapQueryParams: expressions.EntriesMapper,
     mapHeaders: expressions.EntriesMapper,
     mapResponse: expressions.Mapper
 };
@@ -44,6 +46,27 @@ function resolveHeaders(mapHeaders: expressions.EntriesMapper, ctx: { [key: stri
     
     headers.Accept = 'application/json';
     return headers;
+}
+
+function resolveUrl(mapUrl: expressions.Mapper, mapQueryParams: expressions.EntriesMapper, ctx: { [key: string]: unknown }): string | undefined {
+    let url = asString(mapUrl(ctx));
+    if (!url) return;
+
+    const queryParams = mapQueryParams(ctx);
+    if (queryParams.length) {
+        if (!url.endsWith('?')) {
+            url = url + '?';
+        }
+
+        const searchParams = new URLSearchParams();
+        for (const param of queryParams) {
+            searchParams.append(param.key, asString(param.value));
+        }
+
+        url = url + searchParams;
+    }
+
+    return url;
 }
 
 class DataFetcherProcessor extends BaseNodeProcessor {
@@ -100,16 +123,16 @@ class DataFetcherProcessor extends BaseNodeProcessor {
         ctx[KEY_DATA] = this.data;
 
         const config = this.config;
-        const url = asString(config.mapUrl(ctx));
+        const url = resolveUrl(config.mapUrl, config.mapQueryParams, ctx);
         if (!url) return;
-
+        
         const headers = resolveHeaders(config.mapHeaders, ctx);
         const c = ++this.count;
 
         doFetch(url, headers, config.mapResponse, this.params)
             .then(data => {
                 if (this.running && this.count === c) {
-                    this.emitResult(PORT_DATA, data);
+                    this.emitResult(PORT_ROWS, data);
                 }
             });
     }
@@ -124,6 +147,11 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map URL',
             type: InputType.TEXT,
             initialValue: ''
+        },
+        [FIELD_QUERY_PARAMS]: {
+            label: 'Query Params',
+            type: InputType.DATA_ENTRIES,
+            initialValue: []
         },
         [FIELD_HEADERS]: {
             label: 'Headers',
@@ -174,13 +202,16 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const mapUrlExpr = node.fields[FIELD_URL] as string;
         const mapResponseExpr = node.fields[FIELD_MAP_RESPONSE] as string;
         const headerEntries = node.fields[FIELD_HEADERS] as Entry<string>[];
+        const queryParamEntries = node.fields[FIELD_QUERY_PARAMS] as Entry<string>[];
 
         const mapUrl = expressions.compileExpression(mapUrlExpr);
+        const mapQueryParams = expressions.compileEntriesMapper(queryParamEntries);
         const mapHeaders = expressions.compileEntriesMapper(headerEntries);
         const mapResponse = expressions.compileExpression(mapResponseExpr);
 
         return new DataFetcherProcessor(params, {
             mapUrl,
+            mapQueryParams,
             mapHeaders,
             mapResponse
         });
@@ -193,10 +224,13 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         if (key === BTN_RESOLVE_COLUMNS) {
             const ctx = params.variables;
             const mapUrl = expressions.compileExpression(node.fields[FIELD_URL] as string);
+            const mapQueryParams = expressions.compileEntriesMapper(node.fields[FIELD_QUERY_PARAMS] as Entry<string>[]);
             const mapResponse = expressions.compileExpression(node.fields[FIELD_MAP_RESPONSE] as string);
             const mapHeaders = expressions.compileEntriesMapper(node.fields[FIELD_HEADERS] as Entry<string>[]);
 
-            const url = asString(mapUrl(ctx));
+            const url = resolveUrl(mapUrl, mapQueryParams, ctx);
+            if (!url) return;
+
             const headers = resolveHeaders(mapHeaders, ctx);
 
             doFetch(url, headers, mapResponse, params).then((result) => {

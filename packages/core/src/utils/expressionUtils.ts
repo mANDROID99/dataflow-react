@@ -10,7 +10,11 @@ export type Mapper = (ctx: { [key: string]: unknown }) => unknown;
 
 export type EntriesMapper = (context: { [key: string]: unknown }) => Entry<unknown>[];
 
-export function autoConvert(input: string): string | boolean | number {
+export function autoConvert(input: string | undefined): string | boolean | number {
+    if (input == null) {
+        return '';
+    }
+
     const t = input.trim();
     const charStart = t.charCodeAt(0);
     const charEnd = t.charCodeAt(t.length - 1);
@@ -108,7 +112,7 @@ export function columnMapperToExpression(input: ColumnMapperInputValue | undefin
             let targetValue = input.value;
             
             if (target) {
-                targetValue = target + '.' + targetValue;
+                targetValue = target + '["' + targetValue + '"]';
             }
 
             return '= ' + targetValue;

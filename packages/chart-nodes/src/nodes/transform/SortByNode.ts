@@ -11,8 +11,6 @@ type Config = {
 }
 
 class SortByNodeProcessor extends BaseNodeProcessor {
-    private readonly subs: ((value: unknown) => void)[] = [];
-
     constructor(
         private readonly params: ChartParams,
         private readonly config: Config
@@ -43,9 +41,7 @@ class SortByNodeProcessor extends BaseNodeProcessor {
             }
         });
 
-        for (const sub of this.subs) {
-            sub(rowsSorted);
-        };  
+        this.emitResult(PORT_ROWS, rowsSorted);
     }
 }
 
