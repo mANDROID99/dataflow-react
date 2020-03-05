@@ -90,11 +90,9 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Value',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+            params: ({ context }) => ({
+                target: 'row',
+                columns: context.columns
             })
         },
         reduce: {
@@ -105,10 +103,7 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         seed: {
             label: 'Seed',
             type: InputType.TEXT,
-            initialValue: '',
-            resolveParams: ({ fields }) => ({
-                hidden: !fields.reduce
-            })
+            initialValue: ''
         }
     },
     mapContext({ node, context }){

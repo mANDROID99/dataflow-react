@@ -193,3 +193,21 @@
     flex-grow: 1;
     padding: 0 0.5rem;
 }
+
+// multi-input
+
+.ngraph-multifield-row {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-bottom: 0.5rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.ngraph-multifield-input {
+    padding: 0 0.5rem;
+}
+
+.ngraph-multifield-row-close {
+    align-self: flex-end;
+}

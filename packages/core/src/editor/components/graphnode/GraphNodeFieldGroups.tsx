@@ -47,8 +47,8 @@ function GraphNodeFieldGroups<C, P>(props: Props<C, P>) {
                     context={context}
                     fieldName={fieldName}
                     fieldConfig={fieldConfig}
+                    fieldValue={fields[fieldName]}
                     actions={actions}
-                    fields={fields}
                 />
             );
         });

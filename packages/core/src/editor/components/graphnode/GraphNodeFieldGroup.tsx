@@ -27,8 +27,8 @@ export default function GraphNodeFieldGroup<C, P>({ nodeId, context, groupName, 
                     context={context}
                     fieldName={fieldName}
                     fieldConfig={fieldConfig}
+                    fieldValue={fields[fieldName]}
                     actions={actions}
-                    fields={fields}
                 />
             );
         });

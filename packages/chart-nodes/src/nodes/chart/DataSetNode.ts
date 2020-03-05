@@ -4,8 +4,8 @@ import { ChartDataPoint, ChartDataSet } from "../../types/valueTypes";
 import { asString } from '../../utils/conversions';
 import { rowToEvalContext } from '../../utils/expressionUtils';
 
-const PORT_POINTS = 'points';
-const PORT_DATASETS = 'datasets';
+const PORT_IN_POINTS = 'points';
+const PORT_OUT_DATASETS = 'datasets';
 
 type Config = {
     datasetType: string,
@@ -25,7 +25,7 @@ class DataSetNodeProcessor extends BaseNodeProcessor {
     }
 
     process(portName: string, inputs: unknown[]) {
-        if (portName !== PORT_POINTS) {
+        if (portName !== PORT_IN_POINTS) {
             return;
         }
 
@@ -64,7 +64,7 @@ class DataSetNodeProcessor extends BaseNodeProcessor {
             }
         }
 
-        this.emitResult(PORT_DATASETS, dataSets);
+        this.emitResult(PORT_OUT_DATASETS, dataSets);
     }
 }
 
@@ -76,12 +76,12 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     width: 200,
     ports: {
         in: {
-            [PORT_POINTS]: {
+            [PORT_IN_POINTS]: {
                 type: 'datapoint[]'
             }
         },
         out: {
-            [PORT_DATASETS]: {
+            [PORT_OUT_DATASETS]: {
                 type: 'dataset[]'
             }
         }
@@ -108,24 +108,20 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Series Key',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+                target: 'row',
+                columns: context.columns
             })
         },
         label: {
             label: 'Map Label',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+                target: 'row',
+                columns: context.columns
             })
         },
         borderColor: {
@@ -133,12 +129,10 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             fieldGroup: 'Styling',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+                target: 'row',
+                columns: context.columns
             })
         },
         backgroundColor: {
@@ -146,12 +140,10 @@ export const DATA_SET_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             fieldGroup: 'Styling',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+                target: 'row',
+                columns: context.columns
             })
         },
         params: {

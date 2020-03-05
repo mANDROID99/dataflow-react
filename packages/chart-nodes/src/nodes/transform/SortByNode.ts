@@ -66,10 +66,8 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Column Key',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
+            params: ({ context }) => ({
+                target: 'row',
                 columns: context?.columns
             })
         },

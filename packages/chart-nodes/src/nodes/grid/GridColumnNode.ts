@@ -88,18 +88,14 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         [FIELD_NAME]: {
             type: InputType.TEXT,
             initialValue: '',
-            label: 'Column Name',
-            resolveParams: ({ fields }) => ({
-                hidden: fields[FIELD_REST_TEMPLATE]
-            })
+            label: 'Column Name'
         },
         [FIELD_KEY]: {
             type: InputType.SELECT,
             initialValue: columnExpression(''),
             label: 'Row Key',
-            resolveParams: ({ context, fields }) => ({
-                options: context?.columns,
-                hidden: fields[FIELD_REST_TEMPLATE]
+            params: ({ context }) => ({
+                options: context.columns
             })
         },
         [FIELD_WIDTH]: {
@@ -117,11 +113,9 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: columnExpression(''),
             label: 'Map Value',
             fieldGroup: 'Styling',
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
+                target: 'row',
                 columns: context?.columns
             })
         },
@@ -130,11 +124,9 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: columnExpression(''),
             label: 'Map Font Color',
             fieldGroup: 'Styling',
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
+                target: 'row',
                 columns: context?.columns
             })
         },
@@ -143,12 +135,10 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: columnExpression(''),
             label: 'Map Background Color',
             fieldGroup: 'Styling',
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+                target: 'row',
+                columns: context.columns
             })
         },
         [FIELD_REST_TEMPLATE]: {

@@ -107,11 +107,9 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Group',
             initialValue: columnExpression(''),
             type: InputType.COLUMN_MAPPER,
-            params: {
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context ? context.groupColumns ?? context.columns : undefined
+            params: ({ context }) => ({
+                target: 'row',
+                columns: context.groupColumns ?? context.columns
             })
         },
         alias: {

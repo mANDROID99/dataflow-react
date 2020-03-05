@@ -8,7 +8,6 @@ export type GraphFieldInputConfig = {
 }
 
 export type FieldResolverParams<C, P> = {
-    fields: { [key: string]: unknown };
     context: C;
     params: P;
 }
@@ -19,18 +18,26 @@ export type MapContextParams<C, P> = {
     params: P;
 }
 
-export type MemoizedCallback<P, T, D extends any[] = any> = {
-    compute: (...deps: D) => T;
-    deps: (param: P) => D;
-} | ((param: P) => T);
+export type Resolvable<T, P> = T | ((params: P) => T);
+
+export type GraphNodeSubFieldConfig<C, P> = {
+    label: string;
+    type: string;
+    initialValue: unknown;
+    size: number;
+    params?: Resolvable<{ [key: string]: unknown }, FieldResolverParams<C, P>>;
+}
 
 export type GraphNodeFieldConfig<C, P> = {
     label: string;
     type: string;
     initialValue: unknown;
+    description?: string;
     fieldGroup?: string;
-    params?: { [key: string]: unknown };
-    resolveParams?: MemoizedCallback<FieldResolverParams<C, P>, { [key: string]: unknown }>;
+    params?: Resolvable<{ [key: string]: unknown }, FieldResolverParams<C, P>>;
+    subFields?: {
+        [key: string]: GraphNodeSubFieldConfig<C, P>;
+    };
 }
 
 export type GraphNodePortConfig = {

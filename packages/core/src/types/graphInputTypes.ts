@@ -1,12 +1,13 @@
 import { GraphNodeActions } from "./graphNodeComponentTypes";
+import { GraphNodeFieldConfig } from "./graphConfigTypes";
 
 export type InputProps<T> = {
-    nodeId: string;
-    fieldName: string;
     value: T | undefined;
     params: { [key: string]: unknown };
-    actions: GraphNodeActions;
+    fieldConfig: GraphNodeFieldConfig<any, any>;
     onChanged: (value: unknown) => void;
+    context: any;
+    actions: GraphNodeActions;
 }
 
 export enum InputType {
@@ -18,7 +19,9 @@ export enum InputType {
     DATA_ENTRIES = 'data-entries',
     DATA_GRID = 'data-grid',
     DATA_LIST = 'data-list',
-    ACTIONS = 'actions'
+    ACTIONS = 'actions',
+    MULTI = 'multi',
+    COLOR = 'color'
 }
 
 export type Entry<T> = {

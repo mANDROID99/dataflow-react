@@ -5,14 +5,21 @@ import { ChartDataPoint, Row } from "../../types/valueTypes";
 import { asValue, asNumber, asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 
-const PORT_ROWS = 'rows';
-const PORT_POINTS = 'points';
+const FIELD_X = 'x';
+const FIELD_Y = 'y';
+const FIELD_R = 'r';
+const FIELD_BG_COLOR = 'bgColor';
+const FIELD_BORDER_COLOR = 'borderColor';
+
+const PORT_IN_ROWS = 'rows';
+const PORT_OUT_POINTS = 'points';
 
 type Config = {
     mapX: expressions.Mapper;
     mapY: expressions.Mapper;
     mapR: expressions.Mapper;
-    mapColor: expressions.Mapper;
+    mapBgColor: expressions.Mapper;
+    mapBorderColor: expressions.Mapper;
 }
 
 class DataPointNodeProcessor extends BaseNodeProcessor {
@@ -24,7 +31,7 @@ class DataPointNodeProcessor extends BaseNodeProcessor {
     }
 
     process(portName: string, inputs: unknown[]) {
-        if (portName !== PORT_ROWS) {
+        if (portName !== PORT_IN_ROWS) {
             return;
         }
 
@@ -35,11 +42,12 @@ class DataPointNodeProcessor extends BaseNodeProcessor {
             const x = asValue(this.config.mapX(ctx), 0);
             const y = asValue(this.config.mapY(ctx), 0);
             const r = asNumber(this.config.mapR(ctx));
-            const color = asString(this.config.mapColor(ctx));
-            return { x, y, r, color, row }
+            const bgColor = asString(this.config.mapBgColor(ctx));
+            const borderColor = asString(this.config.mapBorderColor(ctx));
+            return { x, y, r, bgColor, borderColor, row };
         });
 
-        this.emitResult(PORT_POINTS, points);
+        this.emitResult(PORT_OUT_POINTS, points);
     }
 }
 
@@ -49,62 +57,65 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     description: 'Transforms rows to points for the dataset.',
     ports: {
         in: {
-            [PORT_ROWS]: {
+            [PORT_IN_ROWS]: {
                 type: 'row[]'
             }
         },
         out: {
-            [PORT_POINTS]: {
+            [PORT_OUT_POINTS]: {
                 type: 'datapoint[]'
             }
         }
     },
     fields: {
-        x: {
+        [FIELD_X]: {
             label: 'Map X',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+            params: ({ context }) => ({
+                target: 'row',
+                columns: context.columns
             })
         },
-        y: {
+        [FIELD_Y]: {
             label: 'Map Y',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+            params: ({ context }) => ({
+                target: 'row',
+                columns: context.columns
             })
         },
-        r: {
+        [FIELD_R]: {
             label: 'Map R',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+                target: 'row',
+                columns: context.columns
             })
         },
-        color: {
-            label: 'Map Color',
+        [FIELD_BG_COLOR]: {
+            label: 'Map Background Color',
             type: InputType.COLUMN_MAPPER,
             fieldGroup: 'Styling',
             initialValue: columnExpression(''),
-            params: {
+            params: ({ context }) => ({
                 optional: true,
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+                target: 'row',
+                columns: context.columns
+            })
+        },
+        [FIELD_BORDER_COLOR]: {
+            label: 'Map Border Color',
+            type: InputType.COLUMN_MAPPER,
+            fieldGroup: 'Styling',
+            initialValue: columnExpression(''),
+            params: ({ context }) => ({
+                optional: true,
+                target: 'row',
+                columns: context.columns
             })
         }
     },
@@ -112,13 +123,16 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const mapXExpr = node.fields.x as ColumnMapperInputValue;
         const mapYExpr = node.fields.y as ColumnMapperInputValue;
         const mapRExpr = node.fields.r as ColumnMapperInputValue;
-        const mapColorExpr = node.fields.color as ColumnMapperInputValue;
+        const mapBgColorExpr = node.fields[FIELD_BG_COLOR] as ColumnMapperInputValue;
+        const mapBorderColorExpr = node.fields[FIELD_BORDER_COLOR] as ColumnMapperInputValue;
+
 
         const mapX = expressions.compileColumnMapper(mapXExpr, 'row');
         const mapY = expressions.compileColumnMapper(mapYExpr, 'row');
         const mapR = expressions.compileColumnMapper(mapRExpr, 'row');
-        const mapColor = expressions.compileColumnMapper(mapColorExpr, 'row');
+        const mapBgColor = expressions.compileColumnMapper(mapBgColorExpr, 'row');
+        const mapBorderColor = expressions.compileColumnMapper(mapBorderColorExpr, 'row');
 
-        return new DataPointNodeProcessor(params, { mapX, mapY, mapR, mapColor });
+        return new DataPointNodeProcessor(params, { mapX, mapY, mapR, mapBgColor, mapBorderColor });
     }
 };

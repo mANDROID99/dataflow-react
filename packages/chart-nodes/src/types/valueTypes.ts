@@ -29,7 +29,8 @@ export type ChartDataPoint = {
     x: number | string | Date;
     y: number | string | Date;
     r?: number;
-    color: string;
+    bgColor: string;
+    borderColor: string;
     row: Row;
 }
 

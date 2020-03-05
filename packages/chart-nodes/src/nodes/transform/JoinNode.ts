@@ -185,22 +185,18 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Key Left',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns
+            params: ({ context }) => ({
+                target: 'row',
+                columns: context.columns
             })
         },
         joinKeyRight: {
             label: 'Map Key Right',
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
-            params: {
-                target: 'row'
-            },
-            resolveParams: ({ context }) => ({
-                columns: context?.columns  
+            params: ({ context }) => ({
+                target: 'row',
+                columns: context.columns  
             })
         }
     },

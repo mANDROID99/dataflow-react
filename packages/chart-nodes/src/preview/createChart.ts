@@ -70,15 +70,15 @@ function mapDataSets(dataSets: ChartDataSet[], dataMapper: DataMapper) {
             const points = ds.data;
             for (let j = 0, n = points.length; j < n; j++) {
                 const point = points[j];
-                if (point.color || datasets.length === 1) {
+                if (point.bgColor || datasets.length === 1) {
                     if (typeof backgroundColor === 'string') {
                         const bg = backgroundColor;
                         backgroundColor = new Array(n);
                         backgroundColor.fill(bg);
                     }
 
-                    if (point.color) {
-                        backgroundColor[j] = point.color;
+                    if (point.bgColor) {
+                        backgroundColor[j] = point.bgColor;
                     } else {
                         // get the background color for the point from the color scheme
                         backgroundColor[j] = scale(j / n).hex();
