@@ -26,11 +26,11 @@ export type Row = {
 }
 
 export type ChartDataPoint = {
-    x: unknown;
-    y: unknown;
-    r: unknown;
-    color: unknown;
-    seriesKey: unknown;
+    x: number | string | Date;
+    y: number | string | Date;
+    r?: number;
+    color: string;
+    row: Row;
 }
 
 export type ChartDataSet = {
@@ -39,7 +39,7 @@ export type ChartDataSet = {
     data: ChartDataPoint[];
     params: Entry<unknown>[];
     borderColor: string;
-    backgroundColor: string | undefined;
+    backgroundColor: string;
 }
 
 export type ChartAxisConfig = {

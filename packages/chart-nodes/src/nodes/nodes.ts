@@ -12,15 +12,11 @@ import { DATA_POINT_NODE } from "./chart/DataPointNode";
 import { GRID_VIEW_NODE } from "./grid/GridViewNode";
 import { GRID_COLUMN_NODE } from './grid/GridColumnNode';
 import { SCHEDULER_NODE } from "./input/SchedulerNode";
-import { PICK_NODE } from "./transform/PickNode";
-import { ROW_NODE } from "./transform/RowNode";
 
 export enum NodeType {
     DATA_GRID='data-grid',
     DATA_FETCHER='data-fetcher',
     COMPUTE='compute',
-    PICK='pick',
-    ROW='row',
     GRID_VIEW='grid-view',
     GRID_COLUMN='grid-column',
     CHART_VIEW='chart-view',
@@ -38,8 +34,6 @@ export const nodes = {
     [NodeType.DATA_GRID]: DATA_GRID_NODE,
     [NodeType.DATA_FETCHER]: DATA_FETCHER_NODE,
     [NodeType.COMPUTE]: COMPUTE_NODE,
-    [NodeType.PICK]: PICK_NODE,
-    [NodeType.ROW]: ROW_NODE,
     [NodeType.GROUP_BY]: GROUP_NODE,
     [NodeType.AGGREGATE]: AGGREGATE_NODE,
     [NodeType.JOIN]: JOIN_NODE,

@@ -1,8 +1,9 @@
-import { GraphNodeConfig, InputType, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 
 import { Row, JoinType } from "../../types/valueTypes";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { asString } from "../../utils/conversions";
+import { rowToEvalContext } from "../../utils/expressionUtils";
 
 type KeyExtractor = (row: Row, i: number) => string;
 
@@ -90,8 +91,8 @@ const PORT_ROWS = 'rows';
 
 type Config = {
     joinType: JoinType;
-    keyLeft: string;
-    keyRight: string;
+    mapKeyLeft: expressions.Mapper;
+    mapKeyRight: expressions.Mapper;
 }
 
 class JoinNodeProcessor extends BaseNodeProcessor {
@@ -141,12 +142,14 @@ class JoinNodeProcessor extends BaseNodeProcessor {
         this.emitResult(PORT_ROWS, rows);
     }
 
-    private extractKeyLeft(row: Row): string {
-        return asString(row[this.config.keyLeft]);
+    private extractKeyLeft(row: Row, index: number): string {
+        const ctx = rowToEvalContext(row, index, null, this.params.variables);
+        return asString(this.config.mapKeyLeft(ctx));
     }
 
-    private extractKeyRight(row: Row): string {
-        return asString(row[this.config.keyRight]);
+    private extractKeyRight(row: Row, index: number): string {
+        const ctx = rowToEvalContext(row, index, null, this.params.variables);
+        return asString(this.config.mapKeyRight(ctx));
     }
 }
 
@@ -179,26 +182,37 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             }
         },
         joinKeyLeft: {
-            label: 'Key Left',
-            type: InputType.SELECT,
-            initialValue: '',
+            label: 'Map Key Left',
+            type: InputType.COLUMN_MAPPER,
+            initialValue: columnExpression(''),
+            params: {
+                target: 'row'
+            },
             resolveParams: ({ context }) => ({
-                options: context.columns
+                columns: context?.columns
             })
         },
         joinKeyRight: {
-            label: 'Key Right',
-            type: InputType.SELECT,
-            initialValue: '',
+            label: 'Map Key Right',
+            type: InputType.COLUMN_MAPPER,
+            initialValue: columnExpression(''),
+            params: {
+                target: 'row'
+            },
             resolveParams: ({ context }) => ({
-                options: context.columns  
+                columns: context?.columns  
             })
         }
     },
     createProcessor(node, params) {
         const joinType = node.fields.joinType as JoinType;
-        const keyLeft = node.fields.joinKeyLeft as string;
-        const keyRight = node.fields.joinKeyRight as string;
-        return new JoinNodeProcessor(params, { joinType, keyLeft, keyRight });
+        
+        const joinKeyLeftExpr = node.fields.joinKeyLeft as ColumnMapperInputValue;
+        const mapKeyLeft = expressions.compileColumnMapper(joinKeyLeftExpr, 'row');
+        
+        const joinKeyRightExpr = node.fields.joinKeyRight as ColumnMapperInputValue;
+        const mapKeyRight = expressions.compileColumnMapper(joinKeyRightExpr, 'row');
+
+        return new JoinNodeProcessor(params, { joinType, mapKeyLeft, mapKeyRight });
     }
 };

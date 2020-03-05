@@ -1,74 +1,45 @@
-import { GraphNodeConfig, BaseNodeProcessor, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { ChartDataPoint } from "../../types/valueTypes";
-import { asString } from "../../utils/conversions";
-import { zipObjKeys, groupBy } from "../../utils/arrayUtils";
+import { ChartDataPoint, Row } from "../../types/valueTypes";
+import { asValue, asNumber, asString } from "../../utils/conversions";
+import { rowToEvalContext } from "../../utils/expressionUtils";
 
-const PORT_IN_X = 'x';
-const PORT_IN_Y = 'y';
-const PORT_IN_R = 'r';
-const PORT_IN_COLOR = 'color';
-const PORT_IN_SERIES_KEY = 'series';
+const PORT_ROWS = 'rows';
+const PORT_POINTS = 'points';
 
-const PORT_OUT_POINTS = 'points';
-const PORT_OUT_SERIES_KEYS = 'keys';
+type Config = {
+    mapX: expressions.Mapper;
+    mapY: expressions.Mapper;
+    mapR: expressions.Mapper;
+    mapColor: expressions.Mapper;
+}
 
 class DataPointNodeProcessor extends BaseNodeProcessor {
-    private xValues?: unknown[];
-    private yValues?: unknown[];
-    private rValues?: unknown[];
-    private colorValues?: unknown[];
-    private seriesValues?: unknown[];
-    private readonly awaiting = new Set<string>();
-
-    registerConnectionInverse(portOut: string, portIn: string, processor: NodeProcessor): number {
-        this.awaiting.add(portIn);
-        return super.registerConnectionInverse(portOut, portIn, processor);
+    constructor(
+        private readonly params: ChartParams,
+        private readonly config: Config
+    ) {
+        super();
     }
 
     process(portName: string, inputs: unknown[]) {
-        if (portName === PORT_IN_X) {
-            this.xValues = inputs[0] as unknown[];
-
-        } else if (portName === PORT_IN_Y) {
-            this.yValues = inputs[0] as unknown[];
-
-        } else if (portName === PORT_IN_R) {
-            this.rValues = inputs[0] as unknown[];
-
-        } else if (portName === PORT_IN_COLOR) {
-            this.colorValues = inputs[0] as unknown[];
-
-        } else if (portName === PORT_IN_SERIES_KEY) {
-            this.seriesValues = inputs[0] as unknown[];
+        if (portName !== PORT_ROWS) {
+            return;
         }
 
-        this.awaiting.delete(portName);
-        if (!this.awaiting.size) {
-            this.update();
-        }
-    }
+        const rows = inputs[0] as Row[];
+        const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
+            const ctx = rowToEvalContext(row, i, null, this.params.variables);
 
-    private update() {
-        const points = zipObjKeys<ChartDataPoint>({
-            x: this.xValues,
-            y: this.yValues,
-            r: this.rValues,
-            color: this.colorValues,
-            seriesKey: this.seriesValues
+            const x = asValue(this.config.mapX(ctx), 0);
+            const y = asValue(this.config.mapY(ctx), 0);
+            const r = asNumber(this.config.mapR(ctx));
+            const color = asString(this.config.mapColor(ctx));
+            return { x, y, r, color, row }
         });
 
-        const groups = groupBy(points, (point) => asString(point.seriesKey));
-        const pointsGrouped: ChartDataPoint[][] = [];
-        const keys: string[] = [];
-        for (const e of groups.entries()) {
-            keys.push(e[0]);
-            pointsGrouped.push(e[1]);
-        }
-
-        this.emitResult(PORT_OUT_POINTS, pointsGrouped);
-        this.emitResult(PORT_OUT_SERIES_KEYS, keys);
+        this.emitResult(PORT_POINTS, points);
     }
 }
 
@@ -78,33 +49,76 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     description: 'Transforms rows to points for the dataset.',
     ports: {
         in: {
-            [PORT_IN_X]: {
-                type: 'value[]'
-            },
-            [PORT_IN_Y]: {
-                type: 'value[]'
-            },
-            [PORT_IN_R]: {
-                type: 'value[]'
-            },
-            [PORT_IN_COLOR]: {
-                type: 'value[]'
-            },
-            [PORT_IN_SERIES_KEY]: {
-                type: 'value[]'
+            [PORT_ROWS]: {
+                type: 'row[]'
             }
         },
         out: {
-            [PORT_OUT_POINTS]: {
+            [PORT_POINTS]: {
                 type: 'datapoint[]'
-            },
-            [PORT_OUT_SERIES_KEYS]: {
-                type: 'value[]'
             }
         }
     },
-    fields: {},
-    createProcessor() {
-        return new DataPointNodeProcessor();
+    fields: {
+        x: {
+            label: 'Map X',
+            type: InputType.COLUMN_MAPPER,
+            initialValue: columnExpression(''),
+            params: {
+                target: 'row'
+            },
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
+            })
+        },
+        y: {
+            label: 'Map Y',
+            type: InputType.COLUMN_MAPPER,
+            initialValue: columnExpression(''),
+            params: {
+                target: 'row'
+            },
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
+            })
+        },
+        r: {
+            label: 'Map R',
+            type: InputType.COLUMN_MAPPER,
+            initialValue: columnExpression(''),
+            params: {
+                optional: true,
+                target: 'row'
+            },
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
+            })
+        },
+        color: {
+            label: 'Map Color',
+            type: InputType.COLUMN_MAPPER,
+            fieldGroup: 'Styling',
+            initialValue: columnExpression(''),
+            params: {
+                optional: true,
+                target: 'row'
+            },
+            resolveParams: ({ context }) => ({
+                columns: context?.columns
+            })
+        }
+    },
+    createProcessor(node, params) {
+        const mapXExpr = node.fields.x as ColumnMapperInputValue;
+        const mapYExpr = node.fields.y as ColumnMapperInputValue;
+        const mapRExpr = node.fields.r as ColumnMapperInputValue;
+        const mapColorExpr = node.fields.color as ColumnMapperInputValue;
+
+        const mapX = expressions.compileColumnMapper(mapXExpr, 'row');
+        const mapY = expressions.compileColumnMapper(mapYExpr, 'row');
+        const mapR = expressions.compileColumnMapper(mapRExpr, 'row');
+        const mapColor = expressions.compileColumnMapper(mapColorExpr, 'row');
+
+        return new DataPointNodeProcessor(params, { mapX, mapY, mapR, mapColor });
     }
 };
