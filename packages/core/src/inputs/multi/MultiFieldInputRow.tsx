@@ -7,15 +7,18 @@ import { GraphNodeActions } from '../../types/graphNodeComponentTypes';
 
 type Props<C> = {
     index: number;
+    isFirst: boolean;
+    isLast: boolean;
     values: { [key: string]: unknown };
     fieldConfigs: { [key: string]: GraphNodeSubFieldConfig<any, any> };
     onRemoved: (index: number) => void;
+    onMoved: (index: number, offset: number) => void;
     onChanged: (index: number, values: { [key: string]: unknown }) => void;
     context: C;
     actions: GraphNodeActions;
 }
 
-function MultiFieldRow<C>({ index, values, fieldConfigs, onRemoved, onChanged, context, actions }: Props<C>) {
+function MultiFieldRow<C>({ index, isFirst, isLast, values, fieldConfigs, onRemoved, onMoved, onChanged, context, actions }: Props<C>) {
     const valuesRef = useRef(values);
 
     useEffect(() => {
@@ -26,6 +29,14 @@ function MultiFieldRow<C>({ index, values, fieldConfigs, onRemoved, onChanged, c
         onRemoved(index);
     };
 
+    const handleMoveUp = () => {
+        onMoved(index, -1);
+    };
+
+    const handleMoveDown = () => {
+        onMoved(index, 1);
+    };
+
     const handleValueChanged = useCallback((key: string, value: unknown) => {
         const vs = { ...valuesRef.current};
         vs[key] = value;
@@ -34,6 +45,14 @@ function MultiFieldRow<C>({ index, values, fieldConfigs, onRemoved, onChanged, c
 
     return (
         <div className="ngraph-multifield-row">
+            <div className="ngraph-multifield-row-move">
+                {!isFirst && <div className="ngraph-multifield-row-btn" onClick={handleMoveUp}>
+                    <FontAwesomeIcon icon="chevron-up"/>
+                </div>}
+                {!isLast && <div className="ngraph-multifield-row-btn" onClick={handleMoveDown}>
+                    <FontAwesomeIcon icon="chevron-down"/>
+                </div>}
+            </div>
             {Object.keys(fieldConfigs).map((fieldKey) => (
                 <MultiFieldInputValue
                     key={fieldKey}
@@ -45,7 +64,7 @@ function MultiFieldRow<C>({ index, values, fieldConfigs, onRemoved, onChanged, c
                     actions={actions}
                 />
             ))}
-            <div className="ngraph-multifield-row-close" onClick={handleRemoved}>
+            <div className="ngraph-multifield-row-btn" onClick={handleRemoved}>
                 <FontAwesomeIcon icon="times"/>
             </div>
         </div>

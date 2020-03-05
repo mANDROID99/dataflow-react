@@ -1,16 +1,15 @@
-import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { KEY_GROUP, Row } from "../../types/valueTypes";
 import { pushDistinct } from "../../utils/arrayUtils";
 import { asString } from "../../utils/conversions";
-import { rowToEvalContext } from "../../utils/expressionUtils";
 
-const PORT_ROWS = 'rows';
-const PORT_GROUPS = 'groups';
+const PORT_IN_ROWS = 'rows';
+const PORT_OUT_GROUPS = 'groups';
+const FIELD_GROUP_KEY = 'group';
 
 type Config = {
-    alias: string;
-    mapGroup: expressions.Mapper
+    groupKey: string;
 }
 
 class GroupNodeProcessor extends BaseNodeProcessor {
@@ -22,67 +21,62 @@ class GroupNodeProcessor extends BaseNodeProcessor {
     }
 
     process(portName: string, values: unknown[]) {
-        if (portName !== PORT_ROWS) {
-            return;
-        }
+        if (portName === PORT_IN_ROWS) {
+            const rows = values[0] as Row[];
+            const result: Row[] = [];
 
-        const rows = values[0] as Row[];
-        const result: Row[] = [];
+            const groupsLookup = new Map<string, Row>();
+            for (let i = 0, n = rows.length; i < n; i++) {
+                const row = rows[i];
+                const subRows = row[KEY_GROUP];
 
-        const groupsLookup = new Map<string, Row>();
-        for (let i = 0, n = rows.length; i < n; i++) {
-            const row = rows[i];
-            const subRows = row[KEY_GROUP];
+                if (subRows) {
+                    const subGroupsLookup = new Map<string, Row>();
 
-            if (subRows) {
-                const subGroupsLookup = new Map<string, Row>();
+                    for (let j = 0, m = subRows.length; j < m; j++) {
+                        const subRow = subRows[j];
+                        const groupName = asString(subRow[this.config.groupKey]);
 
-                for (let j = 0, m = subRows.length; j < m; j++) {
-                    const subRow = subRows[j];
-                    const ctx = rowToEvalContext(subRow, j, null, this.params.variables);
-                    const groupName = asString(this.config.mapGroup(ctx));
+                        if (groupName) {
+                            let groupRow: Row | undefined = subGroupsLookup.get(groupName);
 
+                            if (!groupRow) {
+                                groupRow = {
+                                    ...row,
+                                    [this.config.groupKey]: groupName,
+                                    [KEY_GROUP]: []
+                                };
+
+                                result.push(groupRow);
+                                subGroupsLookup.set(groupName, groupRow);
+                            }
+
+                            groupRow[KEY_GROUP]!.push(subRow);
+                        }
+                    }
+
+                } else {
+                    const groupName = asString(row[this.config.groupKey]);
                     if (groupName) {
-                        let groupRow: Row | undefined = subGroupsLookup.get(groupName);
+                        let groupRow: Row | undefined = groupsLookup.get(groupName);
 
                         if (!groupRow) {
                             groupRow = {
-                                ...row,
-                                [this.config.alias]: groupName,
+                                [this.config.groupKey]: groupName,
                                 [KEY_GROUP]: []
                             };
 
                             result.push(groupRow);
-                            subGroupsLookup.set(groupName, groupRow);
+                            groupsLookup.set(groupName, groupRow);
                         }
 
-                        groupRow[KEY_GROUP]!.push(subRow);
+                        groupRow[KEY_GROUP]!.push(row);
                     }
-                }
-
-            } else {
-                const ctx = rowToEvalContext(row, i, null, this.params.variables);
-                const groupName = asString(this.config.mapGroup(ctx));
-
-                if (groupName) {
-                    let groupRow: Row | undefined = groupsLookup.get(groupName);
-
-                    if (!groupRow) {
-                        groupRow = {
-                            [this.config.alias]: groupName,
-                            [KEY_GROUP]: []
-                        };
-
-                        result.push(groupRow);
-                        groupsLookup.set(groupName, groupRow);
-                    }
-
-                    groupRow[KEY_GROUP]!.push(row);
                 }
             }
+            
+            this.emitResult(PORT_OUT_GROUPS, result);
         }
-        
-        this.emitResult(PORT_ROWS, result);
     }
 }
 
@@ -92,44 +86,37 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     description: 'Groups the rows by a key.',
     ports: {
         in: {
-            [PORT_ROWS]: {
+            [PORT_IN_ROWS]: {
                 type: 'row[]'
             }
         },
         out: {
-            [PORT_GROUPS]: {
+            [PORT_OUT_GROUPS]: {
                 type: 'row[]'
             }
         }
     },
     fields: {
         group: {
-            label: 'Map Group',
-            initialValue: columnExpression(''),
-            type: InputType.COLUMN_MAPPER,
-            params: ({ context }) => ({
-                target: 'row',
-                columns: context.groupColumns ?? context.columns
-            })
-        },
-        alias: {
-            label: 'Alias',
+            label: 'Group Key',
             initialValue: '',
-            type: InputType.TEXT
+            type: InputType.SELECT,
+            params: ({ context }) => ({
+                options: context.groupColumns ?? context.columns
+            })
         }
     },
     mapContext({ node, context }) {
-        const alias = node.fields.alias as string;
-
+        const groupKey = node.fields[FIELD_GROUP_KEY] as string;
         if (context.groupColumns) {
-            const columns = pushDistinct(context.columns, alias);
+            const columns = pushDistinct(context.columns, groupKey);
             return {
                 columns,
                 groupColumns: context.groupColumns
             };
 
         } else {
-            const columns = [alias];
+            const columns = [groupKey];
             return {
                 columns,
                 groupColumns: context.columns
@@ -137,9 +124,7 @@ export const GROUP_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         }
     },
     createProcessor(node, params) {
-        const alias = node.fields.alias as string;
-        const mapGroupExpr = node.fields.group as ColumnMapperInputValue;
-        const mapGroup = expressions.compileColumnMapper(mapGroupExpr, 'row');
-        return new GroupNodeProcessor(params, { alias, mapGroup });
+        const groupKey = node.fields[FIELD_GROUP_KEY] as string;
+        return new GroupNodeProcessor(params, { groupKey });
     }
 };

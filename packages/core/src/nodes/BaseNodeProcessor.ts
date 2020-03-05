@@ -20,6 +20,10 @@ class ValuesCollector {
         this.notifyChanged();
     }
 
+    hasValue(): boolean {
+        return this.n > 0;
+    }
+
     registerOne(): number {
         return this.n++;
     }
@@ -58,6 +62,7 @@ type OutputPort = {
 export abstract class BaseNodeProcessor implements NodeProcessor {
     protected readonly outputs = new Map<string, OutputPort>();
     protected readonly inputs = new Map<string, InputPort>();
+    private _isReady = false;
     
     abstract process(portName: string, values: unknown[]): void;
 
@@ -102,6 +107,19 @@ export abstract class BaseNodeProcessor implements NodeProcessor {
         const input = this.inputs.get(portName);
         if (!input) return;
         input.value.setValue(key, value);
+    }
+
+    isReady() {
+        if (!this._isReady) {
+            for (const v of this.inputs.values()) {
+                if (!v.value.hasValue()) {
+                    return;
+                }
+            }
+            this._isReady = true;
+        }
+
+        return this._isReady;
     }
 
     protected emitResult(portName: string, value: unknown): void {

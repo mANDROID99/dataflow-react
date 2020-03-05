@@ -44,8 +44,8 @@ export const nodes = {
     [NodeType.AXIS]: AXIS_NODE,
     [NodeType.DATA_SETS]: DATA_SET_NODE,
     [NodeType.DATA_POINTS]: DATA_POINT_NODE,
-    [NodeType.COLOR_SCHEME]: COLOR_SCHEME_NODE,
     [NodeType.GRID_VIEW]: GRID_VIEW_NODE,
     [NodeType.GRID_COLUMN]: GRID_COLUMN_NODE,
-    [NodeType.SCHEDULER]: SCHEDULER_NODE
+    [NodeType.SCHEDULER]: SCHEDULER_NODE,
+    [NodeType.COLOR_SCHEME]: COLOR_SCHEME_NODE
 };

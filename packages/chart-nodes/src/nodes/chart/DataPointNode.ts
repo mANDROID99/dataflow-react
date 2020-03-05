@@ -31,23 +31,21 @@ class DataPointNodeProcessor extends BaseNodeProcessor {
     }
 
     process(portName: string, inputs: unknown[]) {
-        if (portName !== PORT_IN_ROWS) {
-            return;
+        if (portName === PORT_IN_ROWS) {
+            const rows = inputs[0] as Row[];
+
+            const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
+                const ctx = rowToEvalContext(row, i, null, this.params.variables);
+                const x = asValue(this.config.mapX(ctx), 0);
+                const y = asValue(this.config.mapY(ctx), 0);
+                const r = asNumber(this.config.mapR(ctx));
+                const bgColor = asString(this.config.mapBgColor(ctx));
+                const borderColor = asString(this.config.mapBorderColor(ctx));
+                return { x, y, r, bgColor, borderColor, row };
+            });
+
+            this.emitResult(PORT_OUT_POINTS, points);
         }
-
-        const rows = inputs[0] as Row[];
-        const points: ChartDataPoint[] = rows.map((row, i): ChartDataPoint => {
-            const ctx = rowToEvalContext(row, i, null, this.params.variables);
-
-            const x = asValue(this.config.mapX(ctx), 0);
-            const y = asValue(this.config.mapY(ctx), 0);
-            const r = asNumber(this.config.mapR(ctx));
-            const bgColor = asString(this.config.mapBgColor(ctx));
-            const borderColor = asString(this.config.mapBorderColor(ctx));
-            return { x, y, r, bgColor, borderColor, row };
-        });
-
-        this.emitResult(PORT_OUT_POINTS, points);
     }
 }
 
@@ -125,7 +123,6 @@ export const DATA_POINT_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const mapRExpr = node.fields.r as ColumnMapperInputValue;
         const mapBgColorExpr = node.fields[FIELD_BG_COLOR] as ColumnMapperInputValue;
         const mapBorderColorExpr = node.fields[FIELD_BORDER_COLOR] as ColumnMapperInputValue;
-
 
         const mapX = expressions.compileColumnMapper(mapXExpr, 'row');
         const mapY = expressions.compileColumnMapper(mapYExpr, 'row');

@@ -60,7 +60,7 @@ function MultiFieldInputValue<C, P>({ name, value, context, fieldConfig, onChang
     ]);
 
     return (
-        <div className="ngraph-multifield-input" style={{ flexGrow: fieldConfig.size }}>
+        <div className="ngraph-multifield-input" style={fieldConfig.style}>
             {inputElement}
         </div>
     );

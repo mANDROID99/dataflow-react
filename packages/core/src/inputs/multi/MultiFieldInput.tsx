@@ -5,6 +5,7 @@ import { InputProps } from '../../types/graphInputTypes';
 import Button from '../../common/Button';
 import { GraphNodeFieldConfig } from '../../types/graphConfigTypes';
 import MultiFieldRow from './MultiFieldInputRow';
+import { move } from '../../utils/arrayUtils';
 
 function createEntry(subFields: { [key: string]: GraphNodeFieldConfig<any, any> }) {
     const entry: { [key: string]: unknown } = {};
@@ -33,6 +34,15 @@ export default function MultiFieldInput({ value, onChanged, fieldConfig, context
         onChanged(vs);
     }, [onChanged]);
 
+    const handleRowMoved = useCallback((index: number, offset: number) => {
+        const value = valueRef.current;
+        if (!value) return;
+
+        const vs = value.slice(0);
+        move(vs, index, index + offset);
+        onChanged(vs);
+    }, [onChanged]);
+
     const handleRowChanged = useCallback((index: number, values: { [key: string]: unknown }) => {
         const value = valueRef.current;
         if (!value) return;
@@ -54,13 +64,16 @@ export default function MultiFieldInput({ value, onChanged, fieldConfig, context
 
     return (
         <div className="ngraph-multifield">
-            {value && subFields && value.map((entry, i) => (
+            {value && subFields && value.map((entry, i, entries) => (
                 <MultiFieldRow
                     key={i}
                     index={i}
+                    isFirst={i === 0}
+                    isLast={i >= entries.length - 1}
                     fieldConfigs={subFields}
                     onRemoved={handleRowRemoved}
                     onChanged={handleRowChanged}
+                    onMoved={handleRowMoved}
                     values={entry}
                     context={context}
                     actions={actions}

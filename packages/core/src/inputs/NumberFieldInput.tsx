@@ -12,7 +12,7 @@ export default function NumberFieldInput(props: InputProps<number>): React.React
     const min = props.params.min as number | undefined;
     const max = props.params.max as number | undefined;
 
-    const handleChange = useCallback((input: string) => {
+    const handleChange = useCallback((input: string): string => {
         let num = toNumber(input) ?? 0;
 
         if (min != null && num < min) {
@@ -24,6 +24,7 @@ export default function NumberFieldInput(props: InputProps<number>): React.React
         }
 
         onChanged(num);
+        return '' + num;
     }, [onChanged, min, max]);
 
     return (

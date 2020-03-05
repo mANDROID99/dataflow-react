@@ -197,17 +197,28 @@
 // multi-input
 
 .ngraph-multifield-row {
+    align-items: center;
     display: flex;
     flex-wrap: nowrap;
     margin-bottom: 0.5rem;
-    margin-left: -0.5rem;
-    margin-right: -0.5rem;
 }
 
 .ngraph-multifield-input {
-    padding: 0 0.5rem;
+    flex-grow: 1;
+    padding: 0 0.25rem;
 }
 
-.ngraph-multifield-row-close {
-    align-self: flex-end;
+.ngraph-multifield-row-btn {
+    cursor: pointer;
+    padding: 0 0.25rem;
+}
+
+.ngraph-multifield-row-move {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ngraph-color-picker .pcr-app {
+    font-size: 14px;
 }

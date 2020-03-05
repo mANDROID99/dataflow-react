@@ -11,6 +11,7 @@ import CheckFieldInput from "./CheckFieldInput";
 import NumberFieldInput from "./NumberFieldInput";
 import ActionsFieldInput from "./ActionsFieldInput";
 import MultiFieldInput from "./multi/MultiFieldInput";
+import ColorPickerInput from "./ColorPickerInput";
 
 export const inputs: { [type: string]: GraphFieldInputConfig } = {
     [InputType.TEXT]: {
@@ -42,5 +43,8 @@ export const inputs: { [type: string]: GraphFieldInputConfig } = {
     },
     [InputType.MULTI]: {
         component: MultiFieldInput
+    },
+    [InputType.COLOR]: {
+        component: ColorPickerInput
     }
 };

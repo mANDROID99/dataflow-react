@@ -22,6 +22,7 @@
     "@fortawesome/react-fontawesome": "^0.1.7",
     "@popperjs/core": "^2.0.4",
     "@react-dnd/invariant": "^2.0.0",
+    "@simonwep/pickr": "^1.5.1",
     "classnames": "^2.2.6",
     "immer": "^5.0.0",
     "jexl": "^2.2.2",

@@ -5,7 +5,7 @@ type Props = {
     focus?: boolean;
     value: string;
     type?: string;
-    onChange: (value: string) => void;
+    onChange: (value: string) => void | string;
 }
 
 export default function CommonTextInput({ value, type, onChange, className, focus }: Props) {
@@ -27,7 +27,10 @@ export default function CommonTextInput({ value, type, onChange, className, focu
     };
 
     const handleBlur = () => {
-        onChange(inputValue);
+        const updated = onChange(inputValue);
+        if (updated != null) {
+            setInputValue(updated);
+        }
     };
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

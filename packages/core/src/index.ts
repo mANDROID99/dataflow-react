@@ -1,5 +1,6 @@
-import './fa.ts';
+import '@simonwep/pickr/dist/themes/nano.min.css';
 import './styles/main.scss';
+import './fa.ts';
 
 // types
 export * from './types/graphConfigTypes';
