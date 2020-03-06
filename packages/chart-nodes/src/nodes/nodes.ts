@@ -13,6 +13,7 @@ import { GRID_VIEW_NODE } from "./grid/GridViewNode";
 import { GRID_COLUMN_NODE } from './grid/GridColumnNode';
 import { SCHEDULER_NODE } from "./input/SchedulerNode";
 import { COLOR_SCHEME_NODE } from "./chart/ColorSchemeNode";
+import { CHART_DATA_POINTS_NODE } from "./chart/DataPointsNode2";
 
 export enum NodeType {
     DATA_GRID='data-grid',
@@ -21,6 +22,7 @@ export enum NodeType {
     GRID_VIEW='grid-view',
     GRID_COLUMN='grid-column',
     CHART_VIEW='chart-view',
+    CHART_DATA_POINTS='chart-datapoints',
     DATA_POINTS='datapoints',
     DATA_SETS='datasets',
     COLOR_SCHEME='color-scheme',
@@ -41,6 +43,7 @@ export const nodes = {
     [NodeType.JOIN]: JOIN_NODE,
     [NodeType.SORT_BY]: SORT_BY_NODE,
     [NodeType.CHART_VIEW]: CHART_VIEW_NODE,
+    [NodeType.CHART_DATA_POINTS]: CHART_DATA_POINTS_NODE,
     [NodeType.AXIS]: AXIS_NODE,
     [NodeType.DATA_SETS]: DATA_SET_NODE,
     [NodeType.DATA_POINTS]: DATA_POINT_NODE,
