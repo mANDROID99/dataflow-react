@@ -29,8 +29,8 @@ export type ChartDataPoint = {
     x: unknown;
     y: unknown;
     r: unknown;
-    bgColor: unknown;
-    borderColor: unknown;
+    bgColor?: string;
+    borderColor?: string;
 }
 
 export type ChartDataSetPoints = {

@@ -2,7 +2,7 @@ import Chart, { ChartOptions } from 'chart.js';
 import { ChartDataPoint, ChartAxisConfig, AxisType, ChartDataSet, ChartViewConfig, ChartEventConfig, ChartEventType } from '../types/valueTypes';
 import { scale } from './colorScheme';
 import { asString, asNumber } from '../utils/conversions';
-import { writeKeyValues } from '../utils/keyPathUtils';
+import { writeKeyPaths } from '../utils/keyPathUtils';
 
 type DataMapper = (data: ChartDataPoint[]) =>  Array<number | null | undefined> | Chart.ChartPoint[];
 
@@ -103,7 +103,7 @@ function mapDataSets(dataSets: ChartDataSet[], dataMapper: DataMapper) {
         }
 
         dataSet.backgroundColor = backgroundColor;
-        writeKeyValues(ds.params, dataSet as any);
+        writeKeyPaths(ds.params, dataSet as any);
         return dataSet;
     });
 }
@@ -123,7 +123,7 @@ function mapAxes(yAxis: boolean, axes: ChartAxisConfig[]) {
             };
         }
         
-        writeKeyValues(axisConfig.params, axis as any);
+        writeKeyPaths(axisConfig.params, axis as any);
         return axis;
     });
 }
@@ -173,6 +173,6 @@ export function createChartConfiguration(chartConfig: ChartViewConfig): Chart.Ch
         } as ChartOptions
     };
 
-    writeKeyValues(chartConfig.params, chartConfiguration as any);
+    writeKeyPaths(chartConfig.params, chartConfiguration as any);
     return chartConfiguration;
 }

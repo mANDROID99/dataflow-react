@@ -6,6 +6,7 @@
   "types": "./lib",
   "scripts": {
     "test": "jest",
+    "test:inspect": "node --inspect-brk=5858 ../../node_modules/jest/bin/jest.js --runInBand",
     "build": "webpack --mode=development",
     "build:watch": "webpack --watch --mode=development"
   },

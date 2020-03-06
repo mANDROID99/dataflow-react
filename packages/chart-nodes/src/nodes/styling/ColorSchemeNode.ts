@@ -1,14 +1,9 @@
 import chroma from 'chroma-js';
 import { GraphNodeConfig, InputType, BaseNodeProcessor } from "@react-ngraph/core";
-
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { Row } from '../../types/valueTypes';
-import { pushDistinct } from '../../utils/arrayUtils';
 
-const PORT_IN_ROWS = 'rows';
-const PORT_OUT_ROWS = 'rows';
+const PORT_OUT_COLOR_SCHEME = 'color-scheme';
 
-const FIELD_ALIAS = 'alias';
 const FIELD_SCALE_NAME = 'scale';
 const FIELD_SCALE_BREAKPOINTS = 'breakpoints'
 
@@ -18,9 +13,12 @@ type BreakPoint = {
 }
 
 type Config = {
-    alias: string;
     scaleName: string;
     scaleBreakPoints: BreakPoint[];
+}
+
+export type ColorScheme = {
+    getColorAt(i: number, n: number): string;
 }
 
 class ColorSchemeNodeProcessor extends BaseNodeProcessor {
@@ -28,20 +26,21 @@ class ColorSchemeNodeProcessor extends BaseNodeProcessor {
         super();
     }
 
-    process(portName: string, values: unknown[]): void {
-        if (portName === PORT_IN_ROWS) {
-            let rows = values[0] as Row[];
+    process(): void {
+        /* do nothing */
+    }
 
-            const alias = this.config.alias;
-            const scale = this.createScaleFromConfig();
+    start() {
+        const colorScheme = this.createColorScheme();
+        this.emitResult(PORT_OUT_COLOR_SCHEME, colorScheme);
+    }
 
-            rows = rows.map((row, index, rows) => {
-                const n = rows.length;
-                const color = scale(n > 1 ? index / (n - 1) : 0).hex();
-                return { ...row, [alias]: color };
-            });
-
-            this.emitResult(PORT_OUT_ROWS, rows);
+    private createColorScheme(): ColorScheme {
+        const scale = this.createScaleFromConfig();
+        return {
+            getColorAt: (i, n) => {
+                return scale(n > 1 ? i / (n - 1) : 0).hex();
+            }
         }
     }
 
@@ -64,23 +63,14 @@ export const COLOR_SCHEME_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     description: 'Chroma.js color scheme generator',
     menuGroup: 'Styling',
     ports: {
-        in: {
-            [PORT_IN_ROWS]: {
-                type: 'row[]'
-            }
-        },
+        in: {},
         out: {
-            [PORT_OUT_ROWS]: {
-                type: 'row[]'
+            [PORT_OUT_COLOR_SCHEME]: {
+                type: 'color-scheme'
             }
         }
     },
     fields: {
-        [FIELD_ALIAS]: {
-            label: 'Alias',
-            type: InputType.TEXT,
-            initialValue: 'color'
-        },
         [FIELD_SCALE_NAME]: {
             label: 'Scale Name',
             description: 'Chroma.js scale name',
@@ -117,15 +107,9 @@ export const COLOR_SCHEME_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             }
         }
     },
-    mapContext({ node, context }) {
-        let columns = context.columns;
-        columns = pushDistinct(columns, node.fields[FIELD_ALIAS] as string);
-        return { ...context, columns };
-    },
     createProcessor(node) {
-        const alias = node.fields[FIELD_ALIAS] as string;
         const scaleName = node.fields[FIELD_SCALE_NAME] as string;
         const scaleBreakPoints = node.fields[FIELD_SCALE_BREAKPOINTS] as BreakPoint[];
-        return new ColorSchemeNodeProcessor({ alias, scaleName, scaleBreakPoints });
+        return new ColorSchemeNodeProcessor({ scaleName, scaleBreakPoints });
     }
 }

@@ -74,7 +74,7 @@ export function writeKeyPath(keyPath: string, value: unknown, result: { [key: st
     }
 }
 
-export function writeKeyValues(keyValues: Entry<unknown>[], result: { [key: string]: unknown }) {
+export function writeKeyPaths(keyValues: Entry<unknown>[], result: { [key: string]: unknown }) {
     for (const kv of keyValues) {
         writeKeyPath(kv.key, kv.value, result);
     }

@@ -1,4 +1,3 @@
-
 export function asString(input: any): string;
 export function asString<T>(input: any, valueNotSet: T): string | T;
 export function asString<T>(input: any, valueNotSet?: T): string | T {
