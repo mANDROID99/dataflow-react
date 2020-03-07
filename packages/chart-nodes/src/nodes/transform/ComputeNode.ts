@@ -1,8 +1,12 @@
-import { InputType, GraphNodeConfig, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from '@react-ngraph/core';
+import { InputType as CoreInputType, GraphNodeConfig, BaseNodeProcessor } from '@react-ngraph/core';
+
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { pushDistinct } from '../../utils/arrayUtils';
 import { Row } from '../../types/valueTypes';
-import { rowToEvalContext } from '../../utils/expressionUtils';
+import { InputType, ColumnMapperInputValue, ColumnMapperType } from '../../types/inputTypes';
+
+import { pushDistinct } from '../../utils/arrayUtils';
+import { rowToEvalContext, Mapper, compileExpression } from '../../utils/expressionUtils';
+import { compileColumnMapper } from '../../utils/columnMapperUtils';
 
 const PORT_ROWS = 'rows';
 const KEY_ACC = 'acc';
@@ -11,7 +15,7 @@ type Config = {
     alias: string;
     reduce: boolean;
     seed: unknown;
-    mapValue: expressions.Mapper;
+    mapValue: Mapper;
 }
 
 class ComputeProcessor extends BaseNodeProcessor {
@@ -83,25 +87,28 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     fields: {
         alias: {
             label: 'Alias',
-            type: InputType.TEXT,
+            type: CoreInputType.TEXT,
             initialValue: ''
         },
         value: {
             label: 'Map Value',
             type: InputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
+            initialValue: {
+                type: ColumnMapperType.EXPRESSION,
+                value: ''
+            },
             params: ({ context }) => ({
                 columns: context.columns
             })
         },
         reduce: {
             label: 'Reduce',
-            type: InputType.CHECK,
+            type: CoreInputType.CHECK,
             initialValue: false
         },
         seed: {
             label: 'Seed',
-            type: InputType.TEXT,
+            type: CoreInputType.TEXT,
             initialValue: ''
         }
     },
@@ -119,8 +126,8 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const seedExpr = node.fields.seed as string;
         const mapValueExpr = node.fields.value as ColumnMapperInputValue;
 
-        const mapValue = expressions.compileColumnMapper(mapValueExpr);
-        const seed = expressions.compileExpression(seedExpr)(params.variables);
+        const mapValue = compileColumnMapper(mapValueExpr);
+        const seed = compileExpression(seedExpr)(params.variables);
 
         return new ComputeProcessor(params, { alias, reduce, seed, mapValue });
     }

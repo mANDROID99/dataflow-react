@@ -1,9 +1,13 @@
-import { GraphNodeConfig, InputType, BaseNodeProcessor, expressions, columnExpression, ColumnMapperInputValue } from "@react-ngraph/core";
+import { GraphNodeConfig, BaseNodeProcessor } from "@react-ngraph/core";
+
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
 import { ChartPointConfig, ChartPointsConfig } from "../../types/chartValueTypes";
+import { InputType, ColumnMapperInputValue } from "../../types/inputTypes";
+
 import { asString } from '../../utils/conversions';
-import { rowToEvalContext } from "../../utils/expressionUtils";
+import { rowToEvalContext, Mapper } from "../../utils/expressionUtils";
+import { compileColumnMapper } from "../../utils/columnMapperUtils";
 import { ColorScheme } from "../styling/ColorSchemeNode";
 
 const PORT_IN_ROWS = 'rows';
@@ -18,12 +22,12 @@ const FIELD_BG_COLOR = 'bgColor';
 const FIELD_BORDER_COLOR = 'borderColor';
 
 type Config = {
-    mapX: expressions.Mapper;
-    mapY: expressions.Mapper;
-    mapR: expressions.Mapper;
-    mapSeries: expressions.Mapper;
-    mapBgColor: expressions.Mapper;
-    mapBorderColor: expressions.Mapper;
+    mapX: Mapper;
+    mapY: Mapper;
+    mapR: Mapper;
+    mapSeries: Mapper;
+    mapBgColor: Mapper;
+    mapBorderColor: Mapper;
 }
 
 class ChartDataPointsNodeProcessor extends BaseNodeProcessor {
@@ -122,25 +126,25 @@ export const CHART_DATA_POINTS_NODE: GraphNodeConfig<ChartContext, ChartParams> 
     },
     fields: {
         [FIELD_X]: {
-            label: 'X',
+            label: 'Map X',
             type: InputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
+            initialValue: '',
             params: ({ context }) => ({
                 columns: context.columns
             })
         },
         [FIELD_Y]: {
-            label: 'Y',
+            label: 'Map Y',
             type: InputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
+            initialValue: '',
             params: ({ context }) => ({
                 columns: context.columns
             })
         },
         [FIELD_R]: {
-            label: 'R',
+            label: 'Map R',
             type: InputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
+            initialValue: '',
             params: ({ context }) => ({
                 optional: true,
                 columns: context.columns
@@ -149,7 +153,7 @@ export const CHART_DATA_POINTS_NODE: GraphNodeConfig<ChartContext, ChartParams> 
         [FIELD_SERIES_KEY]: {
             label: 'Series Key',
             type: InputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
+            initialValue: '',
             params: ({ context }) => ({
                 optional: true,
                 columns: context.columns
@@ -159,7 +163,7 @@ export const CHART_DATA_POINTS_NODE: GraphNodeConfig<ChartContext, ChartParams> 
             label: 'Background Color',
             fieldGroup: 'Styling',
             type: InputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
+            initialValue: '',
             params: ({ context }) => ({
                 optional: true,
                 columns: context.columns
@@ -169,7 +173,7 @@ export const CHART_DATA_POINTS_NODE: GraphNodeConfig<ChartContext, ChartParams> 
             label: 'Border Color',
             fieldGroup: 'Styling',
             type: InputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
+            initialValue: '',
             params: ({ context }) => ({
                 optional: true,
                 columns: context.columns
@@ -177,12 +181,12 @@ export const CHART_DATA_POINTS_NODE: GraphNodeConfig<ChartContext, ChartParams> 
         }
     },
     createProcessor(node, params) {
-        const mapX = expressions.compileColumnMapper(node.fields[FIELD_X] as ColumnMapperInputValue);
-        const mapY = expressions.compileColumnMapper(node.fields[FIELD_Y] as ColumnMapperInputValue);
-        const mapR = expressions.compileColumnMapper(node.fields[FIELD_R] as ColumnMapperInputValue);
-        const mapSeries = expressions.compileColumnMapper(node.fields[FIELD_SERIES_KEY] as ColumnMapperInputValue);
-        const mapBgColor = expressions.compileColumnMapper(node.fields[FIELD_BG_COLOR] as ColumnMapperInputValue);
-        const mapBorderColor = expressions.compileColumnMapper(node.fields[FIELD_BORDER_COLOR] as ColumnMapperInputValue);
+        const mapX = compileColumnMapper(node.fields[FIELD_X] as ColumnMapperInputValue);
+        const mapY = compileColumnMapper(node.fields[FIELD_Y] as ColumnMapperInputValue);
+        const mapR = compileColumnMapper(node.fields[FIELD_R] as ColumnMapperInputValue);
+        const mapSeries = compileColumnMapper(node.fields[FIELD_SERIES_KEY] as ColumnMapperInputValue);
+        const mapBgColor = compileColumnMapper(node.fields[FIELD_BG_COLOR] as ColumnMapperInputValue);
+        const mapBorderColor = compileColumnMapper(node.fields[FIELD_BORDER_COLOR] as ColumnMapperInputValue);
 
         return new ChartDataPointsNodeProcessor(params, {
             mapX,

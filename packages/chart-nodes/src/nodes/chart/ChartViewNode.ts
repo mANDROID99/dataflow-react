@@ -1,4 +1,4 @@
-import { GraphNodeConfig, InputType, Entry, expressions, GraphNode, BaseNodeProcessor, NodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, BaseNodeProcessor, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ViewType } from "../../types/valueTypes";
 import {
@@ -8,6 +8,8 @@ import {
     ChartEventConfig,
     ChartConfig
 } from "../../types/chartValueTypes";
+
+import { compileEntriesMapper } from "../../utils/expressionUtils";
 
 const PORT_IN_DATASETS = 'datasets';
 const PORT_IN_X_AXES = 'xAxes';
@@ -174,7 +176,7 @@ export const CHART_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const chartType = node.fields[FIELD_TYPE] as string;
         const paramInputs = node.fields[FIELD_PARAMS] as Entry<string>[];
         
-        const paramsMapper = expressions.compileEntriesMapper(paramInputs);
+        const paramsMapper = compileEntriesMapper(paramInputs);
         const chartParams = paramsMapper(params.variables);
 
         let viewName = node.fields[FIELD_VIEW_NAME] as string;

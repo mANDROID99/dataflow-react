@@ -1,13 +1,17 @@
-import { GraphNodeConfig, InputType, columnExpression, ColumnMapperInputValue, expressions, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor } from "@react-ngraph/core";
+
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
-import { rowToEvalContext } from "../../utils/expressionUtils";
+import { InputType, ColumnMapperInputValue } from "../../types/inputTypes";
+
+import { rowToEvalContext, Mapper } from "../../utils/expressionUtils";
+import { compileColumnMapper } from "../../utils/columnMapperUtils";
 
 const PORT_ROWS = 'rows';
 
 type Config = {
     descending: boolean;
-    mapColumnKey: expressions.Mapper;
+    mapColumnKey: Mapper;
 }
 
 class SortByNodeProcessor extends BaseNodeProcessor {
@@ -65,21 +69,21 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         column: {
             label: 'Map Column Key',
             type: InputType.COLUMN_MAPPER,
-            initialValue: columnExpression(''),
+            initialValue: '',
             params: ({ context }) => ({
                 columns: context?.columns
             })
         },
         desc: {
             label: 'Descending',
-            type: InputType.CHECK,
+            type: CoreInputType.CHECK,
             initialValue: false
         }
     },
     createProcessor(node, params) {
         const descending = node.fields.desc as boolean;
         const mapColumnKeyExpr = node.fields.column as ColumnMapperInputValue;
-        const mapColumnKey = expressions.compileColumnMapper(mapColumnKeyExpr);
+        const mapColumnKey = compileColumnMapper(mapColumnKeyExpr);
         return new SortByNodeProcessor(params, { descending, mapColumnKey });
     }
 }

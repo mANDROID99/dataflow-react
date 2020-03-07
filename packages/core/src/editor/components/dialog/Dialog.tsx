@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DialogOpts } from './DialogsManager';
 import Modal from '../../../common/Modal';
-import { invokeAll } from '../../../utils/functionUtils';
 import { getDialogDefinitionByType } from './dialogs';
 
 type Props = {
@@ -20,11 +19,13 @@ export default function Dialog({ dialog, onClear }: Props) {
         const d = getDialogDefinitionByType(dialog.type);
         if (!d) return null;
 
-        
         return React.createElement(d.component, {
             show,
             params: dialog.params,
-            onResult: invokeAll(dialog.onResult, handleHide)
+            onResult: (value: any) => {
+                dialog.onResult(value);
+                handleHide();
+            }
         });
     };
 

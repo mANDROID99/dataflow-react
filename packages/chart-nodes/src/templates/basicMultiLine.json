@@ -110,32 +110,17 @@
       "height": 0,
       "fields": {
         "type": "line",
-        "series": {
-          "type": "column",
-          "value": "G"
-        },
-        "label": {
-          "type": "column",
-          "value": "G"
-        },
-        "borderColor": {
-          "type": "column",
-          "value": ""
-        },
-        "backgroundColor": {
-          "type": "column",
-          "value": ""
-        },
+        "series": "G",
+        "label": "G",
+        "borderColor": "",
+        "backgroundColor": "",
         "params": [
           {
             "key": "fill",
             "value": "none"
           }
         ],
-        "bgColor": {
-          "type": "column",
-          "value": ""
-        }
+        "bgColor": ""
       },
       "ports": {
         "in": {
@@ -171,26 +156,11 @@
       "width": 170,
       "height": 0,
       "fields": {
-        "x": {
-          "type": "column",
-          "value": "X"
-        },
-        "y": {
-          "type": "column",
-          "value": "Y"
-        },
-        "r": {
-          "type": "column",
-          "value": ""
-        },
-        "color": {
-          "type": "column",
-          "value": ""
-        },
-        "series": {
-          "type": "column",
-          "value": "G"
-        }
+        "x": "X",
+        "y": "Y",
+        "r": "",
+        "color": "",
+        "series": "G"
       },
       "ports": {
         "in": {

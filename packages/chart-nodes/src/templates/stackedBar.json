@@ -79,26 +79,11 @@
       "width": 170,
       "height": 0,
       "fields": {
-        "x": {
-          "type": "column",
-          "value": "Country"
-        },
-        "y": {
-          "type": "column",
-          "value": "Percent Smokers"
-        },
-        "r": {
-          "type": "column",
-          "value": ""
-        },
-        "color": {
-          "type": "column",
-          "value": ""
-        },
-        "series": {
-          "type": "column",
-          "value": "Gender"
-        }
+        "x": "Country",
+        "y": "Percent Smokers",
+        "r": "",
+        "color": "",
+        "series": "Gender"
       },
       "ports": {
         "in": {
@@ -130,22 +115,10 @@
       "height": 0,
       "fields": {
         "type": "bar",
-        "series": {
-          "type": "column",
-          "value": "Gender"
-        },
-        "label": {
-          "type": "column",
-          "value": "Gender"
-        },
-        "borderColor": {
-          "type": "column",
-          "value": ""
-        },
-        "backgroundColor": {
-          "type": "column",
-          "value": "Colour"
-        },
+        "series": "Gender",
+        "label": "Gender",
+        "borderColor": "",
+        "backgroundColor": "Colour",
         "params": []
       },
       "ports": {

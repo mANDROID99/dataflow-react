@@ -1,6 +1,7 @@
-import { GraphNodeConfig, InputType, Entry, expressions, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ChartAxisType, ChartAxisConfig } from "../../types/chartValueTypes";
+import { compileEntriesMapper } from "../../utils/expressionUtils";
 
 const PORT_OUT_AXIS = 'axis';
 
@@ -97,7 +98,7 @@ export const CHART_AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const paramExprs = node.fields[FIELD_PARAMS] as Entry<string>[];
         const beginAtZero = node.fields[FIELD_BEGIN_AT_ZERO] as boolean;
 
-        const paramsMapper = expressions.compileEntriesMapper(paramExprs);
+        const paramsMapper = compileEntriesMapper(paramExprs);
         const paramsMapped = paramsMapper(params.variables);
         
         return new ChartAxisNodeProcessor({

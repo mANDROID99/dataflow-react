@@ -92,15 +92,12 @@
         "key": "Foo",
         "width": 100,
         "order": 0,
-        "value": {
-          "type": "column",
-          "value": ""
+        "value": "",
+        "fontColor": {
+          "type": "expression",
+          "value": "= key == \"Bar\" ? (Bar > 3 ? \"red\" : \"blue\") : undefined"
         },
-        "fontColor": "= key == \"Bar\" ? (Bar > 3 ? \"red\" : \"blue\") : undefined",
-        "bgColor": {
-          "type": "column",
-          "value": ""
-        },
+        "bgColor": "",
         "template": true
       },
       "ports": {

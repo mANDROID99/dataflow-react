@@ -1,6 +1,7 @@
-import { GraphNodeConfig, InputType, emptyDataGrid, expressions, DataGridInputValue, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, emptyDataGrid, DataGridInputValue, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
+import { autoConvert } from "../../utils/expressionUtils";
 
 const PORT_ROWS = 'rows';
 const FIELD_DATA = 'data';
@@ -26,7 +27,7 @@ class DataGridProcessor extends BaseNodeProcessor {
             const nRows = Math.min(gridColumns.length, values.length);
             
             for (let i = 0; i < nRows; i++) {
-                data[gridColumns[i]] = expressions.autoConvert(values[i]);
+                data[gridColumns[i]] = autoConvert(values[i]);
             }
 
             return data;

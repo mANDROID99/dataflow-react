@@ -1,7 +1,8 @@
-import { GraphNodeConfig, InputType, Entry, NodeProcessor, expressions, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType, Entry, NodeProcessor, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { asString } from "../../utils/conversions";
 import { Row } from "../../types/valueTypes";
+import { Mapper, EntriesMapper, compileExpression, compileEntriesMapper } from "../../utils/expressionUtils";
 
 const KEY_DATA = 'data';
 const PORT_ROWS = 'rows';
@@ -17,13 +18,13 @@ const FIELD_MAP_RESPONSE = 'mapResponse';
 const FIELD_ACTIONS = 'actions';
 
 type Config = {
-    mapUrl: expressions.Mapper,
-    mapQueryParams: expressions.EntriesMapper,
-    mapHeaders: expressions.EntriesMapper,
-    mapResponse: expressions.Mapper
+    mapUrl: Mapper,
+    mapQueryParams: EntriesMapper,
+    mapHeaders: EntriesMapper,
+    mapResponse: Mapper
 };
 
-async function doFetch(url: string, headers: { [key: string]: string}, mapResponse: expressions.Mapper, params: ChartParams) {
+async function doFetch(url: string, headers: { [key: string]: string}, mapResponse: Mapper, params: ChartParams) {
     const response = await params.actions.fetch({
         url,
         method: 'GET',
@@ -37,7 +38,7 @@ async function doFetch(url: string, headers: { [key: string]: string}, mapRespon
     return (mapResponse(ctx) || data) as { [key: string]: unknown }[];
 }
 
-function resolveHeaders(mapHeaders: expressions.EntriesMapper, ctx: { [key: string]: unknown }) {
+function resolveHeaders(mapHeaders: EntriesMapper, ctx: { [key: string]: unknown }) {
     const headers: { [key: string]: string } = {};
     const headersArr = mapHeaders(ctx);
     for (const entry of headersArr) {
@@ -48,7 +49,7 @@ function resolveHeaders(mapHeaders: expressions.EntriesMapper, ctx: { [key: stri
     return headers;
 }
 
-function resolveUrl(mapUrl: expressions.Mapper, mapQueryParams: expressions.EntriesMapper, ctx: { [key: string]: unknown }): string | undefined {
+function resolveUrl(mapUrl: Mapper, mapQueryParams: EntriesMapper, ctx: { [key: string]: unknown }): string | undefined {
     let url = asString(mapUrl(ctx));
     if (!url) return;
 
@@ -150,13 +151,37 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         [FIELD_QUERY_PARAMS]: {
             label: 'Query Params',
-            type: InputType.DATA_ENTRIES,
-            initialValue: []
+            type: InputType.MULTI,
+            initialValue: [],
+            subFields: {
+                key: {
+                    label: 'Key',
+                    initialValue: '',
+                    type: InputType.TEXT
+                },
+                value: {
+                    label: 'Value',
+                    initialValue: '',
+                    type: InputType.TEXT
+                }
+            }
         },
         [FIELD_HEADERS]: {
             label: 'Headers',
-            type: InputType.DATA_ENTRIES,
-            initialValue: []
+            type: InputType.MULTI,
+            initialValue: [],
+            subFields: {
+                key: {
+                    label: 'Key',
+                    initialValue: '',
+                    type: InputType.TEXT
+                },
+                value: {
+                    label: 'Value',
+                    initialValue: '',
+                    type: InputType.TEXT
+                }
+            }
         },
         [FIELD_MAP_RESPONSE]: {
             label: 'Map Response',
@@ -165,8 +190,15 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         [FIELD_COLUMNS]: {
             label: 'Columns',
-            type: InputType.DATA_LIST,
-            initialValue: []
+            type: InputType.MULTI,
+            initialValue: [],
+            subFields: {
+                column: {
+                    label: 'Value',
+                    initialValue: '',
+                    type: InputType.TEXT
+                }
+            }
         },
         [FIELD_ACTIONS]: {
             label: 'Actions',
@@ -204,10 +236,10 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const headerEntries = node.fields[FIELD_HEADERS] as Entry<string>[];
         const queryParamEntries = node.fields[FIELD_QUERY_PARAMS] as Entry<string>[];
 
-        const mapUrl = expressions.compileExpression(mapUrlExpr);
-        const mapQueryParams = expressions.compileEntriesMapper(queryParamEntries);
-        const mapHeaders = expressions.compileEntriesMapper(headerEntries);
-        const mapResponse = expressions.compileExpression(mapResponseExpr);
+        const mapUrl = compileExpression(mapUrlExpr);
+        const mapQueryParams = compileEntriesMapper(queryParamEntries);
+        const mapHeaders = compileEntriesMapper(headerEntries);
+        const mapResponse = compileExpression(mapResponseExpr);
 
         return new DataFetcherProcessor(params, {
             mapUrl,
@@ -223,10 +255,10 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     onEvent(key, payload, { node, params, actions }) {
         if (key === BTN_RESOLVE_COLUMNS) {
             const ctx = params.variables;
-            const mapUrl = expressions.compileExpression(node.fields[FIELD_URL] as string);
-            const mapQueryParams = expressions.compileEntriesMapper(node.fields[FIELD_QUERY_PARAMS] as Entry<string>[]);
-            const mapResponse = expressions.compileExpression(node.fields[FIELD_MAP_RESPONSE] as string);
-            const mapHeaders = expressions.compileEntriesMapper(node.fields[FIELD_HEADERS] as Entry<string>[]);
+            const mapUrl = compileExpression(node.fields[FIELD_URL] as string);
+            const mapQueryParams = compileEntriesMapper(node.fields[FIELD_QUERY_PARAMS] as Entry<string>[]);
+            const mapResponse = compileExpression(node.fields[FIELD_MAP_RESPONSE] as string);
+            const mapHeaders = compileEntriesMapper(node.fields[FIELD_HEADERS] as Entry<string>[]);
 
             const url = resolveUrl(mapUrl, mapQueryParams, ctx);
             if (!url) return;
@@ -236,7 +268,8 @@ export const DATA_FETCHER_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             doFetch(url, headers, mapResponse, params).then((result) => {
                 if (result && result.length) {
                     const first = result[0];
-                    actions.setFieldValue('columns', Object.keys(first));
+                    const columns = Object.keys(first).map((column) => ({ column }));
+                    actions.setFieldValue(FIELD_COLUMNS, columns);
                 }
             })
         }

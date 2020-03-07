@@ -15,10 +15,7 @@ export enum InputType {
     NUMBER = 'number',
     SELECT = 'select',
     CHECK = 'check',
-    COLUMN_MAPPER = 'column-mapper',
-    DATA_ENTRIES = 'data-entries',
     DATA_GRID = 'data-grid',
-    DATA_LIST = 'data-list',
     ACTIONS = 'actions',
     MULTI = 'multi',
     COLOR = 'color'
@@ -29,26 +26,11 @@ export type Entry<T> = {
     value: T;
 }
 
+export type Option = string | { value: string; label: string };
+
 export type DataGridInputValue = {
     columns: string[];
     rows: string[][];
-}
-
-export enum ColumnMapperType {
-    EXPRESSION='expression',
-    COLUMN='column'
-}
-
-export type ColumnMapperInputValue = string | {
-    type: ColumnMapperType.COLUMN;
-    value: string;
-}
-
-export function columnExpression(column: string): ColumnMapperInputValue {
-    return {
-        type: ColumnMapperType.COLUMN,
-        value: column
-    };
 }
 
 export function emptyDataGrid(): DataGridInputValue {

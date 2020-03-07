@@ -17,11 +17,13 @@
   "dependencies": {
     "@react-ngraph/core": "0.1.0",
     "chart.js": "^2.9.3",
-    "chroma-js": "^2.1.0"
+    "chroma-js": "^2.1.0",
+    "jexl": "^2.2.2"
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.2",
     "@types/chroma-js": "^2.0.0",
+    "@types/jexl": "^2.2.0",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@types/react-redux": "^7.1.7",
@@ -44,7 +46,7 @@
     "style-loader": "^1.0.0",
     "ts-jest": "^25.2.0",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.2",
+    "typescript": "^3.8.3",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0",
