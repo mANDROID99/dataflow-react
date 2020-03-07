@@ -1,6 +1,7 @@
 
 export enum InputType {
-    COLUMN_MAPPER = 'column-mapper'
+    COLUMN_MAPPER = 'column-mapper',
+    GRADIENT_PREVIEW = 'gradient-preview'
 }
 
 export enum ColumnMapperType {

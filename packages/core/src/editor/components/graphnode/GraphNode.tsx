@@ -50,11 +50,11 @@ function GraphNode<C, P>({ nodeId, node, nodeContext, container }: Props<C>): Re
     const actions = useGraphNodeActions(nodeId, dispatch, nodeConfig, node, nodeContext, params);
 
     // notify when the graph-node changed
-    const prevNode = useRef<GraphNode>(node);
+    const prevNode = useRef<GraphNode>();
     useEffect(() => {
         if (prevNode.current !== node && nodeConfig.onChanged) {
-            prevNode.current = node;
             actions.triggerNodeChanged(prevNode.current, node);
+            prevNode.current = node;
         }
     });
 

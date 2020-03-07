@@ -5,6 +5,7 @@ import { InputProps } from "../types/graphInputTypes";
 export default class ColorPickerInput extends React.Component<InputProps<string>> {
     private ref: React.RefObject<HTMLDivElement>;
     private picker!: Pickr;
+    private changeDisabled = false;
 
     constructor(props: InputProps<string>) {
         super(props);
@@ -40,6 +41,7 @@ export default class ColorPickerInput extends React.Component<InputProps<string>
     componentDidUpdate(prevProps: InputProps<string>) {
         const value = this.props.value;
         if (value && value !== prevProps.value) {
+            this.changeDisabled = true;
             this.picker.setColor(value);
         }
     }
@@ -56,8 +58,10 @@ export default class ColorPickerInput extends React.Component<InputProps<string>
         );
     }
 
-    private handlePickerSave() {
-        const color = this.picker.getColor().toHEXA();
-        this.props.onChanged('' + color);
+    private handlePickerSave(color: Pickr.HSVaColor) {
+        if (!this.changeDisabled) {
+            this.props.onChanged('' + color.toHEXA());
+        }
+        this.changeDisabled = false;
     }
 }

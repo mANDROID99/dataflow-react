@@ -16,7 +16,7 @@ export type GraphNodeActions = {
     select(): void;
     showContextMenu(x: number, y: number): void;
     triggerEvent(key: string, payload: null): void;
-    triggerNodeChanged(prev: GraphNode, next: GraphNode): void;
+    triggerNodeChanged(prev: GraphNode | undefined, next: GraphNode): void;
 }
 
 export type GraphNodeComponentProps<C, P> = {

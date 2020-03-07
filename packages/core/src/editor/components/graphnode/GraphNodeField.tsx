@@ -14,10 +14,11 @@ type Props<C, P> = {
     fieldName: string;
     fieldValue: unknown;
     fieldConfig: GraphNodeFieldConfig<C, P>;
+    fields: { [key: string]: unknown };
     actions: GraphNodeActions;
 }
 
-function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fieldValue, actions }: Props<C, P>) {
+function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fields, fieldValue, actions }: Props<C, P>) {
     const inputType = fieldConfig.type;
     const dispatch = useDispatch();
     const { graphConfig, params } = useGraphContext<C, P>();
@@ -35,7 +36,7 @@ function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fieldVa
 
     // create the input element
     const inputComponent = input?.component;
-    const inputElement = useMemo(() => {
+    function renderInputElement() {
         if (!inputComponent) {
             return 'Unknown Input Type';
         }
@@ -47,19 +48,12 @@ function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fieldVa
             fieldConfig,
             actions,
             context,
+            fields,
             onChanged: handleChanged
         };
 
         return React.createElement(inputComponent, inputProps);
-    }, [
-        fieldParams,
-        fieldValue,
-        fieldConfig,
-        context,
-        actions,
-        handleChanged,
-        inputComponent
-    ]);
+    }
 
     // field is hidden
     if (fieldParams.hidden) {
@@ -70,10 +64,21 @@ function GraphNodeField<C, P>({ nodeId, context, fieldName, fieldConfig, fieldVa
         <div className="ngraph-node-field">
             <div className="ngraph-text-label ngraph-text-ellipsis">{ fieldConfig.label }</div>
             <div className="ngraph-node-field-input">
-                {inputElement}
+                {renderInputElement()}
             </div>
         </div>
     );
 }
 
-export default React.memo(GraphNodeField) as typeof GraphNodeField;
+export default React.memo(GraphNodeField, (prev, next) => {
+    if (prev.fields !== next.fields && next.fieldConfig.renderWhenAnyFieldChanged) {
+        return false;
+    }
+
+    return prev.actions === next.actions
+        && prev.context === next.context
+        && prev.fieldConfig === next.fieldConfig
+        && prev.fieldName === next.fieldName
+        && prev.fieldValue === next.fieldValue
+        && prev.nodeId === next.nodeId;
+}) as typeof GraphNodeField;

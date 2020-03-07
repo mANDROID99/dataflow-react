@@ -39,9 +39,23 @@ export default function MultiFieldInput({ value, onChanged, fieldConfig, context
         if (!value) return;
 
         const vs = value.slice(0);
-        move(vs, index, index + offset);
+        const from = index;
+        const to = index + offset;
+        move(vs, from, to);
+
+        for (const key in subFields) {
+            if (subFields[key].lockOrder) {
+                const a = vs[from] = Object.assign({}, vs[from]);
+                const b = vs[to] = Object.assign({}, vs[to]);
+                
+                const tmp = a[key];
+                a[key] = b[key];
+                b[key] = tmp;
+            }
+        }
+
         onChanged(vs);
-    }, [onChanged]);
+    }, [onChanged, subFields]);
 
     const handleRowChanged = useCallback((index: number, values: { [key: string]: unknown }) => {
         const value = valueRef.current;

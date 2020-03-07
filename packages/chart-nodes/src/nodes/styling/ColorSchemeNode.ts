@@ -1,18 +1,20 @@
 import chroma from 'chroma-js';
-import { GraphNodeConfig, InputType, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
+import { InputType } from '../../types/inputTypes';
 
 const PORT_OUT_COLOR_SCHEME = 'color-scheme';
 
-const FIELD_SCALE_NAME = 'scale';
-const FIELD_SCALE_BREAKPOINTS = 'breakpoints'
+export const FIELD_SCALE_NAME = 'scale';
+export const FIELD_SCALE_BREAKPOINTS = 'breakpoints';
+const FIELD_GRADIENT_PREVIEW = 'gradient';
 
 type BreakPoint = {
     color: string;
     pos: number;
 }
 
-type Config = {
+export type GradientParams = {
     scaleName: string;
     scaleBreakPoints: BreakPoint[];
 }
@@ -21,8 +23,20 @@ export type ColorScheme = {
     getColorAt(i: number, n: number): string;
 }
 
+export function createChroma(params: GradientParams) {
+    if (params.scaleName) {
+        return chroma.scale(params.scaleName);
+
+    } else {
+        const breakPoints = params.scaleBreakPoints;
+        const colors: string[] = breakPoints.map(pt => pt.color);
+        const points: number[] = breakPoints.map(pt => pt.pos);
+        return chroma.scale(colors).domain(points);
+    }
+}
+
 class ColorSchemeNodeProcessor extends BaseNodeProcessor {
-    constructor(private readonly config: Config) {
+    constructor(private readonly config: GradientParams) {
         super();
     }
 
@@ -36,24 +50,11 @@ class ColorSchemeNodeProcessor extends BaseNodeProcessor {
     }
 
     private createColorScheme(): ColorScheme {
-        const scale = this.createScaleFromConfig();
+        const scale = createChroma(this.config);
         return {
             getColorAt: (i, n) => {
                 return scale(n > 1 ? i / (n - 1) : 0).hex();
             }
-        }
-    }
-
-    private createScaleFromConfig(): chroma.Scale<chroma.Color> {
-        const config = this.config;
-        if (config.scaleName) {
-            return chroma.scale(config.scaleName);
-
-        } else {
-            const breakPoints = config.scaleBreakPoints;
-            const colors: string[] = breakPoints.map(pt => pt.color);
-            const points: number[] = breakPoints.map(pt => pt.pos);
-            return chroma.scale(colors).domain(points);
         }
     }
 }
@@ -74,13 +75,13 @@ export const COLOR_SCHEME_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         [FIELD_SCALE_NAME]: {
             label: 'Scale Name',
             description: 'Chroma.js scale name',
-            type: InputType.TEXT,
+            type: CoreInputType.TEXT,
             initialValue: ''
         },
         [FIELD_SCALE_BREAKPOINTS]: {
             label: 'Scale Breakpoints',
             description: 'Break-points of the scale gradient',
-            type: InputType.MULTI,
+            type: CoreInputType.MULTI,
             initialValue: [
                 { color: '#00496b', pos: 0 },
                 { color: '#BC5090', pos: 0.5 },
@@ -89,13 +90,14 @@ export const COLOR_SCHEME_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             subFields: {
                 color: {
                     label: 'Color',
-                    type: InputType.COLOR,
+                    type: CoreInputType.COLOR,
                     initialValue: '#ffffff'
                 },
                 pos: {
                     label: 'Pos',
-                    type: InputType.NUMBER,
+                    type: CoreInputType.NUMBER,
                     initialValue: 0,
+                    lockOrder: true,
                     style: {
                         maxWidth: '5rem'
                     },
@@ -105,6 +107,12 @@ export const COLOR_SCHEME_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                     }
                 }
             }
+        },
+        [FIELD_GRADIENT_PREVIEW]: {
+            label: 'Preview',
+            type: InputType.GRADIENT_PREVIEW,
+            initialValue: null,
+            renderWhenAnyFieldChanged: true,
         }
     },
     createProcessor(node) {

@@ -24,6 +24,7 @@ export type GraphNodeSubFieldConfig<C, P> = {
     label: string;
     type: string;
     initialValue: unknown;
+    lockOrder?: boolean;
     style?: React.CSSProperties;
     params?: Resolvable<{ [key: string]: unknown }, FieldResolverParams<C, P>>;
 }
@@ -34,6 +35,7 @@ export type GraphNodeFieldConfig<C, P> = {
     initialValue: unknown;
     description?: string;
     fieldGroup?: string;
+    renderWhenAnyFieldChanged?: boolean;
     params?: Resolvable<{ [key: string]: unknown }, FieldResolverParams<C, P>>;
     subFields?: {
         [key: string]: GraphNodeSubFieldConfig<C, P>;
