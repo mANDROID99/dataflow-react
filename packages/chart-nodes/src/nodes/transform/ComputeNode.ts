@@ -103,11 +103,13 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         },
         reduce: {
             label: 'Reduce',
+            fieldGroup: "Reduce",
             type: CoreInputType.CHECK,
             initialValue: false
         },
         seed: {
             label: 'Seed',
+            fieldGroup: "Reduce",
             type: CoreInputType.TEXT,
             initialValue: ''
         }

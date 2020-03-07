@@ -23,7 +23,8 @@ import {
     SetNodeNameAction,
     SetNodeBoundsAction,
     MoveOverlappingBoundsAction,
-    SetNodeSizeAction
+    SetNodeSizeAction,
+    UnmountNodeAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
@@ -53,8 +54,8 @@ function deleteNode(graph: Graph, nodeBounds: { [key: string]: NodeBounds }, nod
         }
     }
 
-     // clear out ports
-     for (const portId in node.ports.out) {
+    // clear out ports
+    for (const portId in node.ports.out) {
         const targets = node.ports.out[portId];
         if (targets) {
             clearPortTargets(graph, targets, nodeId, portId, true);
@@ -80,16 +81,11 @@ function deleteNode(graph: Graph, nodeBounds: { [key: string]: NodeBounds }, nod
 
     // remove the node from the store
     delete nodes[nodeId];
-
-    // remove node bounds
-    clearAlignment(nodeBounds, nodeId);
-    delete nodeBounds[nodeId];
 }
 
 const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, action: Extract<GraphAction, { type: K }>) => GraphEditorState  } = {
     [GraphActionType.LOAD_GRAPH]: produce((state: GraphEditorState, action: LoadGraphAction) => {
         state.graph = action.graph;
-        state.nodeBounds = {};
         state.portDrag = undefined;
         state.contextMenu = undefined;
     }),
@@ -99,7 +95,6 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
             nodeIds: [],
             nodes: {}
         };
-        state.nodeBounds = {};
         state.portDrag = undefined;
         state.contextMenu = undefined;
     }),
@@ -346,6 +341,14 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
                 node.x = nodeBounds.x;
             }
         }
+    }),
+
+    [GraphActionType.UNMOUNT_NODE]: produce((state: GraphEditorState, action: UnmountNodeAction) => {
+        const nodeBounds = state.nodeBounds;    
+
+        // remove node bounds
+        clearAlignment(nodeBounds, action.nodeId);
+        delete nodeBounds[action.nodeId];
     })
 };
 

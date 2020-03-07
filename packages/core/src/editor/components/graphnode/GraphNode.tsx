@@ -6,7 +6,7 @@ import { GraphNode } from '../../../types/graphTypes';
 import GraphNodePort from './GraphNodePort';
 import { useGraphContext } from '../../graphEditorContext';
 import { selectNodeSelected } from '../../../store/selectors';
-import { selectNode, showContextMenu, setNodeBounds, moveOverlapping } from '../../../store/actions';
+import { selectNode, showContextMenu, setNodeBounds, moveOverlapping, mountNode, unmountNode } from '../../../store/actions';
 import { ContextMenuTarget, ContextMenuTargetType, NodeBounds } from '../../../types/storeTypes';
 import { DragType, GraphNodeComponentProps } from '../../../types/graphNodeComponentTypes';
 import { useGraphNodeActions } from './graphNodeActions';
@@ -113,6 +113,13 @@ function GraphNode<C, P>({ nodeId, node, nodeContext, container }: Props<C>): Re
 
     // dont update the bounds while the node is being dragged
     const isDragging = drag != null;
+
+    useEffect(() => {
+        dispatch(mountNode(nodeId));
+        return () => {
+            dispatch(unmountNode(nodeId));
+        };
+    }, [dispatch, nodeId]);
 
     // Detect element measured bounds changes, update in the store
     const prevBounds = useRef<NodeBounds>();
