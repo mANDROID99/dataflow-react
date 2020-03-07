@@ -91,7 +91,6 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
-                target: 'row',
                 columns: context.columns
             })
         },
@@ -120,7 +119,7 @@ export const COMPUTE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const seedExpr = node.fields.seed as string;
         const mapValueExpr = node.fields.value as ColumnMapperInputValue;
 
-        const mapValue = expressions.compileColumnMapper(mapValueExpr, 'row');
+        const mapValue = expressions.compileColumnMapper(mapValueExpr);
         const seed = expressions.compileExpression(seedExpr)(params.variables);
 
         return new ComputeProcessor(params, { alias, reduce, seed, mapValue });

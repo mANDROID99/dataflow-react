@@ -67,7 +67,6 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
-                target: 'row',
                 columns: context?.columns
             })
         },
@@ -80,7 +79,7 @@ export const SORT_BY_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     createProcessor(node, params) {
         const descending = node.fields.desc as boolean;
         const mapColumnKeyExpr = node.fields.column as ColumnMapperInputValue;
-        const mapColumnKey = expressions.compileColumnMapper(mapColumnKeyExpr, 'row');
+        const mapColumnKey = expressions.compileColumnMapper(mapColumnKeyExpr);
         return new SortByNodeProcessor(params, { descending, mapColumnKey });
     }
 }

@@ -1,15 +1,22 @@
 import { GraphNodeConfig, InputType, Entry, expressions, GraphNode, BaseNodeProcessor, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { ChartDataSet, ChartAxisConfig, ChartViewConfig, ChartEventType, ViewType, ChartEventConfig } from "../../types/valueTypes";
+import { ViewType } from "../../types/valueTypes";
+import {
+    ChartDataSetConfig,
+    ChartAxisConfig,
+    ChartEventType,
+    ChartEventConfig,
+    ChartConfig
+} from "../../types/chartValueTypes";
 
-function getDefaultViewName(node: GraphNode) {
-    return 'chart-' + node.id;
-}
+const PORT_IN_DATASETS = 'datasets';
+const PORT_IN_X_AXES = 'xAxes';
+const PORT_IN_Y_AXES = 'yAxes';
+const PORT_OUT_ONCLICK = 'onClick';
 
-const PORT_DATASETS = 'datasets';
-const PORT_X_AXES = 'xAxes';
-const PORT_Y_AXES = 'yAxes';
-const PORT_ON_CLICK = 'onClick';
+const FIELD_VIEW_NAME = 'name';
+const FIELD_TYPE = 'type';
+const FIELD_PARAMS = 'params';
 
 type Config = {
     chartType: string;
@@ -17,7 +24,7 @@ type Config = {
 }
 
 class ChartViewProcessor extends BaseNodeProcessor {
-    private datasets?: ChartDataSet[][];
+    private datasets?: ChartDataSetConfig[][];
     private xAxes?: ChartAxisConfig[];
     private yAxes?: ChartAxisConfig[];
 
@@ -33,26 +40,26 @@ class ChartViewProcessor extends BaseNodeProcessor {
     }
 
     registerConnectionInverse(portOut: string, portIn: string, processor: NodeProcessor) {
-        if (portIn === PORT_DATASETS) {
+        if (portIn === PORT_IN_DATASETS) {
             this.datasets = undefined;
-        } else if (portIn === PORT_X_AXES) {
+        } else if (portIn === PORT_IN_X_AXES) {
             this.xAxes = undefined;
-        } else if (portIn === PORT_Y_AXES) {
+        } else if (portIn === PORT_IN_Y_AXES) {
             this.yAxes = undefined;
         }
         return super.registerConnectionInverse(portOut, portIn, processor);
     }
 
     process(portName: string, inputs: unknown[]) {
-        if (portName === PORT_DATASETS) {
-            this.datasets = inputs as ChartDataSet[][];
+        if (portName === PORT_IN_DATASETS) {
+            this.datasets = inputs as ChartDataSetConfig[][];
             this.update();
 
-        } else if (portName === PORT_X_AXES) {
+        } else if (portName === PORT_IN_X_AXES) {
             this.xAxes = inputs as ChartAxisConfig[];
             this.update();
 
-        } else if (portName === PORT_Y_AXES) {
+        } else if (portName === PORT_IN_Y_AXES) {
             this.yAxes = inputs as ChartAxisConfig[];
             this.update();
         }
@@ -73,15 +80,15 @@ class ChartViewProcessor extends BaseNodeProcessor {
                 const ds = datasets[datasetIndex];
                 if (!ds) return;
 
-                const datum = ds.data[index];
+                const datum = ds.points[index];
                 if (!datum) return;
 
-                this.emitResult(PORT_ON_CLICK, [datum.row]);
+                this.emitResult(PORT_OUT_ONCLICK, [datum.row]);
             }
         })
 
         // chart config
-        const chart: ChartViewConfig = {
+        const chart: ChartConfig = {
             type: ViewType.CHART,
             chartType: this.config.chartType,
             datasets: datasets,
@@ -97,37 +104,37 @@ class ChartViewProcessor extends BaseNodeProcessor {
 }
 
 export const CHART_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
-    title: 'Chart View',
+    title: 'Chart',
     menuGroup: 'Chart',
     description: 'Displays the data as a chart view.',
     ports: {
         in: {
-            [PORT_DATASETS]: {
+            [PORT_IN_DATASETS]: {
                 type: 'dataset[]',
                 multi: true
             },
-            [PORT_X_AXES]: {
+            [PORT_IN_X_AXES]: {
                 type: 'axis',
                 multi: true
             },
-            [PORT_Y_AXES]: {
+            [PORT_IN_Y_AXES]: {
                 type: 'axis',
                 multi: true
             }
         },
         out: {
-            [PORT_ON_CLICK]: {
+            [PORT_OUT_ONCLICK]: {
                 type: 'row[]'
             }
         }
     },
     fields: {
-        name: {
+        [FIELD_VIEW_NAME]: {
             label: 'Name',
             type: InputType.TEXT,
             initialValue: ''
         },
-        type: {
+        [FIELD_TYPE]: {
             label: 'Type',
             type: InputType.SELECT,
             initialValue: 'line',
@@ -144,23 +151,35 @@ export const CHART_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
                 ]
             }
         },
-        params: {
+        [FIELD_PARAMS]: {
             label: 'Params',
             fieldGroup: 'More',
-            type: InputType.DATA_ENTRIES,
-            initialValue: []
+            type: InputType.MULTI,
+            initialValue: [],
+            subFields: {
+                key: {
+                    label: 'Key',
+                    type: InputType.TEXT,
+                    initialValue: ''
+                },
+                value: {
+                    label: 'Value',
+                    type: InputType.TEXT,
+                    initialValue: ''
+                }
+            }
         }
     },
     createProcessor(node, params) {
-        const chartType = node.fields.type as string;
-        const paramInputs = node.fields.params as Entry<string>[];
+        const chartType = node.fields[FIELD_TYPE] as string;
+        const paramInputs = node.fields[FIELD_PARAMS] as Entry<string>[];
         
         const paramsMapper = expressions.compileEntriesMapper(paramInputs);
         const chartParams = paramsMapper(params.variables);
 
-        let viewName = node.fields.name as string;
+        let viewName = node.fields[FIELD_VIEW_NAME] as string;
         if (!viewName) {
-            viewName = getDefaultViewName(node);
+            viewName = 'chart-' + node.id;
         }
 
         return new ChartViewProcessor(params, viewName, { chartType, chartParams });

@@ -101,7 +101,6 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             initialValue: columnExpression(''),
             type: InputType.COLUMN_MAPPER,
             params: ({ context }) => ({
-                target: 'row',
                 columns: context.groupColumns ?? context.columns
             })
         },
@@ -133,7 +132,7 @@ export const AGGREGATE_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const columnExpr = node.fields.column as ColumnMapperInputValue;
         const alias = node.fields.alias as string;
         const aggType = node.fields.type as AggregatorType;
-        const mapColumn = expressions.compileColumnMapper(columnExpr, 'row');
+        const mapColumn = expressions.compileColumnMapper(columnExpr);
         return new AggregateNodeProcessor(params, { alias, aggType, mapColumn });
     }
 };

@@ -186,7 +186,6 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
-                target: 'row',
                 columns: context.columns
             })
         },
@@ -195,7 +194,6 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.COLUMN_MAPPER,
             initialValue: columnExpression(''),
             params: ({ context }) => ({
-                target: 'row',
                 columns: context.columns  
             })
         }
@@ -204,10 +202,10 @@ export const JOIN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const joinType = node.fields.joinType as JoinType;
         
         const joinKeyLeftExpr = node.fields.joinKeyLeft as ColumnMapperInputValue;
-        const mapKeyLeft = expressions.compileColumnMapper(joinKeyLeftExpr, 'row');
+        const mapKeyLeft = expressions.compileColumnMapper(joinKeyLeftExpr);
         
         const joinKeyRightExpr = node.fields.joinKeyRight as ColumnMapperInputValue;
-        const mapKeyRight = expressions.compileColumnMapper(joinKeyRightExpr, 'row');
+        const mapKeyRight = expressions.compileColumnMapper(joinKeyRightExpr);
 
         return new JoinNodeProcessor(params, { joinType, mapKeyLeft, mapKeyRight });
     }

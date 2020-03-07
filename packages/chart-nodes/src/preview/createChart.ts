@@ -1,35 +1,104 @@
 import Chart, { ChartOptions } from 'chart.js';
-import { ChartDataPoint, ChartAxisConfig, AxisType, ChartDataSet, ChartViewConfig, ChartEventConfig, ChartEventType } from '../types/valueTypes';
-import { scale } from './colorScheme';
+import { ChartAxisConfig, ChartAxisType, ChartEventConfig, ChartEventType, ChartConfig } from '../types/chartValueTypes';
 import { asString, asNumber } from '../utils/conversions';
 import { writeKeyPaths } from '../utils/keyPathUtils';
+import { Indexer } from '../utils/chart/Indexer';
 
-type DataMapper = (data: ChartDataPoint[]) =>  Array<number | null | undefined> | Chart.ChartPoint[];
+function isCategorical(chartConfig: ChartConfig) {
+    const xAxes = chartConfig.xAxes;
+    const n = xAxes.length;
 
-function createCategoryDataMapper(labels: string[]): DataMapper {
-    return (data: ChartDataPoint[]) => {
-        const lookup = new Map<string, number>();
-
-        for (const datum of data) {
-            const x = asString(datum.x);
-            const y = asNumber(datum.y);
-            lookup.set(x, y);
-        }
-
-        return labels.map(lbl => lookup.get(lbl) ?? null);
-    };
-}
-
-function createPointDataMapper(): DataMapper {
-    return (data: ChartDataPoint[]) => data;
-}
-
-function isCategoryData(xAxes: ChartAxisConfig[]) {
-    if (xAxes.length) {
-        return xAxes.some(axis => axis.type === AxisType.CATEGORY);
-    } else {
+    // default axis type is "category"
+    if (!n) {
         return true;
     }
+
+    for (let i = 0; i < n; i++) {
+        if (xAxes[i].type === ChartAxisType.CATEGORY) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function mapChartData(chartConfig: ChartConfig): Chart.ChartData {
+    const categorical = isCategorical(chartConfig);
+    const indexer = categorical ? new Indexer() : undefined;
+
+    const datasets = chartConfig.datasets.map((dataset, i): Chart.ChartDataSets => {
+        const ds: Chart.ChartDataSets = {};
+        ds.borderColor = dataset.borderColor;
+        ds.backgroundColor = dataset.bgColor;
+        ds.label = dataset.label;
+
+        const points = dataset.points;
+        const n = points.length;
+        if (indexer) {
+            ds.data = new Array(indexer.getKeys().length);
+
+            for (let i = 0; i < n; i++) {
+                const point = points[i];
+                const key = asString(point.x);
+                const idx = indexer.next(key);
+                ds.data[idx] = asNumber(point.y);
+
+                // override background color with point
+                if (point.bgColor != null) {
+                    if (!Array.isArray(ds.backgroundColor)) {
+                        ds.backgroundColor = new Array(indexer.getKeys().length);
+                    }
+                    ds.backgroundColor[idx] = asString(point.bgColor);
+                }
+
+                // override border color with point
+                if (point.borderColor != null) {
+                    if (!Array.isArray(ds.borderColor)) {
+                        ds.borderColor = new Array(indexer.getKeys().length);
+                    }
+                    ds.borderColor[idx] = asString(point.borderColor);
+                }
+            }
+
+        } else {
+            ds.data = new Array<Chart.ChartPoint>(n);
+
+            for (let i = 0; i < n; i++) {
+                const point = points[i];
+                ds.data[i] = {
+                    x: point.x as any,
+                    y: point.y as any,
+                    r: point.r as any
+                };
+
+                // override background color with point
+                if (point.bgColor != null) {
+                    if (!Array.isArray(ds.backgroundColor)) {
+                        ds.backgroundColor = new Array(n);
+                    }
+                    ds.backgroundColor[i] = asString(point.bgColor);
+                }
+
+                // override border color with point
+                if (point.borderColor != null) {
+                    if (!Array.isArray(ds.borderColor)) {
+                        ds.borderColor = new Array(n);
+                    }
+                    ds.borderColor[i] = asString(point.borderColor);
+                }
+            }
+        }
+
+        // write params to the dataset
+        writeKeyPaths(dataset.params, ds);
+
+        return ds;
+    });
+
+    return {
+        datasets,
+        labels: indexer?.getKeys()
+    };
 }
 
 function resolveAxisId(yAxis: boolean, i: number) {
@@ -38,74 +107,6 @@ function resolveAxisId(yAxis: boolean, i: number) {
     } else {
         return 'x-axis-' + i;
     }
-}
-
-function mapLabels(dataSets: ChartDataSet[]): string[] {
-    const labels = new Set<string>();
-
-    for (const ds of dataSets) {
-        for (const datum of ds.data) {
-            const x = asString(datum.x);
-            labels.add(x);
-        }
-    }
-
-    return Array.from(labels);
-}
-
-function mapDataSets(dataSets: ChartDataSet[], dataMapper: DataMapper) {
-    return dataSets.map((ds, i, datasets): Chart.ChartDataSets => {
-        let backgroundColor: string | string[];
-        const bgColorIndexable = ds.type !== 'line';
-        
-        if (ds.backgroundColor) {
-            backgroundColor = ds.backgroundColor;
-        } else {
-            // get the background color for the dataset from the color scheme
-            backgroundColor = scale(i / datasets.length).hex();
-        }
-
-        // set individual background color for points that define it
-        if (bgColorIndexable) {
-            const points = ds.data;
-            for (let j = 0, n = points.length; j < n; j++) {
-                const point = points[j];
-                if (point.bgColor || datasets.length === 1) {
-                    if (typeof backgroundColor === 'string') {
-                        const bg = backgroundColor;
-                        backgroundColor = new Array(n);
-                        backgroundColor.fill(bg);
-                    }
-
-                    if (point.bgColor) {
-                        backgroundColor[j] = point.bgColor;
-                    } else {
-                        // get the background color for the point from the color scheme
-                        backgroundColor[j] = scale(j / n).hex();
-                    }
-                }
-            }
-        }
-
-        // map data to chart values
-        const data = dataMapper(ds.data);
-
-        const dataSet: Chart.ChartDataSets = {
-            type: ds.type,
-            data,
-            label: ds.label
-        };
-
-        if (ds.borderColor) {
-            dataSet.borderColor = ds.borderColor;
-        } else {
-            dataSet.borderColor = scale(i / datasets.length).hex();
-        }
-
-        dataSet.backgroundColor = backgroundColor;
-        writeKeyPaths(ds.params, dataSet as any);
-        return dataSet;
-    });
 }
 
 function mapAxes(yAxis: boolean, axes: ChartAxisConfig[]) {
@@ -122,8 +123,14 @@ function mapAxes(yAxis: boolean, axes: ChartAxisConfig[]) {
                 labelString: axisConfig.label
             };
         }
+
+        if (axisConfig.beginAtZero) {
+            axis.ticks = {
+                beginAtZero: true
+            };
+        }
         
-        writeKeyPaths(axisConfig.params, axis as any);
+        writeKeyPaths(axisConfig.params, axis);
         return axis;
     });
 }
@@ -141,28 +148,15 @@ function mapOnClickCallback(events: ChartEventConfig[]): ((event?: MouseEvent, a
     }
 }
 
-export function createChartConfiguration(chartConfig: ChartViewConfig): Chart.ChartConfiguration {
-    let labels: string[] | undefined;
-    let datasets: Chart.ChartDataSets[];
-    
-    if (isCategoryData(chartConfig.xAxes)) {
-        labels = mapLabels(chartConfig.datasets);
-        datasets = mapDataSets(chartConfig.datasets, createCategoryDataMapper(labels));
-
-    } else {
-        datasets = mapDataSets(chartConfig.datasets, createPointDataMapper());
-    }
-
+export function createChartConfiguration(chartConfig: ChartConfig): Chart.ChartConfiguration {
+    const data = mapChartData(chartConfig);
     const xAxes = mapAxes(false, chartConfig.xAxes);
     const yAxes = mapAxes(true, chartConfig.yAxes);
     const onClick = mapOnClickCallback(chartConfig.events);
 
     const chartConfiguration: Chart.ChartConfiguration = {
         type: chartConfig.chartType,
-        data: {
-            datasets,
-            labels
-        },
+        data,
         options: {
             scales: {
                 xAxes,
@@ -173,6 +167,6 @@ export function createChartConfiguration(chartConfig: ChartViewConfig): Chart.Ch
         } as ChartOptions
     };
 
-    writeKeyPaths(chartConfig.params, chartConfiguration as any);
+    writeKeyPaths(chartConfig.params, chartConfiguration);
     return chartConfiguration;
 }

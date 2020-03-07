@@ -1,6 +1,7 @@
 import { GraphNodeConfig, InputType, columnExpression, expressions, ColumnMapperInputValue, BaseNodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { Row, GridColumnConfig, GridValueConfig } from "../../types/valueTypes";
+import { Row } from "../../types/valueTypes";
+import { GridColumnConfig, GridValueConfig } from "../../types/gridValueTypes";
 import { asString } from "../../utils/conversions";
 import { rowToEvalContext } from "../../utils/expressionUtils";
 
@@ -115,7 +116,6 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             fieldGroup: 'Styling',
             params: ({ context }) => ({
                 optional: true,
-                target: 'row',
                 columns: context?.columns
             })
         },
@@ -126,7 +126,6 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             fieldGroup: 'Styling',
             params: ({ context }) => ({
                 optional: true,
-                target: 'row',
                 columns: context?.columns
             })
         },
@@ -137,7 +136,6 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             fieldGroup: 'Styling',
             params: ({ context }) => ({
                 optional: true,
-                target: 'row',
                 columns: context.columns
             })
         },
@@ -155,9 +153,9 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const width = fields[FIELD_WIDTH] as number;
         const order = fields[FIELD_ORDER] as number;
         const restTemplate = fields[FIELD_REST_TEMPLATE] as boolean;
-        const mapValue = expressions.compileColumnMapper(fields[FIELD_MAP_VALUE] as ColumnMapperInputValue, 'row');
-        const mapFontColor = expressions.compileColumnMapper(fields[FIELD_MAP_FONT_COLOR] as ColumnMapperInputValue, 'row');
-        const mapBgColor = expressions.compileColumnMapper(fields[FIELD_MAP_BG_COLOR] as ColumnMapperInputValue, 'row');
+        const mapValue = expressions.compileColumnMapper(fields[FIELD_MAP_VALUE] as ColumnMapperInputValue);
+        const mapFontColor = expressions.compileColumnMapper(fields[FIELD_MAP_FONT_COLOR] as ColumnMapperInputValue);
+        const mapBgColor = expressions.compileColumnMapper(fields[FIELD_MAP_BG_COLOR] as ColumnMapperInputValue);
         return new GridColumnNodeProcessor({ name, key, width, order, restTemplate, mapValue, mapFontColor, mapBgColor }, params.variables);
     }
 }

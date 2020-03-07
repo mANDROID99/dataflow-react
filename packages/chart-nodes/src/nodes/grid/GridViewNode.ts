@@ -1,12 +1,9 @@
-import { Column, GraphNodeConfig, InputType, GraphNode, BaseNodeProcessor } from "@react-ngraph/core";
+import { Column, GraphNodeConfig, InputType, BaseNodeProcessor } from "@react-ngraph/core";
 
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { ViewType, GridColumnConfig, GridValueConfig, Row } from "../../types/valueTypes";
+import { ViewType, Row } from "../../types/valueTypes";
+import { GridColumnConfig, GridValueConfig, GridConfig } from "../../types/gridValueTypes";
 import { asString } from "../../utils/conversions";
-
-function getDefaultViewName(node: GraphNode) {
-    return 'grid-' + node.id;
-}
 
 const PORT_COLUMNS = 'columns';
 const PORT_DATA = 'data';
@@ -80,11 +77,13 @@ class GridViewProcessor extends BaseNodeProcessor {
             }));
         });
 
-        this.params.actions.renderView?.(this.viewName, {
+        const config: GridConfig = {
             type: ViewType.GRID,
             columns: gridColumns,
-            data: gridData,
-        });
+            data: gridData
+        };
+
+        this.params.actions.renderView?.(this.viewName, config);
     }
 }
 
@@ -119,7 +118,7 @@ export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         let viewName = node.fields.name as string;
 
         if (!viewName) {
-            viewName = getDefaultViewName(node);
+            viewName = 'grid-' + node.id;
         }
 
         return new GridViewProcessor(viewName, params);

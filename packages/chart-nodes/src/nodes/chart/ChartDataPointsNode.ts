@@ -1,6 +1,7 @@
 import { GraphNodeConfig, InputType, BaseNodeProcessor, expressions, columnExpression, ColumnMapperInputValue } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { ChartDataPoint, Row, ChartDataSetPoints } from "../../types/valueTypes";
+import { Row } from "../../types/valueTypes";
+import { ChartPointConfig, ChartPointsConfig } from "../../types/chartValueTypes";
 import { asString } from '../../utils/conversions';
 import { rowToEvalContext } from "../../utils/expressionUtils";
 import { ColorScheme } from "../styling/ColorSchemeNode";
@@ -25,7 +26,7 @@ type Config = {
     mapBorderColor: expressions.Mapper;
 }
 
-class DataPointsNodeProcessor extends BaseNodeProcessor {
+class ChartDataPointsNodeProcessor extends BaseNodeProcessor {
     private rows?: Row[];
     private colorScheme?: ColorScheme;
 
@@ -55,8 +56,8 @@ class DataPointsNodeProcessor extends BaseNodeProcessor {
 
         const colorScheme = this.colorScheme;
         const config = this.config;
-        const output: ChartDataSetPoints[] = [];
-        const lookup = new Map<string | null, ChartDataSetPoints>();
+        const output: ChartPointsConfig[] = [];
+        const lookup = new Map<string | null, ChartPointsConfig>();
 
         for (let i = 0, n = rows.length; i < n; i++) {
             const row = rows[i];
@@ -66,25 +67,26 @@ class DataPointsNodeProcessor extends BaseNodeProcessor {
             const x = config.mapX(context);
             const y = config.mapY(context);
             const r = config.mapR(context);
-            const seriesKey = asString(config.mapSeries(context), null);
-            let bgColor = asString(config.mapBgColor(context), undefined);
-            let borderColor = asString(config.mapBorderColor(context), undefined);
+            const seriesKey = asString(config.mapSeries(context)) || null;
+            let bgColor = asString(config.mapBgColor(context)) || undefined;
+            let borderColor = asString(config.mapBorderColor(context)) || undefined;
 
             // apply the color-scheme
             if (bgColor == null && colorScheme) {
                 bgColor = colorScheme.getColorAt(i, n);
             }
 
-            const point: ChartDataPoint = { x, y, r, bgColor, borderColor };
+            const point: ChartPointConfig = {
+                x, y, r, bgColor, borderColor, row
+            };
 
             // group points by series-key
-            let points: ChartDataSetPoints | undefined = lookup.get(seriesKey);
+            let points: ChartPointsConfig | undefined = lookup.get(seriesKey);
             if (points) {
                 points.points.push(point);
 
             } else {
                 points = {
-                    seriesKey,
                     points: [point],
                     row
                 };
@@ -99,9 +101,9 @@ class DataPointsNodeProcessor extends BaseNodeProcessor {
 }
 
 export const CHART_DATA_POINTS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
-    title: 'Chart Data-Points' ,
+    title: 'Chart Points' ,
     menuGroup: 'Chart',
-    description: 'Constructs datasets (series) for the chart.',
+    description: 'Maps the points of the chart',
     width: 200,
     ports: {
         in: {
@@ -182,7 +184,7 @@ export const CHART_DATA_POINTS_NODE: GraphNodeConfig<ChartContext, ChartParams> 
         const mapBgColor = expressions.compileColumnMapper(node.fields[FIELD_BG_COLOR] as ColumnMapperInputValue);
         const mapBorderColor = expressions.compileColumnMapper(node.fields[FIELD_BORDER_COLOR] as ColumnMapperInputValue);
 
-        return new DataPointsNodeProcessor(params, {
+        return new ChartDataPointsNodeProcessor(params, {
             mapX,
             mapY,
             mapR,

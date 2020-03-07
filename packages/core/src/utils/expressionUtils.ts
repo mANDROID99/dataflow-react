@@ -1,6 +1,6 @@
 import jexl from 'jexl';
 import Expression from 'jexl/Expression';
-import { ColumnMapperInputValue, Entry, ColumnMapperType } from '../types/graphInputTypes';
+import { Entry, ColumnMapperInputValue, ColumnMapperType } from '../types/graphInputTypes';
 
 const CHAR_SPACE = 32;
 const CHAR_EQ = 61;
@@ -98,6 +98,7 @@ export function compileExpression(input: string | undefined): (context: { [key: 
     }
 }
 
+
 /**
  * converts a column mapper input to an expression string
  * @param input 
@@ -109,13 +110,8 @@ export function columnMapperToExpression(input: ColumnMapperInputValue | undefin
 
     } else if (input.type === ColumnMapperType.COLUMN) {
         if (input.value) {
-            let targetValue = input.value;
-            
-            if (target) {
-                targetValue = target + '["' + targetValue + '"]';
-            }
-
-            return '= ' + targetValue;
+            const tgt = target || 'value';
+            return '= ' + tgt + '["' + input.value + '"]';
             
         } else {
             return '';
@@ -151,4 +147,3 @@ export function compileEntriesMapper(inputs: Entry<string>[]): EntriesMapper {
         });
     };
 }
-

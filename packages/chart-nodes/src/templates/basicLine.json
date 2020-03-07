@@ -1,260 +1,310 @@
 {
-    "nodeIds": [
-      "8272f0ae-65c1-4c45-9b67-ba625736432e",
-      "c511adac-a1e5-4e94-8ca3-c4730e085b5f",
-      "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
-      "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
-      "c36cbe55-37d0-41ae-b4e3-e7bb53047df5",
-      "2035da1d-7e70-47ae-9670-a4a70a950533"
-    ],
-    "nodes": {
-      "8272f0ae-65c1-4c45-9b67-ba625736432e": {
-        "id": "8272f0ae-65c1-4c45-9b67-ba625736432e",
-        "type": "data-grid",
-        "name": "Data-Grid",
-        "x": 146,
-        "y": 154,
-        "width": 170,
-        "height": 0,
-        "fields": {
-          "data": {
-            "columns": [
-              "X",
-              "Y"
+  "nodeIds": [
+    "8272f0ae-65c1-4c45-9b67-ba625736432e",
+    "c511adac-a1e5-4e94-8ca3-c4730e085b5f",
+    "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
+    "c36cbe55-37d0-41ae-b4e3-e7bb53047df5",
+    "2035da1d-7e70-47ae-9670-a4a70a950533",
+    "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
+    "5bf1b255-95bb-410a-ab99-d0994c2a4bb0"
+  ],
+  "nodes": {
+    "8272f0ae-65c1-4c45-9b67-ba625736432e": {
+      "id": "8272f0ae-65c1-4c45-9b67-ba625736432e",
+      "type": "data-grid",
+      "name": "Data-Grid",
+      "x": 146,
+      "y": 154,
+      "width": 170,
+      "height": 0,
+      "fields": {
+        "data": {
+          "columns": [
+            "X",
+            "Y"
+          ],
+          "rows": [
+            [
+              "1",
+              "1"
             ],
-            "rows": [
-              [
-                "1",
-                "1"
-              ],
-              [
-                "2",
-                "3"
-              ],
-              [
-                "3",
-                "4"
-              ],
-              [
-                "4",
-                "2"
-              ],
-              [
-                "5",
-                "5"
-              ],
-              [
-                "6",
-                "6"
-              ]
+            [
+              "2",
+              "3"
+            ],
+            [
+              "3",
+              "4"
+            ],
+            [
+              "4",
+              "2"
+            ],
+            [
+              "5",
+              "5"
+            ],
+            [
+              "6",
+              "6"
             ]
-          }
-        },
-        "ports": {
-          "in": {},
-          "out": {
-            "rows": [
-              {
-                "node": "c511adac-a1e5-4e94-8ca3-c4730e085b5f",
-                "port": "rows"
-              }
-            ]
-          }
+          ]
         }
       },
-      "c511adac-a1e5-4e94-8ca3-c4730e085b5f": {
-        "id": "c511adac-a1e5-4e94-8ca3-c4730e085b5f",
-        "type": "datapoints",
-        "name": "Data-Points",
-        "x": 422,
-        "y": 181,
-        "width": 170,
-        "height": 0,
-        "fields": {
-          "x": {
-            "type": "column",
-            "value": "X"
-          },
-          "y": {
-            "type": "column",
-            "value": "Y"
-          },
-          "r": {
-            "type": "column",
-            "value": ""
-          },
-          "color": {
-            "type": "column",
-            "value": ""
-          }
-        },
-        "ports": {
-          "in": {
-            "rows": [
-              {
-                "node": "8272f0ae-65c1-4c45-9b67-ba625736432e",
-                "port": "rows"
-              }
-            ]
-          },
-          "out": {
-            "points": [
-              {
-                "node": "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
-                "port": "points"
-              }
-            ]
-          }
-        }
-      },
-      "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b": {
-        "id": "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
-        "type": "datasets",
-        "name": "Data-Sets",
-        "x": 703,
-        "y": 162,
-        "width": 200,
-        "height": 0,
-        "fields": {
-          "type": "line",
-          "series": {
-            "type": "column",
-            "value": ""
-          },
-          "label": {
-            "type": "column",
-            "value": ""
-          },
-          "borderColor": "blue",
-          "backgroundColor": {
-            "type": "column",
-            "value": ""
-          },
-          "params": [
+      "ports": {
+        "in": {},
+        "out": {
+          "rows": [
             {
-              "key": "fill",
-              "value": "none"
+              "node": "c511adac-a1e5-4e94-8ca3-c4730e085b5f",
+              "port": "rows"
+            }
+          ]
+        }
+      }
+    },
+    "c511adac-a1e5-4e94-8ca3-c4730e085b5f": {
+      "id": "c511adac-a1e5-4e94-8ca3-c4730e085b5f",
+      "type": "chart-datapoints",
+      "name": "Data-Points",
+      "x": 422,
+      "y": 181,
+      "width": 170,
+      "height": 0,
+      "fields": {
+        "x": {
+          "type": "column",
+          "value": "X"
+        },
+        "y": {
+          "type": "column",
+          "value": "Y"
+        },
+        "r": {
+          "type": "column",
+          "value": ""
+        },
+        "color": {
+          "type": "column",
+          "value": ""
+        }
+      },
+      "ports": {
+        "in": {
+          "rows": [
+            {
+              "node": "8272f0ae-65c1-4c45-9b67-ba625736432e",
+              "port": "rows"
             }
           ]
         },
-        "ports": {
-          "in": {
-            "points": [
-              {
-                "node": "c511adac-a1e5-4e94-8ca3-c4730e085b5f",
-                "port": "points"
-              }
-            ]
-          },
-          "out": {
-            "datasets": [
-              {
-                "node": "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
-                "port": "datasets"
-              }
-            ]
-          }
-        }
-      },
-      "61e0f1d5-c3d3-447f-91d5-63d23d2bce16": {
-        "id": "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
-        "type": "chart-view",
-        "name": "Chart View",
-        "x": 1104,
-        "y": 248,
-        "width": 170,
-        "height": 0,
-        "fields": {
-          "name": "",
-          "type": "line",
-          "params": []
-        },
-        "ports": {
-          "in": {
-            "xAxes": [
-              {
-                "node": "c36cbe55-37d0-41ae-b4e3-e7bb53047df5",
-                "port": "axis"
-              }
-            ],
-            "yAxes": [
-              {
-                "node": "2035da1d-7e70-47ae-9670-a4a70a950533",
-                "port": "axis"
-              }
-            ],
-            "datasets": [
-              {
-                "node": "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
-                "port": "datasets"
-              }
-            ]
-          },
-          "out": {}
-        }
-      },
-      "c36cbe55-37d0-41ae-b4e3-e7bb53047df5": {
-        "id": "c36cbe55-37d0-41ae-b4e3-e7bb53047df5",
-        "type": "axis",
-        "name": "X-Axis",
-        "x": 828,
-        "y": 616,
-        "width": 170,
-        "height": 0,
-        "fields": {
-          "type": "linear",
-          "label": "",
-          "params": [
+        "out": {
+          "points": [
             {
-              "key": "ticks.beginAtZero",
-              "value": "true"
+              "node": "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
+              "port": "points"
+            }
+          ]
+        }
+      }
+    },
+    "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b": {
+      "id": "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
+      "type": "chart-datasets",
+      "name": "Data-Sets",
+      "x": 703,
+      "y": 162,
+      "width": 200,
+      "height": 0,
+      "fields": {
+        "type": "line",
+        "series": {
+          "type": "column",
+          "value": ""
+        },
+        "label": {
+          "type": "column",
+          "value": ""
+        },
+        "borderColor": {
+          "type": "column",
+          "value": ""
+        },
+        "backgroundColor": {
+          "type": "column",
+          "value": ""
+        },
+        "params": [
+          {
+            "key": "fill",
+            "value": "none"
+          }
+        ],
+        "bgColor": {
+          "type": "column",
+          "value": ""
+        }
+      },
+      "ports": {
+        "in": {
+          "points": [
+            {
+              "node": "c511adac-a1e5-4e94-8ca3-c4730e085b5f",
+              "port": "points"
+            }
+          ],
+          "color-scheme": [
+            {
+              "node": "5bf1b255-95bb-410a-ab99-d0994c2a4bb0",
+              "port": "color-scheme"
             }
           ]
         },
-        "ports": {
-          "in": {},
-          "out": {
-            "axis": [
-              {
-                "node": "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
-                "port": "xAxes"
-              }
-            ]
-          }
-        },
-        "collapsed": true
-      },
-      "2035da1d-7e70-47ae-9670-a4a70a950533": {
-        "id": "2035da1d-7e70-47ae-9670-a4a70a950533",
-        "type": "axis",
-        "name": "Y-Axis",
-        "x": 876,
-        "y": 676,
-        "width": 170,
-        "height": 0,
-        "fields": {
-          "type": "linear",
-          "label": "",
-          "params": [
+        "out": {
+          "datasets": [
             {
-              "key": "ticks.beginAtZero",
-              "value": "true"
+              "node": "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
+              "port": "datasets"
+            }
+          ]
+        }
+      }
+    },
+    "61e0f1d5-c3d3-447f-91d5-63d23d2bce16": {
+      "id": "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
+      "type": "chart",
+      "name": "Chart",
+      "x": 1104,
+      "y": 248,
+      "width": 170,
+      "height": 0,
+      "fields": {
+        "name": "",
+        "type": "line",
+        "params": []
+      },
+      "ports": {
+        "in": {
+          "xAxes": [
+            {
+              "node": "c36cbe55-37d0-41ae-b4e3-e7bb53047df5",
+              "port": "axis"
+            }
+          ],
+          "yAxes": [
+            {
+              "node": "2035da1d-7e70-47ae-9670-a4a70a950533",
+              "port": "axis"
+            }
+          ],
+          "datasets": [
+            {
+              "node": "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
+              "port": "datasets"
             }
           ]
         },
-        "ports": {
-          "in": {},
-          "out": {
-            "axis": [
-              {
-                "node": "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
-                "port": "yAxes"
-              }
-            ]
+        "out": {}
+      }
+    },
+    "c36cbe55-37d0-41ae-b4e3-e7bb53047df5": {
+      "id": "c36cbe55-37d0-41ae-b4e3-e7bb53047df5",
+      "type": "chart-axis",
+      "name": "X-Axis",
+      "x": 828,
+      "y": 616,
+      "width": 170,
+      "height": 0,
+      "fields": {
+        "type": "linear",
+        "label": "",
+        "params": [
+          {
+            "key": "ticks.beginAtZero",
+            "value": "true"
           }
-        },
-        "collapsed": true
+        ]
+      },
+      "ports": {
+        "in": {},
+        "out": {
+          "axis": [
+            {
+              "node": "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
+              "port": "xAxes"
+            }
+          ]
+        }
+      },
+      "collapsed": true
+    },
+    "2035da1d-7e70-47ae-9670-a4a70a950533": {
+      "id": "2035da1d-7e70-47ae-9670-a4a70a950533",
+      "type": "chart-axis",
+      "name": "Y-Axis",
+      "x": 876,
+      "y": 676,
+      "width": 170,
+      "height": 0,
+      "fields": {
+        "type": "linear",
+        "label": "",
+        "params": [
+          {
+            "key": "ticks.beginAtZero",
+            "value": "true"
+          }
+        ]
+      },
+      "ports": {
+        "in": {},
+        "out": {
+          "axis": [
+            {
+              "node": "61e0f1d5-c3d3-447f-91d5-63d23d2bce16",
+              "port": "yAxes"
+            }
+          ]
+        }
+      },
+      "collapsed": true
+    },
+    "5bf1b255-95bb-410a-ab99-d0994c2a4bb0": {
+      "id": "5bf1b255-95bb-410a-ab99-d0994c2a4bb0",
+      "type": "color-scheme",
+      "name": "Color Scheme",
+      "x": 463,
+      "y": 522,
+      "width": 170,
+      "height": 0,
+      "fields": {
+        "scale": "",
+        "breakpoints": [
+          {
+            "color": "#00496b",
+            "pos": 0
+          },
+          {
+            "color": "#BC5090",
+            "pos": 0.5
+          },
+          {
+            "color": "#ffae00",
+            "pos": 1
+          }
+        ]
+      },
+      "ports": {
+        "in": {},
+        "out": {
+          "color-scheme": [
+            {
+              "node": "317bdf0e-a099-4fd0-b396-e1ad1a5dc78b",
+              "port": "color-scheme"
+            }
+          ]
+        }
       }
     }
   }
-  
+}

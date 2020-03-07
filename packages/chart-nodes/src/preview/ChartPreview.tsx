@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import { Chart } from 'chart.js';
 
-import { ChartViewConfig } from "../types/valueTypes";
+import { ChartConfig } from "../types/chartValueTypes";
 import { createChartConfiguration } from './createChart';
 
 type Props = {
-    chartConfig: ChartViewConfig;
+    chartConfig: ChartConfig;
 }
 
 function ChartPreview({ chartConfig }: Props) {

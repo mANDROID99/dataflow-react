@@ -1,9 +1,9 @@
 import React from 'react';
 import { SimpleTable, Column } from '@react-ngraph/core';
-import { GridViewConfig } from '../types/valueTypes';
+import { GridConfig } from '../types/gridValueTypes';
 
 type Props = {
-    gridConfig: GridViewConfig
+    gridConfig: GridConfig
 }
 
 const COLUMN_TEMPLATE: Column = {
