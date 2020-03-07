@@ -75,7 +75,10 @@
         "x": "X",
         "y": "Y",
         "r": "",
-        "color": ""
+        "color": "",
+        "series": "",
+        "bgColor": "",
+        "borderColor": ""
       },
       "ports": {
         "in": {
