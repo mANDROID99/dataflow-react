@@ -23,7 +23,6 @@ export default function GraphNodeComponent<C, P>({ node, nodeConfig, nodeId, con
             />
             {!node.collapsed && (
                 <GraphNodeFieldGroups
-                    nodeId={nodeId}
                     nodeConfig={nodeConfig}
                     fields={node.fields}
                     actions={actions}

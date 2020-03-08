@@ -4,7 +4,6 @@ import { GraphNodeFieldConfig } from "./graphConfigTypes";
 export type InputProps<T> = {
     value: T | undefined;
     params: { [key: string]: unknown };
-    fields: { [key: string]: unknown };
     fieldConfig: GraphNodeFieldConfig<any, any>;
     onChanged: (value: unknown) => void;
     context: any;

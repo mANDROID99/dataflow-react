@@ -1,12 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { GraphNodeConfig, GraphNodeFieldConfig } from "../../../types/graphConfigTypes";
 import { GraphNodeActions } from "../../../types/graphNodeComponentTypes";
-import GraphNodeField from "./GraphNodeField";
 import GraphNodeFieldGroup from "./GraphNodeFieldGroup";
+import GraphNodeField from "./GraphNodeField";
 
 type Props<C, P> = {
-    nodeId: string;
     fields: {
         [name: string]: unknown;
     };
@@ -35,36 +34,39 @@ function resolveFieldGroups<C, P>(fields: { [key: string]: GraphNodeFieldConfig<
 }
 
 function GraphNodeFieldGroups<C, P>(props: Props<C, P>) {
-    const { nodeId, fields, context, nodeConfig, actions } = props;
+    const { fields, context, nodeConfig, actions } = props;
     const fieldGroups = useMemo(() => resolveFieldGroups(nodeConfig.fields), [nodeConfig.fields]);
 
+    const handleFieldChanged = useCallback((fieldName: string, value: unknown) => {
+        actions.setFieldValue(fieldName, value);
+    }, [actions]);
+
     function renderFields(group: { [key: string]: GraphNodeFieldConfig<C, P> }) {
-        return Object.entries(group).map(([fieldName, fieldConfig]) => {
-            return (
+        return Object.entries(group).map(([fieldName, fieldConfig]) => (
                 <GraphNodeField<C, P>
                     key={fieldName}
-                    nodeId={nodeId}
                     context={context}
                     fieldName={fieldName}
                     fieldConfig={fieldConfig}
                     fieldValue={fields[fieldName]}
-                    fields={fields}
+                    fieldValues={fields}
                     actions={actions}
+                    onChanged={handleFieldChanged}
                 />
-            );
-        });
+            ));
     }
 
     return (
         <div className="ngraph-node-fields">
-            {[...fieldGroups.entries()].map(([groupName, group], index) => {
+            {Array.from(fieldGroups.entries()).map(([groupName, group], index) => {
                 if (groupName !== null) {
                     return (
                         <GraphNodeFieldGroup
-                            key={index}
                             {...props}
+                            key={index}
                             group={group}
                             groupName={groupName}
+                            onChanged={handleFieldChanged}
                         />
                     );
 

@@ -2,8 +2,8 @@ import React, { useCallback, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { GraphNodeSubFieldConfig } from '../../types/graphConfigTypes';
-import MultiFieldInputValue from './MultiFieldInputValue';
 import { GraphNodeActions } from '../../types/graphNodeComponentTypes';
+import GraphNodeFieldInput from '../../editor/components/graphnode/GraphNodeFieldInput';
 
 type Props<C> = {
     index: number;
@@ -54,16 +54,21 @@ function MultiFieldRow<C>({ index, isFirst, isLast, values, fieldConfigs, onRemo
                 </div>}
             </div>
             {Object.keys(fieldConfigs).map((fieldKey) => (
-                <MultiFieldInputValue
-                    key={fieldKey}
-                    name={fieldKey}
-                    value={values[fieldKey]}
-                    fieldConfig={fieldConfigs[fieldKey]}
-                    onChanged={handleValueChanged}
-                    context={context}
-                    actions={actions}
-                />
-            ))}
+                    <div
+                        key={fieldKey}
+                        className="ngraph-multifield-input"
+                    >
+                        <GraphNodeFieldInput
+                            fieldName={fieldKey}
+                            fieldValue={values[fieldKey]}
+                            fieldValues={values}
+                            fieldConfig={fieldConfigs[fieldKey]}
+                            onChanged={handleValueChanged}
+                            context={context}
+                            actions={actions}
+                        />
+                    </div>
+                ))}
             <div className="ngraph-multifield-row-btn" onClick={handleRemoved}>
                 <FontAwesomeIcon icon="times"/>
             </div>

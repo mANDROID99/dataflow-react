@@ -1,7 +1,8 @@
 import chroma from 'chroma-js';
-import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor } from "@react-ngraph/core";
+import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor, nodes } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { InputType } from '../../types/inputTypes';
+import { PARAM_SCALE } from '../../inputs/GradientPreviewFieldInput';
 
 const PORT_OUT_COLOR_SCHEME = 'color-scheme';
 
@@ -23,7 +24,7 @@ export type ColorScheme = {
     getColorAt(i: number, n: number): string;
 }
 
-export function createChroma(params: GradientParams) {
+function createScale(params: GradientParams) {
     if (params.scaleName) {
         return chroma.scale(params.scaleName);
 
@@ -50,7 +51,7 @@ class ColorSchemeNodeProcessor extends BaseNodeProcessor {
     }
 
     private createColorScheme(): ColorScheme {
-        const scale = createChroma(this.config);
+        const scale = createScale(this.config);
         return {
             getColorAt: (i, n) => {
                 return scale(n > 1 ? i / (n - 1) : 0).hex();
@@ -113,6 +114,12 @@ export const COLOR_SCHEME_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.GRADIENT_PREVIEW,
             initialValue: null,
             renderWhenAnyFieldChanged: true,
+            params: ({ fields }) => ({
+                [PARAM_SCALE]: createScale({
+                    scaleName: fields[FIELD_SCALE_NAME] as string,
+                    scaleBreakPoints: fields[FIELD_SCALE_BREAKPOINTS] as BreakPoint[]
+                })
+            })
         }
     },
     createProcessor(node) {

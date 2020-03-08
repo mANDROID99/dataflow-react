@@ -1,17 +1,14 @@
 import React, { useRef, useEffect, useReducer } from 'react';
 import { InputProps } from "@react-ngraph/core";
-import { GradientParams, createChroma, FIELD_SCALE_NAME, FIELD_SCALE_BREAKPOINTS } from "../nodes/styling/ColorSchemeNode";
+
+export const PARAM_SCALE = 'scale';
 
 declare const ResizeObserver: any;
 
 const NUM_SAMPLES = 100;
 
-export default function GradientPreviewFieldInput({ fields }: InputProps<null>) {
-    const gradient: GradientParams = {
-        scaleName: fields[FIELD_SCALE_NAME] as any,
-        scaleBreakPoints: fields[FIELD_SCALE_BREAKPOINTS] as any
-    };
-
+export default function GradientPreviewFieldInput({ params }: InputProps<null>) {
+    const scale = params[PARAM_SCALE] as chroma.Scale<chroma.Color>;
     const canvas = useRef<HTMLCanvasElement>(null);
     const [,forceRender] = useReducer((c) => c + 1, null);
 
@@ -45,9 +42,7 @@ export default function GradientPreviewFieldInput({ fields }: InputProps<null>) 
         const canvasCtx = canvasEl.getContext('2d');
         if (!canvasCtx) return;
         
-        const scale = createChroma(gradient);
         const w = width / NUM_SAMPLES;
-
         for (let i = 0; i < NUM_SAMPLES; i++) {
             const sample = scale(i / NUM_SAMPLES).hex();
             canvasCtx.fillStyle = sample;
