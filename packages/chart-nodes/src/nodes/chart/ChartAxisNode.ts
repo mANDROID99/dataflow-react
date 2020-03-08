@@ -8,12 +8,14 @@ const PORT_OUT_AXIS = 'axis';
 const FIELD_TYPE = 'type';
 const FIELD_LABEL = 'label';
 const FIELD_BEGIN_AT_ZERO = 'beginAtZero';
+const FIELD_STACKED = 'stacked';
 const FIELD_PARAMS = 'params';
 
 type Config = {
     label: string;
     axisType: ChartAxisType;
     beginAtZero: boolean;
+    stacked: boolean;
     params: Entry<unknown>[];
 }
 
@@ -31,6 +33,7 @@ class ChartAxisNodeProcessor extends BaseNodeProcessor {
             type: this.config.axisType,
             label: this.config.label,
             beginAtZero: this.config.beginAtZero,
+            stacked: this.config.stacked,
             params: this.config.params
         };
         
@@ -74,6 +77,11 @@ export const CHART_AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             type: InputType.CHECK,
             initialValue: false
         },
+        [FIELD_STACKED]: {
+            label: 'Stacked',
+            type: InputType.CHECK,
+            initialValue: false
+        },
         [FIELD_PARAMS]: {
             label: 'Params',
             type: InputType.MULTI,
@@ -97,6 +105,7 @@ export const CHART_AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
         const label = node.fields[FIELD_LABEL] as string;
         const paramExprs = node.fields[FIELD_PARAMS] as Entry<string>[];
         const beginAtZero = node.fields[FIELD_BEGIN_AT_ZERO] as boolean;
+        const stacked = node.fields[FIELD_STACKED] as boolean;
 
         const paramsMapper = compileEntriesMapper(paramExprs);
         const paramsMapped = paramsMapper(params.variables);
@@ -105,6 +114,7 @@ export const CHART_AXIS_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             axisType,
             label,
             beginAtZero,
+            stacked,
             params: paramsMapped
         });
     }

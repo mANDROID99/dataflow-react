@@ -35,6 +35,7 @@ export type ChartAxisConfig = {
     type: ChartAxisType;
     label?: string;
     beginAtZero: boolean;
+    stacked: boolean;
     params: Entry<unknown>[];
 }
 

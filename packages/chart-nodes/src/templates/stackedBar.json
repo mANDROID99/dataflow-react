@@ -1,12 +1,12 @@
 {
   "nodeIds": [
+    "731adb7f-2797-49fd-89bc-f73613c49d2b",
+    "98fe8734-1862-46ab-aff2-92bf7b0c9436",
+    "beebada0-d7f4-4997-b5c2-4f917a131404",
     "ba6c3c8f-6667-461e-99d6-6fcbb0223ed0",
     "3458fb4b-f6e7-4364-aeb6-04ae2c7dff6f",
-    "5e7f9879-7fd3-42fe-a856-e7d583bcbf3b",
     "e837e2b0-d4c3-4e95-bef9-f563743bce2f",
-    "98fe8734-1862-46ab-aff2-92bf7b0c9436",
-    "731adb7f-2797-49fd-89bc-f73613c49d2b",
-    "beebada0-d7f4-4997-b5c2-4f917a131404"
+    "5e7f9879-7fd3-42fe-a856-e7d583bcbf3b"
   ],
   "nodes": {
     "98fe8734-1862-46ab-aff2-92bf7b0c9436": {
@@ -194,13 +194,9 @@
       "fields": {
         "type": "category",
         "label": "Country",
-        "params": [
-          {
-            "key": "stacked",
-            "value": "true"
-          }
-        ],
-        "beginAtZero": true
+        "params": [],
+        "beginAtZero": true,
+        "stacked": true
       },
       "ports": {
         "in": {},
@@ -219,20 +215,16 @@
       "id": "5e7f9879-7fd3-42fe-a856-e7d583bcbf3b",
       "type": "chart-axis",
       "name": "Y-Axis",
-      "x": 806,
-      "y": 571,
+      "x": 801,
+      "y": 565,
       "width": 170,
       "height": 0,
       "fields": {
         "type": "linear",
         "label": "% Smokers",
-        "params": [
-          {
-            "key": "stacked",
-            "value": "true"
-          }
-        ],
-        "beginAtZero": true
+        "params": [],
+        "beginAtZero": true,
+        "stacked": true
       },
       "ports": {
         "in": {},

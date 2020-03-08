@@ -129,6 +129,10 @@ function mapAxes(yAxis: boolean, axes: ChartAxisConfig[]) {
                 beginAtZero: true
             };
         }
+
+        if (axisConfig.stacked) {
+            axis.stacked = true;
+        }
         
         writeKeyPaths(axisConfig.params, axis);
         return axis;
