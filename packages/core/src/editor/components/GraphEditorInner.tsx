@@ -5,7 +5,6 @@ import { DndProvider } from 'react-dnd';
 
 import { Graph } from '../../types/graphTypes';
 import { GraphConfig } from '../../types/graphConfigTypes';
-import { GraphPreviewParams } from '../../types/graphEditorTypes';
 import { GraphTemplate } from '../../types/graphTemplateTypes';
 import { StoreState } from '../../types/storeTypes';
 
@@ -13,7 +12,7 @@ import ContextMenu from './contextmenu/ContextMenu';
 import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
 import GraphScroller from './GraphScroller';
 import { graphContext, GraphContext } from '../graphEditorContext';
-import GraphEditorPreview from './preview/GraphEditorPreview';
+import Preview from './preview/Preview';
 import GraphNodes from './GraphNodes';
 import SideBar from './sidebar/SideBar';
 import { selectGraph } from '../../store/selectors';
@@ -26,7 +25,7 @@ type Props<Ctx, P> = {
     params?: P;
     templates?: GraphTemplate[];
     onGraphChanged?: (graph: Graph) => void;
-    renderPreview?: (params: GraphPreviewParams) => React.ReactNode | null;
+    renderPreview?: (graph: Graph) => React.ReactNode | null;
 }
 
 function useDialogsManager() {
@@ -92,7 +91,7 @@ function GraphEditorInner<Ctx, P>({ modalRoot, graphConfig, params, templates, o
                         )}
                     </GraphScroller>
                     {renderPreview
-                        ? <GraphEditorPreview
+                        ? <Preview
                             renderPreview={renderPreview}/>
                         : undefined
                     }

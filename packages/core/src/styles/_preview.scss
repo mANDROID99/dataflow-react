@@ -18,9 +18,18 @@
     padding: 0.75rem;
 }
 
-.ngraph-preview-body {
+.ngraph-preview-header-autoupdate {
+    display: flex;
+    align-items: center;
+    font-size: 0.8em;
+    color: #aeaeae;
+}
+
+.ngraph-preview-content {
     overflow: hidden;
     position: relative;
+    width: 300px;
+    height: 300px;
 }
 
 .ngraph-preview-header-title {
@@ -30,4 +39,16 @@
 .ngraph-preview-header-icon {
     cursor: pointer;
     margin-left: 0.75rem;
+}
+
+.ngraph-preview-update-overlay {
+    align-items: center;
+    background-color: #0000003d;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
 }

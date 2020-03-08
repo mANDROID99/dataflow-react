@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import { Graph } from '../../types/graphTypes';
 import { GraphConfig } from '../../types/graphConfigTypes';
 import { GraphTemplate } from '../../types/graphTemplateTypes';
-import { GraphPreviewParams } from '../../types/graphEditorTypes';
 import { initStore } from '../../store/store';
 import GraphEditorInner from './GraphEditorInner';
 import { loadGraph } from '../../store/actions';
@@ -14,7 +13,7 @@ type Props<Ctx, Params> = {
     graphConfig: GraphConfig<Ctx, Params>;
     params?: Params;
     templates?: GraphTemplate[];
-    renderPreview?: (params: GraphPreviewParams) => React.ReactNode | null;
+    renderPreview?: (graph: Graph) => React.ReactNode | null;
     onGraphChanged?: (graph: Graph) => void;
 }
 

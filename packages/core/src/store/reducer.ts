@@ -24,7 +24,8 @@ import {
     SetNodeBoundsAction,
     MoveOverlappingBoundsAction,
     SetNodeSizeAction,
-    UnmountNodeAction
+    UnmountNodeAction,
+    SetAutoUpdateAction
 } from "./actions";
 import { comparePortTargets } from "../utils/graph/portUtils";
 import { createInitialState } from "./initialState";
@@ -349,6 +350,10 @@ const handlers: { [K in GraphActionType]?: (editorState: GraphEditorState, actio
         // remove node bounds
         clearAlignment(nodeBounds, action.nodeId);
         delete nodeBounds[action.nodeId];
+    }),
+
+    [GraphActionType.SET_AUTO_UPDATE]: produce((state: GraphEditorState, action: SetAutoUpdateAction) => {
+        state.autoUpdate = action.autoUpdate;
     })
 };
 

@@ -23,11 +23,10 @@ export default function Main() {
     return (
         <div className="App">
             <GraphEditor
-                // initialGraph={templates[0].data}
                 templates={templates}
                 graphConfig={graphConfig}
                 params={params}
-                renderPreview={({ graph }) => {
+                renderPreview={(graph) => {
                     return (
                         <Preview
                             graph={graph}

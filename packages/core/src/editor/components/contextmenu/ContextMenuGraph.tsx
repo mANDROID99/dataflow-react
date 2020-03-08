@@ -13,7 +13,7 @@ function ContextMenuGraph() {
         dispatch(hideContextMenu());
         dialogsManager.showDialog(DialogType.CONFIRM, {
             title: 'Confirm Clear',
-            text: 'Are you sure you want to clear the graph? Press confirm to reset all changes.'
+            text: 'Are you sure you want to clear the graph?'
         }).then(result => {
             if (result) dispatch(clearGraph());
         });

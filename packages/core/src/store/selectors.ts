@@ -57,6 +57,10 @@ export function selectNodeSelected(nodeId: string) {
     };
 }
 
+export function selectAutoUpdate(state: StoreState) {
+    return state.editor.autoUpdate;
+}
+
 export function selectPortTargets(port: PortId) {
     return (state: StoreState): TargetPort[] | undefined => {
         const node = state.editor.graph.nodes[port.nodeId];

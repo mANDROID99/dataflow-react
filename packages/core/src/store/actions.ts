@@ -25,7 +25,8 @@ export enum GraphActionType {
     SET_NODE_CONTEXT = 'SET_NODE_CONTEXT',
     MOVE_OVERLAPPING_BOUNDS = 'MOVE_OVERLAPPING_BOUNDS',
     MOUNT_NODE = 'MOUNT_NODE',
-    UNMOUNT_NODE = 'UNMOUNT_NODE'
+    UNMOUNT_NODE = 'UNMOUNT_NODE',
+    SET_AUTO_UPDATE = 'SET_AUTO_UPDATE'
 }
 
 export type LoadGraphAction = {
@@ -318,6 +319,18 @@ export function unmountNode(nodeId: string): UnmountNodeAction {
     };
 }
 
+export type SetAutoUpdateAction = {
+    type: GraphActionType.SET_AUTO_UPDATE;
+    autoUpdate: boolean;
+}
+
+export function setAutoUpdate(autoUpdate: boolean): SetAutoUpdateAction {
+    return {
+        type: GraphActionType.SET_AUTO_UPDATE,
+        autoUpdate
+    };
+}
+
 export type GraphAction = 
     | LoadGraphAction
     | AddNodeAction
@@ -338,5 +351,6 @@ export type GraphAction =
     | MoveOverlappingBoundsAction
     | MountNodeAction
     | UnmountNodeAction
+    | SetAutoUpdateAction
     ;
 

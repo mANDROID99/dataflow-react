@@ -44,6 +44,7 @@ export type GraphEditorState = {
     nodeBounds: {
         [nodeId: string]: NodeBounds;
     };
+    autoUpdate: boolean;
 }
 
 export type StoreState = {
