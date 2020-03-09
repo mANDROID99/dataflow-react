@@ -1,18 +1,15 @@
 import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor } from "@react-ngraph/core";
-
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { Row } from "../../types/valueTypes";
 import { InputType, ColumnMapperInputValue } from "../../types/inputTypes";
-import { GridColumnConfig, GridValueConfig } from "../../types/gridValueTypes";
-
+import { Mapper, rowToEvalContext } from "../../utils/expressionUtils";
+import { Row } from "../../types/valueTypes";
 import { asString } from "../../utils/conversions";
-import { rowToEvalContext, Mapper } from "../../utils/expressionUtils";
+import { GridValueConfig, GridColumnConfig } from "../../types/gridValueTypes";
 import { compileColumnMapper } from "../../utils/columnMapperUtils";
 
 const PORT_IN_DATA = 'data';
-const PORT_OUT_COLUMN = 'column';
+const PORT_OUT_COLUMNS = 'columns';
 
-const FIELD_NAME = 'name';
 const FIELD_WIDTH = 'width';
 const FIELD_ORDER = 'order';
 const FIELD_MAP_VALUE = 'value';
@@ -20,41 +17,63 @@ const FIELD_MAP_FONT_COLOR = 'fontColor';
 const FIELD_MAP_BG_COLOR = 'bgColor';
 
 type Config = {
-    name: string;
     width: number;
     order: number;
     mapValue: Mapper;
     mapFontColor: Mapper;
     mapBgColor: Mapper;
-};
+}
 
-class GridColumnNodeProcessor extends BaseNodeProcessor {
+
+class GridAutoColumnProcessor extends BaseNodeProcessor {
     constructor(
         private readonly config: Config,
         private readonly context: { [key: string]: unknown }
     ) {
         super();
     }
-    
+
     process(portName: string, data: unknown[][]): void {
         if (portName === PORT_IN_DATA) {
             const rows = data[0] as Row[];
-            const values = rows.map(this.mapRow.bind(this));
-            const column: GridColumnConfig = {
-                name: this.config.name,
-                width: this.config.width,
-                order: this.config.order,
-                values
-            };
-            this.emitResult(PORT_OUT_COLUMN, column);
+
+            const columns: GridColumnConfig[] = [];
+            const columnByKey = new Map<string, number>();
+
+            for (let i = 0, n = rows.length; i < n; i++) {
+                const row = rows[i];
+
+                for (const key in row) {
+                    let j = columnByKey.get(key);
+
+                    if (j == null) {
+                        j = columns.length;
+                        columnByKey.set(key, j);
+
+                        columns.push({
+                            name: key,
+                            width: this.config.width,
+                            order: this.config.order,
+                            values: new Array<GridValueConfig>(n)
+                        });
+                    }
+
+                    columns[j].values[i] = this.mapRow(row, key, i);
+                }
+            }
+
+            this.emitResult(PORT_OUT_COLUMNS, columns);
         }
     }
 
-    private mapRow(row: Row, rowIndex: number): GridValueConfig {
-        const ctx = rowToEvalContext(row, rowIndex, null, this.context);
-        const result: GridValueConfig = {
-            value: asString(this.config.mapValue(ctx))
-        };
+    private mapRow(row: Row, columnKey: string, rowIndex: number): GridValueConfig {
+        const ctx = rowToEvalContext(row, rowIndex, columnKey, this.context);
+        let value = asString(row[columnKey]);
+
+        const v = this.config.mapValue(ctx);
+        if (v != null) value = asString(value);
+
+        const result: GridValueConfig = { value };
 
         const fontColor = asString(this.config.mapFontColor(ctx));
         if (fontColor) result.fontColor = fontColor;
@@ -66,10 +85,10 @@ class GridColumnNodeProcessor extends BaseNodeProcessor {
     }
 }
 
-export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
-    title: 'Grid Column',
+export const GRID_AUTO_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
+    title: 'Grid Auto Columns',
     menuGroup: 'Grid',
-    description: 'Column to show in the grid.',
+    description: 'Automatically generate columns for each key in the data',
     ports: {
         in: {
             [PORT_IN_DATA]: {
@@ -77,17 +96,12 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             }
         },
         out: {
-            [PORT_OUT_COLUMN]: {
-                type: 'column'
+            [PORT_OUT_COLUMNS]: {
+                type: 'column[]'
             }
         }
     },
     fields: {
-        [FIELD_NAME]: {
-            type: CoreInputType.TEXT,
-            initialValue: '',
-            label: 'Column Name'
-        },
         [FIELD_WIDTH]: {
             type: CoreInputType.NUMBER,
             initialValue: 100,
@@ -104,7 +118,8 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             label: 'Map Value',
             fieldGroup: 'Styling',
             params: ({ context }) => ({
-                columns: context.columns
+                optional: true,
+                columns: context?.columns
             })
         },
         [FIELD_MAP_FONT_COLOR]: {
@@ -114,7 +129,7 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
             fieldGroup: 'Styling',
             params: ({ context }) => ({
                 optional: true,
-                columns: context.columns
+                columns: context?.columns
             })
         },
         [FIELD_MAP_BG_COLOR]: {
@@ -130,13 +145,18 @@ export const GRID_COLUMN_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     },
     createProcessor(node, params) {
         const fields = node.fields;
-        const name = fields[FIELD_NAME] as string;
         const width = fields[FIELD_WIDTH] as number;
         const order = fields[FIELD_ORDER] as number;
         const mapValue = compileColumnMapper(fields[FIELD_MAP_VALUE] as ColumnMapperInputValue);
         const mapFontColor = compileColumnMapper(fields[FIELD_MAP_FONT_COLOR] as ColumnMapperInputValue);
         const mapBgColor = compileColumnMapper(fields[FIELD_MAP_BG_COLOR] as ColumnMapperInputValue);
-        return new GridColumnNodeProcessor({ name, width, order, mapValue, mapFontColor, mapBgColor }, params.variables);
+        return new GridAutoColumnProcessor({
+            width,
+            order,
+            mapValue,
+            mapFontColor,
+            mapBgColor
+        }, params.variables);
     }
 }
 

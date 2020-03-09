@@ -4,16 +4,10 @@ import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ViewType, Row } from "../../types/valueTypes";
 import { GridColumnConfig, GridValueConfig, GridConfig } from "../../types/gridValueTypes";
 
-import { asString } from "../../utils/conversions";
-
 const PORT_COLUMNS = 'columns';
-const PORT_DATA = 'data';
 const PORT_ON_CLICK = 'onClick';
 
 class GridViewProcessor extends BaseNodeProcessor {
-    private data: Row[] | undefined;
-    private columns: GridColumnConfig[] | undefined;
-
     constructor(
         private readonly viewName: string,
         private readonly params: ChartParams
@@ -22,69 +16,57 @@ class GridViewProcessor extends BaseNodeProcessor {
     }
 
     process(portName: string, values: unknown[]) {
-        if (portName === PORT_DATA) {
-            this.data = values[0] as Row[];
+        if (portName === PORT_COLUMNS) {
+            const inputColumns = values as (GridColumnConfig | GridColumnConfig[])[];
 
-        } else if (portName === PORT_COLUMNS) {
-            this.columns = values as GridColumnConfig[];
-        }
+            // convert columns to a flat array
+            const columnConfigs = inputColumns.flatMap(x => x);
 
-        if (!this.data || !this.columns) {
-            return;
-        }
+            // sort columns by order
+            columnConfigs.sort((a, b) => a.order - b.order);
 
-        const columnConfigs = new Array<GridColumnConfig>();
-
-        // resolve columns
-        const mappedKeys = new Set<string>();
-        for (const column of this.columns) {
-            if (!column.restTemplate) {
-                columnConfigs.push(column);
-                mappedKeys.add(column.key);
-            }
-        }
-
-        // resolve rest template columns
-        for (const column of this.columns) {
-            if (column.restTemplate) {
-                const datum = this.data[0];
-                if (!datum) continue;
-
-                for (const key in datum) {
-                    if (!mappedKeys.has(key)) {
-                        const name = key;
-                        columnConfigs.push({ ...column, key, name });
-                    }
-                }
-            }
-        }
-
-        // sort columns by order
-        columnConfigs.sort((a, b) => a.order - b.order);
-
-        // map columns config to grid columns
-        const gridColumns: Column[] = columnConfigs.map<Column>(column => ({
-            name: column.name,
-            editable: true,
-            width: column.width,
-            maxWidth: 400
-        }));
-
-        // map rows to grid values
-        const gridData: GridValueConfig[][] = this.data.map((row, index) => {
-            return columnConfigs.map<GridValueConfig>(column => ({
-                value: asString(row[column.key]),
-                ...column.mapRow(row, index, column.key)
+            // map columns config to grid columns
+            const columns: Column[] = columnConfigs.map<Column>(column => ({
+                name: column.name,
+                editable: true,
+                width: column.width,
+                maxWidth: 400
             }));
-        });
 
-        const config: GridConfig = {
-            type: ViewType.GRID,
-            columns: gridColumns,
-            data: gridData
-        };
+            // map rows to grid data
+            const nCols = columnConfigs.length;
+            const data: GridValueConfig[][] = [];
 
-        this.params.actions.renderView?.(this.viewName, config);
+            for (let i = 0;;i++) {
+                const row: GridValueConfig[] = new Array(nCols);
+
+                let j = 0;
+                for (; j < nCols; j++) {
+                    const values = columnConfigs[j].values;
+                    if (i >= values.length) {
+                        break;
+                    }
+
+                    row[j] = values[i];
+                }
+
+                if (j < nCols) {
+                    break;
+                }
+
+                data.push(row);
+            }
+
+            const config: GridConfig = {
+                type: ViewType.GRID,
+                columns: columns,
+                data
+            };
+
+            this.params.actions.renderView?.(this.viewName, config);
+        }
+
+        
     }
 }
 
@@ -94,11 +76,8 @@ export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
     description: 'Displays the data as a grid view.',
     ports: {
         in: {
-            [PORT_DATA]: {
-                type: 'row[]'
-            },
             [PORT_COLUMNS]: {
-                type: 'column',
+                type: ['column', 'column[]'],
                 multi: true
             },
         },

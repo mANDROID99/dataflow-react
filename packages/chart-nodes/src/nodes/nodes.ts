@@ -13,6 +13,7 @@ import { GRID_VIEW_NODE } from "./grid/GridViewNode";
 import { GRID_COLUMN_NODE } from './grid/GridColumnNode';
 import { SCHEDULER_NODE } from "./input/SchedulerNode";
 import { COLOR_SCHEME_NODE } from "./styling/ColorSchemeNode";
+import { GRID_AUTO_COLUMN_NODE } from "./grid/GridAutoColumnNode";
 
 export enum NodeType {
     DATA_GRID='data-grid',
@@ -20,6 +21,7 @@ export enum NodeType {
     COMPUTE='compute',
     GRID_VIEW='grid-view',
     GRID_COLUMN='grid-column',
+    GRID_AUTO_COLUMN='grid-auto-column',
     CHART_VIEW='chart',
     CHART_AXIS='chart-axis',
     CHART_DATA_POINTS='chart-datapoints',
@@ -46,6 +48,7 @@ export const nodes = {
     [NodeType.CHART_AXIS]: CHART_AXIS_NODE,
     [NodeType.GRID_VIEW]: GRID_VIEW_NODE,
     [NodeType.GRID_COLUMN]: GRID_COLUMN_NODE,
+    [NodeType.GRID_AUTO_COLUMN]: GRID_AUTO_COLUMN_NODE,
     [NodeType.SCHEDULER]: SCHEDULER_NODE,
     [NodeType.COLOR_SCHEME]: COLOR_SCHEME_NODE
 };

@@ -1,5 +1,5 @@
 import { Column } from "@react-ngraph/core"
-import { Row, ViewType } from "./valueTypes"
+import { ViewType } from "./valueTypes"
 
 export type GridValueConfig = {
     value: string;
@@ -8,12 +8,10 @@ export type GridValueConfig = {
 }
 
 export type GridColumnConfig = {
-    key: string;
     name: string;
     width: number;
     order: number;
-    restTemplate: boolean;
-    mapRow: (row: Row, rowIndex: number, columnKey: string) => Partial<GridValueConfig>;
+    values: GridValueConfig[];
 }
 
 export type GridConfig = {
