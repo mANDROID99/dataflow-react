@@ -12,7 +12,7 @@ type Props = {
     renderPreview: (graph: Graph) => React.ReactNode | null;
 }
 
-export default function PreviewContent({ renderPreview }: Props) {
+export default function PreviewBody({ renderPreview }: Props) {
     const { graph, autoUpdate } = useSelector((state: StoreState) => ({
         graph: selectGraph(state),
         autoUpdate: selectAutoUpdate(state)
@@ -32,7 +32,7 @@ export default function PreviewContent({ renderPreview }: Props) {
     };
 
     return (
-        <div className="ngraph-preview-content">
+        <div className="ngraph-preview-body">
             {useMemo(() => renderPreview(bufferedGraph), [bufferedGraph, renderPreview])}
             <Transition show={isGraphUpdated}>
                 {(show, onExit) => (

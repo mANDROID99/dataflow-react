@@ -89,7 +89,7 @@ class GridViewProcessor extends BaseNodeProcessor {
 }
 
 export const GRID_VIEW_NODE: GraphNodeConfig<ChartContext, ChartParams> = {
-    title: 'Grid View',
+    title: 'Grid',
     menuGroup: 'Grid',
     description: 'Displays the data as a grid view.',
     ports: {

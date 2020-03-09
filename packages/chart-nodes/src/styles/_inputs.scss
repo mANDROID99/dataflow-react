@@ -1,0 +1,11 @@
+.ngraph-gradient-preview {
+    position: relative;
+    height: 25px;
+    overflow: hidden;
+}
+
+.ngraph-gradient-canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+}

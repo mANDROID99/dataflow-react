@@ -25,13 +25,6 @@
     color: #aeaeae;
 }
 
-.ngraph-preview-content {
-    overflow: hidden;
-    position: relative;
-    width: 300px;
-    height: 300px;
-}
-
 .ngraph-preview-header-title {
     flex-grow: 1;
 }
@@ -39,6 +32,36 @@
 .ngraph-preview-header-icon {
     cursor: pointer;
     margin-left: 0.75rem;
+}
+
+.ngraph-preview-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 300px;
+    height: 300px;
+}
+  
+.ngraph-preview-selector {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+}
+  
+.ngraph-preview-body {
+    flex-grow: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.ngraph-preview-content {
+    background-color: white;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 .ngraph-preview-update-overlay {

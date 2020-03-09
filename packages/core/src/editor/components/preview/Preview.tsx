@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useToggle } from '../../../utils/hooks/useToggle';
 import { selectAutoUpdate } from '../../../store/selectors';
 import { setAutoUpdate } from '../../../store/actions';
-import PreviewContent from './PreviewContent';
+import PreviewBody from './PreviewBody';
 import { Graph } from '../../../types/graphTypes';
 
 type Props = {
@@ -32,7 +32,7 @@ function Preview(props: Props) {
                 <FontAwesomeIcon className="ngraph-preview-header-icon" icon={minimized ? "plus" : "minus"} onClick={toggleMinimized}/>
             </div>
             {!minimized ? (
-                <PreviewContent renderPreview={props.renderPreview}/>
+                <PreviewBody renderPreview={props.renderPreview}/>
             ) : undefined}
         </div>
     );
