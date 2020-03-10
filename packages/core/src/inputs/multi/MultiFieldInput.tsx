@@ -1,11 +1,10 @@
-import React, { useCallback, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { InputProps } from '../../types/graphInputTypes';
+import React, { useCallback, useEffect, useRef } from 'react';
 import Button from '../../common/Button';
 import { GraphNodeFieldConfig } from '../../types/graphConfigTypes';
-import MultiFieldRow from './MultiFieldInputRow';
+import { InputProps } from '../../types/graphInputTypes';
 import { move } from '../../utils/arrayUtils';
+import MultiFieldRow from './MultiFieldInputRow';
 
 function createEntry(subFields: { [key: string]: GraphNodeFieldConfig<any, any> }) {
     const entry: { [key: string]: unknown } = {};

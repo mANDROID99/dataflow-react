@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { DialogOpts } from './DialogsManager';
 import Modal from '../../../common/Modal';
 import { getDialogDefinitionByType } from './dialogs';
+import { DialogOpts } from './DialogsManager';
 
 type Props = {
     dialog: DialogOpts;

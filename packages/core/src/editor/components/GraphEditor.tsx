@@ -1,12 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
-
-import { Graph } from '../../types/graphTypes';
+import { loadGraph } from '../../store/actions';
+import { initStore } from '../../store/store';
 import { GraphConfig } from '../../types/graphConfigTypes';
 import { GraphTemplate } from '../../types/graphTemplateTypes';
-import { initStore } from '../../store/store';
+import { Graph } from '../../types/graphTypes';
 import GraphEditorInner from './GraphEditorInner';
-import { loadGraph } from '../../store/actions';
 
 type Props<Ctx, Params> = {
     initialGraph?: Graph;

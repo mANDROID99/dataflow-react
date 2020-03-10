@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { InputProps, DataGridInputValue } from '../types/graphInputTypes';
-
+import React, { useContext } from 'react';
 import Button from '../common/Button';
 import { dialogsContext } from '../editor/components/dialog/DialogsManager';
 import { DialogType } from '../types/dialogTypes';
+import { DataGridInputValue, InputProps } from '../types/graphInputTypes';
 
 export default function DataGridFieldInput({ value, onChanged }: InputProps<DataGridInputValue>): React.ReactElement {
     const dialogManager = useContext(dialogsContext);

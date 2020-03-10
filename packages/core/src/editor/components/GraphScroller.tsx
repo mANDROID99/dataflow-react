@@ -1,13 +1,12 @@
-import React, { useRef, useState, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
-import { useDrop } from 'react-dnd';
 import classNames from 'classnames';
-
-import { useDrag } from '../../utils/hooks/useDrag';
-import { clearSelectedNode, addNode, showContextMenu } from '../../store/actions';
+import React, { useMemo, useRef, useState } from 'react';
+import { useDrop } from 'react-dnd';
+import { useDispatch } from 'react-redux';
+import { addNode, clearSelectedNode, showContextMenu } from '../../store/actions';
 import { graphNodeFactory } from '../../utils/graph/graphNodeFactory';
-import { useGraphContext } from '../graphEditorContext';
+import { useDrag } from '../../utils/hooks/useDrag';
 import { containerContext, GraphContainerContext } from '../graphContainerContext';
+import { useGraphContext } from '../graphEditorContext';
 import { GraphNodePortRefs } from '../GraphNodePortRefs';
 
 type Props = {

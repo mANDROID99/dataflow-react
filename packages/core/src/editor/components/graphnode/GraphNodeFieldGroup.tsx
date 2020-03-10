@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import React, { useState } from 'react';
+import Collapse from '../../../common/Collapse';
 import { GraphNodeFieldConfig } from '../../../types/graphConfigTypes';
 import { GraphNodeActions } from '../../../types/graphNodeComponentTypes';
-import Collapse from '../../../common/Collapse';
 import GraphNodeField from './GraphNodeField';
 
 type Props<C, P> = {

@@ -1,8 +1,8 @@
 import Chart, { ChartOptions } from 'chart.js';
-import { ChartAxisConfig, ChartAxisType, ChartEventConfig, ChartEventType, ChartConfig } from '../types/chartValueTypes';
-import { asString, asNumber } from '../utils/conversions';
-import { writeKeyPaths } from '../utils/keyPathUtils';
+import { ChartAxisConfig, ChartAxisType, ChartConfig, ChartEventConfig, ChartEventType } from '../types/chartValueTypes';
 import { Indexer } from '../utils/chart/Indexer';
+import { asNumber, asString } from '../utils/conversions';
+import { writeKeyPaths } from '../utils/keyPathUtils';
 
 function isCategorical(chartConfig: ChartConfig) {
     const xAxes = chartConfig.xAxes;

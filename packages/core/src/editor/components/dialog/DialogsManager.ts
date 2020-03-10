@@ -1,7 +1,6 @@
 import { createContext, useContext } from 'react';
 import { v4 } from 'uuid';
-
-import { DialogType, DialogParams, DialogResult } from '../../../types/dialogTypes';
+import { DialogParams, DialogResult, DialogType } from '../../../types/dialogTypes';
 import { Subscribeable } from '../../../utils/Subscribeable';
 
 export type DialogOpts = {

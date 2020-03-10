@@ -1,5 +1,5 @@
-import { Graph, TargetPort } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
+import { Graph, TargetPort } from "../types/graphTypes";
 import { NodeProcessor } from "../types/nodeProcessorTypes";
 
 /**

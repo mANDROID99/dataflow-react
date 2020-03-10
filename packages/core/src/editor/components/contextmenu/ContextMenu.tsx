@@ -1,11 +1,9 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { ContextMenuTargetType } from '../../../types/storeTypes';
-
 import Overlay from '../../../common/Overlay';
 import { hideContextMenu } from '../../../store/actions';
 import { selectContextMenu } from '../../../store/selectors';
+import { ContextMenuTargetType } from '../../../types/storeTypes';
 import ContextMenuGraph from './ContextMenuGraph';
 import ContextMenuNode from './ContextMenuNode';
 

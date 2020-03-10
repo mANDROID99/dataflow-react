@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGraphContext } from '../../graphEditorContext';
 import { loadGraph } from '../../../store/actions';
 import { selectTemplateId } from '../../../store/selectors';
+import { useGraphContext } from '../../graphEditorContext';
 
 function GraphTemplateChooser() {
     const dispatch = useDispatch();

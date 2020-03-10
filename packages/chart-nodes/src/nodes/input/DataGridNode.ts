@@ -1,4 +1,4 @@
-import { GraphNodeConfig, InputType, emptyDataGrid, DataGridInputValue, BaseNodeProcessor } from "@react-ngraph/core";
+import { BaseNodeProcessor, DataGridInputValue, emptyDataGrid, GraphNodeConfig, InputType } from "@react-ngraph/core";
 import { ChartContext } from "../../types/contextTypes";
 import { Row } from "../../types/valueTypes";
 import { autoConvert } from "../../utils/expressionUtils";

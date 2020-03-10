@@ -1,14 +1,7 @@
-import { GraphNodeConfig, InputType, Entry, BaseNodeProcessor, NodeProcessor } from "@react-ngraph/core";
+import { BaseNodeProcessor, Entry, GraphNodeConfig, InputType, NodeProcessor } from "@react-ngraph/core";
+import { ChartAxisConfig, ChartConfig, ChartDataSetConfig, ChartEventConfig, ChartEventType } from "../../types/chartValueTypes";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { ViewType } from "../../types/valueTypes";
-import {
-    ChartDataSetConfig,
-    ChartAxisConfig,
-    ChartEventType,
-    ChartEventConfig,
-    ChartConfig
-} from "../../types/chartValueTypes";
-
 import { compileEntriesMapper } from "../../utils/expressionUtils";
 
 const PORT_IN_DATASETS = 'datasets';

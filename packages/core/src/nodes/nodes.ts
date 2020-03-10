@@ -1,6 +1,6 @@
-import { SUB_GRAPH_NODE } from "./layout/SubGraphNode";
-import { SUBGRAPH_START_NODE } from "./internal/SubGraphStartNode";
 import { SUBGRAPH_END_NODE } from "./internal/SubGraphEndNode";
+import { SUBGRAPH_START_NODE } from "./internal/SubGraphStartNode";
+import { SUB_GRAPH_NODE } from "./layout/SubGraphNode";
 
 export enum NodeType {
     SUB_GRAPH='subgraph',

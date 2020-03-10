@@ -1,6 +1,6 @@
 import React from 'react';
-import { InputProps } from "../types/graphInputTypes";
 import CommonTextInput from '../common/CommonTextInput';
+import { InputProps } from "../types/graphInputTypes";
 
 export default function TextFieldInput(props: InputProps<string>): React.ReactElement {
     return <CommonTextInput

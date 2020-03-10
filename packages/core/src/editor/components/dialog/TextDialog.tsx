@@ -1,8 +1,7 @@
-import React from 'react';
-import { TextDialogParams, DialogComponentProps } from "../../../types/dialogTypes";
+import React, { useState } from 'react';
 import Button from '../../../common/Button';
 import CommonTextInput from '../../../common/CommonTextInput';
-import { useState } from 'react';
+import { DialogComponentProps, TextDialogParams } from "../../../types/dialogTypes";
 
 export default function TextDialog({ show, params, onResult }: DialogComponentProps<TextDialogParams, string | undefined>) {
     const [text, setText] = useState(params.text);

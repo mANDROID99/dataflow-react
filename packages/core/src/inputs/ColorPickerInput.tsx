@@ -1,5 +1,5 @@
-import React from 'react';
 import Pickr from '@simonwep/pickr';
+import React from 'react';
 import { InputProps } from "../types/graphInputTypes";
 
 export default class ColorPickerInput extends React.Component<InputProps<string>> {

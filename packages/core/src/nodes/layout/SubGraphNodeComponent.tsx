@@ -1,10 +1,9 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { GraphNodeComponentProps, DragType } from '../../types/graphNodeComponentTypes';
-import GraphScroller from '../../editor/components/GraphScroller';
-import GraphNodes from '../../editor/components/GraphNodes';
+import React from 'react';
 import GraphConnectionsContainer from '../../editor/components/connections/GraphConnectionsContainer';
+import GraphNodes from '../../editor/components/GraphNodes';
+import GraphScroller from '../../editor/components/GraphScroller';
+import { DragType, GraphNodeComponentProps } from '../../types/graphNodeComponentTypes';
 
 export default function SubGraphNodeComponent({ node, nodeId, nodeConfig, handleDrag, actions, width, height }: GraphNodeComponentProps<any, any>) {
 

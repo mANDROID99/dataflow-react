@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDispatch, useStore } from 'react-redux';
-import { deleteNode, cloneNode, setNodeName, hideContextMenu } from '../../../store/actions';
-import ContextMenuItem from './ContextMenuItem';
-import { useDialogsManager } from '../dialog/DialogsManager';
-import { DialogType } from '../../../types/dialogTypes';
+import { cloneNode, deleteNode, hideContextMenu, setNodeName } from '../../../store/actions';
 import { selectGraphNodeName } from '../../../store/selectors';
+import { DialogType } from '../../../types/dialogTypes';
+import { useDialogsManager } from '../dialog/DialogsManager';
+import ContextMenuItem from './ContextMenuItem';
 
 type Props = {
     nodeId: string;

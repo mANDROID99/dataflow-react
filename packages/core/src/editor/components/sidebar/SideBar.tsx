@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { useGraphContext } from '../../graphEditorContext';
 import { GraphNodeConfig } from '../../../types/graphConfigTypes';
-import NodeListItemGroup, { Group } from './NodeListItemGroup';
-import GraphTemplateChooser from './GraphTemplateChooser';
+import { useGraphContext } from '../../graphEditorContext';
 import GraphDataEditor from './GraphDataEditor';
+import GraphTemplateChooser from './GraphTemplateChooser';
+import NodeListItemGroup, { Group } from './NodeListItemGroup';
 
 function groupGraphNodes(nodes: { [type: string]: GraphNodeConfig<unknown, unknown> }) {
     const lookup = new Map<string, Group>();

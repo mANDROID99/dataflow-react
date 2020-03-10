@@ -1,8 +1,7 @@
-import React from 'react';
-
-import { DialogComponentProps, ConfirmDialogParams } from '../../../../types/dialogTypes';
-import Button from '../../../../common/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import Button from '../../../../common/Button';
+import { ConfirmDialogParams, DialogComponentProps } from '../../../../types/dialogTypes';
 
 export default function ConfirmDialog({ params, onResult }: DialogComponentProps<ConfirmDialogParams, boolean>) {
 

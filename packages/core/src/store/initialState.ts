@@ -1,5 +1,5 @@
-import { GraphEditorState } from "../types/storeTypes";
 import { Graph } from "../types/graphTypes";
+import { GraphEditorState } from "../types/storeTypes";
 
 function createInitialGraph(): Graph {
     return {

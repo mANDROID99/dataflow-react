@@ -1,6 +1,6 @@
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
-import GraphNodeLabelComponent from "./GraphNodeLabelComponent";
 import { DummyNodeProcessor } from "../DummyNodeProcessor";
+import GraphNodeLabelComponent from "./GraphNodeLabelComponent";
 
 const PORT_OUT = 'input';
 const PORT_IN_INTERNAL = '__in';

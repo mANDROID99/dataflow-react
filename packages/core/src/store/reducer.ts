@@ -1,35 +1,34 @@
 import produce from "immer";
 import { v4 } from "uuid";
-
-import { GraphEditorState, ContextMenuTargetType, NodeBounds } from "../types/storeTypes";
-import { GraphNode, Graph } from "../types/graphTypes";
+import { Graph, GraphNode } from "../types/graphTypes";
+import { ContextMenuTargetType, GraphEditorState, NodeBounds } from "../types/storeTypes";
+import { comparePortTargets } from "../utils/graph/portUtils";
 import { clearPortTargets, createConnection } from "../utils/store/connectionUtils";
 import {
+    AddNodeAction,
+    BeginPortDragAction,
+    ClearPortDragTargetAction,
+    CloneNodeAction,
+    DeleteNodeAction,
     GraphAction,
     GraphActionType,
     LoadGraphAction,
-    AddNodeAction,
-    DeleteNodeAction,
-    CloneNodeAction,
-    SetFieldValueAction,
-    ShowContextMenuAction,
+    MoveOverlappingBoundsAction,
     SelectNodeAction,
-    SetNodePosAction,
-    SetNodeWidthAction,
-    BeginPortDragAction,
-    SetPortDragTargetAction,
-    ClearPortDragTargetAction,
+    SetAutoUpdateAction,
+    SetFieldValueAction,
+    SetNodeBoundsAction,
     SetNodeCollapsedAction,
     SetNodeNameAction,
-    SetNodeBoundsAction,
-    MoveOverlappingBoundsAction,
+    SetNodePosAction,
     SetNodeSizeAction,
-    UnmountNodeAction,
-    SetAutoUpdateAction
+    SetNodeWidthAction,
+    SetPortDragTargetAction,
+    ShowContextMenuAction,
+    UnmountNodeAction
 } from "./actions";
-import { comparePortTargets } from "../utils/graph/portUtils";
-import { createInitialState } from "./initialState";
 import { clearAlignment, updateBoundsOverlapping } from "./boundsUpdater";
+import { createInitialState } from "./initialState";
 
 const OVERLAP_MARGIN = 5;
 

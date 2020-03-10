@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo } from "react";
-
 import { GraphNodeConfig, GraphNodeFieldConfig } from "../../../types/graphConfigTypes";
 import { GraphNodeActions } from "../../../types/graphNodeComponentTypes";
-import GraphNodeFieldGroup from "./GraphNodeFieldGroup";
 import GraphNodeField from "./GraphNodeField";
+import GraphNodeFieldGroup from "./GraphNodeFieldGroup";
 
 type Props<C, P> = {
     fields: {

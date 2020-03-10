@@ -1,11 +1,10 @@
+import { createProcessorsFromGraph, Graph, GraphConfig, invokeAllProcessors, NodeProcessor, runAllProcessors } from '@react-ngraph/core';
 import React, { useEffect, useReducer, useRef } from 'react';
-import { Graph, GraphConfig, createProcessorsFromGraph, runAllProcessors, invokeAllProcessors, NodeProcessor } from '@react-ngraph/core';
-
 import { ChartContext, ChartParams } from "../types/contextTypes";
-import { previewsReducer, reset, updatePreview, setActivePreview, init } from './previewsReducer';
 import { ViewConfig, ViewType } from '../types/valueTypes';
 import ChartPreview from './ChartPreview';
 import GridPreview from './GridPreview';
+import { init, previewsReducer, reset, setActivePreview, updatePreview } from './previewsReducer';
 
 type Props = {
     graph: Graph;

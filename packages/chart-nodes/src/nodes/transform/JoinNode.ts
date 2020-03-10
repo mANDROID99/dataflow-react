@@ -1,11 +1,11 @@
-import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor } from "@react-ngraph/core";
-
-import { Row, JoinType } from "../../types/valueTypes";
+import { BaseNodeProcessor, GraphNodeConfig, InputType as CoreInputType } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { asString } from "../../utils/conversions";
-import { rowToEvalContext, Mapper } from "../../utils/expressionUtils";
-import { InputType, ColumnMapperInputValue } from "../../types/inputTypes";
+import { ColumnMapperInputValue, InputType } from "../../types/inputTypes";
+import { JoinType, Row } from "../../types/valueTypes";
 import { compileColumnMapper } from "../../utils/columnMapperUtils";
+import { asString } from "../../utils/conversions";
+import { Mapper, rowToEvalContext } from "../../utils/expressionUtils";
+
 
 type KeyExtractor = (row: Row, i: number) => string;
 

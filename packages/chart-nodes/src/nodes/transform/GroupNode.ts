@@ -1,4 +1,4 @@
-import { GraphNodeConfig, InputType, BaseNodeProcessor } from "@react-ngraph/core";
+import { BaseNodeProcessor, GraphNodeConfig, InputType } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { KEY_GROUP, Row } from "../../types/valueTypes";
 import { pushDistinct } from "../../utils/arrayUtils";

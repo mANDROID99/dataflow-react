@@ -1,6 +1,6 @@
-import React from 'react';
+import { ChartParams, graphConfig, Preview, RequestParams, templates } from '@react-ngraph/chart-nodes';
 import { GraphEditor } from '@react-ngraph/core';
-import { graphConfig, templates, Preview, ChartParams, RequestParams } from '@react-ngraph/chart-nodes';
+import React from 'react';
 
 function requestHandler(params: RequestParams) {
     return fetch(params.url, {

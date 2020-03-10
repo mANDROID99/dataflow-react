@@ -1,5 +1,5 @@
 import { Entry } from "@react-ngraph/core"
-import { ViewType, Row } from "./valueTypes"
+import { Row, ViewType } from "./valueTypes"
 
 export enum ChartAxisType {
     LINEAR = 'linear',

@@ -1,12 +1,10 @@
-import { GraphNodeConfig, InputType as CoreInputType, Entry, BaseNodeProcessor } from "@react-ngraph/core";
-
+import { BaseNodeProcessor, Entry, GraphNodeConfig, InputType as CoreInputType } from "@react-ngraph/core";
+import { ChartDataSetConfig, ChartPointsConfig } from "../../types/chartValueTypes";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { ChartPointsConfig, ChartDataSetConfig } from "../../types/chartValueTypes";
-import { InputType, ColumnMapperInputValue } from "../../types/inputTypes";
-
-import { asString } from '../../utils/conversions';
-import { rowToEvalContext, EntriesMapper, Mapper, compileEntriesMapper } from '../../utils/expressionUtils';
+import { ColumnMapperInputValue, InputType } from "../../types/inputTypes";
 import { compileColumnMapper } from "../../utils/columnMapperUtils";
+import { asString } from '../../utils/conversions';
+import { compileEntriesMapper, EntriesMapper, Mapper, rowToEvalContext } from '../../utils/expressionUtils';
 import { ColorScheme } from "../styling/ColorSchemeNode";
 
 const PORT_IN_POINTS = 'points';

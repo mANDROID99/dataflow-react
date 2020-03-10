@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useRef, useState } from 'react';
 import Tooltip from '../../../common/Tooltip';
 
 type Props = {

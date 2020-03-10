@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
-import cn from 'classnames';
-import { InputProps, Option, CommonTextInput, CommonSelectInput } from "@react-ngraph/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { CommonSelectInput, CommonTextInput, InputProps, Option } from "@react-ngraph/core";
+import cn from 'classnames';
+import React, { useMemo } from "react";
 import { ColumnMapperInputValue, ColumnMapperType } from "../types/inputTypes";
 import { columnMapperToExpression, getColumnMapperType } from "../utils/columnMapperUtils";
+
 
 export default function ColumnMapperFieldInput(props: InputProps<ColumnMapperInputValue>) {
     const { value, onChanged, params } = props;

@@ -1,5 +1,5 @@
+import { Column, SimpleTable } from '@react-ngraph/core';
 import React from 'react';
-import { SimpleTable, Column } from '@react-ngraph/core';
 import { GridConfig } from '../types/gridValueTypes';
 
 type Props = {

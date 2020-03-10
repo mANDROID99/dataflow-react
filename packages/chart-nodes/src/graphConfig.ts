@@ -1,8 +1,8 @@
 import { GraphConfig, inputs as coreInputs, nodes as coreNodes } from '@react-ngraph/core';
-import { ChartContext, ChartParams } from "./types/contextTypes";
-import { mergeContexts, BASE_CONTEXT } from './chartContext';
-import { nodes } from './nodes/nodes';
+import { BASE_CONTEXT, mergeContexts } from './chartContext';
 import { inputs } from './inputs/inputs';
+import { nodes } from './nodes/nodes';
+import { ChartContext, ChartParams } from "./types/contextTypes";
 
 export const graphConfig: GraphConfig<ChartContext, ChartParams> = {
     inputs: {

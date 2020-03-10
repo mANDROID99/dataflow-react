@@ -1,19 +1,19 @@
-import { DATA_GRID_NODE } from "./input/DataGridNode";
-import { DATA_FETCHER_NODE } from "./input/DataFetcherNode";
-import { COMPUTE_NODE } from "./transform/ComputeNode";
-import { GROUP_NODE } from "./transform/GroupNode";
-import { AGGREGATE_NODE } from "./transform/AggregateNode";
-import { JOIN_NODE } from "./transform/JoinNode";
-import { SORT_BY_NODE } from "./transform/SortByNode";
-import { CHART_VIEW_NODE } from "./chart/ChartViewNode";
 import { CHART_AXIS_NODE } from "./chart/ChartAxisNode";
 import { CHART_DATA_POINTS_NODE } from "./chart/ChartDataPointsNode";
 import { CHART_DATA_SETS_NODE } from "./chart/ChartDataSetNode";
-import { GRID_VIEW_NODE } from "./grid/GridViewNode";
+import { CHART_VIEW_NODE } from "./chart/ChartViewNode";
+import { GRID_AUTO_COLUMN_NODE } from "./grid/GridAutoColumnNode";
 import { GRID_COLUMN_NODE } from './grid/GridColumnNode';
+import { GRID_VIEW_NODE } from "./grid/GridViewNode";
+import { DATA_FETCHER_NODE } from "./input/DataFetcherNode";
+import { DATA_GRID_NODE } from "./input/DataGridNode";
 import { SCHEDULER_NODE } from "./input/SchedulerNode";
 import { COLOR_SCHEME_NODE } from "./styling/ColorSchemeNode";
-import { GRID_AUTO_COLUMN_NODE } from "./grid/GridAutoColumnNode";
+import { AGGREGATE_NODE } from "./transform/AggregateNode";
+import { COMPUTE_NODE } from "./transform/ComputeNode";
+import { GROUP_NODE } from "./transform/GroupNode";
+import { JOIN_NODE } from "./transform/JoinNode";
+import { SORT_BY_NODE } from "./transform/SortByNode";
 
 export enum NodeType {
     DATA_GRID='data-grid',

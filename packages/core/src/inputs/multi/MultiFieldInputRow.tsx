@@ -1,9 +1,8 @@
-import React, { useCallback, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import React, { useCallback, useEffect, useRef } from 'react';
+import GraphNodeFieldInput from '../../editor/components/graphnode/GraphNodeFieldInput';
 import { GraphNodeSubFieldConfig } from '../../types/graphConfigTypes';
 import { GraphNodeActions } from '../../types/graphNodeComponentTypes';
-import GraphNodeFieldInput from '../../editor/components/graphnode/GraphNodeFieldInput';
 
 type Props<C> = {
     index: number;

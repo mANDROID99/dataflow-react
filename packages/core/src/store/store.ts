@@ -1,7 +1,7 @@
-import { createStore, combineReducers } from 'redux';
+import { combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { reducer } from './reducer';
 import { StoreState } from '../types/storeTypes';
+import { reducer } from './reducer';
 
 const reducers = combineReducers<StoreState>({
     editor: reducer

@@ -1,7 +1,7 @@
-import { DialogType, DialogDefinition } from "../../../types/dialogTypes";
-import TextDialog from './TextDialog';
-import DataGridDialog from "./datagrid/DataGridDialog";
+import { DialogDefinition, DialogType } from "../../../types/dialogTypes";
 import ConfirmDialog from "./confirm/ConfirmDialog";
+import DataGridDialog from "./datagrid/DataGridDialog";
+import TextDialog from './TextDialog';
 
 const textDialog: DialogDefinition = {
     component: TextDialog

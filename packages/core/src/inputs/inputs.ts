@@ -1,14 +1,13 @@
 import { GraphFieldInputConfig } from "../types/graphConfigTypes";
 import { InputType } from "../types/graphInputTypes";
-
-import TextFieldInput from "./TextFieldInput";
-import DataGridFieldInput from "./DataGridFieldInput";
-import SelectFieldInput from "./SelectFieldInput";
-import CheckFieldInput from "./CheckFieldInput";
-import NumberFieldInput from "./NumberFieldInput";
 import ActionsFieldInput from "./ActionsFieldInput";
-import MultiFieldInput from "./multi/MultiFieldInput";
+import CheckFieldInput from "./CheckFieldInput";
 import ColorPickerInput from "./ColorPickerInput";
+import DataGridFieldInput from "./DataGridFieldInput";
+import MultiFieldInput from "./multi/MultiFieldInput";
+import NumberFieldInput from "./NumberFieldInput";
+import SelectFieldInput from "./SelectFieldInput";
+import TextFieldInput from "./TextFieldInput";
 
 export const inputs: { [type: string]: GraphFieldInputConfig } = {
     [InputType.TEXT]: {

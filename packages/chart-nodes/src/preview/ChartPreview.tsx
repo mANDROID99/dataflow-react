@@ -1,6 +1,5 @@
-import React, { useRef, useEffect } from 'react';
 import { Chart } from 'chart.js';
-
+import React, { useEffect, useRef } from 'react';
 import { ChartConfig } from "../types/chartValueTypes";
 import { createChartConfiguration } from './createChart';
 

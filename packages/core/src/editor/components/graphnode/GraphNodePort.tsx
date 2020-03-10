@@ -1,17 +1,15 @@
-import React, { useEffect, useRef, useMemo } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { createSelector } from 'reselect';
 import classNames from 'classnames';
-
+import React, { useEffect, useMemo, useRef } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
+import { beginPortDrag, clearPortDragTarget, setPortDragTarget } from '../../../store/actions';
+import { selectPortDrag } from '../../../store/selectors';
 import { GraphConfig, GraphNodePortConfig } from '../../../types/graphConfigTypes';
 import { PortTarget } from '../../../types/storeTypes';
-
-import { isPortConnectable, comparePortTargets, resolvePortColors, getPortConfig } from '../../../utils/graph/portUtils';
-import { useGraphContext } from '../../graphEditorContext';
-import { beginPortDrag, setPortDragTarget, clearPortDragTarget } from '../../../store/actions';
-import { selectPortDrag } from '../../../store/selectors';
-import GraphNodePortHandle from './GraphNodePortHandle';
+import { comparePortTargets, getPortConfig, isPortConnectable, resolvePortColors } from '../../../utils/graph/portUtils';
 import { useContainerContext } from '../../graphContainerContext';
+import { useGraphContext } from '../../graphEditorContext';
+import GraphNodePortHandle from './GraphNodePortHandle';
 
 type InnerProps = Props & {
     parentNodeId: string | undefined;

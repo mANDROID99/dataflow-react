@@ -1,23 +1,21 @@
-import React, { useMemo, useEffect, useRef } from 'react';
-import { useStore } from 'react-redux';
-import Backend from 'react-dnd-html5-backend';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
-
-import { Graph } from '../../types/graphTypes';
+import Backend from 'react-dnd-html5-backend';
+import { useStore } from 'react-redux';
+import { selectGraph } from '../../store/selectors';
 import { GraphConfig } from '../../types/graphConfigTypes';
 import { GraphTemplate } from '../../types/graphTemplateTypes';
+import { Graph } from '../../types/graphTypes';
 import { StoreState } from '../../types/storeTypes';
-
-import ContextMenu from './contextmenu/ContextMenu';
-import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
-import GraphScroller from './GraphScroller';
 import { graphContext, GraphContext } from '../graphEditorContext';
-import Preview from './preview/Preview';
-import GraphNodes from './GraphNodes';
-import SideBar from './sidebar/SideBar';
-import { selectGraph } from '../../store/selectors';
-import { dialogsContext, DialogsManager } from './dialog/DialogsManager';
+import GraphConnectionsContainer from './connections/GraphConnectionsContainer';
+import ContextMenu from './contextmenu/ContextMenu';
 import DialogsContainer from './dialog/DialogsContainer';
+import { dialogsContext, DialogsManager } from './dialog/DialogsManager';
+import GraphNodes from './GraphNodes';
+import GraphScroller from './GraphScroller';
+import Preview from './preview/Preview';
+import SideBar from './sidebar/SideBar';
 
 type Props<Ctx, P> = {
     modalRoot: HTMLElement;

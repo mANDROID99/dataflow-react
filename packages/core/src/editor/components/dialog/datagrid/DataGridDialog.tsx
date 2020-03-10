@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
 import cn from 'classnames';
-
+import React, { useState } from 'react';
+import { DataGridDialogParams, DialogComponentProps } from '../../../../types/dialogTypes';
 import { DataGridInputValue } from '../../../../types/graphInputTypes';
-import { DialogComponentProps, DataGridDialogParams } from '../../../../types/dialogTypes';
 import DataGridDimensionsForm from './DataGridDimensionsForm';
 import DataGridTable from './DataGridTable';
 

@@ -1,5 +1,5 @@
-import { Graph } from "../types/graphTypes";
 import { GraphConfig } from "../types/graphConfigTypes";
+import { Graph } from "../types/graphTypes";
 import { resolvePortTargetsByProxy } from "./createProcessors";
 
 type NodeContext<C> = {

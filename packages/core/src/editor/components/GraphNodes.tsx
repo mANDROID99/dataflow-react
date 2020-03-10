@@ -1,9 +1,8 @@
 import React, { useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
-
-import { selectSubGraphNodes, selectGraphNodeContexts } from "../../store/selectors";
-import GraphNode from './graphnode/GraphNode';
+import { selectGraphNodeContexts, selectSubGraphNodes } from "../../store/selectors";
 import { useGraphContext } from "../graphEditorContext";
+import GraphNode from './graphnode/GraphNode';
 
 type Props = {
     scrollX: number;

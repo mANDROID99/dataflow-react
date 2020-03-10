@@ -1,8 +1,7 @@
 import React from 'react';
-
-import { useToggle } from '../../../utils/hooks/useToggle';
 import Button from "../../../common/Button";
 import Modal from '../../../common/Modal';
+import { useToggle } from '../../../utils/hooks/useToggle';
 import GraphDataExporterModal from './GraphDataEditorModal';
 
 function GraphDataExporter() {

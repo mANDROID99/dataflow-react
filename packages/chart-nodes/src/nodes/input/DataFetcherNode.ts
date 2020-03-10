@@ -1,8 +1,8 @@
-import { GraphNodeConfig, InputType, Entry, NodeProcessor, BaseNodeProcessor } from "@react-ngraph/core";
+import { BaseNodeProcessor, Entry, GraphNodeConfig, InputType, NodeProcessor } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { asString } from "../../utils/conversions";
 import { Row } from "../../types/valueTypes";
-import { Mapper, EntriesMapper, compileExpression, compileEntriesMapper } from "../../utils/expressionUtils";
+import { asString } from "../../utils/conversions";
+import { compileEntriesMapper, compileExpression, EntriesMapper, Mapper } from "../../utils/expressionUtils";
 
 const KEY_DATA = 'data';
 const PORT_ROWS = 'rows';

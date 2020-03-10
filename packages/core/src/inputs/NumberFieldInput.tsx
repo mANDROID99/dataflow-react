@@ -1,7 +1,6 @@
-import React from 'react';
-import { InputProps } from "../types/graphInputTypes";
+import React, { useCallback } from 'react';
 import CommonTextInput from '../common/CommonTextInput';
-import { useCallback } from 'react';
+import { InputProps } from "../types/graphInputTypes";
 
 function toNumber(input: string) {
     return isNaN(input as any) ? undefined : +input;

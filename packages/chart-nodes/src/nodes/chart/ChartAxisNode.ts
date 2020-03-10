@@ -1,6 +1,6 @@
-import { GraphNodeConfig, InputType, Entry, BaseNodeProcessor } from "@react-ngraph/core";
+import { BaseNodeProcessor, Entry, GraphNodeConfig, InputType } from "@react-ngraph/core";
+import { ChartAxisConfig, ChartAxisType } from "../../types/chartValueTypes";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { ChartAxisType, ChartAxisConfig } from "../../types/chartValueTypes";
 import { compileEntriesMapper } from "../../utils/expressionUtils";
 
 const PORT_OUT_AXIS = 'axis';

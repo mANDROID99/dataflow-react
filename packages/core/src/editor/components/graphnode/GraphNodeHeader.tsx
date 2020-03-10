@@ -1,13 +1,11 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { GraphNodeConfig } from '../../../types/graphConfigTypes';
-import { GraphNode } from '../../../types/graphTypes';
-import { DragType } from '../../../types/graphNodeComponentTypes';
-
-import GraphNodeDragHandle from './GraphNodeDragHandle';
 import { setNodeCollapsed } from '../../../store/actions';
+import { GraphNodeConfig } from '../../../types/graphConfigTypes';
+import { DragType } from '../../../types/graphNodeComponentTypes';
+import { GraphNode } from '../../../types/graphTypes';
+import GraphNodeDragHandle from './GraphNodeDragHandle';
 
 type Props = {
     nodeId: string;

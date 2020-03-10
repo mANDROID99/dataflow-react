@@ -1,18 +1,10 @@
-import { useMemo, useRef, useEffect } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Dispatch } from "redux";
-import {
-    setNodePos,
-    setNodeSize,
-    setNodeCollapsed,
-    setFieldValue,
-    showContextMenu,
-    selectNode,
-    setNodeWidth
-} from "../../../store/actions";
-import { ContextMenuTargetType, ContextMenuTarget } from "../../../types/storeTypes";
+import { selectNode, setFieldValue, setNodeCollapsed, setNodePos, setNodeSize, setNodeWidth, showContextMenu } from "../../../store/actions";
 import { GraphNodeConfig } from "../../../types/graphConfigTypes";
-import { GraphNode } from "../../../types/graphTypes";
 import { GraphNodeActions } from "../../../types/graphNodeComponentTypes";
+import { GraphNode } from "../../../types/graphTypes";
+import { ContextMenuTarget, ContextMenuTargetType } from "../../../types/storeTypes";
 
 export function useGraphNodeActions<C, P>(nodeId: string, dispatch: Dispatch, nodeConfig: GraphNodeConfig<C, P>, node: GraphNode, context: C | undefined, params: P): GraphNodeActions {
     const paramsRef = useRef({ node, context, params });

@@ -1,12 +1,10 @@
-import { InputType as CoreInputType, GraphNodeConfig, BaseNodeProcessor } from '@react-ngraph/core';
-
+import { BaseNodeProcessor, GraphNodeConfig, InputType as CoreInputType } from '@react-ngraph/core';
 import { ChartContext, ChartParams } from "../../types/contextTypes";
+import { ColumnMapperInputValue, ColumnMapperType, InputType } from '../../types/inputTypes';
 import { Row } from '../../types/valueTypes';
-import { InputType, ColumnMapperInputValue, ColumnMapperType } from '../../types/inputTypes';
-
 import { pushDistinct } from '../../utils/arrayUtils';
-import { rowToEvalContext, Mapper, compileExpression } from '../../utils/expressionUtils';
 import { compileColumnMapper } from '../../utils/columnMapperUtils';
+import { compileExpression, Mapper, rowToEvalContext } from '../../utils/expressionUtils';
 
 const PORT_ROWS = 'rows';
 const KEY_ACC = 'acc';

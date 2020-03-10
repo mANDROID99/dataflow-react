@@ -1,8 +1,7 @@
-import { Column, GraphNodeConfig, InputType, BaseNodeProcessor } from "@react-ngraph/core";
-
+import { BaseNodeProcessor, Column, GraphNodeConfig, InputType } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { ViewType, Row } from "../../types/valueTypes";
-import { GridColumnConfig, GridValueConfig, GridConfig } from "../../types/gridValueTypes";
+import { GridColumnConfig, GridConfig, GridValueConfig } from "../../types/gridValueTypes";
+import { ViewType } from "../../types/valueTypes";
 
 const PORT_COLUMNS = 'columns';
 const PORT_ON_CLICK = 'onClick';

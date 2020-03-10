@@ -1,14 +1,12 @@
-import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor } from "@react-ngraph/core";
-
+import { BaseNodeProcessor, GraphNodeConfig, InputType as CoreInputType } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { Row, KEY_GROUP } from "../../types/valueTypes";
-
-import { asNumber } from "../../utils/conversions";
+import { ColumnMapperInputValue, InputType } from "../../types/inputTypes";
+import { KEY_GROUP, Row } from "../../types/valueTypes";
 import { pushDistinct } from "../../utils/arrayUtils";
-import { AggregatorType, createAggregator } from "./aggregators";
-import { rowToEvalContext, Mapper } from "../../utils/expressionUtils";
-import { InputType, ColumnMapperInputValue } from "../../types/inputTypes";
 import { compileColumnMapper } from "../../utils/columnMapperUtils";
+import { asNumber } from "../../utils/conversions";
+import { Mapper, rowToEvalContext } from "../../utils/expressionUtils";
+import { AggregatorType, createAggregator } from "./aggregators";
 
 const PORT_GROUPS = 'groups';
 const PORT_ROWS = 'rows';

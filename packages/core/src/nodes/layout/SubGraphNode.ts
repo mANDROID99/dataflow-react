@@ -1,10 +1,9 @@
 import { GraphNodeConfig } from "../../types/graphConfigTypes";
 import { GraphNode } from "../../types/graphTypes";
-
-import { NodeType } from "../nodes";
-import SubGraphNodeComponent from "./SubGraphNodeComponent";
 import { DEFAULT_NODE_WIDTH } from "../../utils/graph/graphNodeFactory";
 import { DummyNodeProcessor } from "../DummyNodeProcessor";
+import { NodeType } from "../nodes";
+import SubGraphNodeComponent from "./SubGraphNodeComponent";
 
 const PORT_IN = 'input';
 const PORT_OUT = 'output';

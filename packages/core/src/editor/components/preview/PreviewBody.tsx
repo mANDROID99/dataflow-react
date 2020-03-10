@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useSelector, shallowEqual } from "react-redux";
-
-import { StoreState } from "../../../types/storeTypes";
-import { Graph } from "../../../types/graphTypes";
-
-import { selectGraph, selectAutoUpdate } from "../../../store/selectors";
-import Transition from "../../../common/Transition";
+import React, { useEffect, useMemo, useState } from "react";
+import { shallowEqual, useSelector } from "react-redux";
 import Button from "../../../common/Button";
+import Transition from "../../../common/Transition";
+import { selectAutoUpdate, selectGraph } from "../../../store/selectors";
+import { Graph } from "../../../types/graphTypes";
+import { StoreState } from "../../../types/storeTypes";
 
 type Props = {
     renderPreview: (graph: Graph) => React.ReactNode | null;

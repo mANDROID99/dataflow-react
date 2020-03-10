@@ -1,6 +1,6 @@
+import { Entry } from "@react-ngraph/core";
 import jexl from 'jexl';
 import Expression from 'jexl/Expression';
-import { Entry } from "@react-ngraph/core";
 import { Row } from "../types/valueTypes";
 
 const CHAR_SPACE = 32;

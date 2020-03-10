@@ -1,6 +1,5 @@
 import React from 'react';
-import { GraphNodeComponentProps, DragType } from "../../types/graphNodeComponentTypes";
-
+import { DragType, GraphNodeComponentProps } from "../../types/graphNodeComponentTypes";
 
 export default function GraphNodeLabelComponent({ node, handleDrag }: GraphNodeComponentProps<any, any>) {
     const handleDragPos = (event: React.MouseEvent) => {

@@ -1,8 +1,8 @@
+import { BaseNodeProcessor, GraphNodeConfig, InputType as CoreInputType } from "@react-ngraph/core";
 import chroma from 'chroma-js';
-import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor, nodes } from "@react-ngraph/core";
+import { PARAM_SCALE } from '../../inputs/GradientPreviewFieldInput';
 import { ChartContext, ChartParams } from "../../types/contextTypes";
 import { InputType } from '../../types/inputTypes';
-import { PARAM_SCALE } from '../../inputs/GradientPreviewFieldInput';
 
 const PORT_OUT_COLOR_SCHEME = 'color-scheme';
 

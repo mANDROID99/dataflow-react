@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import NodeListItem from './NodeListItem';
+import React, { useState } from 'react';
 import Collapse from '../../../common/Collapse';
+import NodeListItem from './NodeListItem';
 
 export type GroupEntry = {
     label: string;

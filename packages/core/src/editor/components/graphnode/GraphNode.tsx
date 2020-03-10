@@ -1,18 +1,17 @@
-import React, { useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import cn from 'classnames';
-
-import { GraphNode } from '../../../types/graphTypes';
-import GraphNodePort from './GraphNodePort';
-import { useGraphContext } from '../../graphEditorContext';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { mountNode, moveOverlapping, selectNode, setNodeBounds, showContextMenu, unmountNode } from '../../../store/actions';
 import { selectNodeSelected } from '../../../store/selectors';
-import { selectNode, showContextMenu, setNodeBounds, moveOverlapping, mountNode, unmountNode } from '../../../store/actions';
-import { ContextMenuTarget, ContextMenuTargetType, NodeBounds } from '../../../types/storeTypes';
 import { DragType, GraphNodeComponentProps } from '../../../types/graphNodeComponentTypes';
-import { useGraphNodeActions } from './graphNodeActions';
+import { GraphNode } from '../../../types/graphTypes';
+import { ContextMenuTarget, ContextMenuTargetType, NodeBounds } from '../../../types/storeTypes';
+import { getNodeMaxHeight, getNodeMaxWidth, getNodeMinHeight, getNodeMinWidth } from '../../../utils/graph/graphNodeFactory';
 import { useDragBehaviour } from '../../../utils/hooks/useDragBehaviour';
+import { useGraphContext } from '../../graphEditorContext';
+import { useGraphNodeActions } from './graphNodeActions';
 import GraphNodeComponent from './GraphNodeComponent';
-import { getNodeMinWidth, getNodeMaxWidth, getNodeMinHeight, getNodeMaxHeight } from '../../../utils/graph/graphNodeFactory';
+import GraphNodePort from './GraphNodePort';
 
 type Props<C> = {
     node: GraphNode;

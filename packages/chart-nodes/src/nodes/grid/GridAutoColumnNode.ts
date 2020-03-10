@@ -1,11 +1,11 @@
-import { GraphNodeConfig, InputType as CoreInputType, BaseNodeProcessor } from "@react-ngraph/core";
+import { BaseNodeProcessor, GraphNodeConfig, InputType as CoreInputType } from "@react-ngraph/core";
 import { ChartContext, ChartParams } from "../../types/contextTypes";
-import { InputType, ColumnMapperInputValue } from "../../types/inputTypes";
-import { Mapper, rowToEvalContext } from "../../utils/expressionUtils";
+import { GridColumnConfig, GridValueConfig } from "../../types/gridValueTypes";
+import { ColumnMapperInputValue, InputType } from "../../types/inputTypes";
 import { Row } from "../../types/valueTypes";
-import { asString } from "../../utils/conversions";
-import { GridValueConfig, GridColumnConfig } from "../../types/gridValueTypes";
 import { compileColumnMapper } from "../../utils/columnMapperUtils";
+import { asString } from "../../utils/conversions";
+import { Mapper, rowToEvalContext } from "../../utils/expressionUtils";
 
 const PORT_IN_DATA = 'data';
 const PORT_OUT_COLUMNS = 'columns';

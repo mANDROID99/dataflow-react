@@ -1,8 +1,8 @@
 import React, { useMemo, useRef } from "react";
-import { DataGridInputValue } from "../../../../types/graphInputTypes";
 import Button from "../../../../common/Button";
 import SimpleTable from "../../../../common/table/SimpleTable";
 import { Column } from "../../../../common/table/simpleTableTypes";
+import { DataGridInputValue } from "../../../../types/graphInputTypes";
 
 type Props = {
     columnNames: string[];

@@ -1,7 +1,7 @@
 import React from 'react';
 import { GraphNodeComponentProps } from '../../../types/graphNodeComponentTypes';
-import GraphNodeHeader from './GraphNodeHeader';
 import GraphNodeFieldGroups from './GraphNodeFieldGroups';
+import GraphNodeHeader from './GraphNodeHeader';
 
 export type DragPosState = {
     x: number;

@@ -1,11 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-
-import { GraphNodeFieldConfig, GraphFieldInputConfig } from '../../../types/graphConfigTypes';
+import { GraphFieldInputConfig, GraphNodeFieldConfig } from '../../../types/graphConfigTypes';
 import { InputProps } from '../../../types/graphInputTypes';
 import { GraphNodeActions } from '../../../types/graphNodeComponentTypes';
-
-import { useGraphContext } from '../../graphEditorContext';
 import { resolve } from '../../../utils/resolveUtils';
+import { useGraphContext } from '../../graphEditorContext';
 
 export type FieldInputProps<C, P> = {
     context: C;

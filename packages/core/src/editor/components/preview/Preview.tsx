@@ -1,12 +1,11 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useSelector, useDispatch } from 'react-redux';
-
-import { useToggle } from '../../../utils/hooks/useToggle';
-import { selectAutoUpdate } from '../../../store/selectors';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { setAutoUpdate } from '../../../store/actions';
-import PreviewBody from './PreviewBody';
+import { selectAutoUpdate } from '../../../store/selectors';
 import { Graph } from '../../../types/graphTypes';
+import { useToggle } from '../../../utils/hooks/useToggle';
+import PreviewBody from './PreviewBody';
 
 type Props = {
     renderPreview: (graph: Graph) => React.ReactNode | null;

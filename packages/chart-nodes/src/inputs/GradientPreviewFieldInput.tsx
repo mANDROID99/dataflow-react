@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useReducer } from 'react';
 import { InputProps } from "@react-ngraph/core";
+import React, { useEffect, useReducer, useRef } from 'react';
 
 export const PARAM_SCALE = 'scale';
 

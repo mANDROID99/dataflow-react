@@ -1,9 +1,9 @@
-import { StoreState } from "../types/storeTypes";
-import { GraphTemplate } from "../types/graphTemplateTypes";
 import { PortId } from "../editor/GraphNodePortRefs";
-import { TargetPort, GraphNode } from "../types/graphTypes";
 import { createGraphNodeContextsSelector } from "../processor/computeGraphNodeContexts";
 import { GraphConfig } from "../types/graphConfigTypes";
+import { GraphTemplate } from "../types/graphTemplateTypes";
+import { GraphNode, TargetPort } from "../types/graphTypes";
+import { StoreState } from "../types/storeTypes";
 
 export function selectGraph(state: StoreState) {
     return state.editor.graph;
