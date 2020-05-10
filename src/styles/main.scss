@@ -1,0 +1,94 @@
+@import '~/normalize.css';
+@import '~/react-data-grid/dist/react-data-grid.css';
+
+@import './utils';
+@import './common';
+@import './graph';
+@import './forms';
+
+.ngraph-editor {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.0625em;
+    color: var(--text-color);
+    --canvas-color: #dcdcdc;
+    --primary: #3eb7e5;
+    --primary-highlight: #54cffe;
+    --secondary: #6b6b6b;
+    --secondary-highlight: #898989;
+    --node-color: #f6f6f6;
+    --node-icon-color: #222222;
+    --text-color: #222222;
+    --text-color-highlight: grey;
+    --text-color-disabled: #979797;
+    --ui-bg-color: #f6f6f6;
+    --ui-border-color: #d4d4d4;
+    --input-bg-color: white;
+}
+
+.ngraph-editor * {
+    box-sizing: border-box;
+}
+
+.ngraph-editor[data-theme="dark"] {
+    --canvas-color: #191919;
+    --node-color: #828282;
+    --node-icon-color: #191919;
+    --text-color: #efefef;
+    --ui-bg-color: #383838;
+    --ui-border-color: #626262;
+    --input-bg-color: #292929;
+}
+
+.ngraph-designer-view {
+    flex-grow: 1;
+    background: var(--canvas-color);
+    position: relative;
+}
+
+.ngraph-designer-svg {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+.ngraph-theme-toggle {
+    align-items: center;
+    color: var(--text-color);
+    display: flex;
+    position: absolute;
+    right: 0.5em;
+    top: 0.5em;
+}
+
+.ngraph-theme-toggle-btn {
+    background: var(--text-color);
+    border-radius: 2em;
+    cursor: pointer;
+    width: 3.5em;
+}
+
+.ngraph-theme-toggle-switch {
+    background: var(--canvas-color);
+    height: 1.5em;
+    width: 1.5em;
+    border-radius: 1.5em;
+    margin: 0.2em;
+    transition: transform 0.15s ease;
+}
+
+.ngraph-theme-toggle.toggled
+.ngraph-theme-toggle-switch {
+    transform: translate(100%, 0);
+}
+
+.ngraph-theme-toggle-label {
+    margin-right: 0.5em;
+    text-transform: capitalize;
+}
+

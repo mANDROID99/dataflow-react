@@ -1,0 +1,133 @@
+.ngraph-overlay {
+    background: rgba(black, 0.25);
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+.ngraph-modal-overlay {
+    align-items: flex-start;
+    display: flex;
+    justify-content: center;
+    padding: 2em;
+}
+
+.ngraph-btn {
+    background-color: var(--primary);
+    border: none;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+    outline: none;
+    padding: 0.5em;
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: var(--primary-highlight);
+    }
+}
+
+.ngraph-btn.secondary {
+    background-color: var(--secondary);
+    &:hover {
+        background-color: var(--secondary-highlight);
+    }
+}
+
+.ngraph-modal {
+    background: var(--ui-bg-color);
+    border: 1px solid var(--ui-border-color);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ngraph-modal-header {
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75em 0.5em;
+    border-bottom: 1px solid var(--ui-border-color);
+}
+
+.ngraph-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.75em 0.5em;
+    border-top: 1px solid var(--ui-border-color);
+    & .ngraph-btn {
+        margin-left: 0.5em;
+    }
+}
+
+.ngraph-modal-body {
+    flex-grow: 1;
+    padding: 0.75em 0.5em;
+}
+
+.ngraph-context-menu {
+    position: fixed;
+    background: var(--ui-bg-color);
+    border-radius: 5px;
+    border: 1px solid var(--ui-border-color);
+    box-shadow: 1px 1px 7px 0px #00000026;
+    padding: 0.5em 0;
+}
+
+.ngraph-context-menu-title {
+    color: var(--primary);
+    font-weight: 700;
+    padding: 0em 0.75em;
+    padding-bottom: 0.5em;
+    text-align: center;
+}
+
+.ngraph-context-menu-item {
+    cursor: pointer;
+    padding: 0.75em 0.5em;
+    &.disabled {
+        color: var(--text-color-disabled);
+        cursor: default;
+    }
+
+    &:not(.disabled):hover {
+        background: var(--primary);
+        color: white;
+    }
+}
+
+.ngraph-grid-header {
+    align-items: center;
+    display: flex;
+}
+
+.ngraph-grid-column-menu {
+    padding: 0 5px;
+    margin-left: -5px;
+}
+
+.ngraph-grid-column-text {
+    align-self: stretch;
+    flex-grow: 1;
+}
+
+.ngraph-grid-column-menu,
+.ngraph-grid-column-text {
+    cursor: pointer;
+    &:hover {
+        color: grey;
+    }
+}
+
+.ngraph-grid-column-input {
+    min-width: 0;
+    width: 100%;
+    padding: 0.1em 0.25em;
+    border: 1px solid lightgrey;
+    border-radius: 3px;
+}
+
+.rdg {
+    color: black;
+}

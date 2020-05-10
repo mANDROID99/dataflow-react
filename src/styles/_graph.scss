@@ -1,0 +1,57 @@
+
+.ngraph-nodes {
+    position: relative;
+}
+
+.ngraph-node-bg {
+    cursor: move;
+    fill: var(--node-color);
+}
+
+.ngraph-node-label {
+    fill: var(--text-color);
+    font-weight: 700;
+    user-select: none;
+}
+
+.ngraph-node-content * {
+    fill: var(--node-icon-color);
+    pointer-events: none;
+}
+
+.ngraph-connection {
+    stroke: var(--primary);
+    fill: none;
+}
+
+.ngraph-connection-arrow {
+    fill: var(--primary);
+}
+
+.ngraph-node-port-handle {
+    cursor: pointer;
+    fill: var(--node-color);
+}
+
+.ngraph-node-port-label {
+    fill: var(--text-color);
+    font-size: 0.85em;
+    user-select: none;
+}
+
+.ngraph-node-port.drag-hidden {
+    &>.ngraph-node-port-label {
+        opacity: 0.25;
+    }
+    &>.ngraph-node-port-handle {
+        cursor: not-allowed;
+        opacity: 0.25;
+    }
+}
+
+.ngraph-node-port.drag-target,
+.ngraph-node-port.dragging {
+    &>.ngraph-node-port-handle {
+        fill: var(--primary);
+    }
+}
