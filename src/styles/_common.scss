@@ -8,64 +8,6 @@
     overflow: auto;
 }
 
-.ngraph-modal-overlay {
-    align-items: flex-start;
-    display: flex;
-    justify-content: center;
-    padding: 2em;
-}
-
-.ngraph-btn {
-    background-color: var(--primary);
-    border: none;
-    border-radius: 3px;
-    color: white;
-    cursor: pointer;
-    outline: none;
-    padding: 0.5em;
-    transition: background-color 0.2s;
-    &:hover {
-        background-color: var(--primary-highlight);
-    }
-}
-
-.ngraph-btn.secondary {
-    background-color: var(--secondary);
-    &:hover {
-        background-color: var(--secondary-highlight);
-    }
-}
-
-.ngraph-modal {
-    background: var(--ui-bg-color);
-    border: 1px solid var(--ui-border-color);
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-}
-
-.ngraph-modal-header {
-    font-weight: 700;
-    text-align: center;
-    padding: 0.75em 0.5em;
-    border-bottom: 1px solid var(--ui-border-color);
-}
-
-.ngraph-modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0.75em 0.5em;
-    border-top: 1px solid var(--ui-border-color);
-    & .ngraph-btn {
-        margin-left: 0.5em;
-    }
-}
-
-.ngraph-modal-body {
-    flex-grow: 1;
-    padding: 0.75em 0.5em;
-}
-
 .ngraph-context-menu {
     position: fixed;
     background: var(--ui-bg-color);
@@ -76,7 +18,7 @@
 }
 
 .ngraph-context-menu-title {
-    color: var(--primary);
+    color: var(--color-primary);;
     font-weight: 700;
     padding: 0em 0.75em;
     padding-bottom: 0.5em;
@@ -92,7 +34,7 @@
     }
 
     &:not(.disabled):hover {
-        background: var(--primary);
+        background: var(--color-primary);
         color: white;
     }
 }

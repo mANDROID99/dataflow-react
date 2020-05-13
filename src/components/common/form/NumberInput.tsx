@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 type Props = {
     value: number;
-    size?: string;
+    className?: string;
     onChange: (value: number) => void;
     min?: number;
     max?: number;
@@ -23,7 +23,7 @@ function roundToStep(value: number, step: number): number {
     return value - m;
 }
 
-export default function NumberInput({ value, size, onChange, min, max, step }: Props) {
+export default function NumberInput({ value, className, onChange, min, max, step }: Props) {
     const [input, setInput] = useState<string>('' + value);
 
     const handleBlur = () => {
@@ -48,10 +48,9 @@ export default function NumberInput({ value, size, onChange, min, max, step }: P
         setInput(e.target.value);
     };
 
-    const inputClass = size ? 'ngraph-input-' + size : undefined;
     return (
         <input
-            className={clsx("ngraph-form-field-input", inputClass)}
+            className={clsx("ngr-field-input", className)}
             type="number"
             value={input}
             onChange={handleChange}

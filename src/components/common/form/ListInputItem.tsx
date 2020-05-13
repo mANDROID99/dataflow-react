@@ -23,16 +23,16 @@ export default function ListInputItem({ idx, hasPrev, hasNext, onRemove, onMove,
     const handleMoveDown = () => onMove(idx, 1);
 
     return (
-        <div className="ngraph-form-list-item">
-            <div className="ngraph-form-icon-btn" onClick={handleRemove}>
+        <div className="ngr-flex ngr-align-center ngr-mb-2">
+            <div className="ngr-icon-btn" onClick={handleRemove}>
                 <FontAwesomeIcon icon={faTimes}/>
             </div>
             {children}
-            <div className="ngraph-form-list-item--move">
-                {hasPrev && <div className="ngraph-form-icon-btn" onClick={handleMoveUp}>
+            <div className="ngr-flex-center-v">
+                {hasPrev && <div className="ngr-icon-btn" onClick={handleMoveUp}>
                     <FontAwesomeIcon icon={faChevronUp}/>
                 </div>}
-                {hasNext && <div className="ngraph-form-icon-btn" onClick={handleMoveDown}>
+                {hasNext && <div className="ngr-icon-btn" onClick={handleMoveDown}>
                     <FontAwesomeIcon icon={faChevronDown}/>
                 </div>}
             </div>

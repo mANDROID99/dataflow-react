@@ -1,7 +1,6 @@
 import React from 'react';
 import { GridViewColumnConfig } from "./gridWidgetNodeDef";
 import { Action, ActionType } from './reducer';
-import FieldGroup from '../../components/common/form/FieldGroup';
 import TextInput from '../../components/common/form/TextInput';
 import SelectInput from '../../components/common/form/SelectInput';
 import NumberInput from '../../components/common/form/NumberInput';
@@ -28,17 +27,33 @@ function ColumnConfig({ idx, column, columnKeys, dispatch }: Props) {
     };
 
     return (
-        <div className="ngraph-form-list-item-content ngraph-form-row">
-            <FieldGroup label="Label">
-                <TextInput value={column.label} onChange={handleLabelChanged} size="md" className="ngraph-input-sm"/>
-            </FieldGroup>
-            <FieldGroup label="Key">
-                <SelectInput value={column.key} options={columnKeys} onChange={handleKeyChanged} size="sm"/>
-            </FieldGroup>
-            <FieldGroup label="Width">
-                <NumberInput value={column.width} onChange={handleWidthChanged} size="sm"/>
-            </FieldGroup>
-        </div>
+        <>
+            <div className="ngr-ml-2 ngr-flex-grow-2">
+                <div className="ngr-field-label">Label</div>
+                <TextInput
+                    className="ngr-width-100"
+                    value={column.label}
+                    onChange={handleLabelChanged}
+                />
+            </div>
+            <div className="ngr-mx-2 ngr-flex-grow-1">
+                <div className="ngr-field-label">Key</div>
+                <SelectInput
+                    className="ngr-width-100"
+                    value={column.key}
+                    options={columnKeys}
+                    onChange={handleKeyChanged}
+                />
+            </div>
+            <div className="ngr-mr-2 ngr-flex-grow-1">
+                <div className="ngr-field-label">Width</div>
+                <NumberInput
+                    className="ngr-width-100"
+                    value={column.width}
+                    onChange={handleWidthChanged}
+                />
+            </div>
+        </>
     );
 }
 

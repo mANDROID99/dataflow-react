@@ -1,4 +1,57 @@
 
+
+.ngr-ml-2 {
+    margin-left: 0.5rem;
+}
+
+.ngr-mr-1 {
+    margin-right: 0.25rem;
+}
+
+.ngr-mr-2 {
+    margin-right: 0.5rem;
+}
+
+.ngr-mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.ngr-mx-2 {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.ngr-flex {
+    display: flex;
+}
+
+.ngr-flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.ngr-flex-grow-1 {
+    flex-grow: 1;
+}
+
+.ngr-flex-grow-2 {
+    flex-grow: 2;
+}
+
+.ngr-align-center {
+    align-items: center;
+}
+
+.ngr-flex-center-v {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ngr-width-100 {
+    width: 100%;
+}
+
 @keyframes fadeIn {
     0% {
         opacity: 0;

@@ -1,6 +1,10 @@
 @import '~/normalize.css';
 @import '~/react-data-grid/dist/react-data-grid.css';
 
+@import './theme';
+@import './editor';
+
+
 @import './utils';
 @import './common';
 @import './graph';

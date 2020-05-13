@@ -25,7 +25,7 @@ export default function Overlay({ className, show, children, onHide, onExit }: P
     return (
         <div
             ref={ref}
-            className={clsx("ngraph-overlay", className)}
+            className={clsx("ngr-overlay", className)}
             onClick={handleClick}
             onAnimationEnd={handleAnimationEnd}
             style={{ animation: `${show ? 'fadeIn' : 'fadeOut'} 0.2s` }}

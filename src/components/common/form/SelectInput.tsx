@@ -6,7 +6,7 @@ export type Option = string | { key: string, label: string };
 type Props = {
     value: string;
     options: Option[];
-    size?: string;
+    className?: string;
     onChange: (value: string) => void;
 }
 
@@ -14,13 +14,10 @@ function getOptionValue(opt: Option) {
     return typeof opt === 'string' ? opt : opt.key;
 }
 
-export default function SelectInput({ value, options, size, onChange }: Props) {
-    const inputClass = size ? 'ngraph-input-' + size : undefined;
+export default function SelectInput({ value, options, className, onChange }: Props) {
 
     useEffect(() => {
-        if (options.length &&
-            !options.some((opt) => getOptionValue(opt) === value)
-        ) {
+        if (options.length && !options.some((opt) => getOptionValue(opt) === value)) {
             onChange(getOptionValue(options[0]));
         }
     });
@@ -33,7 +30,7 @@ export default function SelectInput({ value, options, size, onChange }: Props) {
         <select
             value={value}
             onChange={handleChange}
-            className={clsx("ngraph-form-field-input", inputClass)}
+            className={clsx("ngr-field-input", className)}
         >
             {options.map((opt, i) => {
                 let label: string;

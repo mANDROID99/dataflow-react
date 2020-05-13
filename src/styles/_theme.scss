@@ -1,0 +1,27 @@
+
+@mixin base-theme {
+    --color-panel: #f6f6f6;
+    --color-panel-border: #d4d4d4;
+    --color-primary: #3eb7e5;
+    --color-primary-600: #54cffe;
+    --color-secondary: #6b6b6b;
+    --color-secondary-600: #898989;
+    --color-text-light: #efefef;
+    --color-text-dark: #222222;
+    --color-text-faded: #646464;
+    --color-text-faded-hover: #b0b0b0;
+    --color-input-bg: #ffffff;
+    --color-input-border: #d4d4d4;
+}
+
+.ngr-theme--light {
+    @include base-theme();
+}
+
+.ngr-theme--dark {
+    @include base-theme();
+    --color-panel: #383838;
+    --color-panel-border: #626262;
+    --color-input-bg: #292929;
+    --color-input-border: #626262;
+}

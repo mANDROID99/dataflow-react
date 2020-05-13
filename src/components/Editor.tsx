@@ -11,6 +11,7 @@ import GraphComponent from './graph/Graph';
 import ThemeToggle from './ThemeToggle';
 import NodeConfigModal from './configuration/NodeConfigModal';
 import { createProcessorsSelector } from '../redux/editorProcessorsSelectors';
+import clsx from 'clsx';
 
 type Props<Params, Ctx> = {
     graph: Graph;
@@ -44,7 +45,7 @@ function Editor<Params, Ctx>({ graph, graphDef, params }: Props<Params, Ctx>) {
 
     return (
         <editorContext.Provider value={ctx}>
-            <div className="ngraph-editor" data-theme={theme}>
+            <div className={clsx("ngraph-editor", 'ngr-theme--' + theme)} data-theme={theme}>
                 <div className="ngraph-designer-view">
                     <GraphComponent/>
                     <NodeConfigModal

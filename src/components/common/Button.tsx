@@ -10,10 +10,9 @@ type Props = {
 }
 
 export default function Button({ variant, label, className, disabled, onClick }: Props) {
-    const cn = clsx('ngraph-btn', className, variant, { disabled });
     return (
         <button
-            className={cn}
+            className={clsx('ngr-btn', className, variant, { disabled })}
             onClick={onClick}
             disabled={disabled}
         >

@@ -20,12 +20,12 @@
 }
 
 .ngraph-connection {
-    stroke: var(--primary);
+    stroke: var(--color-primary);
     fill: none;
 }
 
 .ngraph-connection-arrow {
-    fill: var(--primary);
+    fill: var(--color-primary);
 }
 
 .ngraph-node-port-handle {
@@ -52,6 +52,6 @@
 .ngraph-node-port.drag-target,
 .ngraph-node-port.dragging {
     &>.ngraph-node-port-handle {
-        fill: var(--primary);
+        fill: var(--color-primary);
     }
 }

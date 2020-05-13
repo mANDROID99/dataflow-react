@@ -1,11 +1,9 @@
-import React, { useReducer, useCallback } from 'react';
+import React, { useReducer, useCallback, useEffect } from 'react';
 import { ConfigComponentProps } from "../../types/graphDefTypes";
 import { BuiltInGraphParams, BuiltInGraphContext } from "../builtInNodeDefTypes";
 import { Config } from "./gridWidgetNodeDef";
 import { reducer, ActionType } from './reducer';
-import Button from '../../components/common/Button';
 import GridViewColumnConfig from './GridWidgetColumnConfig';
-import FieldGroup from '../../components/common/form/FieldGroup';
 import TextInput from '../../components/common/form/TextInput';
 import ListInput from '../../components/common/form/ListInput';
 
@@ -29,35 +27,34 @@ export default function GridWidgetNodeConfig(props: ConfigComponentProps<BuiltIn
         dispatch({ type: ActionType.MOVE_COLUMN, col, offset });
     }, []);
 
+    useEffect(() => {
+        props.onChanged(config);   
+    });
+
     return (
-        <>
-            <div className="ngraph-modal-body">
-                <div className="ngraph-form">
-                    <FieldGroup label="Widget Name">
-                        <TextInput value={config.widgetName} onChange={handleViewNameChanged} size="full"/>
-                    </FieldGroup>
-                    <FieldGroup label="Columns">
-                        <ListInput
-                            values={config.columns}
-                            onAddItem={handleAddColumn}
-                            onRemoveItem={handleRemoveColumn}
-                            onMoveItem={handleMoveColumn}
-                            renderItem={(col, idx) => (
-                                <GridViewColumnConfig
-                                    column={col}
-                                    idx={idx}
-                                    columnKeys={columnKeys}
-                                    dispatch={dispatch}
-                                />
-                            )}
+        <div className="ngraph-form">
+            <div className="ngr-mb-2">
+                <div className="ngr-field-label">Widget name</div>
+                <TextInput value={config.widgetName} onChange={handleViewNameChanged}/>
+            </div>
+            <div>
+                <div className="ngr-field-label">Columns</div>
+                <ListInput
+                    className="ngr-ml-2"
+                    values={config.columns}
+                    onAddItem={handleAddColumn}
+                    onRemoveItem={handleRemoveColumn}
+                    onMoveItem={handleMoveColumn}
+                    renderItem={(col, idx) => (
+                        <GridViewColumnConfig
+                            column={col}
+                            idx={idx}
+                            columnKeys={columnKeys}
+                            dispatch={dispatch}
                         />
-                    </FieldGroup>
-                </div>
+                    )}
+                />
             </div>
-            <div className="ngraph-modal-footer">
-                <Button variant="secondary" onClick={props.onHide} label="Cancel"/>
-                <Button variant="primary" onClick={() => props.onSave(config)} label="Apply Changes"/>
-            </div>
-        </>
+        </div>
     );
 }

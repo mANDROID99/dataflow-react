@@ -1,10 +1,4 @@
 
-
-
-.ngraph-form-field-group {
-    margin-bottom: 0.75em;
-}
-
 .ngraph-form-row {
     display: flex;
     .ngraph-form-field-group:not(:last-child) {
@@ -14,55 +8,4 @@
 
 .ngraph-form-field-label {
     margin-bottom: 0.25em;
-}
-
-.ngraph-form-field-input {
-    background-color: var(--input-bg-color);
-    border: 1px solid var(--ui-border-color);
-    border-radius: 3px;
-    color: var(--text-color);
-    min-width: 0;
-    padding: 0.3em 0.5em;
-}
-
-.ngraph-form-field-input:focus {
-    outline: 2px solid var(--primary);
-}
-
-.ngraph-form-list-outer {
-    margin-left: 0.5em;
-}
-
-.ngraph-form-list {
-    margin-top: 0.5em;
-}
-
-.ngraph-form-list-item {
-    align-items: center;
-    display: flex;
-}
-
-.ngraph-form-list-item-content {
-    flex-grow: 1;
-}
-
-.ngraph-form-icon-btn {
-    cursor: pointer;
-    color: var(--text-color);
-    padding: 0.5em;
-    &:hover {
-        color: var(--text-color-highlight);
-    }
-}
-
-.ngraph-input-sm {
-    width: 5em;
-}
-
-.ngraph-input-md {
-    width: 10em;
-}
-
-.ngraph-input-full {
-    width: 100%;
 }

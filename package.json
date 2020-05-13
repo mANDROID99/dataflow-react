@@ -20,7 +20,8 @@
     "normalize.css": "^8.0.1",
     "react-data-grid": "7.0.0-canary.16",
     "react-redux": "^7.2.0",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "tailwindcss": "^1.4.6"
   },
   "peerDependencies": {
     "react": "^16.0.0",

@@ -6,7 +6,7 @@ import { selectConfiguringNode } from '../../redux/editorSelectors';
 import { NodeProcessor } from '../../types/processorTypes';
 import { throwNodeNotFound } from '../../utils/errors';
 import { ActionType, useModalReducer } from '../../utils/modalReducer';
-import Modal from '../common/Modal';
+import Overlay from '../common/Overlay';
 import NodeConfigModalContent from './NodeConfigModalContent';
 
 type Props<Ctx> = {
@@ -36,8 +36,7 @@ function NodeConfigModal<Ctx>({ processors }: Props<Ctx>) {
     }
 
     return (
-        <Modal
-            title="Node Config"
+        <Overlay
             show={state.show}
             onExit={() => dispatch({ type: ActionType.EXIT })}
             onHide={() => reduxDispatch(cancelConfigModal())}
@@ -48,7 +47,7 @@ function NodeConfigModal<Ctx>({ processors }: Props<Ctx>) {
                 onSave={(config) => reduxDispatch(setNodeConfig(state.value!, config, true))}
                 onHide={() => reduxDispatch(cancelConfigModal())}
             />
-        </Modal>
+        </Overlay>
     )
 }
 

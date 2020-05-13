@@ -18,8 +18,7 @@ export type ContentComponentProps<Params, C> = ComponentProps<Params, C> & {
 
 export type ConfigComponentProps<Params, Ctx, C> = ComponentProps<Params, C> & {
     context: Ctx;
-    onSave(config: C): void;
-    onHide(): void;
+    onChanged: (config: C) => void;
 };
 
 export type GetContextCallbackParams<C, Params, Ctx> = {

@@ -3,6 +3,7 @@ import Button from '../Button';
 import ListInputItem from './ListInputItem';
 
 type Props<T> = {
+    className?: string;
     values: T[];
     getItemKey?: (value: T, i: number) => string | number;
     onAddItem: () => void;
@@ -13,21 +14,19 @@ type Props<T> = {
 
 function ListInput<T>(props: Props<T>) {
     return (
-        <div className="ngraph-form-list-outer">
-            <div className="ngraph-form-list">
-                {props.values.map((value, idx, arr) => (
-                    <ListInputItem
-                        idx={idx}
-                        key={props.getItemKey?.(value, idx) ?? idx}
-                        hasPrev={idx > 0}
-                        hasNext={idx < arr.length - 1}
-                        onMove={props.onMoveItem}
-                        onRemove={props.onRemoveItem}
-                    >
-                        {props.renderItem(value, idx)}
-                    </ListInputItem>
-                ))}
-            </div>
+        <div className={props.className}>
+            {props.values.map((value, idx, arr) => (
+                <ListInputItem
+                    idx={idx}
+                    key={props.getItemKey?.(value, idx) ?? idx}
+                    hasPrev={idx > 0}
+                    hasNext={idx < arr.length - 1}
+                    onMove={props.onMoveItem}
+                    onRemove={props.onRemoveItem}
+                >
+                    {props.renderItem(value, idx)}
+                </ListInputItem>
+            ))}
             <Button
                 variant="secondary"
                 onClick={props.onAddItem}

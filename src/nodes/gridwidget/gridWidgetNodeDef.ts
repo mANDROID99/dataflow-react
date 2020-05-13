@@ -45,7 +45,7 @@ class Processor implements NodeProcessor<BuiltInGraphContext> {
 }
 
 export const gridWidgetNode: NodeDef<BuiltInGraphParams, BuiltInGraphContext, Config> = {
-    name: 'Grid View',
+    name: 'Grid Widget',
     initialConfig: {
         widgetName: '',
         columns: []

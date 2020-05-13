@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useSelector } from "react-redux"
 import { selectGraphNode } from "../../redux/editorSelectors";
 import { useEditorContext } from "../editorContext";
@@ -24,13 +24,37 @@ export default function NodeConfigModalContent<Params, Ctx>({ nodeId, processor,
     // select the context from the node processor.
     // Node processors are recreated every time something changed in the graph, so it will always be up to date.
     const context = useMemo(() => processor.getContext(), [processor]);
+    const configRef = useRef(node.config);
 
-    return nodeDef.renderConfig({
-        config: node.config,
-        params,
-        context,
-        onSave,
-        onHide
-    }) as any;
+    const onChanged = (config: unknown) => {
+        configRef.current = config;
+    };
+
+    const onSubmit = () => {
+        onSave(configRef.current);
+    };
+
+    return (
+        <div className="ngr-modal ngr-modal-md">
+            <div className="ngr-modal-header">
+                {nodeDef.name}
+            </div>
+            <div className="ngr-modal-body">
+                {nodeDef.renderConfig({
+                    config: node.config,
+                    params,
+                    context,
+                    onChanged
+                })}
+            </div>
+            <div className="ngr-modal-footer">
+                <button type="submit" className="ngr-btn primary ngr-mr-1" onClick={onSubmit}>
+                    Apply
+                </button>
+                <button className="ngr-btn secondary" onClick={onHide}>
+                    Cancel
+                </button>
+            </div>
+        </div>
+    );
 }
-
