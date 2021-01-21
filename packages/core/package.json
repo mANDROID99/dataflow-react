@@ -24,7 +24,7 @@
     "@react-dnd/invariant": "^2.0.0",
     "@simonwep/pickr": "^1.5.1",
     "classnames": "^2.2.6",
-    "immer": "^5.0.0",
+    "immer": "^8.0.1",
     "react-dnd": "^10.0.2",
     "react-dnd-html5-backend": "^10.0.2",
     "react-redux": "^7.1.3",
