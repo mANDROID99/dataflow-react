@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@react-ngraph/core": "0.1.0",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "chroma-js": "^2.1.0",
     "jexl": "^2.2.2"
   },
